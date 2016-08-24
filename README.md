@@ -1,1 +1,9 @@
-# Hexagon Cartogram
+# Hexagon Cartograms
+
+## Processing pipeline
+
+TODOC
+
+## Editor
+
+TODOC

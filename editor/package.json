@@ -1,9 +1,13 @@
 {
   "name": "hexagon-cartograms",
   "version": "0.1.0",
-  "description": "Hexagon cartogram maker",
+  "description": "Hexagon cartogram editor",
   "author": "Pitch Interactive, Inc.",
   "license": "ISC",
+  "repository" : {
+    "type" : "git",
+    "url" : "https://github.com/PitchInteractiveInc/hexagon-cartograms.git"
+  },
   "main": "index.js",
   "scripts": {
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --host 0.0.0.0",
