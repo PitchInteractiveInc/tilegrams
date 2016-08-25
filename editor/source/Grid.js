@@ -1,22 +1,13 @@
-import {tiles} from '../data/tile-coordinates.json'
-
 const SIDE = 10
 const TILE_DIMENSIONS = {
   width: 2.0 * SIDE,
   height: Math.sqrt(3.0) * SIDE
 }
+const TILE_OFFSET = 2
 
 export default class Grid {
-  constructor() {
-    this._tiles = tiles.map(tile => {
-      return {
-        id: tile.id,
-        position: {
-          x: tile.position.x + 10,
-          y: 100 - (tile.position.y + 63) - (tile.position.x % 2 == 0 ? -1 : 0),
-        }
-      }
-    })
+  constructor(tiles) {
+    this._tiles = tiles
   }
 
   onMouseDown(event) {
@@ -81,8 +72,8 @@ export default class Grid {
   /** http://www.redblobgames.com/grids/hexagons/#basics */
   _drawTile(position, fill, superstroke) {
     const center = {
-      x: position.x * (1.5 * SIDE),
-      y: position.y * TILE_DIMENSIONS.height + (
+      x: (position.x + TILE_OFFSET) * (1.5 * SIDE),
+      y: (position.y + TILE_OFFSET) * TILE_DIMENSIONS.height + (
           position.x % 2 == 0 ?
             TILE_DIMENSIONS.height * 0.5 :
             0.0
@@ -124,16 +115,4 @@ export default class Grid {
     this._ctx.lineWidth = superstroke ? 3 : 1
     this._ctx.stroke()
   }
-
-  /*
-  _inspectRawTiles() {
-    const ys = tiles.map(tile => tile.position.y)
-    console.log('max y', Math.max.apply(null, ys));
-    console.log('min y', Math.min.apply(null, ys));
-
-    const xs = tiles.map(tile => tile.position.x)
-    console.log('max x', Math.max.apply(null, xs));
-    console.log('min x', Math.min.apply(null, xs));
-  }
-  */
 }
