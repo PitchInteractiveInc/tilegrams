@@ -25,7 +25,11 @@
   },
   "dependencies": {
     "d3": "^4.2.2",
+    "d3-geo": "^1.2.4",
+    "point-in-polygon": "^1.0.1",
     "react": "^15.3.1",
-    "react-dom": "^15.3.1"
+    "react-dom": "^15.3.1",
+    "stats-js": "^1.0.0-alpha1",
+    "topojson": "^1.6.26"
   }
 }

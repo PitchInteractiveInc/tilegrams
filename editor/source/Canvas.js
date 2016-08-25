@@ -1,3 +1,8 @@
+import Stats from 'stats-js'
+
+import GridGraphic from './graphics/GridGraphic'
+import MapGraphic from './graphics/MapGraphic'
+
 const canvasColor = '#f0f0f0'
 const canvasDimensions = {
   width: 1920 * 2,
@@ -5,14 +10,17 @@ const canvasDimensions = {
 }
 
 export default class Canvas {
-  constructor() {
-    this._objects = []
+  constructor(usTopoJson) {
     this._createCanvas()
     this._requestRender()
+    this._initStats()
+
+    this._mapGraphic = new MapGraphic(usTopoJson)
+    this._gridGraphic = new GridGraphic()
   }
 
-  include(object) {
-    this._objects.push(object)
+  updateTiles() {
+    return this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
   _createCanvas() {
@@ -36,26 +44,38 @@ export default class Canvas {
     this._canvas.onmousemove = this._onMouseMove.bind(this)
   }
 
+  /** stats.js fps indicator */
+  _initStats() {
+    this._stats = new Stats()
+    this._stats.domElement.style.position = 'absolute'
+    this._stats.domElement.style.left = 0
+    this._stats.domElement.style.top = 0
+    document.body.appendChild(this._stats.domElement)
+  }
+
   _requestRender() {
     requestAnimationFrame(this._render.bind(this))
   }
 
   _render(timestamp) {
     this._requestRender()
+    this._stats.begin()
     this._renderBackground()
-    this._objects.forEach(object => object.render(this._ctx))
+    this._mapGraphic.render(this._ctx)
+    this._gridGraphic.render(this._ctx)
+    this._stats.end()
   }
 
   _onMouseDown(event) {
-    this._objects.forEach(object => object.onMouseDown(event, this._ctx))
+    this._gridGraphic.onMouseDown(event, this._ctx)
   }
 
   _onMouseUp(event) {
-    this._objects.forEach(object => object.onMouseUp(event, this._ctx))
+    this._gridGraphic.onMouseUp(event, this._ctx)
   }
 
   _onMouseMove(event) {
-    this._objects.forEach(object => object.onMouseMove(event, this._ctx))
+    this._gridGraphic.onMouseMove(event, this._ctx)
   }
 
   _renderBackground() {
