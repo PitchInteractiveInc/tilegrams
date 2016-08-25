@@ -26,7 +26,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Camera Behaviors",
+      title: "Hexagon Cartograms",
     }),
   ],
 }
