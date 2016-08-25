@@ -1,9 +1,6 @@
 import React from 'react'
 import * as d3 from 'd3'
 
-import {tiles} from '../../data/tile-coordinates.json'
-
-
 export default class HexCount extends React.Component {
   constructor(props) {
     super(props)
@@ -44,9 +41,9 @@ export default class HexCount extends React.Component {
   _getMetrics(inputData) {
     const input = this._parseInput(inputData)
     const inputHash = this._createHashFromInput(input)
-    const idealRatio = d3.sum(input, (d) => d[1]) / tiles.length
+    const idealRatio = d3.sum(input, (d) => d[1]) / this.props.tiles.length
     return (
-      this._getCountsByGeo(tiles).map((d) => {
+      this._getCountsByGeo(this.props.tiles).map((d) => {
         const metric = inputHash[d.key]
         return {
           key: d.key,

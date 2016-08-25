@@ -24,7 +24,7 @@ document.body.appendChild(container)
 
 ReactDOM.render(
   (
-    <HexMetrics />
+    <HexMetrics tiles={tiles} />
   ),
   document.getElementById('editor')
 )
