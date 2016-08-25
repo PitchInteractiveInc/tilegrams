@@ -4,9 +4,9 @@
   "description": "Hexagon cartogram editor",
   "author": "Pitch Interactive, Inc.",
   "license": "ISC",
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/PitchInteractiveInc/hexagon-cartograms.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PitchInteractiveInc/hexagon-cartograms.git"
   },
   "main": "index.js",
   "scripts": {
@@ -23,5 +23,9 @@
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.15.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "d3": "^4.2.2",
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1"
+  }
 }
