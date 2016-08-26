@@ -1,26 +1,45 @@
 import {geoPath, geoAlbersUsa} from 'd3-geo'
 import topojson from 'topojson'
 import inside from 'point-in-polygon';
+import area from 'area-polygon'
 
-import {fipsColor} from '../utils'
+import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import Graphic from './Graphic'
 
+const MIN_PATH_AREA = 0.5
+
 export default class Map extends Graphic {
-  constructor(topoJson) {
+  constructor(mapTopoJson) {
     super()
+    this._initProjection()
+    this._importTopoJson(mapTopoJson)
+  }
+
+  _importTopoJson(mapTopoJson) {
+    // break out state features
     this._stateFeatures = topojson.feature(
-      topoJson,
-      topoJson.objects.states
+      mapTopoJson,
+      mapTopoJson.objects.states
     )
-    this._projection = geoAlbersUsa()
-      .scale(3500.0)
-      .translate([2000.0, 1000.0])
+
+    // pre-cache projected bounding boxes and paths for each state
+    const pathProjection = geoPath().projection(this._project)
+    this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
+    this._projectedStates = this._stateFeatures.features.map(feature => {
+      const hasMultiplePaths = feature.geometry.type == 'MultiPolygon'
+      const bounds = pathProjection.bounds(feature)
+      updateBounds(this._generalBounds, bounds)
+      const paths = feature.geometry.coordinates
+        .filter(path => area(hasMultiplePaths ? path[0] : path) > MIN_PATH_AREA)
+        .map(path => [(hasMultiplePaths ? path[0] : path).map(this._project)])
+      return {bounds, paths}
+    })
   }
 
   render(ctx) {
     return
     const drawFeaturePathToContext = geoPath()
-      .projection(this._projection)
+      .projection(this._project)
       .context(ctx)
 
     this._stateFeatures.features.forEach(feature => {
@@ -36,13 +55,29 @@ export default class Map extends Graphic {
 
   /** Find feature that contains given point */
   getFeatureAtPoint(point) {
-    const projectedPoint = this._projection.invert([point.x, point.y])
-    return this._stateFeatures.features.find(feature => {
-      // TODO: check feature bounding box before looking up point
-      const matchingPath = feature.geometry.coordinates.find(path => {
-        return inside(projectedPoint, path[0])
-      })
+    const pointDimensions = [point.x, point.y]
+
+    // check if point is within general bounds of TopoJSON
+    if (!checkWithinBounds(pointDimensions, this._generalBounds)) {
+      return null
+    }
+
+    // for each feature: check if point is within bounds, then within path
+    return this._stateFeatures.features.find((feature, featureIndex) => {
+      const bounds = this._projectedStates[featureIndex].bounds
+      if (!checkWithinBounds(pointDimensions, bounds)) {
+        return false
+      }
+      const matchingPath = this._projectedStates[featureIndex].paths.find(
+        path => inside(pointDimensions, path[0])
+      )
       return matchingPath != null
     })
+  }
+
+  _initProjection() {
+    this._project = geoAlbersUsa()
+      .scale(3500.0)
+      .translate([2000.0, 1000.0])
   }
 }

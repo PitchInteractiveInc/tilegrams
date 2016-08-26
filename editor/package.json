@@ -24,6 +24,7 @@
     "webpack-dev-server": "^1.15.0"
   },
   "dependencies": {
+    "area-polygon": "^1.0.1",
     "d3": "^4.2.2",
     "d3-geo": "^1.2.4",
     "point-in-polygon": "^1.0.1",
