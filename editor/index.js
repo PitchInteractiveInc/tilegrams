@@ -13,6 +13,9 @@ const canvas = new Canvas(usTopoJson)
 const tiles = canvas.updateTiles()
 
 ReactDOM.render(
-  <HexMetrics tiles={tiles} />,
+  <HexMetrics
+    tiles={tiles}
+    onAddTileMouseDown={grid.onAddTileMouseDown.bind(grid)}
+    onAddTileMouseUp={grid.onAddTileMouseUp.bind(grid)} />,
   createElement()
 )
