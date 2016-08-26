@@ -33,13 +33,7 @@ export default class GridGraphic extends Graphic {
       }
     }
   }
-
-  _findTile(position) {
-    return this._tiles.find(tile => {
-      return tile.position.x == position.x && tile.position.y == position.y
-    })
-  }
-
+  
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic) {
     this._tiles = []
@@ -54,6 +48,12 @@ export default class GridGraphic extends Graphic {
       }
     })
     return this._tiles
+  }
+
+  _findTile(position) {
+    return this._tiles.find(tile => {
+      return tile.position.x == position.x && tile.position.y == position.y
+    })
   }
 
   render(ctx) {

@@ -10,7 +10,7 @@ function createElement() {
   return div
 }
 
-/** Updated memoized bounds if exceeded by bounds */
+/** Update memoized bounds if exceeded by bounds */
 function updateBounds(memoBounds, bounds) {
   for (let lim = 0; lim < 2; lim++) {       // limit (0 = min; 1 = max)
     for (let dim = 0; dim < 2; dim++) {     // dimension (0 = x; 1 = y)
