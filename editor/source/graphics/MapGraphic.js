@@ -38,7 +38,6 @@ export default class Map extends Graphic {
   }
 
   render(ctx) {
-    return
     const drawFeaturePathToContext = geoPath()
       .projection(this._project)
       .context(ctx)
@@ -48,7 +47,7 @@ export default class Map extends Graphic {
       drawFeaturePathToContext(feature)
       ctx.closePath()
       ctx.fillStyle = fipsColor(feature.id)
-      ctx.globalAlpha = 0.5
+      ctx.globalAlpha = 0.35
       ctx.fill()
       ctx.globalAlpha = 1.0
     })
