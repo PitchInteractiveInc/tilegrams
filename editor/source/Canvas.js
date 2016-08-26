@@ -28,6 +28,10 @@ export default class Canvas {
     return this._gridGraphic
   }
 
+  getTiles() {
+    return this._gridGraphic.getTiles()
+  }
+
   _createCanvas() {
     const canvas = document.createElement('canvas')
 

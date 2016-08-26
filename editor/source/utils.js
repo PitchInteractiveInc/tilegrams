@@ -36,9 +36,18 @@ function checkWithinBounds(point, bounds) {
   return true
 }
 
+/** Do arithmetic with points in array form */
+function subtractPointDimensions(point, minusPoint) {
+  return [
+    point[0] - minusPoint[0],
+    point[1] - minusPoint[1],
+  ]
+}
+
 module.exports = {
   fipsColor,
   createElement,
   updateBounds,
-  checkWithinBounds
+  checkWithinBounds,
+  subtractPointDimensions,
 }

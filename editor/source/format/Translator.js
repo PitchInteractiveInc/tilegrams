@@ -1,5 +1,5 @@
 /**
- * Translator coordinates from TopoJSON to hexagon offset coordinates and back
+ * Translate coordinates from TopoJSON to hexagon offset coordinates and back
  *
  * TopoJSON reference:
  * https://github.com/mbostock/topojson/wiki/Introduction
@@ -8,7 +8,10 @@
  * http://www.redblobgames.com/grids/hexagons/#coordinates
  */
 
-export default class Translator {
+import hexagonGrid from '../HexagonGrid'
+import {subtractPointDimensions} from '../utils'
+
+class Translator {
   /** Convert TopoJSON to hexagon offset coordinates */
   fromTopoJson(topoJson) {
     const tilePoints = topoJson.objects.statesHex.geometries.map(geometry => {
@@ -22,8 +25,64 @@ export default class Translator {
   }
 
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson() {
-    // TODO
+  toTopoJson(tiles) {
+    const geometries = []
+    const arcs = []
+    const hexagonDeltaPaths = this._getHexagonDeltaPaths()
+
+    tiles.forEach((tile, tileIndex) => {
+      geometries.push({
+        type: 'Polygon',
+        id: tile.id,
+        arcs: [[tileIndex]]
+      })
+      const center = hexagonGrid.tileCenterPoint(tile.position)
+      arcs.push(
+        [hexagonGrid.getLeftPoint(center)].concat(hexagonDeltaPaths)
+      )
+    })
+
+    return {
+      type: 'Topology',
+      objects: {
+        states: {
+          type: 'GeometryCollection',
+          geometries,
+        }
+      },
+      arcs,
+    }
+  }
+
+  /** Build array of delta-encoded hexagon points from upper-left point */
+  _getHexagonDeltaPaths() {
+    const origin = {x: 0, y: 0}
+    return [
+      subtractPointDimensions(
+        hexagonGrid.getUpperLeftPoint(origin),
+        hexagonGrid.getLeftPoint(origin)
+      ),
+      subtractPointDimensions(
+        hexagonGrid.getUpperRightPoint(origin),
+        hexagonGrid.getUpperLeftPoint(origin)
+      ),
+      subtractPointDimensions(
+        hexagonGrid.getRightPoint(origin),
+        hexagonGrid.getUpperRightPoint(origin)
+      ),
+      subtractPointDimensions(
+        hexagonGrid.getLowerRightPoint(origin),
+        hexagonGrid.getRightPoint(origin)
+      ),
+      subtractPointDimensions(
+        hexagonGrid.getLowerLeftPoint(origin),
+        hexagonGrid.getLowerRightPoint(origin)
+      ),
+      subtractPointDimensions(
+        hexagonGrid.getLeftPoint(origin),
+        hexagonGrid.getLowerLeftPoint(origin)
+      ),
+    ]
   }
 
   /** Determine path absolute points, given TopoJSON delta-encoded arcs */
@@ -187,3 +246,5 @@ export default class Translator {
     }
   }
 }
+
+export default new Translator()

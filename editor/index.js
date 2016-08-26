@@ -5,6 +5,8 @@ import Canvas from './source/Canvas'
 import Ui from './source/Ui'
 
 import {createElement} from './source/utils'
+import {csvParseRows} from 'd3-dsv'
+import translator from './source/format/Translator'
 
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
@@ -20,7 +22,6 @@ const ui = new Ui(geos)
 canvas.getGrid().onChange(() => updateUi())
 ui.setAddTileCallback((event) => canvas.getGrid().onAddTileMouseDown(event))
 
-
 canvas.computeCartogram({
   topoJson: usTopoJson,
   properties: csvParseRows(usPopulationCsv),
@@ -33,4 +34,10 @@ function updateUi() {
     canvas.getGrid().getTiles(),
     canvas.getGrid().getOriginalTilesLength
   )
+}
+
+// export functionality is command-line only for the moment
+window.exportToTopoJson = () => {
+  const outputTopoJson = translator.toTopoJson(canvas.getTiles())
+  console.log(JSON.stringify(outputTopoJson));
 }
