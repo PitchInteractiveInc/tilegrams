@@ -1,3 +1,8 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import HexMetrics from './components/HexMetrics'
+
 const SIDE = 10
 const TILE_DIMENSIONS = {
   width: 2.0 * SIDE,
@@ -8,7 +13,10 @@ const TILE_OFFSET = 2
 export default class Grid {
   constructor(tiles) {
     this._tiles = tiles
+    this.originalTilesLength = this._tiles.length
     document.body.onkeydown = this.onkeydown.bind(this)
+    this._setUpMetrics()
+    this._renderMetrics(tiles)
   }
 
   onMouseDown(event) {
@@ -27,11 +35,19 @@ export default class Grid {
     if ((this._selectedTile && !this._selectedTile.shouldDrag) || !this._selectedTile) {
       return
     }
-    this._selectedTile.shouldDrag = false
+
     const position = this._rectToHexPosition(event.offsetX, event.offsetY)
     const tile = this._findTile(position)
+
+    this._selectedTile.shouldDrag = false
     if (this._selectedTile && tile == null) {
       this._selectedTile.position = position
+    }
+    if (this._selectedTile == this._newTile) {
+      /** add new tile to list of tiles only once it's successfully added to the canvas */
+      this._tiles.push(this._newTile)
+      this._renderMetrics()
+      this._newTile = null
     }
   }
 
@@ -47,6 +63,7 @@ export default class Grid {
     if( key == 8 || key == 46 ) {
       if (this._selectedTile) {
         this._deleteTile(this._selectedTile)
+        this._renderMetrics()
         this._selectedTile = null
       }
       return
@@ -71,7 +88,6 @@ export default class Grid {
       shouldDrag: true
     }
     this._mouseAt = {x: -1, y: -1}
-    this._tiles.push(this._newTile)
     this._selectedTile = this._newTile
   }
 
@@ -173,5 +189,24 @@ export default class Grid {
     this._ctx.strokeStyle = superstroke ? '#333333' : '#f0f0f0'
     this._ctx.lineWidth = superstroke ? 3 : 1
     this._ctx.stroke()
+  }
+
+  _setUpMetrics() {
+    const container = document.createElement('div')
+    container.id = 'metrics'
+    document.body.appendChild(container)
+  }
+
+  _renderMetrics() {
+    ReactDOM.render(
+      (
+        <HexMetrics
+          tiles={this._tiles}
+          originalTilesLength={this.originalTilesLength}
+          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)}
+          onAddTileMouseUp={this.onAddTileMouseUp.bind(this)} />
+      ),
+      document.getElementById('metrics')
+    )
   }
 }

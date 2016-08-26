@@ -6,13 +6,8 @@ export default class HexCount extends React.Component {
     super(props)
 
     this.state = {
-      metrics: [],
       inputValue: '',
     }
-  }
-
-  componentWillMount() {
-    this._updateMetrics()
   }
 
   _getCountsByGeo(tiles) {
@@ -25,11 +20,11 @@ export default class HexCount extends React.Component {
   }
 
   _updateMetrics(event) {
-    let inputData = !event ? null : event.target.value
-    this.setState({
-      inputValue: inputData,
-      metrics: this._getMetrics(inputData)
-    })
+    if (event) {
+      this.setState({
+        inputValue: event.target.value
+      })
+    }
   }
 
   _parseInput(inputData) {
@@ -55,7 +50,7 @@ export default class HexCount extends React.Component {
     }
     const input = this._parseInput(inputData)
     const inputHash = this._createHashFromInput(input)
-    const idealRatio = d3.sum(input, (d) => d[1]) / this.props.tiles.length
+    const idealRatio = d3.sum(input, (d) => d[1]) / this.props.originalTilesLength
     return (
       this._getCountsByGeo(this.props.tiles).map((d) => {
         const metric = inputHash[d.key]
@@ -95,9 +90,9 @@ export default class HexCount extends React.Component {
     )
   }
 
-  _renderHexCount() {
-    if (!this.state.metrics.length) return null
-    const rows = this.state.metrics.map((count) => {
+  _renderHexCount(metrics) {
+    if (!metrics.length) return null
+    const rows = metrics.map((count) => {
       const metric = count.metric ? <td>{count.metric}</td> : <td />
       const ratio = count.ratio ? <td>{count.ratio}</td> : <td />
       const deviation = count.deviation ? <td>{count.deviation}</td> : <td />
@@ -136,9 +131,10 @@ export default class HexCount extends React.Component {
   }
 
   render() {
+    let metrics = this._getMetrics(this.state.inputValue)
     return (
       <div>
-        {this._renderHexCount()}
+        {this._renderHexCount(metrics)}
         <div>
           Paste CSV here:
           <br />
