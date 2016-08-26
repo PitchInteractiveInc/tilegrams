@@ -3,8 +3,9 @@ import topojson from 'topojson'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 
-import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import Graphic from './Graphic'
+import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
+import {canvasDimensions} from '../constants'
 
 const MIN_PATH_AREA = 0.5
 
@@ -77,7 +78,10 @@ export default class Map extends Graphic {
 
   _initProjection() {
     this._project = geoAlbersUsa()
-      .scale(3500.0)
-      .translate([2000.0, 1000.0])
+      .scale(canvasDimensions.width)
+      .translate([
+        canvasDimensions.width * 0.5,
+        canvasDimensions.height * 0.5,
+      ])
   }
 }

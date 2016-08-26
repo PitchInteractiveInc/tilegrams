@@ -1,14 +1,13 @@
 import Graphic from './Graphic'
 import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-
-const TILE_DIMENSIONS = hexagonGrid.getTileDimensions()
-const SHRINKAGE = 0.9
+import {selectedTileBorderColor} from '../constants'
 
 export default class GridGraphic extends Graphic {
   onMouseDown(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position =
+        hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       this._draggingTile = tile
     }
@@ -16,7 +15,8 @@ export default class GridGraphic extends Graphic {
 
   onMouseUp(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position =
+        hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       if (this._draggingTile && tile == null) {
         this._draggingTile.position = position
@@ -33,7 +33,7 @@ export default class GridGraphic extends Graphic {
       }
     }
   }
-  
+
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic) {
     this._tiles = []
@@ -78,39 +78,19 @@ export default class GridGraphic extends Graphic {
   _drawTile(position, fill, superstroke) {
     const center = hexagonGrid.tileCenterPoint(position)
     this._ctx.beginPath()
-    this._ctx.moveTo(
-      center.x - SHRINKAGE * TILE_DIMENSIONS.width * 0.25,
-      center.y - SHRINKAGE * TILE_DIMENSIONS.height * 0.5
-    )
-    this._ctx.lineTo(
-      center.x + SHRINKAGE * TILE_DIMENSIONS.width * 0.25,
-      center.y - SHRINKAGE * TILE_DIMENSIONS.height * 0.5
-    )
-    this._ctx.lineTo(
-      center.x + SHRINKAGE * TILE_DIMENSIONS.width * 0.5,
-      center.y
-    )
-    this._ctx.lineTo(
-      center.x + SHRINKAGE * TILE_DIMENSIONS.width * 0.25,
-      center.y + SHRINKAGE * TILE_DIMENSIONS.height * 0.5
-    )
-    this._ctx.lineTo(
-      center.x - SHRINKAGE * TILE_DIMENSIONS.width * 0.25,
-      center.y + SHRINKAGE * TILE_DIMENSIONS.height * 0.5
-    )
-    this._ctx.lineTo(
-      center.x - SHRINKAGE * TILE_DIMENSIONS.width * 0.5,
-      center.y
-    )
-    this._ctx.lineTo(
-      center.x - SHRINKAGE * TILE_DIMENSIONS.width * 0.25,
-      center.y - SHRINKAGE * TILE_DIMENSIONS.height * 0.5
-    )
+    this._ctx.moveTo.apply(this._ctx, hexagonGrid.getUpperLeftPoint(center))
+    this._ctx.lineTo.apply(this._ctx, hexagonGrid.getUpperRightPoint(center))
+    this._ctx.lineTo.apply(this._ctx, hexagonGrid.getRightPoint(center))
+    this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLowerRightPoint(center))
+    this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLowerLeftPoint(center))
+    this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLeftPoint(center))
     this._ctx.closePath()
     this._ctx.fillStyle = fill
     this._ctx.fill()
-    this._ctx.strokeStyle = superstroke ? '#333333' : '#f0f0f0'
-    this._ctx.lineWidth = superstroke ? 3 : 1
-    this._ctx.stroke()
+    if (superstroke) {
+      this._ctx.strokeStyle = selectedTileBorderColor
+      this._ctx.lineWidth = 3
+      this._ctx.stroke()
+    }
   }
 }

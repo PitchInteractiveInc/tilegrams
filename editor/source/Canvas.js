@@ -2,12 +2,7 @@ import Stats from 'stats-js'
 
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
-
-const canvasColor = '#f0f0f0'
-const canvasDimensions = {
-  width: 1920 * 2,
-  height: 1080 * 2,
-}
+import {canvasColor, canvasDimensions} from './constants'
 
 export default class Canvas {
   constructor(usTopoJson) {
