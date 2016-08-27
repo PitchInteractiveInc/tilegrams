@@ -32,7 +32,11 @@ export default class Map extends Graphic {
       updateBounds(this._generalBounds, bounds)
       const paths = feature.geometry.coordinates
         .filter(path => area(hasMultiplePaths ? path[0] : path) > MIN_PATH_AREA)
-        .map(path => [(hasMultiplePaths ? path[0] : path).map(this._project)])
+        .map(path => {
+          const originalPath = hasMultiplePaths ? path[0] : path
+          const projectedPath = originalPath.map(this._project)
+          return [projectedPath.filter(point => point != null)]
+        })
       return {bounds, paths}
     })
   }
