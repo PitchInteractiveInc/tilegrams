@@ -3,25 +3,51 @@ import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
 import {selectedTileBorderColor} from '../constants'
 
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import HexMetrics from '../components/HexMetrics'
+
 export default class GridGraphic extends Graphic {
+  constructor() {
+    //TODO: Move HexMetrics out of Grid Graphic
+    super()
+    this.originalTilesLength = this._tiles ? this._tiles.length : 0
+    document.body.onkeydown = this.onkeydown.bind(this)
+    this._setUpMetrics()
+  }
+
   onMouseDown(event) {
     if (this._tiles) {
-      const position =
-        hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
-      this._draggingTile = tile
+      /** Deselect if clicking on null tile, otherwise select tile and/or allow drag */
+      if ((this._selectedTile && tile == null) || tile == null) {
+        this._selectedTile = null
+        return
+      }
+      if (this._selectedTile != tile) this._selectedTile = tile
+      this._selectedTile.shouldDrag = true
     }
   }
 
   onMouseUp(event) {
-    if (this._tiles) {
-      const position =
-        hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
-      const tile = this._findTile(position)
-      if (this._draggingTile && tile == null) {
-        this._draggingTile.position = position
-      }
-      this._draggingTile = null
+    if ((this._selectedTile && !this._selectedTile.shouldDrag) || !this._selectedTile) {
+      return
+    }
+
+    const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+    const tile = this._findTile(position)
+
+    this._selectedTile.shouldDrag = false
+    if (this._selectedTile && tile == null) {
+      this._selectedTile.position = position
+    }
+    if (this._selectedTile == this._newTile) {
+      /** add new tile to list of tiles only once it's successfully added to the canvas */
+      this._tiles.push(this._newTile)
+      this._renderMetrics()
+      this._newTile = null
     }
   }
 
@@ -32,6 +58,50 @@ export default class GridGraphic extends Graphic {
         y: event.offsetY,
       }
     }
+  }
+
+  onkeydown(event) {
+    let key = event.keyCode || event.charCode
+    if( key == 8 || key == 46 ) {
+      if (this._selectedTile) {
+        this._deleteTile(this._selectedTile)
+        this._renderMetrics()
+        this._selectedTile = null
+      }
+      return
+    }
+  }
+
+  _deselectTile() {
+    if (this._selectedTile) {
+      this._selectedTile.shouldDrag = false
+      this._selectedTile = null
+    }
+  }
+
+  onAddTileMouseDown(event) {
+    this._deselectTile()
+    this._newTile = {
+      id: event.currentTarget.id,
+      position: {
+        x: null,
+        y: null
+      },
+      shouldDrag: true
+    }
+    this._mouseAt = {x: -1, y: -1}
+    this._selectedTile = this._newTile
+  }
+
+  onAddTileMouseUp() {
+    if (this._newTile == this._selectedTile) this._selectedTile = null
+    this._newTile = null
+  }
+
+  _deleteTile(selected) {
+    this._tiles = this._tiles.filter((tile) => {
+      return tile.position.x != selected.position.x || tile.position.y != selected.position.y
+    })
   }
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
@@ -47,6 +117,7 @@ export default class GridGraphic extends Graphic {
         })
       }
     })
+    this._renderMetrics()
     return this._tiles
   }
 
@@ -60,15 +131,18 @@ export default class GridGraphic extends Graphic {
     this._ctx = ctx
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
-      if (tile == this._draggingTile) {
+      if (tile == this._selectedTile) {
         color = '#cccccc'
       }
       this._drawTile(tile.position, color)
     })
-    if (this._draggingTile) {
+    if (this._selectedTile) {
+      let position = this._selectedTile.shouldDrag ?
+        hexagonGrid.rectToHexPosition(this._mouseAt.x, this._mouseAt.y) :
+        this._selectedTile.position
       this._drawTile(
-        hexagonGrid.rectToHexPosition(this._mouseAt.x, this._mouseAt.y),
-        fipsColor(this._draggingTile.id),
+        position,
+        fipsColor(this._selectedTile.id),
         true
       )
     }
@@ -94,5 +168,24 @@ export default class GridGraphic extends Graphic {
       this._ctx.lineWidth = 3
       this._ctx.stroke()
     }
+  }
+
+  _setUpMetrics() {
+    const container = document.createElement('div')
+    container.id = 'metrics'
+    document.body.appendChild(container)
+  }
+
+  _renderMetrics() {
+    ReactDOM.render(
+      (
+        <HexMetrics
+          tiles={this._tiles}
+          originalTilesLength={this.originalTilesLength}
+          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)}
+          onAddTileMouseUp={this.onAddTileMouseUp.bind(this)} />
+      ),
+      document.getElementById('metrics')
+    )
   }
 }

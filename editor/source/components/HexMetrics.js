@@ -1,6 +1,8 @@
 import React from 'react'
 import * as d3 from 'd3'
 
+import {fipsColor} from '../utils'
+
 export default class HexCount extends React.Component {
   constructor(props) {
     super(props)
@@ -65,10 +67,6 @@ export default class HexCount extends React.Component {
     )
   }
 
-  _colorFromId(id) {
-    return `hsl(${parseInt(id) * 700 % 25.5 * 10.0}, 80%, 60%)`
-  }
-
   _drawHexagon(id) {
     const width = 15
     const height = Math.sqrt(3)/2 * width
@@ -83,7 +81,7 @@ export default class HexCount extends React.Component {
     return (
       <svg width={width} height={height}>
         <polygon
-          fill={this._colorFromId(id)}
+          fill={fipsColor(id)}
           points={vertices.map((pt) => pt.join(',')).join(' ')}
         />
       </svg>
