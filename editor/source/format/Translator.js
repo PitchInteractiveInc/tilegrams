@@ -54,7 +54,7 @@ class Translator {
     }
   }
 
-  /** Build array of delta-encoded hexagon points from upper-left point */
+  /** Build array of delta-encoded hexagon points, from left point */
   _getHexagonDeltaPaths() {
     const origin = {x: 0, y: 0}
     return [
