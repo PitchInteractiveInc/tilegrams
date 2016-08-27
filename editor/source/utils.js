@@ -1,6 +1,8 @@
+import {settings} from './constants'
+
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  return `hsl(${parseInt(fips) * 300 % 25.5 * 10.0}, 80%, 60%)`
+  return `hsl(${parseInt(fips) * settings.hueScalar % 25.5 * 10.0}, 80%, 60%)`
 }
 
 /** Create DOM element */

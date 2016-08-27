@@ -6,4 +6,4 @@ import usTopoJson from '../../../data/us-110m.topo.json'
 
 const canvas = new Canvas(usTopoJson)
 
-const tiles = canvas.updateTiles()
+const tiles = canvas.getTiles()
