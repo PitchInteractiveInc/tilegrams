@@ -2,7 +2,7 @@ import Stats from 'stats-js'
 
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
-import {canvasColor, canvasDimensions} from './constants'
+import {canvasColor, canvasDimensions, settings} from './constants'
 
 export default class Canvas {
   constructor(usTopoJson) {
@@ -12,10 +12,15 @@ export default class Canvas {
 
     this._mapGraphic = new MapGraphic(usTopoJson)
     this._gridGraphic = new GridGraphic()
+    this.updateTiles()
   }
 
   updateTiles() {
-    return this._gridGraphic.populateTiles(this._mapGraphic)
+    this._gridGraphic.populateTiles(this._mapGraphic)
+  }
+
+  getTiles() {
+    return this._gridGraphic.getTiles()
   }
 
   _createCanvas() {
@@ -56,8 +61,13 @@ export default class Canvas {
     this._requestRender()
     this._stats.begin()
     this._renderBackground()
-    this._mapGraphic.render(this._ctx)
-    this._gridGraphic.render(this._ctx)
+    this.updateTiles()
+    if (settings.displayMap) {
+      this._mapGraphic.render(this._ctx)
+    }
+    if (settings.displayGrid) {
+      this._gridGraphic.render(this._ctx)
+    }
     this._stats.end()
   }
 

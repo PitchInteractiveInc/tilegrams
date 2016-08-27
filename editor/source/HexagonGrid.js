@@ -1,13 +1,15 @@
 /** Hexagon grid: manage and convert hexagon coordinates */
 
-import {canvasDimensions, defaultTileEdge, defaultTileScale} from './constants'
+import {settings, tileEdgeSetting, canvasDimensions} from './constants'
 
 const TILE_OFFSET = 1
 
 class HexagonGrid {
-  constructor({tileEdge, tileScale}) {
-    this._setTileEdge(tileEdge)
-    this._tileScale = tileScale
+  constructor() {
+    this._setTileEdge(tileEdgeSetting.initialValue)
+    tileEdgeSetting.onChange(tileEdge => {
+      this._setTileEdge(tileEdge)
+    })
   }
 
   _setTileEdge(tileEdge) {
@@ -51,42 +53,42 @@ class HexagonGrid {
 
   getUpperLeftPoint(center) {
     return [
-      center.x - this._tileScale * this._tileSize.width * 0.25,
-      center.y - this._tileScale * this._tileSize.height * 0.5
+      center.x - settings.tileScale * this._tileSize.width * 0.25,
+      center.y - settings.tileScale * this._tileSize.height * 0.5
     ]
   }
 
   getUpperRightPoint(center) {
     return [
-      center.x + this._tileScale * this._tileSize.width * 0.25,
-      center.y - this._tileScale * this._tileSize.height * 0.5
+      center.x + settings.tileScale * this._tileSize.width * 0.25,
+      center.y - settings.tileScale * this._tileSize.height * 0.5
     ]
   }
 
   getRightPoint(center) {
     return [
-      center.x + this._tileScale * this._tileSize.width * 0.5,
+      center.x + settings.tileScale * this._tileSize.width * 0.5,
       center.y
     ]
   }
 
   getLowerRightPoint(center) {
     return [
-      center.x + this._tileScale * this._tileSize.width * 0.25,
-      center.y + this._tileScale * this._tileSize.height * 0.5
+      center.x + settings.tileScale * this._tileSize.width * 0.25,
+      center.y + settings.tileScale * this._tileSize.height * 0.5
     ]
   }
 
   getLowerLeftPoint(center) {
     return [
-      center.x - this._tileScale * this._tileSize.width * 0.25,
-      center.y + this._tileScale * this._tileSize.height * 0.5
+      center.x - settings.tileScale * this._tileSize.width * 0.25,
+      center.y + settings.tileScale * this._tileSize.height * 0.5
     ]
   }
 
   getLeftPoint(center) {
     return [
-      center.x - this._tileScale * this._tileSize.width * 0.5,
+      center.x - settings.tileScale * this._tileSize.width * 0.5,
       center.y
     ]
   }
@@ -103,7 +105,4 @@ class HexagonGrid {
   }
 }
 
-export default new HexagonGrid({
-  tileEdge: defaultTileEdge,
-  tileScale: defaultTileScale,
-})
+export default new HexagonGrid()
