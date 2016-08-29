@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,500');
+@import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
 
 body {
+  margin: 10px;
   font-family: $font-stack;
 }
 
@@ -14,7 +16,15 @@ table {
   th {
     font-weight: bold;
   }
-  td {
-    margin: 0.1em;
+  th, td {
+    padding: 0.3em;
+  }
+}
+
+#metrics {
+  float: left;
+  #input-data {
+    font-weight: bold;
+    margin-top: 1em;
   }
 }
