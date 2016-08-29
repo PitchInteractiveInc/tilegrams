@@ -2,7 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
 
-import {fipsColor} from '../utils'
+import {fipsColor} from '../../utils'
 
 export default class HexCount extends React.Component {
   constructor(props) {
@@ -25,7 +25,7 @@ export default class HexCount extends React.Component {
     return geos.map((geo) => {
       return {
         key: geo,
-        value: countHash[geo]
+        value: countHash[geo] || 0
       }
     }).sort((a,b) => a.key - b.key)
   }
@@ -68,7 +68,7 @@ export default class HexCount extends React.Component {
         const stats = {key: d.key, nHex: d.value}
         if (metric) {
           stats.metric = metric
-          stats.ration = d.value > 0 ? (metric / d.value).toFixed(2) : null
+          stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
           stats.deviation = d.value - Math.round(metric / idealRatio)
         }
         return stats
@@ -109,9 +109,9 @@ export default class HexCount extends React.Component {
     })
 
     const rows = metrics.map((count) => {
-      const metric = count.metric ? <td>{count.metric}</td> : <td />
-      const ratio = count.ratio ? <td>{count.ratio}</td> : <td />
-      const deviation = count.deviation ? <td>{count.deviation}</td> : <td />
+      const metric = isNaN(count.metric) ? <td /> : <td>{count.metric}</td>
+      const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
+      const deviation = isNaN(count.deviation) ? <td /> : <td>{count.deviation}</td>
       return (
         <tr key={count.key}>
           <td

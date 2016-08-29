@@ -3,19 +3,20 @@ import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
 import {selectedTileBorderColor, settings} from '../constants'
 
-import React from 'react'
-import ReactDOM from 'react-dom'
-
-import HexMetrics from '../components/HexMetrics'
+import Metrics from '../ui/Metrics'
 
 export default class GridGraphic extends Graphic {
   constructor(geos) {
-    //TODO: Move HexMetrics out of Grid Graphic
     super()
+
+    this.populateTilesLength = 0
     this.geos = geos
-    this.originalTilesLength = this._tiles ? this._tiles.length : 0
+    this.originalTilesLength = 0
+
+    this.metrics = new Metrics(geos, this.onAddTileMouseDown.bind(this))
+
     document.body.onkeydown = this.onkeydown.bind(this)
-    this._setUpMetrics()
+
     this._lastTileEdge = null
   }
 
@@ -48,7 +49,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTile == this._newTile) {
         /** add new tile to list of tiles only once it's successfully added to the canvas */
         this._tiles.push(this._newTile)
-        this._renderMetrics()
+        this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
         this._newTile = null
       }
     } else if (this._selectedTile == this._newTile) {
@@ -81,7 +82,7 @@ export default class GridGraphic extends Graphic {
     if( key == 8 || key == 46 ) {
       if (this._selectedTile) {
         this._deleteTile(this._selectedTile)
-        this._renderMetrics()
+        this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
         this._selectedTile = null
       }
       return
@@ -131,7 +132,8 @@ export default class GridGraphic extends Graphic {
         })
       }
     })
-    this._renderMetrics()
+    this.originalTilesLength = this._tiles.length || 0 // save tiles length so the stats does not have a moving target
+    this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
     return this._tiles
   }
 
@@ -186,24 +188,5 @@ export default class GridGraphic extends Graphic {
       this._ctx.lineWidth = 3
       this._ctx.stroke()
     }
-  }
-
-  _setUpMetrics() {
-    const container = document.createElement('div')
-    container.id = 'metrics'
-    document.body.appendChild(container)
-  }
-
-  _renderMetrics() {
-    ReactDOM.render(
-      (
-        <HexMetrics
-          geos={this.geos}
-          tiles={this._tiles}
-          originalTilesLength={this.originalTilesLength}
-          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)} />
-      ),
-      document.getElementById('metrics')
-    )
   }
 }
