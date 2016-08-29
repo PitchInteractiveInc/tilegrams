@@ -41,6 +41,10 @@ export default class MapGraphic extends Graphic {
     })
   }
 
+  getGeos() {
+    return [...new Set(this._stateFeatures.features.map((feature) => feature.id))]
+  }
+
   render(ctx) {
     this._stateFeatures.features.forEach(feature => {
       ctx.beginPath()

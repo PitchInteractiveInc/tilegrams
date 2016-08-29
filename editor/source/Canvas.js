@@ -11,7 +11,7 @@ export default class Canvas {
     this._initStats()
 
     this._mapGraphic = new MapGraphic(usTopoJson)
-    this._gridGraphic = new GridGraphic()
+    this._gridGraphic = new GridGraphic(this._mapGraphic.getGeos())
     this._cartogramReady = false
   }
 

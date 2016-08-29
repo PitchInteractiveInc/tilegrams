@@ -9,9 +9,10 @@ import ReactDOM from 'react-dom'
 import HexMetrics from '../components/HexMetrics'
 
 export default class GridGraphic extends Graphic {
-  constructor() {
+  constructor(geos) {
     //TODO: Move HexMetrics out of Grid Graphic
     super()
+    this.geos = geos
     this.originalTilesLength = this._tiles ? this._tiles.length : 0
     document.body.onkeydown = this.onkeydown.bind(this)
     this._setUpMetrics()
@@ -19,6 +20,7 @@ export default class GridGraphic extends Graphic {
   }
 
   onMouseDown(event) {
+    event.preventDefault()
     if (this._tiles) {
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
@@ -90,6 +92,7 @@ export default class GridGraphic extends Graphic {
   }
 
   onAddTileMouseDown(event) {
+    event.preventDefault()
     this._deselectTile()
     this._newTile = {
       id: event.currentTarget.id,
@@ -191,6 +194,7 @@ export default class GridGraphic extends Graphic {
     ReactDOM.render(
       (
         <HexMetrics
+          geos={this.geos}
           tiles={this._tiles}
           originalTilesLength={this.originalTilesLength}
           onAddTileMouseDown={this.onAddTileMouseDown.bind(this)} />
