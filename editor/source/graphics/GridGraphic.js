@@ -1,7 +1,7 @@
 import Graphic from './Graphic'
 import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor} from '../constants'
+import {selectedTileBorderColor, settings} from '../constants'
 
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -15,6 +15,7 @@ export default class GridGraphic extends Graphic {
     this.originalTilesLength = this._tiles ? this._tiles.length : 0
     document.body.onkeydown = this.onkeydown.bind(this)
     this._setUpMetrics()
+    this._lastTileEdge = null
   }
 
   onMouseDown(event) {
@@ -106,6 +107,8 @@ export default class GridGraphic extends Graphic {
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic) {
+    if (this._lastTileEdge === settings.tileEdge) return
+    this._lastTileEdge = settings.tileEdge
     this._tiles = []
     hexagonGrid.forEachTilePosition((x, y) => {
       const point = hexagonGrid.tileCenterPoint({x, y})
