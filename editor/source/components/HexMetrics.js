@@ -1,5 +1,6 @@
 import React from 'react'
 import * as d3 from 'd3'
+import {csvParseRows} from 'd3-dsv'
 
 import {fipsColor} from '../utils'
 
@@ -30,7 +31,7 @@ export default class HexCount extends React.Component {
   }
 
   _parseInput(inputData) {
-    return d3.csvParseRows(inputData, (d) => ( [d[0], +d[1]] ))
+    return csvParseRows(inputData, (d) => ( [d[0], +d[1]] ))
   }
 
   _createHashFromInput(data) {
