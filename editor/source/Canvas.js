@@ -12,7 +12,13 @@ export default class Canvas {
 
     this._mapGraphic = new MapGraphic(usTopoJson)
     this._gridGraphic = new GridGraphic()
+    this._cartogramReady = false
+  }
+
+  computeCartogram(options) {
+    this._mapGraphic.computeCartogram(options)
     this.updateTiles()
+    this._cartogramReady = true
   }
 
   updateTiles() {
@@ -61,12 +67,15 @@ export default class Canvas {
     this._requestRender()
     this._stats.begin()
     this._renderBackground()
-    this.updateTiles()
-    if (settings.displayMap) {
-      this._mapGraphic.render(this._ctx)
-    }
-    if (settings.displayGrid) {
-      this._gridGraphic.render(this._ctx)
+
+    if (this._cartogramReady) {
+      this.updateTiles()
+      if (settings.displayMap) {
+        this._mapGraphic.render(this._ctx)
+      }
+      if (settings.displayGrid) {
+        this._gridGraphic.render(this._ctx)
+      }
     }
     this._stats.end()
   }

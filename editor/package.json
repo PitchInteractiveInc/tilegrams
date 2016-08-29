@@ -26,12 +26,15 @@
   "dependencies": {
     "area-polygon": "^1.0.1",
     "d3": "^4.2.2",
+    "d3-dsv": "^1.0.1",
     "d3-geo": "^1.2.4",
     "dat-gui": "^0.5.0",
     "point-in-polygon": "^1.0.1",
+    "raw-loader": "^0.5.1",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "stats-js": "^1.0.0-alpha1",
+    "topogram": "file:../../topogram",
     "topojson": "^1.6.26"
   }
 }

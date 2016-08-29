@@ -22,6 +22,10 @@ module.exports = {
         test: /\.json$/,
         loaders: ['json'],
       },
+      {
+        test: /\.csv$/,
+        loaders: ['raw'],
+      },
     ],
   },
   plugins: [
