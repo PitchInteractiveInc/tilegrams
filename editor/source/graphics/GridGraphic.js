@@ -51,6 +51,10 @@ export default class GridGraphic extends Graphic {
         this._renderMetrics()
         this._newTile = null
       }
+    } else if (this._selectedTile == this._newTile) {
+      /** if new tile is placed on top of another title, reset new and selected tile */
+      this._newTile = null
+      this._selectedTile = null
     }
   }
 
