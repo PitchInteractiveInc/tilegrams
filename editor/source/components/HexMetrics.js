@@ -105,15 +105,14 @@ export default class HexCount extends React.Component {
           <td
             style={{cursor: 'pointer'}}
             id={count.key}
-            onMouseDown={this.props.onAddTileMouseDown}
-            onMouseUp={this.props.onAddTileMouseUp}>
+            onMouseDown={this.props.onAddTileMouseDown}>
             {this._drawHexagon(count.key)}
           </td>
         </tr>
       )
     })
     return (
-      <table style={{textAlign: 'center'}}>
+      <table>
         <tbody>
           <tr>
             <th>GEO_ID</th>

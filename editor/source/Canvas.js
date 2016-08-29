@@ -39,6 +39,7 @@ export default class Canvas {
     }
     setCanvasAttribute('width', canvasDimensions.width)
     setCanvasAttribute('height', canvasDimensions.height)
+    canvas.id = 'canv'
     canvas.style = `width: ${canvasDimensions.width * 0.5}px; cursor: pointer`
 
     document.body.appendChild(canvas)
@@ -48,6 +49,8 @@ export default class Canvas {
     this._canvas.onmousedown = this._onMouseDown.bind(this)
     this._canvas.onmouseup = this._onMouseUp.bind(this)
     this._canvas.onmousemove = this._onMouseMove.bind(this)
+
+    document.onmouseup = this._bodyOnMouseUp.bind(this)
   }
 
   /** stats.js fps indicator */
@@ -90,6 +93,10 @@ export default class Canvas {
 
   _onMouseMove(event) {
     this._gridGraphic.onMouseMove(event, this._ctx)
+  }
+
+  _bodyOnMouseUp(event) {
+    this._gridGraphic.bodyOnMouseUp(event, this.ctx)
   }
 
   _renderBackground() {

@@ -43,12 +43,21 @@ export default class GridGraphic extends Graphic {
     this._selectedTile.shouldDrag = false
     if (this._selectedTile && tile == null) {
       this._selectedTile.position = position
+      if (this._selectedTile == this._newTile) {
+        /** add new tile to list of tiles only once it's successfully added to the canvas */
+        this._tiles.push(this._newTile)
+        this._renderMetrics()
+        this._newTile = null
+      }
     }
-    if (this._selectedTile == this._newTile) {
-      /** add new tile to list of tiles only once it's successfully added to the canvas */
-      this._tiles.push(this._newTile)
-      this._renderMetrics()
-      this._newTile = null
+  }
+
+  bodyOnMouseUp(event) {
+    if (event.target.id === 'canv') return
+    if (this._selectedTile && this._selectedTile.shouldDrag) {
+      this._selectedTile.shouldDrag = false
+      if (this._selectedTile == this._newTile) this._selectedTile = null
+        this._newTile = null
     }
   }
 
@@ -92,11 +101,6 @@ export default class GridGraphic extends Graphic {
     }
     this._mouseAt = {x: -1, y: -1}
     this._selectedTile = this._newTile
-  }
-
-  onAddTileMouseUp() {
-    if (this._newTile == this._selectedTile) this._selectedTile = null
-    this._newTile = null
   }
 
   _deleteTile(selected) {
@@ -189,8 +193,7 @@ export default class GridGraphic extends Graphic {
         <HexMetrics
           tiles={this._tiles}
           originalTilesLength={this.originalTilesLength}
-          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)}
-          onAddTileMouseUp={this.onAddTileMouseUp.bind(this)} />
+          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)} />
       ),
       document.getElementById('metrics')
     )

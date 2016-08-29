@@ -1,8 +1,9 @@
+require("./source/css/main.scss")
+
 import Canvas from './source/Canvas'
 import {createElement} from './source/utils'
 import {csvParseRows} from 'd3-dsv'
 
-// raw inputs
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
 
