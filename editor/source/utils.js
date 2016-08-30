@@ -44,10 +44,20 @@ function checkWithinBounds(point, bounds) {
   return true
 }
 
+/** Convert array of key,value objects (eg: [{key: 0, value: 0}]) to hash for quick lookup */
+function hashFromData(data) {
+  const dataHash = {}
+  data.forEach((datum) => {
+    dataHash[datum.key] = datum.value
+  })
+  return dataHash
+}
+
 module.exports = {
   fipsColor,
   createElement,
   startDownload,
   updateBounds,
   checkWithinBounds,
+  hashFromData,
 }
