@@ -2,10 +2,44 @@
 @import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
+$sidebar-width: 300px;
 
 body {
-  margin: 10px;
+  margin: 0;
   font-family: $font-stack;
+}
+
+#canvas {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  left: $sidebar-width;
+  overflow: auto;
+  background-color: #f8f8f8;
+  padding: 40px;
+  canvas {
+    cursor: pointer;
+    background-color: white;
+    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+#ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: calc(100% - #{$sidebar-width});
+  background-color: #1a1a1a;
+  color: #fff;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+// dat.gui
+.dg.ac {
+  z-index: 1;
 }
 
 table {

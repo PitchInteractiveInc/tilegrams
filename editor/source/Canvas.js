@@ -2,7 +2,8 @@ import Stats from 'stats-js'
 
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
-import {canvasColor, canvasDimensions, settings} from './constants'
+import {canvasDimensions, settings} from './constants'
+import {createElement} from './utils'
 
 class Canvas {
   constructor() {
@@ -28,22 +29,25 @@ class Canvas {
     return this._gridGraphic
   }
 
-  _createCanvas() {
-    const canvas = document.createElement('canvas')
+  enableDebug() {
+    this._debug = true
+  }
 
-    function setCanvasAttribute(key, value) {
+  _createCanvas() {
+    const container = createElement({id: 'canvas'})
+
+    this._canvas = document.createElement('canvas')
+    function setCanvasAttribute(canvas, key, value) {
       const attribute = document.createAttribute(key)
       attribute.value = value
       canvas.setAttributeNode(attribute)
     }
-    setCanvasAttribute('width', canvasDimensions.width)
-    setCanvasAttribute('height', canvasDimensions.height)
-    canvas.id = 'canv'
-    canvas.style = `width: ${canvasDimensions.width * 0.5}px; cursor: pointer`
+    setCanvasAttribute(this._canvas, 'width', canvasDimensions.width)
+    setCanvasAttribute(this._canvas, 'height', canvasDimensions.height)
+    this._canvas.style.width = `${canvasDimensions.width * 0.5}px`
 
-    document.body.appendChild(canvas)
-    this._canvas = canvas
-    this._ctx = canvas.getContext('2d')
+    container.appendChild(this._canvas)
+    this._ctx = this._canvas.getContext('2d')
 
     this._canvas.onmousedown = this._onMouseDown.bind(this)
     this._canvas.onmouseup = this._onMouseUp.bind(this)
@@ -58,7 +62,9 @@ class Canvas {
     this._stats.domElement.style.position = 'absolute'
     this._stats.domElement.style.left = 0
     this._stats.domElement.style.top = 0
-    document.body.appendChild(this._stats.domElement)
+    if (this._debug) {
+      document.body.appendChild(this._stats.domElement)
+    }
   }
 
   _requestRender() {
@@ -68,12 +74,9 @@ class Canvas {
   _render(timestamp) {
     this._requestRender()
     this._stats.begin()
-    this._renderBackground()
+    this._ctx.clearRect(0, 0, canvasDimensions.width, canvasDimensions.height)
 
     if (this._cartogramReady) {
-      if (settings.displayMap) {
-        this._mapGraphic.render(this._ctx)
-      }
       if (settings.displayGrid) {
         this._gridGraphic.render(this._ctx)
       }
@@ -94,13 +97,10 @@ class Canvas {
   }
 
   _bodyOnMouseUp(event) {
-    if (event.target.id === 'canv') return
+    if (event.target === this._canvas) {
+      return
+    }
     this._gridGraphic.bodyOnMouseUp(event, this.ctx)
-  }
-
-  _renderBackground() {
-    this._ctx.fillStyle = canvasColor
-    this._ctx.fillRect(0, 0, canvasDimensions.width, canvasDimensions.height)
   }
 }
 

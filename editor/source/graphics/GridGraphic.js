@@ -183,9 +183,7 @@ export default class GridGraphic extends Graphic {
     this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLeftPoint(center))
     this._ctx.closePath()
     this._ctx.fillStyle = fill
-    this._ctx.globalAlpha = 0.6
     this._ctx.fill()
-    this._ctx.globalAlpha = 1.0
     if (superstroke) {
       this._ctx.strokeStyle = selectedTileBorderColor
       this._ctx.lineWidth = 3

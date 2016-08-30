@@ -2,13 +2,14 @@ import {settings} from './constants'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  return `hsl(${parseInt(fips) * settings.hueScalar % 25.5 * 10.0}, 80%, 60%)`
+  return `hsl(${parseInt(fips) * settings.hueScalar % 25.5 * 10.0}, 90%, 70%)`
 }
 
-/** Create DOM element */
-function createElement() {
+/** Create DOM element. Options may include 'id' */
+function createElement(options) {
   const div = document.createElement('div')
   document.body.appendChild(div)
+  div.id = options.id
   return div
 }
 
