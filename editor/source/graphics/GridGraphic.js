@@ -3,8 +3,6 @@ import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
 import {selectedTileBorderColor, settings, tileEdgeSetting} from '../constants'
 
-import Metrics from '../ui/Metrics'
-
 export default class GridGraphic extends Graphic {
   constructor(updateTiles) {
     super()
@@ -15,8 +13,6 @@ export default class GridGraphic extends Graphic {
       hexagonGrid._setTileEdge(tileEdge)
       updateTiles()
     })
-
-    this.metrics = new Metrics([], this.onAddTileMouseDown.bind(this))
 
     document.body.onkeydown = this.onkeydown.bind(this)
   }
@@ -50,7 +46,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTile == this._newTile) {
         /** add new tile to list of tiles only once it's successfully added to the canvas */
         this._tiles.push(this._newTile)
-        this.updateMetrics()
+        this.updateUi()
         this._newTile = null
       }
     } else if (this._selectedTile == this._newTile) {
@@ -61,7 +57,6 @@ export default class GridGraphic extends Graphic {
   }
 
   bodyOnMouseUp(event) {
-    if (event.target.id === 'canv') return
     if (this._selectedTile && this._selectedTile.shouldDrag) {
       this._selectedTile.shouldDrag = false
       if (this._selectedTile == this._newTile) this._selectedTile = null
@@ -83,11 +78,15 @@ export default class GridGraphic extends Graphic {
     if( key == 8 || key == 46 ) {
       if (this._selectedTile) {
         this._deleteTile(this._selectedTile)
-        this.updateMetrics()
+        this.updateUi()
         this._selectedTile = null
       }
       return
     }
+  }
+
+  onChange(callback) {
+    this._onChangeCallback = callback
   }
 
   _deselectTile() {
@@ -131,13 +130,18 @@ export default class GridGraphic extends Graphic {
         })
       }
     })
-    this.originalTilesLength = this._tiles.length || 0 // save tiles length so the stats does not have a moving target
-    this.updateMetrics()
+    // save tiles length so the stats does not have a moving target
+    this.originalTilesLength = this._tiles.length
+    this.updateUi()
     return this._tiles
   }
 
   getTiles() {
     return this._tiles
+  }
+
+  getOriginalTilesLength() {
+    return this.originalTilesLength
   }
 
   _findTile(position) {
@@ -189,13 +193,9 @@ export default class GridGraphic extends Graphic {
     }
   }
 
-  createMetrics(topoJson) {
-    const geos = [...new Set(topoJson.objects.states.geometries.map((feature) => feature.id))]
-    this.metrics = new Metrics(geos, this.onAddTileMouseDown.bind(this))
-    this.updateMetrics()
-  }
-
-  updateMetrics() {
-    this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
+  updateUi() {
+    if (this._onChangeCallback) {
+      this._onChangeCallback()
+    }
   }
 }

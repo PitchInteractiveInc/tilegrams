@@ -2,7 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
 
-import {fipsColor} from '../../utils'
+import {fipsColor} from '../utils'
 
 export default class HexCount extends React.Component {
   constructor(props) {

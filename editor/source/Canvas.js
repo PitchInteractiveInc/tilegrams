@@ -18,15 +18,14 @@ export default class Canvas {
     this._mapGraphic.computeCartogram(options)
     this.updateTiles()
     this._cartogramReady = true
-    this._gridGraphic.createMetrics(options.topoJson) //pass original map obj to metrics to ensure no geos get dropped
   }
 
   updateTiles() {
     this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
-  getTiles() {
-    return this._gridGraphic.getTiles()
+  getGrid() {
+    return this._gridGraphic
   }
 
   _createCanvas() {
