@@ -39,12 +39,6 @@ export default class HexCount extends React.Component {
     return csvParseRows(inputData, (d) => ( [d[0], +d[1]] ))
   }
 
-  _createHashFromInput(data) {
-    const dataHash = {}
-    data.forEach((row) => { dataHash[row[0]] = row[1] })
-    return dataHash
-  }
-
   _getMetrics(inputData) {
     if (!inputData) {
       return (
@@ -58,7 +52,7 @@ export default class HexCount extends React.Component {
     }
     const input = this._parseInput(inputData).map((row) => ( {key: row[0], value: row[1]} ))
     const inputHash = hashFromData(input)
-    const idealRatio = d3.sum(input, (d) => d[1]) / this.props.originalTilesLength
+    const idealRatio = d3.sum(input, (d) => d.value) / this.props.originalTilesLength
     return (
       this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
         const metric = inputHash[d.key]
