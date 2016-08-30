@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import {createElement} from './utils'
+import DatasetSelector from './components/DatasetSelector'
 import HexMetrics from './components/HexMetrics'
 
 class Ui {
@@ -10,11 +11,19 @@ class Ui {
   }
 
   setGeos(geos) {
-    this.geos = geos
+    this._geos = geos
+  }
+
+  setDatasetLabels(datasetLabels) {
+    this._datasetLabels = datasetLabels
   }
 
   setAddTileCallback(callback) {
-    this.addTileCallback = callback
+    this._addTileCallback = callback
+  }
+
+  setDatasetSelectedCallback(callback) {
+    this._datasetSelectedCallback = callback
   }
 
   _init() {
@@ -23,13 +32,18 @@ class Ui {
 
   render(tiles, originalTilesLength) {
     ReactDOM.render(
-      (
+      <div>
+        <DatasetSelector
+          labels={this._datasetLabels}
+          onDatasetSelected={(index) => this._datasetSelectedCallback(index)}
+          />
         <HexMetrics
-          geos={this.geos}
+          geos={this._geos}
           tiles={tiles}
           originalTilesLength={originalTilesLength}
-          onAddTileMouseDown={this.addTileCallback} />
-      ),
+          onAddTileMouseDown={this._addTileCallback}
+          />
+      </div>,
       this._container
     )
   }
