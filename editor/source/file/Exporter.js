@@ -16,7 +16,7 @@ class Exporter {
   }
 
   toTopoJson() {
-    const json = this._formatTopoJson(canvas.getTiles())
+    const json = this._formatTopoJson(canvas.getGrid().getTiles())
     startDownload({
       filename: 'hexagon-cartogram.json',
       mimeType: 'application/json',
