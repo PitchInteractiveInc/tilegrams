@@ -13,13 +13,21 @@ export default class HexCount extends React.Component {
     }
   }
 
-  _getCountsByGeo(tiles) {
+  _getCountsByGeo(tiles, geos) {
     const counts = d3.nest()
-      .key((d) => d.id)
+      .key((d) => d.id )
       .rollup((values) => values.length)
       .entries(tiles)
-      .sort((a,b) => a.key - b.key)
-    return (counts)
+    const countHash = counts.reduce((map, count) => {
+      map[count.key] = count.value
+      return map
+    })
+    return geos.map((geo) => {
+      return {
+        key: geo,
+        value: countHash[geo] || 0
+      }
+    }).sort((a,b) => a.key - b.key)
   }
 
   _updateMetrics(event) {
@@ -43,7 +51,7 @@ export default class HexCount extends React.Component {
   _getMetrics(inputData) {
     if (!inputData) {
       return (
-        this._getCountsByGeo(this.props.tiles).map((d) => {
+        this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
           return {
             key: d.key,
             nHex: d.value
@@ -55,15 +63,15 @@ export default class HexCount extends React.Component {
     const inputHash = this._createHashFromInput(input)
     const idealRatio = d3.sum(input, (d) => d[1]) / this.props.originalTilesLength
     return (
-      this._getCountsByGeo(this.props.tiles).map((d) => {
+      this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
         const metric = inputHash[d.key]
-        return {
-          key: d.key,
-          nHex: d.value,
-          metric: metric,
-          ratio: (metric / d.value).toFixed(2),
-          deviation: d.value - Math.round(metric / idealRatio)
+        const stats = {key: d.key, nHex: d.value}
+        if (metric) {
+          stats.metric = metric
+          stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
+          stats.deviation = d.value - Math.round(metric / idealRatio)
         }
+        return stats
       })
     )
   }
@@ -91,37 +99,40 @@ export default class HexCount extends React.Component {
 
   _renderHexCount(metrics) {
     if (!metrics.length) return null
+
+    const headerTitles = ['ADD HEX', 'GEO_ID', 'HEXAGONS']
+    if (this.state.inputValue.length) {
+      headerTitles.push('METRIC', 'N/HEXAGON', 'Deviation')
+    }
+    const headers = headerTitles.map((header) => {
+      return <th key={header}>{header}</th>
+    })
+
     const rows = metrics.map((count) => {
-      const metric = count.metric ? <td>{count.metric}</td> : <td />
-      const ratio = count.ratio ? <td>{count.ratio}</td> : <td />
-      const deviation = count.deviation ? <td>{count.deviation}</td> : <td />
+      const metric = isNaN(count.metric) ? <td /> : <td>{count.metric}</td>
+      const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
+      const deviation = isNaN(count.deviation) ? <td /> : <td>{count.deviation}</td>
       return (
         <tr key={count.key}>
+          <td
+            style={{cursor: 'pointer'}}
+            id={count.key}
+            onMouseDown={this.props.onAddTileMouseDown}>
+            {this._drawHexagon(count.key)}
+          </td>
           <td>{count.key}</td>
           <td>{count.nHex}</td>
           {metric}
           {ratio}
           {deviation}
-          <td
-            style={{cursor: 'pointer'}}
-            id={count.key}
-            onMouseDown={this.props.onAddTileMouseDown}
-            onMouseUp={this.props.onAddTileMouseUp}>
-            {this._drawHexagon(count.key)}
-          </td>
         </tr>
       )
     })
     return (
-      <table style={{textAlign: 'center'}}>
+      <table>
         <tbody>
           <tr>
-            <th>GEO_ID</th>
-            <th>HEXAGONS</th>
-            <th>METRIC</th>
-            <th>N PER HEXAGON</th>
-            <th>Deviation</th>
-            <th>ADD HEXAGON</th>
+            {headers}
           </tr>
           {rows}
         </tbody>
@@ -134,7 +145,7 @@ export default class HexCount extends React.Component {
     return (
       <div>
         {this._renderHexCount(metrics)}
-        <div>
+        <div id='input-data'>
           Paste CSV here:
           <br />
           <textarea

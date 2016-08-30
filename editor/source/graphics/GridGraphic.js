@@ -1,23 +1,24 @@
 import Graphic from './Graphic'
 import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor} from '../constants'
-
-import React from 'react'
-import ReactDOM from 'react-dom'
-
-import HexMetrics from '../components/HexMetrics'
+import {selectedTileBorderColor, settings, tileEdgeSetting} from '../constants'
 
 export default class GridGraphic extends Graphic {
-  constructor() {
-    //TODO: Move HexMetrics out of Grid Graphic
+  constructor(updateTiles) {
     super()
-    this.originalTilesLength = this._tiles ? this._tiles.length : 0
+
+    this.originalTilesLength = 0
+
+    tileEdgeSetting.onChange((tileEdge) => {
+      hexagonGrid._setTileEdge(tileEdge)
+      updateTiles()
+    })
+
     document.body.onkeydown = this.onkeydown.bind(this)
-    this._setUpMetrics()
   }
 
   onMouseDown(event) {
+    event.preventDefault()
     if (this._tiles) {
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
@@ -42,12 +43,24 @@ export default class GridGraphic extends Graphic {
     this._selectedTile.shouldDrag = false
     if (this._selectedTile && tile == null) {
       this._selectedTile.position = position
-    }
-    if (this._selectedTile == this._newTile) {
-      /** add new tile to list of tiles only once it's successfully added to the canvas */
-      this._tiles.push(this._newTile)
-      this._renderMetrics()
+      if (this._selectedTile == this._newTile) {
+        /** add new tile to list of tiles only once it's successfully added to the canvas */
+        this._tiles.push(this._newTile)
+        this.updateUi()
+        this._newTile = null
+      }
+    } else if (this._selectedTile == this._newTile) {
+      /** if new tile is placed on top of another title, reset new and selected tile */
       this._newTile = null
+      this._selectedTile = null
+    }
+  }
+
+  bodyOnMouseUp(event) {
+    if (this._selectedTile && this._selectedTile.shouldDrag) {
+      this._selectedTile.shouldDrag = false
+      if (this._selectedTile == this._newTile) this._selectedTile = null
+        this._newTile = null
     }
   }
 
@@ -65,11 +78,15 @@ export default class GridGraphic extends Graphic {
     if( key == 8 || key == 46 ) {
       if (this._selectedTile) {
         this._deleteTile(this._selectedTile)
-        this._renderMetrics()
+        this.updateUi()
         this._selectedTile = null
       }
       return
     }
+  }
+
+  onChange(callback) {
+    this._onChangeCallback = callback
   }
 
   _deselectTile() {
@@ -80,6 +97,7 @@ export default class GridGraphic extends Graphic {
   }
 
   onAddTileMouseDown(event) {
+    event.preventDefault()
     this._deselectTile()
     this._newTile = {
       id: event.currentTarget.id,
@@ -91,11 +109,6 @@ export default class GridGraphic extends Graphic {
     }
     this._mouseAt = {x: -1, y: -1}
     this._selectedTile = this._newTile
-  }
-
-  onAddTileMouseUp() {
-    if (this._newTile == this._selectedTile) this._selectedTile = null
-    this._newTile = null
   }
 
   _deleteTile(selected) {
@@ -117,12 +130,18 @@ export default class GridGraphic extends Graphic {
         })
       }
     })
-    this._renderMetrics()
+    // save tiles length so the stats does not have a moving target
+    this.originalTilesLength = this._tiles.length
+    this.updateUi()
     return this._tiles
   }
 
   getTiles() {
     return this._tiles
+  }
+
+  getOriginalTilesLength() {
+    return this.originalTilesLength
   }
 
   _findTile(position) {
@@ -174,22 +193,9 @@ export default class GridGraphic extends Graphic {
     }
   }
 
-  _setUpMetrics() {
-    const container = document.createElement('div')
-    container.id = 'metrics'
-    document.body.appendChild(container)
-  }
-
-  _renderMetrics() {
-    ReactDOM.render(
-      (
-        <HexMetrics
-          tiles={this._tiles}
-          originalTilesLength={this.originalTilesLength}
-          onAddTileMouseDown={this.onAddTileMouseDown.bind(this)}
-          onAddTileMouseUp={this.onAddTileMouseUp.bind(this)} />
-      ),
-      document.getElementById('metrics')
-    )
+  updateUi() {
+    if (this._onChangeCallback) {
+      this._onChangeCallback()
+    }
   }
 }

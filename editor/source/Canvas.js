@@ -5,13 +5,12 @@ import MapGraphic from './graphics/MapGraphic'
 import {canvasColor, canvasDimensions, settings} from './constants'
 
 export default class Canvas {
-  constructor(usTopoJson) {
+  constructor() {
     this._createCanvas()
     this._requestRender()
     this._initStats()
-
-    this._mapGraphic = new MapGraphic(usTopoJson)
-    this._gridGraphic = new GridGraphic()
+    this._mapGraphic = new MapGraphic()
+    this._gridGraphic = new GridGraphic(this.updateTiles.bind(this))
     this._cartogramReady = false
   }
 
@@ -25,8 +24,8 @@ export default class Canvas {
     this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
-  getTiles() {
-    return this._gridGraphic.getTiles()
+  getGrid() {
+    return this._gridGraphic
   }
 
   _createCanvas() {
@@ -39,6 +38,7 @@ export default class Canvas {
     }
     setCanvasAttribute('width', canvasDimensions.width)
     setCanvasAttribute('height', canvasDimensions.height)
+    canvas.id = 'canv'
     canvas.style = `width: ${canvasDimensions.width * 0.5}px; cursor: pointer`
 
     document.body.appendChild(canvas)
@@ -48,6 +48,8 @@ export default class Canvas {
     this._canvas.onmousedown = this._onMouseDown.bind(this)
     this._canvas.onmouseup = this._onMouseUp.bind(this)
     this._canvas.onmousemove = this._onMouseMove.bind(this)
+
+    document.onmouseup = this._bodyOnMouseUp.bind(this)
   }
 
   /** stats.js fps indicator */
@@ -69,7 +71,6 @@ export default class Canvas {
     this._renderBackground()
 
     if (this._cartogramReady) {
-      this.updateTiles()
       if (settings.displayMap) {
         this._mapGraphic.render(this._ctx)
       }
@@ -90,6 +91,11 @@ export default class Canvas {
 
   _onMouseMove(event) {
     this._gridGraphic.onMouseMove(event, this._ctx)
+  }
+
+  _bodyOnMouseUp(event) {
+    if (event.target.id === 'canv') return
+    this._gridGraphic.bodyOnMouseUp(event, this.ctx)
   }
 
   _renderBackground() {

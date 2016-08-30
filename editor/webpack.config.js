@@ -26,6 +26,10 @@ module.exports = {
         test: /\.csv$/,
         loaders: ['raw'],
       },
+      {
+        test: /\.scss$/,
+        loaders: ["style", "css", "sass"]
+      }
     ],
   },
   plugins: [
