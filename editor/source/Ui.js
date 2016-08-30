@@ -4,10 +4,13 @@ import ReactDOM from 'react-dom'
 import {createElement} from './utils'
 import HexMetrics from './components/HexMetrics'
 
-export default class Ui {
-  constructor(geos) {
-    this.geos = geos
+class Ui {
+  constructor() {
     this._init()
+  }
+
+  setGeos(geos) {
+    this.geos = geos
   }
 
   setAddTileCallback(callback) {
@@ -32,3 +35,5 @@ export default class Ui {
     )
   }
 }
+
+export default new Ui()

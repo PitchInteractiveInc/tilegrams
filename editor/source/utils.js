@@ -12,6 +12,13 @@ function createElement() {
   return div
 }
 
+function startDownload({filename, content, mimeType}) {
+  const link = document.createElement('a')
+  link.setAttribute('href', `data:${mimeType},${content}`)
+  link.setAttribute('download', filename)
+  link.click()
+}
+
 /** Update memoized bounds if exceeded by bounds */
 function updateBounds(memoBounds, bounds) {
   for (let lim = 0; lim < 2; lim++) {       // limit (0 = min; 1 = max)
@@ -39,6 +46,7 @@ function checkWithinBounds(point, bounds) {
 module.exports = {
   fipsColor,
   createElement,
+  startDownload,
   updateBounds,
-  checkWithinBounds
+  checkWithinBounds,
 }

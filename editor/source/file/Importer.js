@@ -1,15 +1,12 @@
 /**
- * Translator coordinates from TopoJSON to hexagon offset coordinates and back
+ * Importer: convert hex grid TopoJSON into hexagon grid coordinates
  *
- * TopoJSON reference:
- * https://github.com/mbostock/topojson/wiki/Introduction
- *
- * Hexagon offset coordinates reference:
- * http://www.redblobgames.com/grids/hexagons/#coordinates
+ * Assume that TopoJSON is of a hex grid and use some fuzzy logic to re-generate
+ * that grid in the offset coordinates that HexagonGrid uses.
  */
 
-export default class Translator {
-  /** Convert TopoJSON to hexagon offset coordinates */
+class Importer {
+  /** Convert hex grid TopoJSON to hexagon offset coordinates */
   fromTopoJson(topoJson) {
     const tilePoints = topoJson.objects.statesHex.geometries.map(geometry => {
       const path = this._getAbsolutePath(geometry, topoJson.arcs)
@@ -19,11 +16,6 @@ export default class Translator {
       }
     })
     return this._getTilePositions(tilePoints)
-  }
-
-  /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson() {
-    // TODO
   }
 
   /** Determine path absolute points, given TopoJSON delta-encoded arcs */
@@ -187,3 +179,5 @@ export default class Translator {
     }
   }
 }
+
+export default new Importer()
