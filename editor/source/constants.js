@@ -1,7 +1,7 @@
 import dat from 'dat-gui'
 
 const canvasDimensions = {
-  width: 1280 * 2,
+  width: 960 * 2,
   height: 720 * 2,
 }
 
@@ -28,6 +28,7 @@ gui.add(settings, 'hueScalar', 1, 10)
 gui.add(settings, 'displayMap')
 gui.add(settings, 'displayGrid')
 gui.add(settings, 'exportTopoJson')
+dat.GUI.toggleHide()
 
 let exportTopoJsonHandler
 function onExportTopoJson(handler) {
@@ -39,6 +40,5 @@ module.exports = {
   tileEdgeSetting,
   onExportTopoJson,
   canvasDimensions,
-  canvasColor: '#f0f0f0',
   selectedTileBorderColor: '#333333',
 }

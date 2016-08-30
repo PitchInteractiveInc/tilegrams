@@ -18,8 +18,7 @@ class Ui {
   }
 
   _init() {
-    const container = createElement('div')
-    container.id = 'ui'
+    this._container = createElement({id: 'ui'})
   }
 
   render(tiles, originalTilesLength) {
@@ -31,7 +30,7 @@ class Ui {
           originalTilesLength={originalTilesLength}
           onAddTileMouseDown={this.addTileCallback} />
       ),
-      document.getElementById('ui')
+      this._container
     )
   }
 }
