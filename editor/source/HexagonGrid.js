@@ -1,4 +1,9 @@
-/** Hexagon grid: manage and convert hexagon coordinates */
+/**
+ * HexagonGrid: manage and convert hexagon coordinates
+ *
+ * Primary reference:
+ * http://www.redblobgames.com/grids/hexagons/#coordinates
+ */
 
 import {settings, tileEdgeSetting, canvasDimensions} from './constants'
 

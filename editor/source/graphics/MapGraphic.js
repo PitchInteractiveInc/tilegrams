@@ -1,5 +1,4 @@
 import {geoPath, geoAlbersUsa} from 'd3-geo'
-import topojson from 'topojson'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'

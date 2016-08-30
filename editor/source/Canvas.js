@@ -4,7 +4,7 @@ import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
 import {canvasColor, canvasDimensions, settings} from './constants'
 
-export default class Canvas {
+class Canvas {
   constructor() {
     this._createCanvas()
     this._requestRender()
@@ -107,3 +107,5 @@ export default class Canvas {
     this._ctx.fillRect(0, 0, canvasDimensions.width, canvasDimensions.height)
   }
 }
+
+export default new Canvas()

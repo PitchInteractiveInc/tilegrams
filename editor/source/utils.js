@@ -12,6 +12,13 @@ function createElement() {
   return div
 }
 
+function startDownload({filename, content, mimeType}) {
+  const link = document.createElement('a')
+  link.setAttribute('href', `data:${mimeType},${content}`)
+  link.setAttribute('download', filename)
+  link.click()
+}
+
 /** Update memoized bounds if exceeded by bounds */
 function updateBounds(memoBounds, bounds) {
   for (let lim = 0; lim < 2; lim++) {       // limit (0 = min; 1 = max)
@@ -36,18 +43,10 @@ function checkWithinBounds(point, bounds) {
   return true
 }
 
-/** Do arithmetic with points in array form */
-function subtractPointDimensions(point, minusPoint) {
-  return [
-    point[0] - minusPoint[0],
-    point[1] - minusPoint[1],
-  ]
-}
-
 module.exports = {
   fipsColor,
   createElement,
+  startDownload,
   updateBounds,
   checkWithinBounds,
-  subtractPointDimensions,
 }
