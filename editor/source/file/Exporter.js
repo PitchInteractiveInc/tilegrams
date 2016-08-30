@@ -7,25 +7,10 @@
 
 import canvas from '../Canvas'
 import hexagonGrid from '../HexagonGrid'
-import {onExportTopoJson} from '../constants'
-import {startDownload} from '../utils'
 
 class Exporter {
-  constructor() {
-    onExportTopoJson(() => this.toTopoJson())
-  }
-
-  toTopoJson() {
-    const json = this._formatTopoJson(canvas.getGrid().getTiles())
-    startDownload({
-      filename: 'hexagon-cartogram.json',
-      mimeType: 'application/json',
-      content: JSON.stringify(json),
-    })
-  }
-
   /** Convert hexagon offset coordinates to TopoJSON */
-  _formatTopoJson(tiles) {
+  formatTopoJson(tiles) {
     const geometries = []
     const arcs = []
 

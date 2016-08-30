@@ -1,9 +1,13 @@
 require("./source/css/main.scss")
 
 import {csvParseRows} from 'd3-dsv'
+
 import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
+
+import {onExportTopoJson} from './source/constants'
+import {startDownload} from './source/utils'
 
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
@@ -26,12 +30,15 @@ updateUi()
 function updateUi() {
   ui.render(
     canvas.getGrid().getTiles(),
-    canvas.getGrid().getOriginalTilesLength
+    canvas.getGrid().getOriginalTilesLength()
   )
 }
 
-// export functionality is command-line only for the moment
-window.exportToTopoJson = () => {
-  const outputTopoJson = translator.toTopoJson(canvas.getTiles())
-  console.log(JSON.stringify(outputTopoJson));
-}
+onExportTopoJson(() => {
+  const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
+  startDownload({
+    filename: 'hexagon-cartogram.json',
+    mimeType: 'application/json',
+    content: JSON.stringify(json),
+  })
+})
