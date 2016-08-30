@@ -7,9 +7,6 @@ const TILE_OFFSET = 1
 class HexagonGrid {
   constructor() {
     this._setTileEdge(tileEdgeSetting.initialValue)
-    tileEdgeSetting.onChange(tileEdge => {
-      this._setTileEdge(tileEdge)
-    })
   }
 
   _setTileEdge(tileEdge) {

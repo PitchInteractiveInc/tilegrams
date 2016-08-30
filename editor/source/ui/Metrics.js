@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import {createElement} from '../utils'
 import HexMetrics from './components/HexMetrics'
 
 export default class Metrics {
@@ -11,9 +12,8 @@ export default class Metrics {
   }
 
   _setUpMetrics() {
-    const container = document.createElement('div')
+    const container = createElement('div')
     container.id = 'metrics'
-    document.body.appendChild(container)
   }
 
   renderMetrics(tiles, originalTilesLength) {

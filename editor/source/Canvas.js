@@ -10,7 +10,7 @@ export default class Canvas {
     this._requestRender()
     this._initStats()
     this._mapGraphic = new MapGraphic()
-    this._gridGraphic = new GridGraphic()
+    this._gridGraphic = new GridGraphic(this.updateTiles.bind(this))
     this._cartogramReady = false
   }
 
@@ -72,7 +72,6 @@ export default class Canvas {
     this._renderBackground()
 
     if (this._cartogramReady) {
-      this.updateTiles()
       if (settings.displayMap) {
         this._mapGraphic.render(this._ctx)
       }
@@ -96,6 +95,7 @@ export default class Canvas {
   }
 
   _bodyOnMouseUp(event) {
+    if (event.target.id === 'canv') return
     this._gridGraphic.bodyOnMouseUp(event, this.ctx)
   }
 

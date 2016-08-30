@@ -1,21 +1,24 @@
 import Graphic from './Graphic'
 import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor, settings} from '../constants'
+import {selectedTileBorderColor, settings, tileEdgeSetting} from '../constants'
 
 import Metrics from '../ui/Metrics'
 
 export default class GridGraphic extends Graphic {
-  constructor() {
+  constructor(updateTiles) {
     super()
 
     this.originalTilesLength = 0
 
+    tileEdgeSetting.onChange((tileEdge) => {
+      hexagonGrid._setTileEdge(tileEdge)
+      updateTiles()
+    })
+
     this.metrics = new Metrics([], this.onAddTileMouseDown.bind(this))
 
     document.body.onkeydown = this.onkeydown.bind(this)
-
-    this._lastTileEdge = null
   }
 
   onMouseDown(event) {
@@ -47,7 +50,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTile == this._newTile) {
         /** add new tile to list of tiles only once it's successfully added to the canvas */
         this._tiles.push(this._newTile)
-        this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
+        this.updateMetrics()
         this._newTile = null
       }
     } else if (this._selectedTile == this._newTile) {
@@ -80,7 +83,7 @@ export default class GridGraphic extends Graphic {
     if( key == 8 || key == 46 ) {
       if (this._selectedTile) {
         this._deleteTile(this._selectedTile)
-        this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
+        this.updateMetrics()
         this._selectedTile = null
       }
       return
@@ -117,8 +120,6 @@ export default class GridGraphic extends Graphic {
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic) {
-    if (this._lastTileEdge === settings.tileEdge) return
-    this._lastTileEdge = settings.tileEdge
     this._tiles = []
     hexagonGrid.forEachTilePosition((x, y) => {
       const point = hexagonGrid.tileCenterPoint({x, y})
@@ -131,7 +132,7 @@ export default class GridGraphic extends Graphic {
       }
     })
     this.originalTilesLength = this._tiles.length || 0 // save tiles length so the stats does not have a moving target
-    this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
+    this.updateMetrics()
     return this._tiles
   }
 
@@ -191,6 +192,10 @@ export default class GridGraphic extends Graphic {
   createMetrics(topoJson) {
     const geos = [...new Set(topoJson.objects.states.geometries.map((feature) => feature.id))]
     this.metrics = new Metrics(geos, this.onAddTileMouseDown.bind(this))
+    this.updateMetrics()
+  }
+
+  updateMetrics() {
     this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
   }
 }
