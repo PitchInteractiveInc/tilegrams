@@ -20,7 +20,7 @@ export default class DatasetSelector extends React.Component {
     }
   }
 
-  _csvInputChanged(event) {
+  _onCustomCsv(event) {
     const csvInputValue = event.target.value
     this.setState({csvInputValue})
     this.props.onCustomDataset(csvInputValue)
@@ -57,7 +57,7 @@ export default class DatasetSelector extends React.Component {
         <br />
         <textarea
           rows={5}
-          onChange={this._csvInputChanged.bind(this)}
+          onChange={this._onCustomCsv.bind(this)}
           value={this.state.csvInputValue || ''}
         />
       </div>
