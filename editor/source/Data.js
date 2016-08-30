@@ -9,18 +9,22 @@ class Data {
     this._datasets = [
       {
         label: "Population 2016",
-        data: csvParseRows(populationCsv),
+        data: this.parseCsv(populationCsv),
       },
       {
         label: "Electoral College 2016",
-        data: csvParseRows(electoralCollegeCsv),
+        data: this.parseCsv(electoralCollegeCsv),
       },
       {
         label: "GDP 2016",
-        data: csvParseRows(gdpCsv),
+        data: this.parseCsv(gdpCsv),
       },
     ]
     this._selectedDatasetIndex = 2
+  }
+
+  parseCsv(csv) {
+    return csvParseRows(csv, d => [d[0], +d[1]])
   }
 
   getLabels() {

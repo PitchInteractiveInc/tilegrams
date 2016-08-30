@@ -18,15 +18,17 @@ ui.setDatasetLabels(data.getLabels())
 // events
 canvas.getGrid().onChange(() => updateUi())
 ui.setAddTileCallback(event => canvas.getGrid().onAddTileMouseDown(event))
-ui.setDatasetSelectedCallback(index => updateCartogram(index))
+ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
+ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
 
-updateCartogram(0)
+selectDataset(data.getDataset(0))
 updateUi()
 
-function updateCartogram(index) {
+function selectDataset(dataset) {
+  ui.setSelectedDataset(dataset)
   canvas.computeCartogram({
     topoJson: usTopoJson,
-    properties: data.getDataset(index),
+    properties: dataset,
   })
 }
 
