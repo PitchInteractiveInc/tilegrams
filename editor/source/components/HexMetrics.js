@@ -2,7 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
 
-import {fipsColor, hashFromData} from '../utils'
+import {fipsColor, hashFromData, fipsToPostal} from '../utils'
 
 export default class HexCount extends React.Component {
   constructor(props) {
@@ -47,7 +47,7 @@ export default class HexCount extends React.Component {
         if (metric) {
           stats.metric = metric
           stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
-          stats.deviation = d.value - Math.round(metric / idealRatio)
+          stats.deviation = Math.round(metric / idealRatio) - d.value
         }
         return stats
       })
@@ -75,43 +75,40 @@ export default class HexCount extends React.Component {
     )
   }
 
+  _mouseDown(event) {
+    return (event) => {
+      event.preventDefault()
+      this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
+    }
+  }
+
   _renderHexCount(metrics) {
     if (!metrics.length) return null
-
-    const headerTitles = ['ADD HEX', 'GEO_ID', 'HEXAGONS']
-    if (this.props.dataset.length) {
-      headerTitles.push('METRIC', 'N/HEXAGON', 'Deviation')
-    }
-    const headers = headerTitles.map((header) => {
-      return <th key={header}>{header}</th>
-    })
-
     const rows = metrics.map((count) => {
-      const metric = isNaN(count.metric) ? <td /> : <td>{count.metric}</td>
-      const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
-      const deviation = isNaN(count.deviation) ? <td /> : <td>{count.deviation}</td>
+      const adjustString = isNaN(count.deviation) ? '' : count.deviation > 0 ? `+${count.deviation}` : count.deviation
+      const adjust = <td>{adjustString}</td>
+      const rowClass = count.deviation == 0 ? 'fade' : null
       return (
-        <tr key={count.key}>
+        <tr
+          key={count.key}
+          id={count.key}
+          className={rowClass}
+          onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
+          onMouseOut={this.props.onMetricMouseOut} >
+          <td>{fipsToPostal(count.key)}</td>
+          {adjust}
           <td
             style={{cursor: 'pointer'}}
-            id={count.key}
-            onMouseDown={this.props.onAddTileMouseDown}>
+            onMouseDown={this._mouseDown(event)}
+            >
             {this._drawHexagon(count.key)}
           </td>
-          <td>{count.key}</td>
-          <td>{count.nHex}</td>
-          {metric}
-          {ratio}
-          {deviation}
         </tr>
       )
     })
     return (
       <table>
         <tbody>
-          <tr>
-            {headers}
-          </tr>
           {rows}
         </tbody>
       </table>
@@ -122,6 +119,7 @@ export default class HexCount extends React.Component {
     let metrics = this._getMetrics()
     return (
       <div>
+        <div id='metrics-header'>Adjustments</div>
         {this._renderHexCount(metrics)}
       </div>
     )

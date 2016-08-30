@@ -1,0 +1,206 @@
+{
+  "01": {
+    "postal": "AL",
+    "name": "ALABAMA"
+  },
+  "02": {
+    "postal": "AK",
+    "name": "ALASKA"
+  },
+  "04": {
+    "postal": "AZ",
+    "name": "ARIZONA"
+  },
+  "05": {
+    "postal": "AR",
+    "name": "ARKANSAS"
+  },
+  "06": {
+    "postal": "CA",
+    "name": "CALIFORNIA"
+  },
+  "08": {
+    "postal": "CO",
+    "name": "COLORADO"
+  },
+  "09": {
+    "postal": "CT",
+    "name": "CONNECTICUT"
+  },
+  "10": {
+    "postal": "DE",
+    "name": "DELAWARE"
+  },
+  "11": {
+    "postal": "DC",
+    "name": "DISTRICT OF COLUMBIA"
+  },
+  "12": {
+    "postal": "FL",
+    "name": "FLORIDA"
+  },
+  "13": {
+    "postal": "GA",
+    "name": "GEORGIA"
+  },
+  "15": {
+    "postal": "HI",
+    "name": "HAWAII"
+  },
+  "16": {
+    "postal": "ID",
+    "name": "IDAHO"
+  },
+  "17": {
+    "postal": "IL",
+    "name": "ILLINOIS"
+  },
+  "18": {
+    "postal": "IN",
+    "name": "INDIANA"
+  },
+  "19": {
+    "postal": "IA",
+    "name": "IOWA"
+  },
+  "20": {
+    "postal": "KS",
+    "name": "KANSAS"
+  },
+  "21": {
+    "postal": "KY",
+    "name": "KENTUCKY"
+  },
+  "22": {
+    "postal": "LA",
+    "name": "LOUISIANA"
+  },
+  "23": {
+    "postal": "ME",
+    "name": "MAINE"
+  },
+  "24": {
+    "postal": "MD",
+    "name": "MARYLAND"
+  },
+  "25": {
+    "postal": "MA",
+    "name": "MASSACHUSETTS"
+  },
+  "26": {
+    "postal": "MI",
+    "name": "MICHIGAN"
+  },
+  "27": {
+    "postal": "MN",
+    "name": "MINNESOTA"
+  },
+  "28": {
+    "postal": "MS",
+    "name": "MISSISSIPPI"
+  },
+  "29": {
+    "postal": "MO",
+    "name": "MISSOURI"
+  },
+  "30": {
+    "postal": "MT",
+    "name": "MONTANA"
+  },
+  "31": {
+    "postal": "NE",
+    "name": "NEBRASKA"
+  },
+  "32": {
+    "postal": "NV",
+    "name": "NEVADA"
+  },
+  "33": {
+    "postal": "NH",
+    "name": "NEW HAMPSHIRE"
+  },
+  "34": {
+    "postal": "NJ",
+    "name": "NEW JERSEY"
+  },
+  "35": {
+    "postal": "NM",
+    "name": "NEW MEXICO"
+  },
+  "36": {
+    "postal": "NY",
+    "name": "NEW YORK"
+  },
+  "37": {
+    "postal": "NC",
+    "name": "NORTH CAROLINA"
+  },
+  "38": {
+    "postal": "ND",
+    "name": "NORTH DAKOTA"
+  },
+  "39": {
+    "postal": "OH",
+    "name": "OHIO"
+  },
+  "40": {
+    "postal": "OK",
+    "name": "OKLAHOMA"
+  },
+  "41": {
+    "postal": "OR",
+    "name": "OREGON"
+  },
+  "42": {
+    "postal": "PA",
+    "name": "PENNSYLVANIA"
+  },
+  "44": {
+    "postal": "RI",
+    "name": "RHODE ISLAND"
+  },
+  "45": {
+    "postal": "SC",
+    "name": "SOUTH CAROLINA"
+  },
+  "46": {
+    "postal": "SD",
+    "name": "SOUTH DAKOTA"
+  },
+  "47": {
+    "postal": "TN",
+    "name": "TENNESSEE"
+  },
+  "48": {
+    "postal": "TX",
+    "name": "TEXAS"
+  },
+  "49": {
+    "postal": "UT",
+    "name": "UTAH"
+  },
+  "50": {
+    "postal": "VT",
+    "name": "VERMONT"
+  },
+  "51": {
+    "postal": "VA",
+    "name": "VIRGINIA"
+  },
+  "53": {
+    "postal": "WA",
+    "name": "WASHINGTON"
+  },
+  "54": {
+    "postal": "WV",
+    "name": "WEST VIRGINIA"
+  },
+  "55": {
+    "postal": "WI",
+    "name": "WISCONSIN"
+  },
+  "56": {
+    "postal": "WY",
+    "name": "WYOMING"
+  }
+}

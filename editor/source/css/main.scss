@@ -35,6 +35,11 @@ body {
   color: #fff;
   overflow-x: hidden;
   overflow-y: auto;
+  #metrics-header {
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+  }
 }
 
 // dat.gui
@@ -51,14 +56,16 @@ fieldset {
 }
 
 table {
+  width: 100%;
+  table-layout: fixed;
   text-align: center;
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
-  th {
-    font-weight: bold;
+  tr.fade {
+    opacity: 0.3;
   }
-  th, td {
+  td {
     padding: 0.3em;
   }
 }
