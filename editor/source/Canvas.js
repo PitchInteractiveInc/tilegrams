@@ -11,7 +11,7 @@ class Canvas {
     this._requestRender()
     this._initStats()
     this._mapGraphic = new MapGraphic()
-    this._gridGraphic = new GridGraphic(this.updateTiles.bind(this))
+    this._gridGraphic = new GridGraphic()
     this._cartogramReady = false
   }
 

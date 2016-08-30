@@ -5,6 +5,7 @@ import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
+import hexagonGrid from './source/HexagonGrid'
 
 import {onExportTopoJson} from './source/constants'
 import {startDownload} from './source/utils'
@@ -16,6 +17,10 @@ ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
 ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
 ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
 ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
+ui.setResolutionChangedCallback(value => {
+  hexagonGrid._setTileEdge(value)
+  canvas.updateTiles()
+})
 
 // populate
 ui.setGeos(mapData.getUniqueFeatureIds())
