@@ -5,7 +5,7 @@
  * that grid in the offset coordinates that HexagonGrid uses.
  */
 
-export default class Importer {
+class Importer {
   /** Convert hex grid TopoJSON to hexagon offset coordinates */
   fromTopoJson(topoJson) {
     const tilePoints = topoJson.objects.statesHex.geometries.map(geometry => {
@@ -179,3 +179,5 @@ export default class Importer {
     }
   }
 }
+
+export default new Importer()
