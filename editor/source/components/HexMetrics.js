@@ -9,7 +9,6 @@ export default class HexCount extends React.Component {
     super(props)
 
     this.state = {
-      inputValue: '',
     }
   }
 
@@ -27,20 +26,8 @@ export default class HexCount extends React.Component {
     }).sort((a,b) => a.key - b.key)
   }
 
-  _updateMetrics(event) {
-    if (event) {
-      this.setState({
-        inputValue: event.target.value
-      })
-    }
-  }
-
-  _parseInput(inputData) {
-    return csvParseRows(inputData, (d) => ( [d[0], +d[1]] ))
-  }
-
-  _getMetrics(inputData) {
-    if (!inputData) {
+  _getMetrics() {
+    if (!this.props.dataset) {
       return (
         this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
           return {
@@ -50,7 +37,7 @@ export default class HexCount extends React.Component {
         })
       )
     }
-    const input = this._parseInput(inputData).map((row) => ( {key: row[0], value: row[1]} ))
+    const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
     const idealRatio = d3.sum(input, (d) => d.value) / this.props.originalTilesLength
     return (
@@ -92,7 +79,7 @@ export default class HexCount extends React.Component {
     if (!metrics.length) return null
 
     const headerTitles = ['ADD HEX', 'GEO_ID', 'HEXAGONS']
-    if (this.state.inputValue.length) {
+    if (this.props.dataset.length) {
       headerTitles.push('METRIC', 'N/HEXAGON', 'Deviation')
     }
     const headers = headerTitles.map((header) => {
@@ -132,19 +119,10 @@ export default class HexCount extends React.Component {
   }
 
   render() {
-    let metrics = this._getMetrics(this.state.inputValue)
+    let metrics = this._getMetrics()
     return (
       <div>
         {this._renderHexCount(metrics)}
-        <div id='input-data'>
-          Paste CSV here:
-          <br />
-          <textarea
-            rows={5}
-            onChange={this._updateMetrics.bind(this)}
-            value={this.state.inputValue || ''}
-          />
-        </div>
       </div>
     )
   }
