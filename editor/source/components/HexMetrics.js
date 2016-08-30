@@ -2,7 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
 
-import {fipsColor} from '../utils'
+import {fipsColor, hashFromData} from '../utils'
 
 export default class HexCount extends React.Component {
   constructor(props) {
@@ -18,10 +18,7 @@ export default class HexCount extends React.Component {
       .key((d) => d.id )
       .rollup((values) => values.length)
       .entries(tiles)
-    const countHash = counts.reduce((map, count) => {
-      map[count.key] = count.value
-      return map
-    })
+    const countHash = hashFromData(counts)
     return geos.map((geo) => {
       return {
         key: geo,
@@ -59,8 +56,8 @@ export default class HexCount extends React.Component {
         })
       )
     }
-    const input = this._parseInput(inputData)
-    const inputHash = this._createHashFromInput(input)
+    const input = this._parseInput(inputData).map((row) => ( {key: row[0], value: row[1]} ))
+    const inputHash = hashFromData(input)
     const idealRatio = d3.sum(input, (d) => d[1]) / this.props.originalTilesLength
     return (
       this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
