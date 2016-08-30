@@ -75,45 +75,40 @@ export default class HexCount extends React.Component {
     )
   }
 
+  _mouseDown(event) {
+    return (event) => {
+      event.preventDefault()
+      this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
+    }
+  }
+
   _renderHexCount(metrics) {
     if (!metrics.length) return null
-
-    const headerTitles = ['ADD HEX', 'GEO_ID', 'N HEXAGONS']
-    if (this.props.dataset.length) {
-      headerTitles.push('Adjust')
-    }
-    const headers = headerTitles.map((header) => {
-      return <th key={header}>{header}</th>
-    })
-
     const rows = metrics.map((count) => {
-      const metric = isNaN(count.metric) ? <td /> : <td>{count.metric}</td>
-      const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
       const adjustString = isNaN(count.deviation) ? '' : count.deviation > 0 ? `+${count.deviation}` : count.deviation
       const adjust = <td>{adjustString}</td>
+      const rowClass = count.deviation == 0 ? 'fade' : null
       return (
         <tr
           key={count.key}
           id={count.key}
-          onMouseOver={this.props.onMetricMouseOver}
+          className={rowClass}
+          onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
           onMouseOut={this.props.onMetricMouseOut} >
+          <td>{fipsToPostal(count.key)}</td>
+          {adjust}
           <td
             style={{cursor: 'pointer'}}
-            onMouseDown={this.props.onAddTileMouseDown}>
+            onMouseDown={this._mouseDown(event)}
+            >
             {this._drawHexagon(count.key)}
           </td>
-          <td>{fipsToPostal(count.key)}</td>
-          <td>{count.nHex}</td>
-          {adjust}
         </tr>
       )
     })
     return (
       <table>
         <tbody>
-          <tr>
-            {headers}
-          </tr>
           {rows}
         </tbody>
       </table>

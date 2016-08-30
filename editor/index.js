@@ -17,10 +17,10 @@ ui.setDatasetLabels(data.getLabels())
 
 // events
 canvas.getGrid().onChange(() => updateUi())
-ui.setAddTileCallback(event => canvas.getGrid().onAddTileMouseDown(event))
+ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
 ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
 ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
-ui.setHightlightCallback((event) => canvas.getGrid().onHighlightGeo(event))
+ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
 ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
 
 selectDataset(data.getDataset(0))

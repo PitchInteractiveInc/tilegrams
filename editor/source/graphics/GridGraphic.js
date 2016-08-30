@@ -74,9 +74,8 @@ export default class GridGraphic extends Graphic {
     }
   }
 
-  onHighlightGeo(event) {
-    const highlightId = event.currentTarget.id
-    this._highlights = this._tiles.filter((tile) => tile.id === highlightId)
+  onHighlightGeo(id) {
+    this._highlights = this._tiles.filter((tile) => tile.id === id)
   }
 
   resetHighlightedGeo() {
@@ -106,11 +105,10 @@ export default class GridGraphic extends Graphic {
     }
   }
 
-  onAddTileMouseDown(event) {
-    event.preventDefault()
+  onAddTileMouseDown(id) {
     this._deselectTile()
     this._newTile = {
-      id: event.currentTarget.parentElement.id,
+      id: id,
       position: {
         x: null,
         y: null
