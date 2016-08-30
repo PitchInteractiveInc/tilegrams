@@ -19,12 +19,18 @@ export default class DatasetSelector extends React.Component {
     const datasets = this.props.labels.map((label, index) => {
       return <option key={label} value={index}>{label}</option>
     })
-    return (
+    const menu = (
       <select
         value={this.state.selectedIndex}
         onChange={(event) => this._onChange(event)}>
         {datasets}
       </select>
+    )
+    return (
+      <fieldset>
+        <label>Dataset</label>
+        {menu}
+      </fieldset>
     )
   }
 }

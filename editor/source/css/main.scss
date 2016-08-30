@@ -42,6 +42,14 @@ body {
   z-index: 1;
 }
 
+fieldset {
+  padding: 0.5em;
+  label {
+    display: inline-block;
+    width: $sidebar-width * 0.3;
+  }
+}
+
 table {
   text-align: center;
   -webkit-user-select: none;

@@ -37,6 +37,7 @@ class Ui {
           labels={this._datasetLabels}
           onDatasetSelected={(index) => this._datasetSelectedCallback(index)}
           />
+        <hr />
         <HexMetrics
           geos={this._geos}
           tiles={tiles}
