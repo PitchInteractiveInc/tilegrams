@@ -20,6 +20,8 @@ canvas.getGrid().onChange(() => updateUi())
 ui.setAddTileCallback(event => canvas.getGrid().onAddTileMouseDown(event))
 ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
 ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
+ui.setHightlightCallback((event) => canvas.getGrid().onHighlightGeo(event))
+ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
 
 selectDataset(data.getDataset(0))
 updateUi()

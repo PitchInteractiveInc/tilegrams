@@ -2,7 +2,7 @@ import React from 'react'
 import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
 
-import {fipsColor, hashFromData} from '../utils'
+import {fipsColor, hashFromData, fipsToPostal} from '../utils'
 
 export default class HexCount extends React.Component {
   constructor(props) {
@@ -78,9 +78,15 @@ export default class HexCount extends React.Component {
   _renderHexCount(metrics) {
     if (!metrics.length) return null
 
+<<<<<<< ffb1e710333f2e32f995af7640e0bc076864756f
     const headerTitles = ['ADD HEX', 'GEO_ID', 'HEXAGONS']
     if (this.props.dataset.length) {
       headerTitles.push('METRIC', 'N/HEXAGON', 'Deviation')
+=======
+    const headerTitles = ['ADD HEX', 'GEO_ID', 'N HEXAGONS']
+    if (this.state.inputValue.length) {
+      headerTitles.push('Deviation')
+>>>>>>> add hover state to metrics, include metrics to state codes
     }
     const headers = headerTitles.map((header) => {
       return <th key={header}>{header}</th>
@@ -91,17 +97,18 @@ export default class HexCount extends React.Component {
       const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
       const deviation = isNaN(count.deviation) ? <td /> : <td>{count.deviation}</td>
       return (
-        <tr key={count.key}>
+        <tr
+          key={count.key}
+          id={count.key}
+          onMouseOver={this.props.onMetricMouseOver}
+          onMouseOut={this.props.onMetricMouseOut} >
           <td
             style={{cursor: 'pointer'}}
-            id={count.key}
             onMouseDown={this.props.onAddTileMouseDown}>
             {this._drawHexagon(count.key)}
           </td>
-          <td>{count.key}</td>
+          <td>{fipsToPostal(count.key)}</td>
           <td>{count.nHex}</td>
-          {metric}
-          {ratio}
           {deviation}
         </tr>
       )

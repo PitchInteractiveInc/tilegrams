@@ -8,6 +8,7 @@ export default class GridGraphic extends Graphic {
     super()
 
     this.originalTilesLength = 0
+    this._highlights = []
 
     tileEdgeSetting.onChange((tileEdge) => {
       hexagonGrid._setTileEdge(tileEdge)
@@ -73,6 +74,15 @@ export default class GridGraphic extends Graphic {
     }
   }
 
+  onHighlightGeo(event) {
+    const highlightId = event.currentTarget.id
+    this._highlights = this._tiles.filter((tile) => tile.id === highlightId)
+  }
+
+  resetHighlightedGeo() {
+    this._highlights = []
+  }
+
   onkeydown(event) {
     let key = event.keyCode || event.charCode
     if( key == 8 || key == 46 ) {
@@ -100,7 +110,7 @@ export default class GridGraphic extends Graphic {
     event.preventDefault()
     this._deselectTile()
     this._newTile = {
-      id: event.currentTarget.id,
+      id: event.currentTarget.parentElement.id,
       position: {
         x: null,
         y: null
@@ -159,6 +169,10 @@ export default class GridGraphic extends Graphic {
       }
       this._drawTile(tile.position, color)
     })
+    this._highlights.forEach(tile => {
+      let color = fipsColor(tile.id)
+      this._drawTile(tile.position, null, true)
+    })
     if (this._selectedTile) {
       let position = this._selectedTile.shouldDrag ?
         hexagonGrid.rectToHexPosition(this._mouseAt.x, this._mouseAt.y) :
@@ -182,8 +196,10 @@ export default class GridGraphic extends Graphic {
     this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLowerLeftPoint(center))
     this._ctx.lineTo.apply(this._ctx, hexagonGrid.getLeftPoint(center))
     this._ctx.closePath()
-    this._ctx.fillStyle = fill
-    this._ctx.fill()
+    if (fill) {
+      this._ctx.fillStyle = fill
+      this._ctx.fill()
+    }
     if (superstroke) {
       this._ctx.strokeStyle = selectedTileBorderColor
       this._ctx.lineWidth = 3

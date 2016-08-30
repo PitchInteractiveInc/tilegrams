@@ -34,6 +34,14 @@ class Ui {
     this._customDatasetCallback = callback
   }
 
+  setHightlightCallback(callback) {
+    this._highlightCallback = callback
+  }
+
+  setUnhighlightCallback(callback) {
+    this._unhighlightCallback = callback
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
@@ -53,6 +61,8 @@ class Ui {
           tiles={tiles}
           originalTilesLength={originalTilesLength}
           onAddTileMouseDown={this._addTileCallback}
+          onMetricMouseOver={this._highlightCallback}
+          onMetricMouseOut={this._unhighlightCallback}
           />
       </div>,
       this._container

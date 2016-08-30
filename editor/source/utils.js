@@ -1,4 +1,5 @@
 import {settings} from './constants'
+import fipsHash from '../data/fips-to-state.json'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
@@ -53,6 +54,10 @@ function hashFromData(data) {
   return dataHash
 }
 
+function fipsToPostal(fips) {
+  return fipsHash[fips].postal
+}
+
 module.exports = {
   fipsColor,
   createElement,
@@ -60,4 +65,5 @@ module.exports = {
   updateBounds,
   checkWithinBounds,
   hashFromData,
+  fipsToPostal,
 }
