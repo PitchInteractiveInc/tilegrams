@@ -2,16 +2,15 @@ require("./source/css/main.scss")
 
 import {csvParseRows} from 'd3-dsv'
 import canvas from './source/Canvas'
-import Ui from './source/Ui'
+import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
 
 // geos must be updated when topoJson is updated
-const geos = [...new Set(usTopoJson.objects.states.geometries.map((feature) => feature.id))]
-
-const ui = new Ui(geos)
+const geometries = usTopoJson.objects.states.geometries
+ui.setGeos([...new Set(geometries.map((feature) => feature.id))])
 
 // events
 canvas.getGrid().onChange(() => updateUi())
