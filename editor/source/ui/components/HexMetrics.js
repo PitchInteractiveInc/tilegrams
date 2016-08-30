@@ -15,7 +15,7 @@ export default class HexCount extends React.Component {
 
   _getCountsByGeo(tiles, geos) {
     const counts = d3.nest()
-      .key((d) => d.id)
+      .key((d) => d.id )
       .rollup((values) => values.length)
       .entries(tiles)
     const countHash = counts.reduce((map, count) => {

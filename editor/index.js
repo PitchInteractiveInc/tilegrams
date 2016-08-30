@@ -7,7 +7,7 @@ import {csvParseRows} from 'd3-dsv'
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
 
-const canvas = new Canvas()
+const canvas = new Canvas(usTopoJson)
 
 canvas.computeCartogram({
   topoJson: usTopoJson,

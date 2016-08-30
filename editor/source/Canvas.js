@@ -5,13 +5,12 @@ import MapGraphic from './graphics/MapGraphic'
 import {canvasColor, canvasDimensions, settings} from './constants'
 
 export default class Canvas {
-  constructor(usTopoJson) {
+  constructor() {
     this._createCanvas()
     this._requestRender()
     this._initStats()
-
-    this._mapGraphic = new MapGraphic(usTopoJson)
-    this._gridGraphic = new GridGraphic(this._mapGraphic.getGeos())
+    this._mapGraphic = new MapGraphic()
+    this._gridGraphic = new GridGraphic()
     this._cartogramReady = false
   }
 
@@ -19,6 +18,7 @@ export default class Canvas {
     this._mapGraphic.computeCartogram(options)
     this.updateTiles()
     this._cartogramReady = true
+    this._gridGraphic.createMetrics(options.topoJson) //pass original map obj to metrics to ensure no geos get dropped
   }
 
   updateTiles() {

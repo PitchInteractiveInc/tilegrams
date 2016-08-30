@@ -6,14 +6,12 @@ import {selectedTileBorderColor, settings} from '../constants'
 import Metrics from '../ui/Metrics'
 
 export default class GridGraphic extends Graphic {
-  constructor(geos) {
+  constructor() {
     super()
 
-    this.populateTilesLength = 0
-    this.geos = geos
     this.originalTilesLength = 0
 
-    this.metrics = new Metrics(geos, this.onAddTileMouseDown.bind(this))
+    this.metrics = new Metrics([], this.onAddTileMouseDown.bind(this))
 
     document.body.onkeydown = this.onkeydown.bind(this)
 
@@ -188,5 +186,11 @@ export default class GridGraphic extends Graphic {
       this._ctx.lineWidth = 3
       this._ctx.stroke()
     }
+  }
+
+  createMetrics(topoJson) {
+    const geos = [...new Set(topoJson.objects.states.geometries.map((feature) => feature.id))]
+    this.metrics = new Metrics(geos, this.onAddTileMouseDown.bind(this))
+    this.metrics.renderMetrics(this._tiles, this.originalTilesLength)
   }
 }
