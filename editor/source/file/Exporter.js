@@ -5,10 +5,10 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 
-import canvas from './Canvas'
-import hexagonGrid from './HexagonGrid'
-import {onExportTopoJson} from './constants'
-import {startDownload} from './utils'
+import canvas from '../Canvas'
+import hexagonGrid from '../HexagonGrid'
+import {onExportTopoJson} from '../constants'
+import {startDownload} from '../utils'
 
 class Exporter {
   constructor() {

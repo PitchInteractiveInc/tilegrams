@@ -3,7 +3,7 @@ require("./source/css/main.scss")
 import {csvParseRows} from 'd3-dsv'
 import canvas from './source/Canvas'
 import Ui from './source/Ui'
-import exporter from './source/Exporter'
+import exporter from './source/file/Exporter'
 
 import usTopoJson from '../../../data/us-110m.topo.json'
 import usPopulationCsv from '../../../data/us-state-population.csv'
