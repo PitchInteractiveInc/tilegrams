@@ -44,7 +44,7 @@ function checkWithinBounds(point, bounds) {
   return true
 }
 
-/** Convert array of key,value objects to hash for quick lookup */
+/** Convert array of key,value objects (eg: [{key: 0, value: 0}]) to hash for quick lookup */
 function hashFromData(data) {
   const dataHash = {}
   data.forEach((datum) => {
