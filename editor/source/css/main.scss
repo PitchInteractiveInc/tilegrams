@@ -35,6 +35,12 @@ body {
   color: #fff;
   overflow-x: hidden;
   overflow-y: auto;
+  #metrics-header {
+    padding: 0.5em;
+    margin-bottom: 0.5em;
+    font-weight: bold;
+    border-bottom: 1px solid #fff;
+  }
 }
 
 // dat.gui

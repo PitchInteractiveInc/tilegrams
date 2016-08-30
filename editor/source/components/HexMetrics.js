@@ -47,7 +47,7 @@ export default class HexCount extends React.Component {
         if (metric) {
           stats.metric = metric
           stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
-          stats.deviation = d.value - Math.round(metric / idealRatio)
+          stats.deviation = Math.round(metric / idealRatio) - d.value
         }
         return stats
       })
@@ -78,15 +78,9 @@ export default class HexCount extends React.Component {
   _renderHexCount(metrics) {
     if (!metrics.length) return null
 
-<<<<<<< ffb1e710333f2e32f995af7640e0bc076864756f
-    const headerTitles = ['ADD HEX', 'GEO_ID', 'HEXAGONS']
-    if (this.props.dataset.length) {
-      headerTitles.push('METRIC', 'N/HEXAGON', 'Deviation')
-=======
     const headerTitles = ['ADD HEX', 'GEO_ID', 'N HEXAGONS']
-    if (this.state.inputValue.length) {
-      headerTitles.push('Deviation')
->>>>>>> add hover state to metrics, include metrics to state codes
+    if (this.props.dataset.length) {
+      headerTitles.push('Adjust')
     }
     const headers = headerTitles.map((header) => {
       return <th key={header}>{header}</th>
@@ -95,7 +89,8 @@ export default class HexCount extends React.Component {
     const rows = metrics.map((count) => {
       const metric = isNaN(count.metric) ? <td /> : <td>{count.metric}</td>
       const ratio = isNaN(count.ratio) ? <td /> : <td>{count.ratio}</td>
-      const deviation = isNaN(count.deviation) ? <td /> : <td>{count.deviation}</td>
+      const adjustString = isNaN(count.deviation) ? '' : count.deviation > 0 ? `+${count.deviation}` : count.deviation
+      const adjust = <td>{adjustString}</td>
       return (
         <tr
           key={count.key}
@@ -109,7 +104,7 @@ export default class HexCount extends React.Component {
           </td>
           <td>{fipsToPostal(count.key)}</td>
           <td>{count.nHex}</td>
-          {deviation}
+          {adjust}
         </tr>
       )
     })
@@ -129,6 +124,7 @@ export default class HexCount extends React.Component {
     let metrics = this._getMetrics()
     return (
       <div>
+        <div id='metrics-header'>Adjustments</div>
         {this._renderHexCount(metrics)}
       </div>
     )
