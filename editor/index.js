@@ -6,8 +6,6 @@ import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
 import hexagonGrid from './source/HexagonGrid'
-
-import {onExportTopoJson} from './source/constants'
 import {startDownload} from './source/utils'
 
 // wire up callbacks
@@ -20,6 +18,14 @@ ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
 ui.setResolutionChangedCallback(value => {
   hexagonGrid._setTileEdge(value)
   canvas.updateTiles()
+})
+ui.setExportCallback(() => {
+  const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
+  startDownload({
+    filename: 'hexagon-cartogram.json',
+    mimeType: 'application/json',
+    content: JSON.stringify(json),
+  })
 })
 
 // populate
@@ -42,12 +48,3 @@ function updateUi() {
     canvas.getGrid().getOriginalTilesLength()
   )
 }
-
-onExportTopoJson(() => {
-  const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
-  startDownload({
-    filename: 'hexagon-cartogram.json',
-    mimeType: 'application/json',
-    content: JSON.stringify(json),
-  })
-})
