@@ -2,11 +2,17 @@
 @import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
-$sidebar-width: 250px;
+$sidebar-width: 280px;
+$blue: #1144bb;
 
 body {
   margin: 0;
   font-family: $font-stack;
+}
+
+a {
+  color: $blue;
+  margin: 0 5px;
 }
 
 #canvas {
@@ -36,6 +42,18 @@ body {
   overflow-x: hidden;
   overflow-y: auto;
   padding-top: 15px;
+  hr {
+    border: none;
+    height: 1px;
+    background-color: #444;
+  }
+  h1 {
+    font-size: 200%;
+    line-height: 1.2em;
+  }
+  h1, h2 {
+    padding: 15px;
+  }
   #metrics-header {
     padding: 0.5em;
     margin-bottom: 0.5em;
@@ -55,10 +73,11 @@ fieldset {
     width: $sidebar-width * 0.3;
   }
   a.export {
-    background-color: #1144bb;
+    background-color: $blue;
     border-radius: 5px;
     padding: 0.5em 0.75em;
     cursor: pointer;
+    color: white;
   }
 }
 

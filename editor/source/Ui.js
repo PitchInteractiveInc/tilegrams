@@ -59,7 +59,31 @@ class Ui {
   render(tiles, originalTilesLength) {
     ReactDOM.render(
       <div>
+        <h1>
+          Tesselated Hexagon Cartogram Authoring Interface
+        </h1>
+        <h2>
+          A project by
+          <a
+            href="http://pitchinteractive.com/"
+            target="_blank">
+            Pitch Interactive
+          </a>
+          <br/>
+          <br/>
+          View
+          <a
+            href="https://github.com/PitchInteractiveInc/hexagon-cartograms"
+            target="_blank">
+            source
+          </a>
+          on GitHub
+          <br/>
+          <br/>
+          Instructions forthcoming
+        </h2>
         <ExportButton onClick={() => this._exportCallback()} />
+        <hr/>
         <DatasetSelector
           labels={this._datasetLabels}
           onDatasetSelected={index => this._datasetSelectedCallback(index)}
