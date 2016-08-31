@@ -8,15 +8,15 @@ class Data {
   constructor() {
     this._datasets = [
       {
-        label: "Population 2016",
+        label: 'Population 2016',
         data: this.parseCsv(populationCsv),
       },
       {
-        label: "Electoral College 2016",
+        label: 'Electoral College 2016',
         data: this.parseCsv(electoralCollegeCsv),
       },
       {
-        label: "GDP 2016 (Millions)",
+        label: 'GDP 2016 (Millions)',
         data: this.parseCsv(gdpCsv),
       },
     ]

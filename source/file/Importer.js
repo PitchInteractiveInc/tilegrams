@@ -15,7 +15,7 @@ class Importer {
       const path = this._getAbsolutePath(geometry, topoJson.arcs)
       return {
         id: geometry.id,
-        point: this._hexagonCenterPoint(path)
+        point: this._hexagonCenterPoint(path),
       }
     })
     return this._getTilePositions(tilePoints)
@@ -40,7 +40,7 @@ class Importer {
             const lastPoint = arcPoints[arcPoints.length - 1]
             const newPoint = [
               lastPoint[0] + delta[0],
-              lastPoint[1] + delta[1]
+              lastPoint[1] + delta[1],
             ]
             arcPoints.push(newPoint)
           } else {
@@ -102,7 +102,7 @@ class Importer {
         position: {
           x: tile.position.x + minX,
           y: (maxY - minY) - (tile.position.y - minY),
-        }
+        },
       }
     })
   }
@@ -130,10 +130,10 @@ class Importer {
     const DIMENSIONS = ['x', 'y']
 
     return DIMENSIONS.map(dimension => {
-      let deltaCounts = []
+      const deltaCounts = []
 
       // tally frequency of each delta over sample
-      for (var i = 0; i < Math.min(SAMPLE_COUNT, tilePoints.length); i++) {
+      for (let i = 0; i < Math.min(SAMPLE_COUNT, tilePoints.length); i++) {
         const delta =
           tilePoints[i + 1].point[dimension] -
           tilePoints[i].point[dimension]

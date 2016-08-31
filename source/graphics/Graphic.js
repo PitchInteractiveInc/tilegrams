@@ -2,18 +2,18 @@
 
 export default class Graphic {
   /** To override: mouse event handler */
-  onMouseDown(event) {
+  onMouseDown(event) { // eslint-disable-line no-unused-vars
   }
 
   /** To override: mouse event handler */
-  onMouseUp(event) {
+  onMouseUp(event) { // eslint-disable-line no-unused-vars
   }
 
   /** To override: mouse event handler */
-  onMouseMove(event) {
+  onMouseMove(event) { // eslint-disable-line no-unused-vars
   }
 
   /** To override: canvas drawing commands */
-  render(ctx) {
+  render(ctx) { // eslint-disable-line no-unused-vars
   }
 }

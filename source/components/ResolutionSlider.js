@@ -23,13 +23,14 @@ export default class ResolutionSlider extends React.Component {
   render() {
     return (
       <fieldset>
-        <label>Resolution</label>
+        <label htmlFor='resolutionSlider'>Resolution</label>
         <input
-          type="range"
+          id='resolutionSlider'
+          type='range'
           min={0}
           max={100}
           onChange={(event) => this._onChange(event)}
-          />
+        />
       </fieldset>
     )
   }

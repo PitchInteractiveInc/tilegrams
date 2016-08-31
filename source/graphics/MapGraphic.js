@@ -2,12 +2,13 @@ import {geoPath, geoAlbersUsa} from 'd3-geo'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'
-const topogram = topogramImport()
 
 import Graphic from './Graphic'
 import mapData from '../MapData'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
+
+const topogram = topogramImport()
 
 const MIN_PATH_AREA = 0.5
 
@@ -15,7 +16,7 @@ export default class MapGraphic extends Graphic {
   /** Apply topogram on topoJson using data in properties */
   computeCartogram({topoJson, properties}) {
     topogram.value(
-      feature => properties.find(property => property[0] == feature.id)[1]
+      feature => properties.find(property => property[0] === feature.id)[1]
     )
     topogram.projection(this._buildPreProjection())
     this._stateFeatures = topogram(
@@ -31,7 +32,7 @@ export default class MapGraphic extends Graphic {
     const pathProjection = geoPath()
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
     this._projectedStates = this._stateFeatures.features.map(feature => {
-      const hasMultiplePaths = feature.geometry.type == 'MultiPolygon'
+      const hasMultiplePaths = feature.geometry.type === 'MultiPolygon'
       const bounds = pathProjection.bounds(feature)
       updateBounds(this._generalBounds, bounds)
       const paths = feature.geometry.coordinates

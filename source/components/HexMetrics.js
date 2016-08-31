@@ -1,30 +1,28 @@
-import React from 'react'
-import {csvParseRows} from 'd3-dsv'
+import React, {PropTypes} from 'react'
 import {nest} from 'd3-collection'
 import {sum} from 'd3-array'
 
 import {fipsColor, hashFromData, fipsToPostal} from '../utils'
 
-export default class HexCount extends React.Component {
+export default class HexMetrics extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-    }
+    this._mouseDown = this._mouseDown.bind(this)
   }
 
   _getCountsByGeo(tiles, geos) {
     const counts = nest()
-      .key((d) => d.id )
+      .key((d) => d.id)
       .rollup((values) => values.length)
       .entries(tiles)
     const countHash = hashFromData(counts)
     return geos.map((geo) => {
       return {
         key: geo,
-        value: countHash[geo] || 0
+        value: countHash[geo] || 0,
       }
-    }).sort((a,b) => a.key - b.key)
+    }).sort((a, b) => a.key - b.key)
   }
 
   _getMetrics() {
@@ -33,7 +31,7 @@ export default class HexCount extends React.Component {
         this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
           return {
             key: d.key,
-            nHex: d.value
+            nHex: d.value,
           }
         })
       )
@@ -56,14 +54,14 @@ export default class HexCount extends React.Component {
 
   _drawHexagon(id) {
     const width = 15
-    const height = Math.sqrt(3)/2 * width
+    const height = (Math.sqrt(3) / 2) * width
     const vertices = [
-      [width * 0.25,0],
-      [width * 0.75,0],
+      [width * 0.25, 0],
+      [width * 0.75, 0],
       [width, height * 0.5],
       [width * 0.75, height],
       [width * 0.25, height],
-      [0, height / 2]
+      [0, height / 2],
     ]
     return (
       <svg width={width} height={height}>
@@ -76,31 +74,35 @@ export default class HexCount extends React.Component {
   }
 
   _mouseDown(event) {
-    return (event) => {
-      event.preventDefault()
-      this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
-    }
+    event.preventDefault()
+    this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
   }
 
   _renderHexCount(metrics) {
     if (!metrics.length) return null
     const rows = metrics.map((count) => {
-      const adjustString = isNaN(count.deviation) ? '' : count.deviation > 0 ? `+${count.deviation}` : count.deviation
+      let adjustString = null
+      if (isNaN(count.deviation)) {
+        adjustString = ''
+      } else {
+        adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
+      }
       const adjust = <td>{adjustString}</td>
-      const rowClass = count.deviation == 0 ? 'fade' : null
+      const rowClass = count.deviation === 0 ? 'fade' : null
       return (
         <tr
           key={count.key}
           id={count.key}
           className={rowClass}
           onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
-          onMouseOut={this.props.onMetricMouseOut} >
+          onMouseOut={this.props.onMetricMouseOut}
+        >
           <td>{fipsToPostal(count.key)}</td>
           {adjust}
           <td
             style={{cursor: 'pointer'}}
-            onMouseDown={this._mouseDown(event)}
-            >
+            onMouseDown={this._mouseDown}
+          >
             {this._drawHexagon(count.key)}
           </td>
         </tr>
@@ -126,4 +128,14 @@ export default class HexCount extends React.Component {
       </div>
     )
   }
+}
+
+HexMetrics.propTypes = {
+  dataset: PropTypes.array,
+  tiles: PropTypes.array,
+  geos: PropTypes.array,
+  originalTilesLength: PropTypes.number,
+  onAddTileMouseDown: PropTypes.func,
+  onMetricMouseOut: PropTypes.func,
+  onMetricMouseOver: PropTypes.func,
 }

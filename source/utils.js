@@ -3,7 +3,7 @@ import fipsHash from '../data/fips-to-state.json'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  return `hsl(${parseInt(fips) * settings.hueScalar % 25.5 * 10.0}, 90%, 70%)`
+  return `hsl(${parseInt(fips, 10) * (settings.hueScalar % 25.5) * 10.0}, 90%, 70%)`
 }
 
 /** Create DOM element. Options may include 'id' */
@@ -26,7 +26,7 @@ function updateBounds(memoBounds, bounds) {
   for (let lim = 0; lim < 2; lim++) {       // limit (0 = min; 1 = max)
     for (let dim = 0; dim < 2; dim++) {     // dimension (0 = x; 1 = y)
       memoBounds[lim][dim] =
-        Math[lim == 0 ? 'min' : 'max'](memoBounds[lim][dim], bounds[lim][dim])
+        Math[lim === 0 ? 'min' : 'max'](memoBounds[lim][dim], bounds[lim][dim])
     }
   }
 }
@@ -35,9 +35,9 @@ function updateBounds(memoBounds, bounds) {
 function checkWithinBounds(point, bounds) {
   for (let lim = 0; lim < 2; lim++) {       // limit (0 = min; 1 = max)
     for (let dim = 0; dim < 2; dim++) {     // dimension (0 = x; 1 = y)
-      if (lim == 0 && point[dim] < bounds[lim][dim]) {
+      if (lim === 0 && point[dim] < bounds[lim][dim]) {
         return false
-      } else if (lim == 1 && point[dim] > bounds[lim][dim]) {
+      } else if (lim === 1 && point[dim] > bounds[lim][dim]) {
         return false
       }
     }

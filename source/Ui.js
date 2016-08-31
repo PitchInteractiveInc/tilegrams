@@ -65,33 +65,37 @@ class Ui {
         <h2>
           A project by
           <a
-            href="http://pitchinteractive.com/"
-            target="_blank">
+            href='http://pitchinteractive.com/'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             Pitch Interactive
           </a>
-          <br/>
-          <br/>
+          <br />
+          <br />
           View
           <a
-            href="https://github.com/PitchInteractiveInc/hexagon-cartograms"
-            target="_blank">
+            href='https://github.com/PitchInteractiveInc/hexagon-cartograms'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             source
           </a>
           on GitHub
-          <br/>
-          <br/>
+          <br />
+          <br />
           Instructions forthcoming
         </h2>
         <ExportButton onClick={() => this._exportCallback()} />
-        <hr/>
+        <hr />
         <DatasetSelector
           labels={this._datasetLabels}
           onDatasetSelected={index => this._datasetSelectedCallback(index)}
           onCustomDataset={csv => this._customDatasetCallback(csv)}
-          />
+        />
         <ResolutionSlider
           onChange={value => this._resolutionChangedCallback(value)}
-          />
+        />
         <hr />
         <HexMetrics
           dataset={this._selectedDataset}
@@ -101,7 +105,7 @@ class Ui {
           onAddTileMouseDown={this._addTileCallback}
           onMetricMouseOver={this._highlightCallback}
           onMetricMouseOut={this._unhighlightCallback}
-          />
+        />
       </div>,
       this._container
     )
