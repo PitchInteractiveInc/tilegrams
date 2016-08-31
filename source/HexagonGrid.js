@@ -11,10 +11,10 @@ const TILE_OFFSET = 1
 
 class HexagonGrid {
   constructor() {
-    this._setTileEdge(tileEdgeRange.default)
+    this.setTileEdge(tileEdgeRange.default)
   }
 
-  _setTileEdge(tileEdge) {
+  setTileEdge(tileEdge) {
     this._tileSize = {
       width: 2.0 * tileEdge,
       height: Math.sqrt(3.0) * tileEdge,
