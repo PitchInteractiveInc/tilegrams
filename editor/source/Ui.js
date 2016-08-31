@@ -5,6 +5,7 @@ import {createElement} from './utils'
 import DatasetSelector from './components/DatasetSelector'
 import ResolutionSlider from './components/ResolutionSlider'
 import HexMetrics from './components/HexMetrics'
+import ExportButton from './components/ExportButton'
 
 class Ui {
   constructor() {
@@ -47,6 +48,10 @@ class Ui {
     this._resolutionChangedCallback = callback
   }
 
+  setExportCallback(callback) {
+    this._exportCallback = callback
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
@@ -54,6 +59,7 @@ class Ui {
   render(tiles, originalTilesLength) {
     ReactDOM.render(
       <div>
+        <ExportButton onClick={() => this._exportCallback()} />
         <DatasetSelector
           labels={this._datasetLabels}
           onDatasetSelected={index => this._datasetSelectedCallback(index)}
