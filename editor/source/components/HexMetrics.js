@@ -1,6 +1,7 @@
 import React from 'react'
-import * as d3 from 'd3'
 import {csvParseRows} from 'd3-dsv'
+import {nest} from 'd3-collection'
+import {sum} from 'd3-array'
 
 import {fipsColor, hashFromData, fipsToPostal} from '../utils'
 
@@ -13,7 +14,7 @@ export default class HexCount extends React.Component {
   }
 
   _getCountsByGeo(tiles, geos) {
-    const counts = d3.nest()
+    const counts = nest()
       .key((d) => d.id )
       .rollup((values) => values.length)
       .entries(tiles)
@@ -39,7 +40,7 @@ export default class HexCount extends React.Component {
     }
     const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
-    const idealRatio = d3.sum(input, (d) => d.value) / this.props.originalTilesLength
+    const idealRatio = sum(input, (d) => d.value) / this.props.originalTilesLength
     return (
       this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
         const metric = inputHash[d.key]
