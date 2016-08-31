@@ -4,7 +4,7 @@ export default class ExportButton extends React.Component {
   render() {
     return (
       <fieldset>
-        <a className="export" onClick={() => this.props.onClick()}>
+        <a className="export" onClick={this.props.onClick}>
           Export TopoJSON
         </a>
       </fieldset>
