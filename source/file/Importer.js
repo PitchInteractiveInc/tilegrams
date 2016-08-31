@@ -59,8 +59,8 @@ class Importer {
           const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
           const firstArcPoint = arcPoints[0]
           if (
-            firstArcPoint[0] == lastGeometryPoint[0] &&
-            firstArcPoint[1] == lastGeometryPoint[1]
+            firstArcPoint[0] === lastGeometryPoint[0] &&
+            firstArcPoint[1] === lastGeometryPoint[1]
           ) {
             arcPoints.shift()
           }
@@ -115,7 +115,7 @@ class Importer {
     } else {
       position.x = Math.round((point.x - origin.x) / xDelta)
       position.y = ((point.y - origin.y) / yDelta)
-      if (position.x % 2 == 0) {
+      if (position.x % 2 === 0) {
         position.y = Math.ceil(position.y)
       } else {
         position.y = Math.floor(position.y)
@@ -139,7 +139,7 @@ class Importer {
           tilePoints[i].point[dimension]
         if (delta > 0.0) {
           const deltaCount = deltaCounts.find(
-            deltaCount => deltaCount.value == delta
+            testDeltaCount => testDeltaCount.value === delta
           )
           if (deltaCount) {
             deltaCount.deltaCount++
@@ -154,12 +154,11 @@ class Importer {
 
       // return delta that occurred the most often
       const maxDeltaCount = deltaCounts.reduce(
-        (maxDeltaCount, deltaCount) => {
-          if (!maxDeltaCount || deltaCount.count > maxDeltaCount.count) {
+        (testMaxDeltaCount, deltaCount) => {
+          if (!testMaxDeltaCount || deltaCount.count > testMaxDeltaCount.count) {
             return deltaCount
-          } else {
-            return maxDeltaCount
           }
+          return testMaxDeltaCount
         },
         null
       )
@@ -169,7 +168,7 @@ class Importer {
   }
 
   /** Determine the X/Y center point of a given hexagon by averaging */
-  _hexagonCenterPoint(path) {
+  _hexagonCenterPoint(inputPath) {
     function hexagonDimensionCenter(path, subIndex) {
       return path.slice(0, 6).reduce(
         (sum, p) => sum + p[subIndex],
@@ -177,8 +176,8 @@ class Importer {
       ) / 6.0
     }
     return {
-      x: hexagonDimensionCenter(path, 0),
-      y: hexagonDimensionCenter(path, 1),
+      x: hexagonDimensionCenter(inputPath, 0),
+      y: hexagonDimensionCenter(inputPath, 1),
     }
   }
 }
