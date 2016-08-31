@@ -1,20 +1,13 @@
 import Graphic from './Graphic'
 import {fipsColor} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor, settings, tileEdgeSetting} from '../constants'
+import {selectedTileBorderColor, settings} from '../constants'
 
 export default class GridGraphic extends Graphic {
-  constructor(updateTiles) {
+  constructor() {
     super()
-
     this.originalTilesLength = 0
     this._highlights = []
-
-    tileEdgeSetting.onChange((tileEdge) => {
-      hexagonGrid._setTileEdge(tileEdge)
-      updateTiles()
-    })
-
     document.body.onkeydown = this.onkeydown.bind(this)
   }
 

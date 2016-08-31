@@ -5,13 +5,13 @@
  * http://www.redblobgames.com/grids/hexagons/#coordinates
  */
 
-import {settings, tileEdgeSetting, canvasDimensions} from './constants'
+import {settings, tileEdgeRange, canvasDimensions} from './constants'
 
 const TILE_OFFSET = 1
 
 class HexagonGrid {
   constructor() {
-    this._setTileEdge(tileEdgeSetting.initialValue)
+    this._setTileEdge(tileEdgeRange.default)
   }
 
   _setTileEdge(tileEdge) {

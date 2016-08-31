@@ -8,7 +8,6 @@ const canvasDimensions = {
 /** dat.gui for realtime updating of properties */
 class Settings {
   constructor() {
-    this.tileEdge = 20
     this.tileScale = 0.95
     this.hueScalar = 5
     this.displayMap = true
@@ -22,7 +21,6 @@ class Settings {
 }
 const settings = new Settings()
 const gui = new dat.GUI()
-const tileEdgeSetting = gui.add(settings, 'tileEdge', 10, 40)
 gui.add(settings, 'tileScale', 0.9, 1.0)
 gui.add(settings, 'hueScalar', 1, 10)
 gui.add(settings, 'displayMap')
@@ -37,8 +35,12 @@ function onExportTopoJson(handler) {
 
 module.exports = {
   settings,
-  tileEdgeSetting,
   onExportTopoJson,
   canvasDimensions,
+  tileEdgeRange: {
+    default: 20,
+    min: 10,
+    max: 40,
+  },
   selectedTileBorderColor: '#333333',
 }

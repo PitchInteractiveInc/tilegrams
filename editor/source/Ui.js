@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 
 import {createElement} from './utils'
 import DatasetSelector from './components/DatasetSelector'
+import ResolutionSlider from './components/ResolutionSlider'
 import HexMetrics from './components/HexMetrics'
 
 class Ui {
@@ -42,6 +43,10 @@ class Ui {
     this._unhighlightCallback = callback
   }
 
+  setResolutionChangedCallback(callback) {
+    this._resolutionChangedCallback = callback
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
@@ -53,6 +58,9 @@ class Ui {
           labels={this._datasetLabels}
           onDatasetSelected={index => this._datasetSelectedCallback(index)}
           onCustomDataset={csv => this._customDatasetCallback(csv)}
+          />
+        <ResolutionSlider
+          onChange={value => this._resolutionChangedCallback(value)}
           />
         <hr />
         <HexMetrics
