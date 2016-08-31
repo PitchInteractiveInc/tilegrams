@@ -40,7 +40,7 @@
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "stats-js": "^1.0.0-alpha1",
-    "topogram": "file:../../topogram",
+    "topogram": "git://github.com/shawnbot/topogram.git#node-js",
     "topojson": "^1.6.26"
   }
 }
