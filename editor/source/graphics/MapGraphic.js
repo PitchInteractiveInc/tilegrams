@@ -5,6 +5,7 @@ import topogramImport from 'topogram'
 const topogram = topogramImport()
 
 import Graphic from './Graphic'
+import mapData from '../MapData'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
 
@@ -19,7 +20,7 @@ export default class MapGraphic extends Graphic {
     topogram.projection(this._buildPreProjection())
     this._stateFeatures = topogram(
       topoJson,
-      topoJson.objects.states.geometries
+      topoJson.objects[mapData.getObjectId()].geometries
     )
 
     this._precomputeBounds()

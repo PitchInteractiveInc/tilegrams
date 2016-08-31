@@ -6,6 +6,7 @@
  */
 
 import canvas from '../Canvas'
+import mapData from '../MapData'
 import hexagonGrid from '../HexagonGrid'
 
 class Exporter {
@@ -43,7 +44,7 @@ class Exporter {
     return {
       type: 'Topology',
       objects: {
-        states: {
+        [mapData.getObjectId()]: {
           type: 'GeometryCollection',
           geometries,
         }

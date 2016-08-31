@@ -4,18 +4,12 @@ import data from './source/Data'
 import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
+import mapData from './source/MapData'
 
 import {onExportTopoJson} from './source/constants'
 import {startDownload} from './source/utils'
 
-import usTopoJson from '../../../data/us-110m.topo.json'
-
-// geos must be updated when topoJson is updated
-const geometries = usTopoJson.objects.states.geometries
-ui.setGeos([...new Set(geometries.map((feature) => feature.id))])
-ui.setDatasetLabels(data.getLabels())
-
-// events
+// wire up callbacks
 canvas.getGrid().onChange(() => updateUi())
 ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
 ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
@@ -23,13 +17,16 @@ ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
 ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
 ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
 
+// populate
+ui.setGeos(mapData.getUniqueFeatureIds())
+ui.setDatasetLabels(data.getLabels())
 selectDataset(data.getDataset(0))
 updateUi()
 
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram({
-    topoJson: usTopoJson,
+    topoJson: mapData.getTopoJson(),
     properties: dataset,
   })
 }
