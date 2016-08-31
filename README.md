@@ -1,16 +1,56 @@
 # Hexagon Cartograms
 
+The Maker is a Node.js front-end app for editing GeoJSON composed of hexagons.
+
 One day, we got [really interested](https://twitter.com/pitchinc/status/765962981855199232)
 in cartograms made from hexagons.
 
-Now we've figured out how to make our own.
+## Development
 
-## Processing pipeline
+### Setup
 
-Currently, we use [R](https://www.r-project.org/) to merge data into a shape
-file, [ScapeToad](http://scapetoad.choros.ch/) to produce the cartogram,
-[QGIS](http://www.qgis.org/) (and the [MMQGIS](http://michaelminn.com/linux/mmqgis/)
-plugin) to apply the hexagon grid, and [`ogr2ogr`](http://www.gdal.org/ogr2ogr.html)
-to convert to TopoJSON.
+After cloning the repository, run:
 
-More information forthcoming.
+    npm i
+
+Since [`topogram`](https://github.com/shawnbot/topogram)
+has not yet been published to `npm`, you'll need to clone it and check out the
+[`node-js`](https://github.com/shawnbot/topogram/tree/node-js) branch, and
+update the local path in `package.json`.
+
+### Running
+
+Run
+
+    npm start
+
+Then access `http://localhost:8080/`.
+
+### Deploying
+
+To generate deployable assets, run:
+
+    npm run build
+
+They will be written to `dist/`.
+
+## Dependencies
+
+JavaScript is written in [ES2015](https://babeljs.io/docs/learn-es2015/)
+using [Babel](https://babeljs.io/). Styles are written in
+[SASS](http://sass-lang.com/). All assets are preprocessed with
+[webpack](https://webpack.github.io/).
+
+The Maker also depends on a pre-release `npm` version of `topogram`
+(formerly `cartogram.js`) as seen in
+[this PR](https://github.com/shawnbot/topogram/pull/26).
+
+## Data Sources
+[Population Data](http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=PEP_2015_PEPANNRES&prodType=table)
+[Electoral Votes Data](https://www.archives.gov/federal-register/electoral-college/allocation.html)
+[GDP Data](http://www.bea.gov/newsreleases/regional/gdp_state/qgsp_newsrelease.htm)
+
+# License
+
+This software is distributed under the [ISC](https://spdx.org/licenses/ISC.html)
+license.
