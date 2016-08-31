@@ -167,7 +167,7 @@
 	      label: "Electoral College 2016",
 	      data: this.parseCsv(_electoralCollegeVotesByState2.default)
 	    }, {
-	      label: "GDP 2016",
+	      label: "GDP 2016 (Millions)",
 	      data: this.parseCsv(_gdpByState2.default)
 	    }];
 	    this._selectedDatasetIndex = 2;
@@ -42604,16 +42604,17 @@
 	      var idealRatio = (0, _d3Array.sum)(input, function (d) {
 	        return d.value;
 	      }) / this.props.originalTilesLength;
-	      return this._getCountsByGeo(this.props.tiles, this.props.geos).map(function (d) {
+	      var stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map(function (d) {
 	        var metric = inputHash[d.key];
-	        var stats = { key: d.key, nHex: d.value };
+	        var stat = { key: d.key, nHex: d.value };
 	        if (metric) {
-	          stats.metric = metric;
-	          stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null;
-	          stats.deviation = Math.round(metric / idealRatio) - d.value;
+	          stat.metric = metric;
+	          stat.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null;
+	          stat.deviation = Math.round(metric / idealRatio) - d.value;
 	        }
-	        return stats;
+	        return stat;
 	      });
+	      return { stats: stats, idealRatio: idealRatio };
 	    }
 	  }, {
 	    key: '_drawHexagon',
@@ -42695,16 +42696,23 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var metrics = this._getMetrics();
+	      var stats = this._getMetrics().stats;
+	      var idealRatio = parseFloat(this._getMetrics().idealRatio.toPrecision(3));
 	      return _react2.default.createElement(
 	        'div',
 	        null,
 	        _react2.default.createElement(
 	          'div',
 	          { id: 'metrics-header' },
-	          'Adjustments'
+	          'State Tiles'
 	        ),
-	        this._renderHexCount(metrics)
+	        _react2.default.createElement(
+	          'div',
+	          { id: 'metrics-ideal' },
+	          idealRatio,
+	          ' Per Tile'
+	        ),
+	        this._renderHexCount(stats)
 	      );
 	    }
 	  }]);
@@ -42890,7 +42898,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Fira+Sans:400,500);", ""]);
 
 	// module
-	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif; }\n\na {\n  color: #1144bb;\n  margin: 0 5px; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 280px;\n  overflow: auto;\n  background-color: #f8f8f8;\n  padding: 40px; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: white;\n    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1); }\n\n#ui {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 280px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto;\n  padding-top: 15px; }\n  #ui hr {\n    border: none;\n    height: 1px;\n    background-color: #444; }\n  #ui h1 {\n    font-size: 200%;\n    line-height: 1.2em; }\n  #ui h1, #ui h2 {\n    padding: 15px; }\n  #ui #metrics-header {\n    padding: 0.5em;\n    margin-bottom: 0.5em;\n    font-weight: bold; }\n\n.dg.ac {\n  z-index: 1; }\n\nfieldset {\n  padding: 15px; }\n  fieldset label {\n    display: inline-block;\n    width: 84px; }\n  fieldset a.export {\n    background-color: #1144bb;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    cursor: pointer;\n    color: white; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n", ""]);
+	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif; }\n\na {\n  color: #1144bb;\n  margin: 0 5px; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 280px;\n  overflow: auto;\n  background-color: #f8f8f8;\n  padding: 40px; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: white;\n    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1); }\n\n#ui {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 280px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto;\n  padding-top: 15px; }\n  #ui hr {\n    border: none;\n    height: 1px;\n    background-color: #444; }\n  #ui h1 {\n    font-size: 200%;\n    line-height: 1.2em; }\n  #ui h1, #ui h2 {\n    padding: 15px; }\n  #ui #metrics-header {\n    padding: 0.5em; }\n  #ui #metrics-ideal {\n    padding: 0.5em;\n    margin-bottom: 0.5em; }\n\n.dg.ac {\n  z-index: 1; }\n\nfieldset {\n  padding: 15px; }\n  fieldset label {\n    display: inline-block;\n    width: 84px; }\n  fieldset a.export {\n    background-color: #1144bb;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    cursor: pointer;\n    color: white; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n", ""]);
 
 	// exports
 
