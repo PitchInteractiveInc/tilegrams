@@ -41,18 +41,17 @@ export default class HexCount extends React.Component {
     const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
     const idealRatio = sum(input, (d) => d.value) / this.props.originalTilesLength
-    return (
-      this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
-        const metric = inputHash[d.key]
-        const stats = {key: d.key, nHex: d.value}
-        if (metric) {
-          stats.metric = metric
-          stats.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
-          stats.deviation = Math.round(metric / idealRatio) - d.value
-        }
-        return stats
-      })
-    )
+    const stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
+      const metric = inputHash[d.key]
+      const stat = {key: d.key, nHex: d.value}
+      if (metric) {
+        stat.metric = metric
+        stat.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
+        stat.deviation = Math.round(metric / idealRatio) - d.value
+      }
+      return stat
+    })
+    return {stats, idealRatio}
   }
 
   _drawHexagon(id) {
@@ -117,11 +116,13 @@ export default class HexCount extends React.Component {
   }
 
   render() {
-    let metrics = this._getMetrics()
+    const stats = this._getMetrics().stats
+    const idealRatio = parseFloat(this._getMetrics().idealRatio.toPrecision(3))
     return (
       <div>
-        <div id='metrics-header'>Adjustments</div>
-        {this._renderHexCount(metrics)}
+        <div id='metrics-header'>State Tiles</div>
+        <div id='metrics-ideal'>{idealRatio} Per Tile</div>
+        {this._renderHexCount(stats)}
       </div>
     )
   }
