@@ -45,6 +45,7 @@ export default class DatasetSelector extends React.Component {
     })
     return (
       <select
+        id='datasetSelectorSelect'
         value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
       >
@@ -72,11 +73,9 @@ export default class DatasetSelector extends React.Component {
     if (this._displayCsvInput()) {
       csvInput = this._renderCsvInput()
     }
-    // eslint-disable-next-line jsx-a11y/label-has-for
-    const label = <label>Dataset</label>
     return (
       <fieldset>
-        {label}
+        <label htmlFor='datasetSelectorSelect'>Dataset</label>
         {this._renderMenu()}
         {csvInput}
       </fieldset>
