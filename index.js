@@ -8,7 +8,6 @@ import {startDownload} from './source/utils'
 
 require('./source/css/main.scss')
 
-
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram({
@@ -51,6 +50,5 @@ function init() {
   selectDataset(data.getDataset(0))
   updateUi()
 }
-
 
 init()

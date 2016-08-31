@@ -11,7 +11,8 @@
     "import/no-extraneous-dependencies": 0,
     "import/no-unresolved": 0,
     "jsx-quotes": [2, "prefer-single"],
-    "object-curly-spacing": ["error", "never"]
+    "object-curly-spacing": ["error", "never"],
+    "no-multiple-empty-lines": ["error", { "max": 1 }]
   },
   "env": {
     "browser": true,
