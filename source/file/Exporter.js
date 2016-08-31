@@ -5,7 +5,6 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 
-import canvas from '../Canvas'
 import mapData from '../MapData'
 import hexagonGrid from '../HexagonGrid'
 
@@ -24,11 +23,11 @@ class Exporter {
       geometries.push({
         type: 'Polygon',
         id: tile.id,
-        arcs: [[tileIndex]]
+        arcs: [[tileIndex]],
       })
       const center = hexagonGrid.tileCenterPoint({
         x: tile.position.x,
-        y: maxTileY - tile.position.y + ((tile.position.x % 2 == 0) ? 0 : 1),
+        y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
       })
       arcs.push([
         hexagonGrid.getLeftPoint(center, true),
@@ -47,7 +46,7 @@ class Exporter {
         [mapData.getObjectId()]: {
           type: 'GeometryCollection',
           geometries,
-        }
+        },
       },
       arcs,
     }

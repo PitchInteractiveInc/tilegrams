@@ -10,6 +10,8 @@ export default class DatasetSelector extends React.Component {
       selectedIndex: 0,
       csvInputValue: '',
     }
+
+    this._onCustomCsv = this._onCustomCsv.bind(this)
   }
 
   _onSelect(event) {
@@ -28,12 +30,12 @@ export default class DatasetSelector extends React.Component {
 
   /** Return true if user has selected 'Custom' option but hasn't pasted yet */
   _displayCsvInput() {
-    return this._isCustomSelection() && this.state.csvInputValue == ''
+    return this._isCustomSelection() && this.state.csvInputValue === ''
   }
 
   /** Return true if index is the 'Custom' option */
   _isCustomSelection(index) {
-    return (index || this.state.selectedIndex) == this.props.labels.length
+    return (index || this.state.selectedIndex) === this.props.labels.length
   }
 
   _renderMenu() {
@@ -43,8 +45,10 @@ export default class DatasetSelector extends React.Component {
     })
     return (
       <select
+        id='datasetSelectorSelect'
         value={this.state.selectedIndex}
-        onChange={(event) => this._onSelect(event)}>
+        onChange={(event) => this._onSelect(event)}
+      >
         {datasets}
       </select>
     )
@@ -57,7 +61,7 @@ export default class DatasetSelector extends React.Component {
         <br />
         <textarea
           rows={5}
-          onChange={this._onCustomCsv.bind(this)}
+          onChange={this._onCustomCsv}
           value={this.state.csvInputValue || ''}
         />
       </div>
@@ -71,7 +75,7 @@ export default class DatasetSelector extends React.Component {
     }
     return (
       <fieldset>
-        <label>Dataset</label>
+        <label htmlFor='datasetSelectorSelect'>Dataset</label>
         {this._renderMenu()}
         {csvInput}
       </fieldset>
@@ -81,6 +85,7 @@ export default class DatasetSelector extends React.Component {
 DatasetSelector.propTypes = {
   labels: React.PropTypes.array,
   onDatasetSelected: React.PropTypes.func,
+  onCustomDataset: React.PropTypes.func,
 }
 DatasetSelector.defaultProps = {
   labels: [],

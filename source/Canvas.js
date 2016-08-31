@@ -71,7 +71,7 @@ class Canvas {
     requestAnimationFrame(this._render.bind(this))
   }
 
-  _render(timestamp) {
+  _render() {
     this._requestRender()
     this._stats.begin()
     this._ctx.clearRect(0, 0, canvasDimensions.width, canvasDimensions.height)

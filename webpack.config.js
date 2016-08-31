@@ -9,6 +9,13 @@ module.exports = {
     path: 'dist',
   },
   module: {
+    preLoaders: [
+      {
+        test: /\.(js|jsx)$/,
+        loaders: ["eslint-loader"],
+        exclude: /node_modules/
+      }
+    ],
     loaders: [
       {
         test: /\.js$/,
