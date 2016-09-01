@@ -1,4 +1,4 @@
-import usTopoJson from '../maps/us-110m.topo.json'
+import usTopoJson from '../maps/us-states-110m.topo.json'
 
 const OBJECT_ID = 'states'
 
