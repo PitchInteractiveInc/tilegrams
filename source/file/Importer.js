@@ -6,6 +6,7 @@
  */
 
 import {IMPORT_TILE_MARGINS} from '../HexagonGrid'
+
 import {OBJECT_ID} from './Exporter'
 
 class Importer {
