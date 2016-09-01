@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import {nest} from 'd3-collection'
 
-import {fipsColor, hashFromData, fipsToPostal} from '../utils'
+import {fipsColor, hashFromData, fipsToCountyName} from '../utils'
 
 export default class HexMetrics extends React.Component {
   constructor(props) {
@@ -111,7 +111,7 @@ export default class HexMetrics extends React.Component {
           onMouseOut={this.props.onMetricMouseOut}
         >
           <td>{warn}</td>
-          <td>{fipsToPostal(count.key)}</td>
+          <td>{fipsToCountyName(count.key)}</td>
           <td>{adjustString}</td>
           <td
             style={{cursor: 'pointer'}}

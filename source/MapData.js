@@ -1,6 +1,7 @@
-import usTopoJson from '../maps/us-states-110m.topo.json'
+import usTopoJson from '../maps/us-counties-20m.topo.json'
+import fipsToCounty from '../data/fips-to-county.json'
 
-const OBJECT_ID = 'states'
+const OBJECT_ID = 'counties'
 
 class MapData {
   constructor(topoJson) {
@@ -19,8 +20,15 @@ class MapData {
     return this._topoJson.objects[OBJECT_ID].geometries
   }
 
+  getCountyGeometriesForState(stateCode) {
+    return this.getGeometries().filter(geometry => {
+      const county = fipsToCounty[geometry.id]
+      return county !== undefined && county.state === stateCode
+    })
+  }
+
   getUniqueFeatureIds() {
-    return [...new Set(this.getGeometries().map((feature) => feature.id))]
+    return [...new Set(this.getCountyGeometriesForState('CA').map((feature) => feature.id))]
   }
 }
 

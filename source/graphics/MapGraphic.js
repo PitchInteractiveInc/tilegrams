@@ -1,4 +1,4 @@
-import {geoPath, geoAlbersUsa} from 'd3-geo'
+import {geoPath, geoAlbers} from 'd3-geo'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'
@@ -35,7 +35,7 @@ export default class MapGraphic extends Graphic {
     this.updatePreProjection()
     this._stateFeatures = topogram(
       mapData.getTopoJson(),
-      mapData.getGeometries()
+      mapData.getCountyGeometriesForState('CA')
     )
     this._precomputeBounds()
   }
@@ -59,9 +59,9 @@ export default class MapGraphic extends Graphic {
   /** Apply projectiong _before_ cartogram computation */
   updatePreProjection() {
     const projection = geoAlbersUsa()
-      .scale(canvasDimensions.width)
+      .scale(canvasDimensions.width * 3.0)
       .translate([
-        canvasDimensions.width * 0.5,
+        canvasDimensions.width * 0.5 * 3.0,
         canvasDimensions.height * 0.5,
       ])
     topogram.projection(projection)
