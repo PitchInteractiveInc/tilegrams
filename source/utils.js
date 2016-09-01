@@ -58,9 +58,14 @@ function fipsToPostal(fips) {
   return fipsHash[fips].postal
 }
 
-function isDevEnviornment() {
+function checkDevEnvironment() {
   const devPort = 8080 // should match whatever port webpack-dev-server is running on
   return parseInt(document.location.port, 10) === devPort
+}
+const _isDevEnviornment = checkDevEnvironment() // eslint-disable-line no-underscore-dangle
+
+function isDevEnvironment() {
+  return _isDevEnviornment
 }
 
 module.exports = {
@@ -71,5 +76,5 @@ module.exports = {
   checkWithinBounds,
   hashFromData,
   fipsToPostal,
-  isDevEnviornment,
+  isDevEnvironment,
 }

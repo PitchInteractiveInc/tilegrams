@@ -4,7 +4,7 @@ import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
 import hexagonGrid from './source/HexagonGrid'
-import {startDownload, isDevEnviornment} from './source/utils'
+import {startDownload, isDevEnvironment} from './source/utils'
 
 require('./source/css/main.scss')
 
@@ -56,7 +56,7 @@ function init() {
   ui.setDatasetLabels(data.getLabels())
   selectDataset(data.getDataset(0))
   updateUi()
-  if (!isDevEnviornment()) {
+  if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)
   }
 }

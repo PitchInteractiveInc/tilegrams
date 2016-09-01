@@ -3,7 +3,7 @@ import Stats from 'stats-js'
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
 import {canvasDimensions, settings} from './constants'
-import {createElement, isDevEnviornment} from './utils'
+import {createElement, isDevEnvironment} from './utils'
 
 class Canvas {
   constructor() {
@@ -58,7 +58,7 @@ class Canvas {
     this._stats.domElement.style.position = 'absolute'
     this._stats.domElement.style.right = 0
     this._stats.domElement.style.top = 0
-    if (isDevEnviornment()) {
+    if (isDevEnvironment()) {
       document.body.appendChild(this._stats.domElement)
     }
   }
