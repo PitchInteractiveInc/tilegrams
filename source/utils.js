@@ -62,10 +62,10 @@ function checkDevEnvironment() {
   const devPort = 8080 // should match whatever port webpack-dev-server is running on
   return parseInt(document.location.port, 10) === devPort
 }
-const _isDevEnviornment = checkDevEnvironment() // eslint-disable-line no-underscore-dangle
+const _isDevEnvironment = checkDevEnvironment() // eslint-disable-line no-underscore-dangle
 
 function isDevEnvironment() {
-  return _isDevEnviornment
+  return _isDevEnvironment
 }
 
 module.exports = {
