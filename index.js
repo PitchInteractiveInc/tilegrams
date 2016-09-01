@@ -4,7 +4,7 @@ import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
 import hexagonGrid from './source/HexagonGrid'
-import {startDownload} from './source/utils'
+import {startDownload, isDevEnvironment} from './source/utils'
 
 require('./source/css/main.scss')
 
@@ -21,6 +21,13 @@ function updateUi() {
     canvas.getGrid().getTiles(),
     canvas.getGrid().getOriginalTilesLength()
   )
+}
+
+function confirmNavigation(e) {
+  // most browsers won't let you display custom text but have something like this anyway
+  const message = 'Are you sure you want to leave this page? You will lose any unsaved work.'
+  e.returnValue = message
+  return message
 }
 
 // wire up callbacks
@@ -49,6 +56,9 @@ function init() {
   ui.setDatasetLabels(data.getLabels())
   selectDataset(data.getDataset(0))
   updateUi()
+  if (!isDevEnvironment()) {
+    window.addEventListener('beforeunload', confirmNavigation)
+  }
 }
 
 init()
