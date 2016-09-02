@@ -16,7 +16,7 @@ class Data {
         data: this.parseCsv(electoralCollegeCsv),
       },
       {
-        label: 'GDP 2016 (Millions)',
+        label: 'GDP 2015 (Millions)',
         data: this.parseCsv(gdpCsv),
       },
     ]
