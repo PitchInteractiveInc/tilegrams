@@ -92,4 +92,11 @@ export default class MapGraphic extends Graphic {
         canvasDimensions.height * 0.5,
       ])
   }
+
+  computeCartogramArea() {
+    const featureAreas = this._stateFeatures.features.map((feature) => {
+      return geoPath().area(feature)
+    })
+    return featureAreas.reduce((a, b) => a + b)
+  }
 }

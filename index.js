@@ -3,7 +3,6 @@ import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
-import hexagonGrid from './source/HexagonGrid'
 import {startDownload, isDevEnvironment} from './source/utils'
 
 require('./source/css/main.scss')
@@ -38,9 +37,9 @@ function init() {
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
-  ui.setResolutionChangedCallback(value => {
-    hexagonGrid.setTileEdge(value)
-    canvas.updateTiles()
+  ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
+    ui.metricPerTile = metricPerTile
+    canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setExportCallback(() => {
     const json = exporter.formatTopoJson(canvas.getGrid().getTiles())

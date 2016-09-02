@@ -1,6 +1,5 @@
 import React, {PropTypes} from 'react'
 import {nest} from 'd3-collection'
-import {sum} from 'd3-array'
 
 import {fipsColor, hashFromData, fipsToPostal} from '../utils'
 
@@ -38,18 +37,18 @@ export default class HexMetrics extends React.Component {
     }
     const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
-    const idealRatio = sum(input, (d) => d.value) / this.props.originalTilesLength
+    const selectedRatio = this.props.metricPerTile
     const stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
       const metric = inputHash[d.key]
       const stat = {key: d.key, nHex: d.value}
       if (metric) {
         stat.metric = metric
         stat.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
-        stat.deviation = Math.round(metric / idealRatio) - d.value
+        stat.deviation = Math.round(metric / selectedRatio) - d.value
       }
       return stat
     })
-    return {stats, idealRatio}
+    return {stats, selectedRatio}
   }
 
   _drawHexagon(id) {
@@ -81,13 +80,7 @@ export default class HexMetrics extends React.Component {
   _renderHexCount(metrics) {
     if (!metrics.length) return null
     const rows = metrics.map((count) => {
-      let adjustString = null
-      if (isNaN(count.deviation)) {
-        adjustString = ''
-      } else {
-        adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
-      }
-      const adjust = <td>{adjustString}</td>
+      const adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
       const rowClass = count.deviation === 0 ? 'fade' : null
       return (
         <tr
@@ -98,7 +91,7 @@ export default class HexMetrics extends React.Component {
           onMouseOut={this.props.onMetricMouseOut}
         >
           <td>{fipsToPostal(count.key)}</td>
-          {adjust}
+          <td>{adjustString}</td>
           <td
             style={{cursor: 'pointer'}}
             onMouseDown={this._mouseDown}
@@ -119,11 +112,9 @@ export default class HexMetrics extends React.Component {
 
   render() {
     const stats = this._getMetrics().stats
-    const idealRatio = parseFloat(this._getMetrics().idealRatio.toPrecision(3))
     return (
       <div>
         <div id='metrics-header'>State Tiles</div>
-        <div id='metrics-ideal'>{idealRatio} Per Tile</div>
         {this._renderHexCount(stats)}
       </div>
     )
@@ -134,6 +125,7 @@ HexMetrics.propTypes = {
   dataset: PropTypes.array,
   tiles: PropTypes.array,
   geos: PropTypes.array,
+  metricPerTile: PropTypes.number,
   originalTilesLength: PropTypes.number,
   onAddTileMouseDown: PropTypes.func,
   onMetricMouseOut: PropTypes.func,

@@ -5,6 +5,12 @@ const canvasDimensions = {
   height: 720 * 2,
 }
 
+/**
+ * target min and max number of tiles for map output
+ * used to calculate a dataset's domain
+ */
+const nTileDomain = [80, 8000]
+
 /** dat.gui for realtime updating of properties */
 class Settings {
   constructor() {
@@ -25,6 +31,7 @@ dat.GUI.toggleHide()
 module.exports = {
   settings,
   canvasDimensions,
+  nTileDomain,
   tileEdgeRange: {
     default: 20,
     min: 10,
