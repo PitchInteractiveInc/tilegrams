@@ -80,13 +80,7 @@ export default class HexMetrics extends React.Component {
   _renderHexCount(metrics) {
     if (!metrics.length) return null
     const rows = metrics.map((count) => {
-      let adjustString = null
-      if (isNaN(count.deviation)) {
-        adjustString = ''
-      } else {
-        adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
-      }
-      const adjust = <td>{adjustString}</td>
+      const adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
       const rowClass = count.deviation === 0 ? 'fade' : null
       return (
         <tr
@@ -97,7 +91,7 @@ export default class HexMetrics extends React.Component {
           onMouseOut={this.props.onMetricMouseOut}
         >
           <td>{fipsToPostal(count.key)}</td>
-          {adjust}
+          <td>{adjustString}</td>
           <td
             style={{cursor: 'pointer'}}
             onMouseDown={this._mouseDown}

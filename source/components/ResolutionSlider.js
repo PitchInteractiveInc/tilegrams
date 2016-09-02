@@ -54,11 +54,11 @@ export default class ResolutionSlider extends React.Component {
     const min = this.props.metricDomain[0]
     const max = this.props.metricDomain[1]
     if (this.state.typedValue < min) {
-      this._triggerChange(this._toSignificant(min))
+      this._triggerChange(min)
     } else if (this.state.typedValue > max) {
-      this._triggerChange(this._toSignificant(max))
+      this._triggerChange(max)
     } else {
-      const typedAsFloat = this._toSignificant(parseFloat(this.state.typedValue))
+      const typedAsFloat = parseFloat(this.state.typedValue)
       this._triggerChange(typedAsFloat)
     }
   }
