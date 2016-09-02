@@ -38,9 +38,9 @@ function init() {
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
-  ui.setResolutionChangedCallback((metricPerTile, metricSum) => {
+  ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
     ui.metricPerTile = metricPerTile
-    canvas.updateTilesFromMetrics(metricPerTile, metricSum)
+    canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setExportCallback(() => {
     const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
