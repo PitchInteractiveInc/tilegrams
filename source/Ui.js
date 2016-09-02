@@ -32,13 +32,14 @@ class Ui {
     this._metricDomain = this._calculateIdealDomain()
   }
 
+  /** calculate the slider's domain from the dataset */
   _calculateIdealDomain() {
-    /** calculate the slider's domain from the dataset */
     const metricMin = this.roundToPretty(this._selectedDatasetSum / nTileDomain[0])
     const metricMax = this.roundToPretty(this._selectedDatasetSum / nTileDomain[1])
     return [metricMax, metricMin]
   }
 
+  /** round to two significant digits rounded to nearest multiple of 5 */
   roundToPretty(number) {
     const units = Math.pow(10, Math.floor(Math.log10(number)) - 1)
     const significant = number / units

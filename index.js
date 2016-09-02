@@ -38,13 +38,9 @@ function init() {
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
-  ui.setResolutionChangedCallback((metricPerTile, sumMetric) => {
+  ui.setResolutionChangedCallback((metricPerTile, metricSum) => {
     ui.metricPerTile = metricPerTile
-    const totalArea = canvas.getCartogramArea()
-    const idealHexArea = (totalArea * metricPerTile) / sumMetric
-    const hexEdgeSize = hexagonGrid.hexAreaToSide(idealHexArea)
-    hexagonGrid.setTileEdge(hexEdgeSize)
-    canvas.updateTiles()
+    canvas.updateTilesFromMetrics(metricPerTile, metricSum)
   })
   ui.setExportCallback(() => {
     const json = exporter.formatTopoJson(canvas.getGrid().getTiles())

@@ -2,6 +2,7 @@ import Stats from 'stats-js'
 
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
+import hexagonGrid from './HexagonGrid'
 import {canvasDimensions, settings} from './constants'
 import {createElement, isDevEnvironment} from './utils'
 
@@ -13,11 +14,12 @@ class Canvas {
     this._mapGraphic = new MapGraphic()
     this._gridGraphic = new GridGraphic()
     this._cartogramReady = false
+    this._cartogramArea = null
   }
 
   computeCartogram(options) {
     this._mapGraphic.computeCartogram(options)
-    this.getCartogramArea()
+    this._setCartogramArea()
     this.updateTiles()
     this._cartogramReady = true
   }
@@ -26,8 +28,15 @@ class Canvas {
     this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
-  getCartogramArea() {
-    return this._mapGraphic.computeCartogramArea()
+  updateTilesFromMetrics(metricPerTile, sumMetrics) {
+    const idealHexArea = (this._cartogramArea * metricPerTile) / sumMetrics
+    const hexEdgeSize = hexagonGrid.hexAreaToSide(idealHexArea)
+    hexagonGrid.setTileEdge(hexEdgeSize)
+    this.updateTiles()
+  }
+
+  _setCartogramArea() {
+    this._cartogramArea = this._mapGraphic.computeCartogramArea()
   }
 
   getGrid() {
