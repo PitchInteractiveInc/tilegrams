@@ -69,12 +69,10 @@ export default class GridGraphic extends Graphic {
       const tile = this._findTile(position)
       if (!tile) {
         this._hoveredLabel = null
-        this.resetHighlightedGeo()
         return
       }
       const postal = fipsToPostal(tile.id)
       this._hoveredLabel = postal
-      this.onHighlightGeo(tile.id)
     }
   }
 
