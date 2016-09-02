@@ -5,7 +5,10 @@ const canvasDimensions = {
   height: 720 * 2,
 }
 
-/** target min and max number of tiles for map output */
+/**
+ * target min and max number of tiles for map output
+ * used to calculate a dataset's domain
+ */
 const nTileDomain = [80, 8000]
 
 /** dat.gui for realtime updating of properties */

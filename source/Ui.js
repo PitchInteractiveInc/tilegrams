@@ -123,7 +123,6 @@ class Ui {
         <HexMetrics
           metricPerTile={this.metricPerTile}
           dataset={this._selectedDataset}
-          datasetSum={this._selectedDatasetSum}
           geos={this._geos}
           tiles={tiles}
           originalTilesLength={originalTilesLength}
