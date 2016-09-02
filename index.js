@@ -3,7 +3,6 @@ import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import mapData from './source/MapData'
-import hexagonGrid from './source/HexagonGrid'
 import {startDownload, isDevEnvironment} from './source/utils'
 
 require('./source/css/main.scss')
