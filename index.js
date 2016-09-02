@@ -38,8 +38,12 @@ function init() {
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
-  ui.setResolutionChangedCallback(value => {
-    hexagonGrid.setTileEdge(value)
+  ui.setResolutionChangedCallback((metricPerTile, sumMetric) => {
+    ui.metricPerTile = metricPerTile
+    const totalArea = canvas.getCartogramArea()
+    const idealHexArea = (totalArea * metricPerTile) / sumMetric
+    const hexEdgeSize = hexagonGrid.hexAreaToSide(idealHexArea)
+    hexagonGrid.setTileEdge(hexEdgeSize)
     canvas.updateTiles()
   })
   ui.setExportCallback(() => {

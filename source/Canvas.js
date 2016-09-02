@@ -17,12 +17,17 @@ class Canvas {
 
   computeCartogram(options) {
     this._mapGraphic.computeCartogram(options)
+    this.getCartogramArea()
     this.updateTiles()
     this._cartogramReady = true
   }
 
   updateTiles() {
     this._gridGraphic.populateTiles(this._mapGraphic)
+  }
+
+  getCartogramArea() {
+    return this._mapGraphic.computeCartogramArea()
   }
 
   getGrid() {

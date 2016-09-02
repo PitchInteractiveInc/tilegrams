@@ -29,6 +29,11 @@ class HexagonGrid {
     }
   }
 
+  setFromHexArea(area) {
+    const hexEdgeSize = this.hexAreaToSide(area)
+    this.setTileEdge(hexEdgeSize)
+  }
+
   getTileDimensions() {
     return this._tileSize
   }
@@ -110,6 +115,12 @@ class HexagonGrid {
       (x % 2 === 0 ? 0.5 : 0)
     ) - TILE_OFFSET
     return {x, y}
+  }
+
+  hexAreaToSide(area) {
+    return Math.sqrt(
+      (area * 2) / (Math.sqrt(3) * 3)
+    )
   }
 }
 

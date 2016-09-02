@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 import {createElement} from './utils'
+import {nTileDomain} from './constants'
 import DatasetSelector from './components/DatasetSelector'
 import ResolutionSlider from './components/ResolutionSlider'
 import HexMetrics from './components/HexMetrics'
@@ -10,6 +11,7 @@ import ExportButton from './components/ExportButton'
 class Ui {
   constructor() {
     this._init()
+    this.metricPerTile = null
   }
 
   setGeos(geos) {
@@ -26,6 +28,26 @@ class Ui {
 
   setSelectedDataset(dataset) {
     this._selectedDataset = dataset
+    this._selectedDatasetSum = this.getDatasetSum(dataset)
+    this._metricDomain = this._calculateIdealDomain()
+  }
+
+  _calculateIdealDomain() {
+    /** calculate the slider's domain from the dataset */
+    const metricMin = this.roundToPretty(this._selectedDatasetSum / nTileDomain[0])
+    const metricMax = this.roundToPretty(this._selectedDatasetSum / nTileDomain[1])
+    return [metricMax, metricMin]
+  }
+
+  roundToPretty(number) {
+    const units = Math.pow(10, Math.floor(Math.log10(number)) - 1)
+    const significant = number / units
+    const rounded = 5 * (Math.round(significant / 5))
+    return rounded * units
+  }
+
+  getDatasetSum(dataset) {
+    return dataset.reduce((a, b) => { return a + b[1] }, 0)
   }
 
   setDatasetSelectedCallback(callback) {
@@ -94,11 +116,14 @@ class Ui {
           onCustomDataset={csv => this._customDatasetCallback(csv)}
         />
         <ResolutionSlider
-          onChange={value => this._resolutionChangedCallback(value)}
+          metricDomain={this._metricDomain}
+          onChange={value => this._resolutionChangedCallback(value, this._selectedDatasetSum)}
         />
         <hr />
         <HexMetrics
+          metricPerTile={this.metricPerTile}
           dataset={this._selectedDataset}
+          datasetSum={this._selectedDatasetSum}
           geos={this._geos}
           tiles={tiles}
           originalTilesLength={originalTilesLength}
