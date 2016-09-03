@@ -1,5 +1,5 @@
 import Graphic from './Graphic'
-import {fipsColor} from '../utils'
+import {fipsColor, fipsToPostal} from '../utils'
 import hexagonGrid from '../HexagonGrid'
 import {selectedTileBorderColor} from '../constants'
 
@@ -8,6 +8,7 @@ export default class GridGraphic extends Graphic {
     super()
     this.originalTilesLength = 0
     this._highlights = []
+    this._hoveredLabel = null
     document.body.onkeydown = this.onkeydown.bind(this)
   }
 
@@ -64,6 +65,14 @@ export default class GridGraphic extends Graphic {
         x: event.offsetX,
         y: event.offsetY,
       }
+      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const tile = this._findTile(position)
+      if (!tile) {
+        this._hoveredLabel = null
+        return
+      }
+      const postal = fipsToPostal(tile.id)
+      this._hoveredLabel = postal
     }
   }
 
@@ -172,6 +181,11 @@ export default class GridGraphic extends Graphic {
         fipsColor(this._selectedTile.id),
         true
       )
+    }
+    if (this._hoveredLabel) {
+      this._ctx.fillStyle = 'black'
+      this._ctx.font = '24px Arial'
+      this._ctx.fillText(this._hoveredLabel, 20, 40)
     }
   }
 
