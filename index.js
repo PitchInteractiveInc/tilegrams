@@ -42,6 +42,7 @@ function init() {
     ui.metricPerTile = metricPerTile
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
+  ui.setToolChangedCallback(tool => canvas.getGrid().setTool(tool))
   ui.setExportCallback(() => {
     const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
     startDownload({

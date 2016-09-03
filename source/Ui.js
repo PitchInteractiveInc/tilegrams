@@ -7,6 +7,7 @@ import DatasetSelector from './components/DatasetSelector'
 import ResolutionSlider from './components/ResolutionSlider'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
+import ToolSelector from './components/ToolSelector'
 
 class Ui {
   constructor() {
@@ -75,6 +76,10 @@ class Ui {
     this._exportCallback = callback
   }
 
+  setToolChangedCallback(callback) {
+    this._toolChangedCallback = callback
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
@@ -121,6 +126,7 @@ class Ui {
           onChange={value => this._resolutionChangedCallback(value, this._selectedDatasetSum)}
         />
         <hr />
+        <ToolSelector onSelect={tool => this._toolChangedCallback(tool)} />
         <HexMetrics
           metricPerTile={this.metricPerTile}
           dataset={this._selectedDataset}
