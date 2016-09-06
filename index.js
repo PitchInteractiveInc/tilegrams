@@ -6,6 +6,7 @@ import mapData from './source/MapData'
 import {startDownload, isDevEnvironment} from './source/utils'
 
 require('./source/css/main.scss')
+require('font-awesome/scss/font-awesome.scss')
 
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)

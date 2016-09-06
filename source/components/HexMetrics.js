@@ -38,17 +38,20 @@ export default class HexMetrics extends React.Component {
     const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
     const selectedRatio = this.props.metricPerTile
+    let shouldWarn = false
     const stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
       const metric = inputHash[d.key]
       const stat = {key: d.key, nHex: d.value}
       if (metric) {
+        const idealNHex = Math.round(metric / selectedRatio)
+        if (idealNHex === 0 && d.value === 0) shouldWarn = true
+        stat.idealNHex = idealNHex
         stat.metric = metric
-        stat.ratio = d.value > 0 ? (metric / d.value).toFixed(2) : null
-        stat.deviation = Math.round(metric / selectedRatio) - d.value
+        stat.deviation = idealNHex - d.value
       }
       return stat
     })
-    return {stats, selectedRatio}
+    return {stats, shouldWarn}
   }
 
   _drawHexagon(id) {
@@ -63,7 +66,7 @@ export default class HexMetrics extends React.Component {
       [0, height / 2],
     ]
     return (
-      <svg width={width} height={height}>
+      <svg width={width} height={height} className='drag-hex'>
         <polygon
           fill={fipsColor(id)}
           points={vertices.map((pt) => pt.join(',')).join(' ')}
@@ -77,19 +80,33 @@ export default class HexMetrics extends React.Component {
     this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
   }
 
+  _renderWarning(shouldWarn) {
+    if (!shouldWarn) return null
+    return (
+      <div id='warning'>
+        <i className='fa fa-exclamation-triangle' />
+        {` At this data resolution, some states are not represented.
+        Consider a lower resolution.`}
+      </div>
+    )
+  }
+
   _renderHexCount(metrics) {
     if (!metrics.length) return null
     const rows = metrics.map((count) => {
       const adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
-      const rowClass = count.deviation === 0 ? 'fade' : null
+      const warn = (count.idealNHex === 0 && count.nHex === 0) ?
+        <i className='fa fa-exclamation-triangle' /> :
+        null
       return (
         <tr
           key={count.key}
           id={count.key}
-          className={rowClass}
+          className={count.deviation === 0 ? 'fade' : null}
           onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
           onMouseOut={this.props.onMetricMouseOut}
         >
+          <td>{warn}</td>
           <td>{fipsToPostal(count.key)}</td>
           <td>{adjustString}</td>
           <td
@@ -111,11 +128,14 @@ export default class HexMetrics extends React.Component {
   }
 
   render() {
-    const stats = this._getMetrics().stats
+    const metrics = this._getMetrics()
     return (
       <div>
-        <div id='metrics-header'>State Tiles</div>
-        {this._renderHexCount(stats)}
+        <div id='metrics-header'>
+          State Tiles
+          {this._renderWarning(metrics.shouldWarn)}
+        </div>
+        {this._renderHexCount(metrics.stats)}
       </div>
     )
   }
