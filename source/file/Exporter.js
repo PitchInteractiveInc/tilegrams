@@ -19,6 +19,13 @@ class Exporter {
       -Infinity
     )
 
+    tiles.sort((a, b) => {
+      return (
+        (a.position.y + (a.position.x * (maxTileY + 1))) -
+        (b.position.y + (b.position.x * (maxTileY + 1)))
+      )
+    })
+
     tiles.forEach((tile, tileIndex) => {
       geometries.push({
         type: 'Polygon',

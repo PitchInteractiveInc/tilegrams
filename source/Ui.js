@@ -7,15 +7,27 @@ import DatasetSelector from './components/DatasetSelector'
 import ResolutionSlider from './components/ResolutionSlider'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
+import ImportButton from './components/ImportButton'
 
 class Ui {
   constructor() {
     this._init()
     this.metricPerTile = null
+    this._tiles = null
+    this._originalTilesLength = null
+    this._usingImportedTiles = false
+    this._tileFilename = null
+
+    this._resetImportedTiles = this._resetImportedTiles.bind(this)
   }
 
   setGeos(geos) {
     this._geos = geos
+  }
+
+  setTiles(tiles, originalTilesLength) {
+    this._tiles = tiles
+    this._originalTilesLength = originalTilesLength
   }
 
   setAddTileCallback(callback) {
@@ -75,11 +87,49 @@ class Ui {
     this._exportCallback = callback
   }
 
+  setImportCallback(callback) {
+    this._importCallback = (tileFilename, topoJson) => {
+      this._tileFilename = tileFilename
+      this._usingImportedTiles = true
+      callback(topoJson)
+    }
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
 
-  render(tiles, originalTilesLength) {
+  _resetImportedTiles() {
+    this._usingImportedTiles = false
+    this._tileFilename = null
+    this.render()
+  }
+
+  render() {
+    let tileGenerationControls
+    if (this._usingImportedTiles) {
+      tileGenerationControls = (
+        <fieldset>
+          <span>Using {this._tileFilename}</span>
+          <a onClick={this._resetImportedTiles}>✕</a>
+        </fieldset>
+      )
+    } else {
+      tileGenerationControls = (
+        <div>
+          <DatasetSelector
+            labels={this._datasetLabels}
+            onDatasetSelected={index => this._datasetSelectedCallback(index)}
+            onCustomDataset={csv => this._customDatasetCallback(csv)}
+          />
+          <ResolutionSlider
+            metricDomain={this._metricDomain}
+            onChange={value => this._resolutionChangedCallback(value, this._selectedDatasetSum)}
+          />
+          <ImportButton onLoad={this._importCallback} />
+        </div>
+      )
+    }
     ReactDOM.render(
       <div>
         <h1>
@@ -111,22 +161,14 @@ class Ui {
         </h2>
         <ExportButton onClick={() => this._exportCallback()} />
         <hr />
-        <DatasetSelector
-          labels={this._datasetLabels}
-          onDatasetSelected={index => this._datasetSelectedCallback(index)}
-          onCustomDataset={csv => this._customDatasetCallback(csv)}
-        />
-        <ResolutionSlider
-          metricDomain={this._metricDomain}
-          onChange={value => this._resolutionChangedCallback(value, this._selectedDatasetSum)}
-        />
+        {tileGenerationControls}
         <hr />
         <HexMetrics
           metricPerTile={this.metricPerTile}
           dataset={this._selectedDataset}
           geos={this._geos}
-          tiles={tiles}
-          originalTilesLength={originalTilesLength}
+          tiles={this._tiles}
+          originalTilesLength={this._originalTilesLength}
           onAddTileMouseDown={this._addTileCallback}
           onMetricMouseOver={this._highlightCallback}
           onMetricMouseOut={this._unhighlightCallback}

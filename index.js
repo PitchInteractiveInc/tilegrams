@@ -2,6 +2,7 @@ import data from './source/Data'
 import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
+import importer from './source/file/Importer'
 import mapData from './source/MapData'
 import {startDownload, isDevEnvironment} from './source/utils'
 
@@ -17,10 +18,11 @@ function selectDataset(dataset) {
 }
 
 function updateUi() {
-  ui.render(
+  ui.setTiles(
     canvas.getGrid().getTiles(),
     canvas.getGrid().getOriginalTilesLength()
   )
+  ui.render()
 }
 
 function confirmNavigation(e) {
@@ -49,6 +51,11 @@ function init() {
       mimeType: 'application/json',
       content: JSON.stringify(json),
     })
+  })
+  ui.setImportCallback(topoJson => {
+    const tiles = importer.fromTopoJson(topoJson)
+    canvas.getGrid().importTiles(tiles)
+    updateUi()
   })
 
   // populate
