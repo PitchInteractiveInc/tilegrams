@@ -13,6 +13,7 @@ body {
 a {
   color: $blue;
   margin: 0 5px;
+  cursor: pointer;
 }
 
 #canvas {
@@ -78,8 +79,13 @@ fieldset {
     background-color: $blue;
     border-radius: 5px;
     padding: 0.5em 0.75em;
-    cursor: pointer;
     color: white;
+  }
+  a.import {
+    font-size: 80%;
+  }
+  input.import {
+    margin: 10px 5px 0 5px;
   }
 }
 

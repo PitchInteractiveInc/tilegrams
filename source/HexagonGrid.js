@@ -9,6 +9,8 @@ import {settings, tileEdgeRange, canvasDimensions} from './constants'
 
 const TILE_OFFSET = 1
 
+export const IMPORT_TILE_MARGINS = 3
+
 class HexagonGrid {
   constructor() {
     this.setTileEdge(tileEdgeRange.default)
@@ -29,9 +31,13 @@ class HexagonGrid {
     }
   }
 
-  setFromHexArea(area) {
-    const hexEdgeSize = this.hexAreaToSide(area)
-    this.setTileEdge(hexEdgeSize)
+  setTileEdgeFromMax(maxX, maxY) {
+    const xSpace = canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS)
+    const xEdge = (xSpace / 3.0) * 2.0
+    const ySpace = canvasDimensions.height / (maxY + IMPORT_TILE_MARGINS)
+    const yEdge = ySpace / Math.sqrt(3.0)
+    const tileEdge = Math.min(xEdge, yEdge)
+    this.setTileEdge(tileEdge)
   }
 
   getTileDimensions() {

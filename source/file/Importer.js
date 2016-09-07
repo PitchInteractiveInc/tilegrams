@@ -6,6 +6,7 @@
  */
 
 import mapData from '../MapData'
+import {IMPORT_TILE_MARGINS} from '../HexagonGrid'
 
 class Importer {
   /** Convert hex grid TopoJSON to hexagon offset coordinates */
@@ -18,7 +19,8 @@ class Importer {
         point: this._hexagonCenterPoint(path),
       }
     })
-    return this._getTilePositions(tilePoints)
+    const tiles = this._getTilePositions(tilePoints)
+    return this._normalizeTilePosition(tiles)
   }
 
   /** Determine path absolute points, given TopoJSON delta-encoded arcs */
@@ -72,13 +74,12 @@ class Importer {
     )
   }
 
+  /** translate X/Y coordinates into hexagon coordinates */
   _getTilePositions(tilePoints) {
     const [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
-
-    // translate X/Y coordinates into hexagon coordinates
     let origin
     let position
-    const tiles = tilePoints.map(tilePoint => {
+    return tilePoints.map(tilePoint => {
       [position, origin] = this._getTilePosition(
         tilePoint.point,
         origin,
@@ -90,8 +91,10 @@ class Importer {
         position,
       }
     })
+  }
 
-    // Offset all tiles so that there are no negative coordinates
+  /** Offset all tiles so that there are no negative coordinates */
+  _normalizeTilePosition(tiles) {
     const tileYs = tiles.map(tile => tile.position.y)
     const minY = Math.min.apply(null, tileYs)
     const maxY = Math.max.apply(null, tileYs)
@@ -100,8 +103,8 @@ class Importer {
       return {
         id: tile.id,
         position: {
-          x: tile.position.x + minX,
-          y: (maxY - minY) - (tile.position.y - minY),
+          x: (tile.position.x - minX) + IMPORT_TILE_MARGINS,
+          y: ((maxY - minY) - (tile.position.y - minY)) + IMPORT_TILE_MARGINS,
         },
       }
     })
@@ -116,9 +119,13 @@ class Importer {
       position.x = Math.round((point.x - origin.x) / xDelta)
       position.y = ((point.y - origin.y) / yDelta)
       if (position.x % 2 === 0) {
-        position.y = Math.ceil(position.y)
-      } else {
         position.y = Math.floor(position.y)
+        // TODO: why/how is this adjustment is related to IMPORT_TILE_MARGINS??
+        if (position.y < -2) {
+          position.y += 1
+        }
+      } else {
+        position.y = Math.ceil(position.y)
       }
     }
     return [position, origin]
@@ -134,9 +141,10 @@ class Importer {
 
       // tally frequency of each delta over sample
       for (let i = 0; i < Math.min(SAMPLE_COUNT, tilePoints.length); i++) {
-        const delta =
+        const delta = Math.abs(
           tilePoints[i + 1].point[dimension] -
           tilePoints[i].point[dimension]
+        )
         if (delta > 0.0) {
           const deltaCount = deltaCounts.find(
             testDeltaCount => testDeltaCount.value === delta

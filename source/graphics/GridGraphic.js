@@ -146,6 +146,13 @@ export default class GridGraphic extends Graphic {
     return this._tiles
   }
 
+  importTiles(tiles) {
+    const maxX = Math.max.apply(null, tiles.map(tile => tile.position.x))
+    const maxY = Math.max.apply(null, tiles.map(tile => tile.position.y))
+    hexagonGrid.setTileEdgeFromMax(maxX, maxY)
+    this._tiles = tiles
+  }
+
   getTiles() {
     return this._tiles
   }
