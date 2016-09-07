@@ -74,6 +74,7 @@ a {
 // dat.gui
 .dg.ac {
   z-index: 1;
+  pointer-events: none;
 }
 
 fieldset {
