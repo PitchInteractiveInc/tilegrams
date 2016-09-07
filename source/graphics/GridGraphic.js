@@ -1,14 +1,15 @@
+import hull from 'hull.js'
+
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor} from '../constants'
+import {selectedTileBorderColor, hoveredTileBorderColor} from '../constants'
 
 export default class GridGraphic extends Graphic {
   constructor() {
     super()
     this.originalTilesLength = 0
-    this._highlights = []
-    this._hoveredLabel = null
+    this._highlightId = null
     this._makingMarqueeSelection = false
     this._draggingMultiSelect = false
     this._selectedTiles = []
@@ -170,20 +171,19 @@ export default class GridGraphic extends Graphic {
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       if (!tile) {
-        this._hoveredLabel = null
+        this._highlightId = null
         return
       }
-      const postal = fipsToPostal(tile.id)
-      this._hoveredLabel = postal
+      this._highlightId = tile.id
     }
   }
 
   onHighlightGeo(id) {
-    this._highlights = this._tiles.filter((tile) => tile.id === id)
+    this._highlightId = id
   }
 
   resetHighlightedGeo() {
-    this._highlights = []
+    this._highlightId = null
   }
 
   onkeydown(event) {
@@ -284,9 +284,10 @@ export default class GridGraphic extends Graphic {
       }
       this._drawTile(tile.position, color)
     })
-    this._highlights.forEach(tile => {
-      this._drawTile(tile.position, null, true)
-    })
+
+    if (this._highlightId) {
+      this._drawGeoBorder(this._highlightId)
+    }
 
     if (this._selectedTiles.length > 0) {
       this._selectedTiles.forEach((tile) => {
@@ -317,6 +318,7 @@ export default class GridGraphic extends Graphic {
       this._drawMarqueeSelection()
     }
   }
+
 
   _drawMarqueeSelection() {
     this._ctx.strokeStyle = 'black'
@@ -351,9 +353,52 @@ export default class GridGraphic extends Graphic {
     }
   }
 
+  /** Draw border around geo using convex hull algorithm */
+  _drawGeoBorder(id) {
+    const tiles = this._getTilesById(id)
+    const path = this._computeOutlinePath(tiles)
+    this._ctx.beginPath()
+    path.forEach((point, index) => {
+      const command = (index === 0) ? 'moveTo' : 'lineTo'
+      this._ctx[command](...point)
+    })
+    this._ctx.closePath()
+    this._ctx.globalAlpha = 0.75
+    this._ctx.strokeStyle = hoveredTileBorderColor
+    this._ctx.lineWidth = 3
+    this._ctx.stroke()
+    this._ctx.globalAlpha = 1.0
+  }
+
+  /** Compute contiguous outline (convex hull) of given tiles */
+  _computeOutlinePath(tiles) {
+    const points = []
+    tiles.forEach(tile => {
+      const center = hexagonGrid.tileCenterPoint(tile.position)
+      const hexagonPoints = [
+        hexagonGrid.getUpperLeftPoint(center),
+        hexagonGrid.getUpperRightPoint(center),
+        hexagonGrid.getRightPoint(center),
+        hexagonGrid.getLowerRightPoint(center),
+        hexagonGrid.getLowerLeftPoint(center),
+        hexagonGrid.getLeftPoint(center),
+      ]
+      hexagonPoints.forEach(point => {
+        if (points.indexOf(point) === -1) {
+          points.push(point)
+        }
+      })
+    })
+    return hull(points)
+  }
+
   updateUi() {
     if (this._onChangeCallback) {
       this._onChangeCallback()
     }
+  }
+
+  _getTilesById(id) {
+    return this._tiles.filter((tile) => tile.id === id)
   }
 }
