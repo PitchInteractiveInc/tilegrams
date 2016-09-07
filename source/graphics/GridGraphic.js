@@ -84,6 +84,7 @@ export default class GridGraphic extends Graphic {
       }
       this._selectedTiles = this._tiles.filter((tile) => {
         const center = hexagonGrid.tileCenterPoint(tile.position)
+        // DPI fixes?
         center.x /= 2
         center.y /= 2
         return center.x > marqueeBounds.x1 && center.x < marqueeBounds.x2 &&
@@ -91,49 +92,62 @@ export default class GridGraphic extends Graphic {
       })
       this._makingMarqueeSelection = false
     } else if (this._draggingMultiSelect) {
+      // we need to offset each selected tile by the amount the mouse moved,
+      // we cannot just put each tile where the mouse is as some will not be under the mouse
+      // when the mouse went down. calculated to where the mouse went down when
+      // dragging started.
       const offset = {
         x: event.offsetX - this._draggingMultiSelectOrigin.x,
         y: event.offsetY - this._draggingMultiSelectOrigin.y,
       }
+
+      // special case for new tiles, there is only one of them at a time
+      // so they can just go where the mouse is
       if (this._selectedTiles[0] === this._newTile) {
         offset.x = event.offsetX
         offset.y = event.offsetY
       }
 
-      // assign `newPosition` to each tile
+      // determine where each tile is going to be moved to
       const overlaps = this._selectedTiles.some((tile) => {
+        // figure out where in XY space this tile currently is
         const tileXY = hexagonGrid.tileCenterPoint(tile.position)
+        // add in the offset of the moved mouse (accounting for DPI)
         tileXY.x = (tileXY.x * 0.5) + offset.x
         tileXY.y = (tileXY.y * 0.5) + offset.y
+        // convert back to hex coordinates
         tile.newPosition = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
+        // check to see if a tile exists at that place
         const overlappingTile = this._findTile(tile.newPosition)
         // if there is an overlapping tile
         if (overlappingTile) {
           // and it's not currently selected
           if (!this._selectedTiles.includes(overlappingTile)) {
-            // bail
+            // bail, we are moving a tile to where a tile already exists.
             return true
           }
         }
         return false
       })
 
+      // nothing is overlapping
       if (!overlaps) {
+        // actually update the tile positions
         this._selectedTiles.forEach((tile) => {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
       } else if (this._selectedTiles[0] === this._newTile) {
+        // there exists overlaps on a new tile, remove new tile
         this._newTile = null
         this._selectedTiles.length = 0
       }
 
       if (this._selectedTiles[0] === this._newTile) {
-        /** add new tile to list of tiles only once it's successfully added to the canvas */
+        // add new tile to list of tiles
         this._tiles.push(this._newTile)
         this.updateUi()
         this._newTile = null
-        console.log('add new tile')
       }
       this._draggingMultiSelect = false
     }
@@ -299,6 +313,7 @@ export default class GridGraphic extends Graphic {
 
   _drawMarqueeSelection() {
     this._ctx.strokeStyle = 'black'
+    // DPI fixes ?
     this._ctx.strokeRect(
       this._marqueeStart.x * 2,
       this._marqueeStart.y * 2,
