@@ -318,8 +318,13 @@ export default class GridGraphic extends Graphic {
     if (this._makingMarqueeSelection) {
       this._drawMarqueeSelection()
     }
-  }
 
+    if (this._highlightId) {
+      this._ctx.fillStyle = 'black'
+      this._ctx.font = '24px Arial'
+      this._ctx.fillText(fipsToPostal(this._highlightId), 20, 40)
+    }
+  }
 
   _drawMarqueeSelection() {
     this._ctx.strokeStyle = 'black'
@@ -357,7 +362,7 @@ export default class GridGraphic extends Graphic {
   /** Draw border around geo using convex hull algorithm */
   _drawGeoBorder(id) {
     const tiles = this._getTilesById(id)
-    const paths = this._computeOutlinePaths(tiles, id)
+    const paths = this._computeOutlinePaths(tiles)
     paths.forEach(path => {
       this._ctx.beginPath()
       path.forEach((point, index) => {
@@ -374,7 +379,7 @@ export default class GridGraphic extends Graphic {
   }
 
   /** Compute contiguous outline (convex hull) of given tiles */
-  _computeOutlinePaths(tiles, id) {
+  _computeOutlinePaths(tiles) {
     // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {

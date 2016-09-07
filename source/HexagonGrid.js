@@ -45,7 +45,7 @@ class HexagonGrid {
     const tileEdge = Math.min(xEdge, yEdge)
     this.setTileEdge(tileEdge)
   }
-  
+
   getTileDimensions() {
     return this._tileSize
   }
