@@ -44,7 +44,7 @@ export default class HexMetrics extends React.Component {
       const stat = {key: d.key, nHex: d.value}
       if (metric) {
         const idealNHex = Math.round(metric / selectedRatio)
-        if (idealNHex === 0 && d.value === 0) shouldWarn = true
+        if (idealNHex === 0) shouldWarn = true
         stat.idealNHex = idealNHex
         stat.metric = metric
         stat.deviation = idealNHex - d.value
@@ -66,7 +66,7 @@ export default class HexMetrics extends React.Component {
       [0, height / 2],
     ]
     return (
-      <svg width={width} height={height} className='drag-hex'>
+      <svg width={width} height={height}>
         <polygon
           fill={fipsColor(id)}
           points={vertices.map((pt) => pt.join(',')).join(' ')}
@@ -85,7 +85,7 @@ export default class HexMetrics extends React.Component {
     return (
       <div id='warning'>
         <i className='fa fa-exclamation-triangle' />
-        {` At this data resolution, some states are not represented.
+        {` At this data resolution, some states will not be represented.
         Consider a lower resolution.`}
       </div>
     )
