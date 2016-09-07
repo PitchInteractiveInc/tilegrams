@@ -61,6 +61,14 @@ a {
     padding: 0.5em;
     margin-bottom: 0.5em;
   }
+  #warning {
+    font-size: 0.8em;
+    padding-top: 10px;
+    line-height: 1.2em;
+    i {
+      padding-right: 0.5em;
+    }
+  }
 }
 
 // dat.gui
@@ -91,9 +99,14 @@ table {
   -moz-user-select: none;
   -ms-user-select: none;
   tr.fade {
-    opacity: 0.3;
+    td:not(:first-child) {
+      opacity: 0.3;
+    }
   }
   td {
     padding: 0.3em;
+  }
+  td:first-child {
+    width: 0%;
   }
 }
