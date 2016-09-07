@@ -73,7 +73,6 @@ export default class GridGraphic extends Graphic {
     }
   }
 
-
   onMouseUp(event) {
     if (this._makingMarqueeSelection) {
       const marqueeBounds = {
