@@ -110,13 +110,3 @@ table {
     width: 0%;
   }
 }
-
-#toolSelector {
-  span {
-    display: inline-block;
-    margin-right: 1em;
-    &.active {
-      font-weight: bold
-    }
-  }
-}

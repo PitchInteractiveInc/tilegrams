@@ -9,23 +9,21 @@ export default class GridGraphic extends Graphic {
     this.originalTilesLength = 0
     this._highlights = []
     this._hoveredLabel = null
-    this._tool = 'arrow'
     this._makingMarqueeSelection = false
     this._draggingMultiSelect = false
     this._selectedTiles = []
+    this._mouseAt = {x: 0, y: 0}
     document.body.onkeydown = this.onkeydown.bind(this)
-  }
-
-  setTool(tool) {
-    this._tool = tool
   }
 
   onMouseDown(event) {
     event.preventDefault()
-    if (this._tool === 'arrow') {
-      this._onArrowMouseDown(event)
-    } else if (this._tool === 'marquee') {
+    const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+    const tile = this._findTile(position)
+    if (tile == null || this._selectedTiles.includes(tile)) {
       this._onMarqueeMouseDown(event)
+    } else {
+      this._onArrowMouseDown(event)
     }
   }
 
@@ -34,12 +32,19 @@ export default class GridGraphic extends Graphic {
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       /** Deselect if clicking on null tile, otherwise select tile and/or allow drag */
-      if ((this._selectedTile && tile == null) || tile == null) {
-        this._selectedTile = null
+      if ((this._selectedTiles.length > 0 && tile == null) || tile == null) {
+        this._selectedTile.length = 0
         return
       }
-      if (this._selectedTile !== tile) this._selectedTile = tile
-      this._selectedTile.shouldDrag = true
+      if (this._selectedTiles[0] !== tile) {
+        this._selectedTiles.length = 0
+        this._draggingMultiSelect = true
+        this._draggingMultiSelectOrigin = {
+          x: event.offsetX,
+          y: event.offsetY,
+        }
+        this._selectedTiles.push(tile)
+      }
     }
   }
 
@@ -68,39 +73,8 @@ export default class GridGraphic extends Graphic {
     }
   }
 
+
   onMouseUp(event) {
-    if (this._tool === 'arrow') {
-      this._onArrowMouseUp(event)
-    } else if (this._tool === 'marquee') {
-      this._onMarqueeMouseUp(event)
-    }
-  }
-
-  _onArrowMouseUp(event) {
-    if ((this._selectedTile && !this._selectedTile.shouldDrag) || !this._selectedTile) {
-      return
-    }
-
-    const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
-    const tile = this._findTile(position)
-
-    this._selectedTile.shouldDrag = false
-    if (this._selectedTile && tile == null) {
-      this._selectedTile.position = position
-      if (this._selectedTile === this._newTile) {
-        /** add new tile to list of tiles only once it's successfully added to the canvas */
-        this._tiles.push(this._newTile)
-        this.updateUi()
-        this._newTile = null
-      }
-    } else if (this._selectedTile === this._newTile) {
-      /** if new tile is placed on top of another title, reset new and selected tile */
-      this._newTile = null
-      this._selectedTile = null
-    }
-  }
-
-  _onMarqueeMouseUp(event) {
     if (this._makingMarqueeSelection) {
       const marqueeBounds = {
         x1: Math.min(this._marqueeStart.x, this._mouseAt.x),
@@ -122,10 +96,14 @@ export default class GridGraphic extends Graphic {
         x: event.offsetX - this._draggingMultiSelectOrigin.x,
         y: event.offsetY - this._draggingMultiSelectOrigin.y,
       }
+      if (this._selectedTiles[0] === this._newTile) {
+        offset.x = event.offsetX
+        offset.y = event.offsetY
+      }
 
       let noOverlaps = true
       // assign `newPosition` to each tile
-      this._selectedTiles.forEach((tile) => {
+      this._selectedTiles.some((tile) => {
         const tileXY = hexagonGrid.tileCenterPoint(tile.position)
         tileXY.x = (tileXY.x * 0.5) + offset.x
         tileXY.y = (tileXY.y * 0.5) + offset.y
@@ -138,6 +116,7 @@ export default class GridGraphic extends Graphic {
             noOverlaps = false
           }
         }
+        return !noOverlaps
       })
 
       if (noOverlaps) {
@@ -145,24 +124,27 @@ export default class GridGraphic extends Graphic {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
+      } else if (this._selectedTiles[0] === this._newTile) {
+        this._newTile = null
+        this._selectedTiles.length = 0
+      }
+
+      if (this._selectedTiles[0] === this._newTile) {
+        /** add new tile to list of tiles only once it's successfully added to the canvas */
+        this._tiles.push(this._newTile)
+        this.updateUi()
+        this._newTile = null
+        console.log('add new tile')
       }
       this._draggingMultiSelect = false
     }
   }
 
   bodyOnMouseUp() {
-    if (this._tool === 'arrow') {
-      if (this._selectedTile && this._selectedTile.shouldDrag) {
-        this._selectedTile.shouldDrag = false
-        if (this._selectedTile === this._newTile) this._selectedTile = null
-        this._newTile = null
-      }
-    } else if (this._tool === 'marquee') {
-      if (this._makingMarqueeSelection) {
-        this._makingMarqueeSelection = false
-      } else if (this._draggingMultiSelect) {
-        this._draggingMultiSelect = false
-      }
+    if (this._makingMarqueeSelection) {
+      this._makingMarqueeSelection = false
+    } else if (this._draggingMultiSelect) {
+      this._draggingMultiSelect = false
     }
   }
 
@@ -194,20 +176,11 @@ export default class GridGraphic extends Graphic {
   onkeydown(event) {
     const key = event.keyCode || event.charCode
     if (key === 8 || key === 46) {
-      if (this._tool === 'arrow') {
-        if (this._selectedTile) {
-          this._deleteTile(this._selectedTile)
-          this.updateUi()
-          this._selectedTile = null
-        }
-      } else if (this._tool === 'marquee') {
-        this._selectedTiles.forEach((tile) => {
-          this._deleteTile(tile)
-        })
-        this._selectedTiles.length = 0
-        this.updateUi()
-      }
-      return
+      this._selectedTiles.forEach((tile) => {
+        this._deleteTile(tile)
+      })
+      this._selectedTiles.length = 0
+      this.updateUi()
     }
   }
 
@@ -216,9 +189,10 @@ export default class GridGraphic extends Graphic {
   }
 
   _deselectTile() {
-    if (this._selectedTile) {
-      this._selectedTile.shouldDrag = false
-      this._selectedTile = null
+    if (this._selectedTiles.length !== 0) {
+      this._selectedTiles.length = 0
+      this._makingMarqueeSelection = false
+      this._draggingMultiSelect = false
     }
   }
 
@@ -230,10 +204,15 @@ export default class GridGraphic extends Graphic {
         x: null,
         y: null,
       },
-      shouldDrag: true,
     }
-    this._mouseAt = {x: -1, y: -1}
-    this._selectedTile = this._newTile
+    this._draggingMultiSelect = true
+    this._draggingMultiSelectOrigin = {
+      x: this._mouseAt.x,
+      y: this._mouseAt.y,
+    }
+    // this._mouseAt = {x: -1, y: -1}
+    this._selectedTiles.length = 0
+    this._selectedTiles.push(this._newTile)
   }
 
   _deleteTile(selected) {
@@ -279,7 +258,7 @@ export default class GridGraphic extends Graphic {
     this._ctx = ctx
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
-      if (tile === this._selectedTile || this._selectedTiles.includes(tile)) {
+      if (this._selectedTiles.includes(tile)) {
         color = '#cccccc'
       }
       this._drawTile(tile.position, color)
@@ -287,21 +266,7 @@ export default class GridGraphic extends Graphic {
     this._highlights.forEach(tile => {
       this._drawTile(tile.position, null, true)
     })
-    if (this._selectedTile) {
-      const position = this._selectedTile.shouldDrag ?
-        hexagonGrid.rectToHexPosition(this._mouseAt.x, this._mouseAt.y) :
-        this._selectedTile.position
-      this._drawTile(
-        position,
-        fipsColor(this._selectedTile.id),
-        true
-      )
-    }
-    if (this._hoveredLabel) {
-      this._ctx.fillStyle = 'black'
-      this._ctx.font = '24px Arial'
-      this._ctx.fillText(this._hoveredLabel, 20, 40)
-    }
+
     if (this._selectedTiles.length > 0) {
       this._selectedTiles.forEach((tile) => {
         let position = tile.position
@@ -310,6 +275,11 @@ export default class GridGraphic extends Graphic {
             x: this._mouseAt.x - this._draggingMultiSelectOrigin.x,
             y: this._mouseAt.y - this._draggingMultiSelectOrigin.y,
           }
+          if (this._selectedTiles[0] === this._newTile) {
+            offset.x = this._mouseAt.x
+            offset.y = this._mouseAt.y
+          }
+
           const tileXY = hexagonGrid.tileCenterPoint(position)
           tileXY.x = (tileXY.x * 0.5) + offset.x
           tileXY.y = (tileXY.y * 0.5) + offset.y
