@@ -96,9 +96,9 @@ class Importer {
   /** Offset all tiles so that there are no negative coordinates */
   _normalizeTilePosition(tiles) {
     const tileYs = tiles.map(tile => tile.position.y)
-    const minY = Math.min.apply(null, tileYs)
-    const maxY = Math.max.apply(null, tileYs)
-    const minX = Math.min.apply(null, tiles.map(tile => tile.position.x))
+    const minY = Math.min(...tileYs)
+    const maxY = Math.max(...tileYs)
+    const minX = Math.min(...tiles.map(tile => tile.position.x))
     return tiles.map(tile => {
       return {
         id: tile.id,

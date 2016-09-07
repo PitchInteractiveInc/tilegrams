@@ -106,16 +106,16 @@ class Ui {
   }
 
   render() {
-    let cartogramControls
+    let tileGenerationControls
     if (this._usingImportedTiles) {
-      cartogramControls = (
+      tileGenerationControls = (
         <fieldset>
           <span>Using {this._tileFilename}</span>
           <a onClick={this._resetImportedTiles}>✕</a>
         </fieldset>
       )
     } else {
-      cartogramControls = (
+      tileGenerationControls = (
         <div>
           <DatasetSelector
             labels={this._datasetLabels}
@@ -161,7 +161,7 @@ class Ui {
         </h2>
         <ExportButton onClick={() => this._exportCallback()} />
         <hr />
-        {cartogramControls}
+        {tileGenerationControls}
         <hr />
         <HexMetrics
           metricPerTile={this.metricPerTile}

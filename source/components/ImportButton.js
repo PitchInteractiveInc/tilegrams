@@ -40,7 +40,7 @@ export default class ImportButton extends React.Component {
     return (
       <fieldset>
         <a className='import' onClick={this._displayFileInput}>
-          Import TopoJSON
+          Import tiled TopoJSON
         </a>
         {fileInput}
       </fieldset>
