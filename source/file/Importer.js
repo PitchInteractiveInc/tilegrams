@@ -118,15 +118,10 @@ class Importer {
     } else {
       position.x = Math.round((point.x - origin.x) / xDelta)
       position.y = ((point.y - origin.y) / yDelta)
-      if (position.x % 2 === 0) {
-        position.y = Math.floor(position.y)
-        // TODO: why/how is this adjustment is related to IMPORT_TILE_MARGINS??
-        if (position.y < -2) {
-          position.y += 1
-        }
-      } else {
-        position.y = Math.ceil(position.y)
+      if (position.x % 2 === 1) {
+        position.y -= 0.5
       }
+      position.y = Math.round(position.y)
     }
     return [position, origin]
   }

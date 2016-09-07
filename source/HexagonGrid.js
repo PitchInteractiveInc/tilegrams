@@ -9,7 +9,8 @@ import {settings, tileEdgeRange, canvasDimensions} from './constants'
 
 const TILE_OFFSET = 1
 
-export const IMPORT_TILE_MARGINS = 3
+// tile margins must be even to not break Importer._getTilePosition()
+export const IMPORT_TILE_MARGINS = 10
 
 class HexagonGrid {
   constructor() {
