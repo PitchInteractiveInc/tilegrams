@@ -32,8 +32,8 @@ export default class GridGraphic extends Graphic {
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       /** Deselect if clicking on null tile, otherwise select tile and/or allow drag */
-      if ((this._selectedTiles.length > 0 && tile == null) || tile == null) {
-        this._selectedTile.length = 0
+      if (tile == null) {
+        this._selectedTiles.length = 0
         return
       }
       if (this._selectedTiles[0] !== tile) {
