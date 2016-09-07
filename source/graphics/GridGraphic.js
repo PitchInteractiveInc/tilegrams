@@ -1,4 +1,5 @@
 import hull from 'hull.js'
+import {DBSCAN} from 'density-clustering'
 
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
@@ -356,22 +357,25 @@ export default class GridGraphic extends Graphic {
   /** Draw border around geo using convex hull algorithm */
   _drawGeoBorder(id) {
     const tiles = this._getTilesById(id)
-    const path = this._computeOutlinePath(tiles)
-    this._ctx.beginPath()
-    path.forEach((point, index) => {
-      const command = (index === 0) ? 'moveTo' : 'lineTo'
-      this._ctx[command](...point)
+    const paths = this._computeOutlinePaths(tiles, id)
+    paths.forEach(path => {
+      this._ctx.beginPath()
+      path.forEach((point, index) => {
+        const command = (index === 0) ? 'moveTo' : 'lineTo'
+        this._ctx[command](...point)
+      })
+      this._ctx.closePath()
+      this._ctx.globalAlpha = 0.75
+      this._ctx.strokeStyle = hoveredTileBorderColor
+      this._ctx.lineWidth = 3
+      this._ctx.stroke()
+      this._ctx.globalAlpha = 1.0
     })
-    this._ctx.closePath()
-    this._ctx.globalAlpha = 0.75
-    this._ctx.strokeStyle = hoveredTileBorderColor
-    this._ctx.lineWidth = 3
-    this._ctx.stroke()
-    this._ctx.globalAlpha = 1.0
   }
 
   /** Compute contiguous outline (convex hull) of given tiles */
-  _computeOutlinePath(tiles) {
+  _computeOutlinePaths(tiles, id) {
+    // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {
       const center = hexagonGrid.tileCenterPoint(tile.position)
@@ -389,7 +393,20 @@ export default class GridGraphic extends Graphic {
         }
       })
     })
-    return hull(points)
+
+    // cluster points
+    const dbscan = new DBSCAN()
+    const clusters = dbscan.run(
+      points,
+      hexagonGrid.getTileEdge(),  // neighborhood radius
+      2                           // min points per cluster
+    )
+
+    // return paths
+    return clusters.map(clusterIndices => {
+      const clusterPoints = clusterIndices.map(index => points[index])
+      return hull(clusterPoints)
+    })
   }
 
   updateUi() {

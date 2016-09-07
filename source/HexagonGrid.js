@@ -18,6 +18,7 @@ class HexagonGrid {
   }
 
   setTileEdge(tileEdge) {
+    this._tileEdge = tileEdge
     this._tileSize = {
       width: 2.0 * tileEdge,
       height: Math.sqrt(3.0) * tileEdge,
@@ -32,6 +33,10 @@ class HexagonGrid {
     }
   }
 
+  getTileEdge() {
+    return this._tileEdge
+  }
+
   setTileEdgeFromMax(maxX, maxY) {
     const xSpace = canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS)
     const xEdge = (xSpace / 3.0) * 2.0
@@ -40,7 +45,7 @@ class HexagonGrid {
     const tileEdge = Math.min(xEdge, yEdge)
     this.setTileEdge(tileEdge)
   }
-
+  
   getTileDimensions() {
     return this._tileSize
   }
