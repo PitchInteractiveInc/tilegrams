@@ -223,6 +223,7 @@ export default class GridGraphic extends Graphic {
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic) {
     this._tiles = []
+    this._deselectTile()
     hexagonGrid.forEachTilePosition((x, y) => {
       const point = hexagonGrid.tileCenterPoint({x, y})
       const feature = mapGraphic.getFeatureAtPoint(point)
