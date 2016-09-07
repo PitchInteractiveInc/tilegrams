@@ -7492,6 +7492,7 @@
 	        })[1];
 	      });
 	      topogram.projection(this._buildPreProjection());
+	      topogram.iterations(15);
 	      this._stateFeatures = topogram(topoJson, topoJson.objects[_MapData2.default.getObjectId()].geometries);
 
 	      this._precomputeBounds();
