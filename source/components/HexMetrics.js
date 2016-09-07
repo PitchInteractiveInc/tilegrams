@@ -44,7 +44,9 @@ export default class HexMetrics extends React.Component {
       const stat = {key: d.key, nHex: d.value}
       if (metric) {
         const idealNHex = Math.round(metric / selectedRatio)
-        if (idealNHex === 0) shouldWarn = true
+        if (idealNHex === 0) {
+          shouldWarn = true
+        }
         stat.idealNHex = idealNHex
         stat.metric = metric
         stat.deviation = idealNHex - d.value
@@ -81,12 +83,14 @@ export default class HexMetrics extends React.Component {
   }
 
   _renderWarning(shouldWarn) {
-    if (!shouldWarn) return null
+    if (!shouldWarn) {
+      return null
+    }
     return (
       <div id='warning'>
         <i className='fa fa-exclamation-triangle' />
-        {` At this data resolution, some states will not be represented.
-        Consider a lower resolution.`}
+        At this data resolution, some states will not be represented.
+        Consider a lower resolution.
       </div>
     )
   }
