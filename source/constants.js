@@ -38,4 +38,5 @@ module.exports = {
     max: 40,
   },
   selectedTileBorderColor: '#333333',
+  hoveredTileBorderColor: '#333333',
 }
