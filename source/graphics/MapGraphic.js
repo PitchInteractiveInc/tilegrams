@@ -19,6 +19,7 @@ export default class MapGraphic extends Graphic {
       feature => properties.find(property => property[0] === feature.id)[1]
     )
     topogram.projection(this._buildPreProjection())
+    topogram.iterations(15)
     this._stateFeatures = topogram(
       topoJson,
       topoJson.objects[mapData.getObjectId()].geometries
