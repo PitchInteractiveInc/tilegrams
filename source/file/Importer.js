@@ -159,19 +159,8 @@ class Importer {
           }
         }
       }
-
-      // return delta that occurred the most often
-      const maxDeltaCount = deltaCounts.reduce(
-        (testMaxDeltaCount, deltaCount) => {
-          if (!testMaxDeltaCount || deltaCount.count > testMaxDeltaCount.count) {
-            return deltaCount
-          }
-          return testMaxDeltaCount
-        },
-        null
-      )
-
-      return maxDeltaCount.value
+      deltaCounts.sort((a, b) => a.deltaCount - b.deltaCount)
+      return deltaCounts.pop().value
     })
   }
 
