@@ -100,25 +100,25 @@ export default class GridGraphic extends Graphic {
         offset.y = event.offsetY
       }
 
-      let noOverlaps = true
       // assign `newPosition` to each tile
-      this._selectedTiles.some((tile) => {
+      const overlaps = this._selectedTiles.some((tile) => {
         const tileXY = hexagonGrid.tileCenterPoint(tile.position)
         tileXY.x = (tileXY.x * 0.5) + offset.x
         tileXY.y = (tileXY.y * 0.5) + offset.y
         tile.newPosition = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
         const overlappingTile = this._findTile(tile.newPosition)
+        // if there is an overlapping tile
         if (overlappingTile) {
-          if (this._selectedTiles.includes(overlappingTile)) {
-            // overlapping tile is also being moved, ignore it.
-          } else {
-            noOverlaps = false
+          // and it's not currently selected
+          if (!this._selectedTiles.includes(overlappingTile)) {
+            // bail
+            return true
           }
         }
-        return !noOverlaps
+        return false
       })
 
-      if (noOverlaps) {
+      if (!overlaps) {
         this._selectedTiles.forEach((tile) => {
           tile.position = tile.newPosition
           delete tile.newPosition
