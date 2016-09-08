@@ -11,10 +11,7 @@ require('font-awesome/scss/font-awesome.scss')
 
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)
-  canvas.computeCartogram({
-    topoJson: mapData.getTopoJson(),
-    properties: dataset,
-  })
+  canvas.computeCartogram({properties: dataset})
 }
 
 function updateUi() {

@@ -15,6 +15,10 @@ class MapData {
     return this._topoJson
   }
 
+  getGeometries() {
+    return this._topoJson.objects[OBJECT_ID].geometries
+  }
+
   getUniqueFeatureIds() {
     const geometries = this._topoJson.objects[OBJECT_ID].geometries
     return [...new Set(geometries.map((feature) => feature.id))]

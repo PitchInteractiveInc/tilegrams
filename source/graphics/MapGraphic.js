@@ -14,15 +14,15 @@ const MIN_PATH_AREA = 0.5
 
 export default class MapGraphic extends Graphic {
   /** Apply topogram on topoJson using data in properties */
-  computeCartogram({topoJson, properties}) {
+  computeCartogram({properties}) {
     topogram.value(
       feature => properties.find(property => property[0] === feature.id)[1]
     )
     topogram.projection(this._buildPreProjection())
     topogram.iterations(15)
     this._stateFeatures = topogram(
-      topoJson,
-      topoJson.objects[mapData.getObjectId()].geometries
+      mapData.getTopoJson(),
+      mapData.getGeometries()
     )
 
     this._precomputeBounds()
