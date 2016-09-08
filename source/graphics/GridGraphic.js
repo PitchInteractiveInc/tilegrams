@@ -181,10 +181,6 @@ export default class GridGraphic extends Graphic {
 
   onDoubleClick(event) {
     if (this._tiles) {
-      this._mouseAt = {
-        x: event.offsetX,
-        y: event.offsetY,
-      }
       const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
       const tile = this._findTile(position)
       if (tile) {
