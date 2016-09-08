@@ -3,7 +3,7 @@
 
 $font-stack: 'Fira Sans', sans-serif;
 $sidebar-width: 280px;
-$blue: #1144bb;
+$blue: #5656f7;
 
 body {
   margin: 0;
@@ -14,6 +14,15 @@ a {
   color: $blue;
   margin: 0 5px;
   cursor: pointer;
+}
+
+.code {
+  font-family: "Lucida Console", Monaco, monospace;
+  background-color: rgba(255,255,255,0.1);
+  padding: 10px;
+  margin: 10px;
+  font-size: 80%;
+  line-height: 110%;
 }
 
 #canvas {
@@ -55,12 +64,49 @@ a {
   h1, h2 {
     padding: 15px;
   }
-  #metrics-header {
-    padding: 0.5em;
+  .csv-input {
+    margin-top: 15px;
+    textarea {
+      width: 100%;
+      margin-top: 10px;
+      &:focus {
+        outline: none;
+      }
+    }
   }
-  #metrics-ideal {
-    padding: 0.5em;
-    margin-bottom: 0.5em;
+  .dataset-select {
+    width: 100%;
+  }
+  .instruction {
+    margin-top: 10px;
+  }
+  .resolution-slider input {
+    width: 100%;
+  }
+  .resolution-input {
+    label {
+      margin-bottom: 0;
+    }
+    input {
+      border: none;
+      font-size: 1.1em;
+      border-bottom: 1px solid #fff;
+      background-color: #1a1a1a;
+      color: #fff;
+      padding: 0px 0 3px 0;
+      width: 100%;
+      text-align: right;
+      &:focus {
+        outline: none;
+        border-bottom: 1px solid $blue;
+      }
+    }
+  }
+  .metrics {
+    padding: 8px;
+  }
+  #metrics-header {
+    padding-bottom: 0.5em;
   }
   #warning {
     font-size: 0.8em;
@@ -72,29 +118,23 @@ a {
   }
 }
 
-// dat.gui
-.dg.ac {
-  z-index: 1;
-  pointer-events: none;
-}
-
 fieldset {
   padding: 15px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
+    margin-bottom: 6px;
   }
   a.export {
     background-color: $blue;
     border-radius: 5px;
     padding: 0.5em 0.75em;
     color: white;
-  }
-  a.import {
+    margin: 0;
     font-size: 80%;
   }
-  input.import {
-    margin: 10px 5px 0 5px;
+  a.import {
+    margin: 0;
   }
 }
 
@@ -117,3 +157,10 @@ table {
     width: 0%;
   }
 }
+
+// dat.gui
+.dg.ac {
+  z-index: 1;
+  pointer-events: none;
+}
+

@@ -134,7 +134,7 @@ export default class HexMetrics extends React.Component {
   render() {
     const metrics = this._getMetrics()
     return (
-      <div>
+      <div className='metrics'>
         <div id='metrics-header'>
           State Tiles
           {this._renderWarning(metrics.shouldWarn)}
