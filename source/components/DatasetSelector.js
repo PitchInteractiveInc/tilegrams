@@ -45,7 +45,7 @@ export default class DatasetSelector extends React.Component {
     })
     return (
       <select
-        id='datasetSelectorSelect'
+        className='dataset-select'
         value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
       >
@@ -56,9 +56,18 @@ export default class DatasetSelector extends React.Component {
 
   _renderCsvInput() {
     return (
-      <div>
-        Paste CSV here:
-        <br />
+      <div className='csv-input'>
+        <div className='instruction'>
+        {`Paste custom CSV below. Csv should be formatted with no
+        headers and state id (fips) as the first column. Ex:`}
+          <div className='code'>
+          01,4858979
+            <br />
+          02,738432
+            <br />
+          04,6828065
+          </div>
+        </div>
         <textarea
           rows={5}
           onChange={this._onCustomCsv}

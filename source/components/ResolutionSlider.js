@@ -70,19 +70,18 @@ export default class ResolutionSlider extends React.Component {
   render() {
     return (
       <div>
-        <fieldset>
+        <fieldset className='resolution-slider'>
           <label htmlFor='resolutionSlider'>Resolution</label>
           <input
-            id='resolutionSlider'
             type='range'
             min={1}
             max={99}
             onChange={(event) => this._triggerChangeFromSlider(event.target.value)}
             value={this.state.value}
           />
-          <br />
-          <br />
-          <label htmlFor='resolutionInput'>Per tile:</label>
+        </fieldset>
+        <fieldset className='resolution-input'>
+          <label htmlFor='resolutionInput'>Per tile</label>
           <input
             ref={(ref) => { this.typedInput = ref }}
             type='text'
