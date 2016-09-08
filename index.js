@@ -44,7 +44,7 @@ function init() {
   ui.setExportCallback(() => {
     const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
     startDownload({
-      filename: 'hexagon-cartogram.json',
+      filename: 'tiles.topo.json',
       mimeType: 'application/json',
       content: JSON.stringify(json),
     })
