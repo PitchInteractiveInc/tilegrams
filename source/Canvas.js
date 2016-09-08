@@ -62,6 +62,7 @@ class Canvas {
     this._canvas.onmousedown = this._onMouseDown.bind(this)
     this._canvas.onmouseup = this._onMouseUp.bind(this)
     this._canvas.onmousemove = this._onMouseMove.bind(this)
+    this._canvas.ondblclick = this._onDoubleClick.bind(this)
 
     document.onmouseup = this._bodyOnMouseUp.bind(this)
   }
@@ -104,6 +105,10 @@ class Canvas {
 
   _onMouseMove(event) {
     this._gridGraphic.onMouseMove(event, this._ctx)
+  }
+
+  _onDoubleClick(event) {
+    this._gridGraphic.onDoubleClick(event, this._ctx)
   }
 
   _bodyOnMouseUp(event) {
