@@ -5,13 +5,13 @@
  * that grid in the offset coordinates that HexagonGrid uses.
  */
 
-import mapData from '../MapData'
 import {IMPORT_TILE_MARGINS} from '../HexagonGrid'
+import {OBJECT_ID} from './Exporter'
 
 class Importer {
   /** Convert hex grid TopoJSON to hexagon offset coordinates */
   fromTopoJson(topoJson) {
-    const geometries = topoJson.objects[mapData.getObjectId()].geometries
+    const geometries = topoJson.objects[OBJECT_ID].geometries
     const tilePoints = geometries.map(geometry => {
       const path = this._getAbsolutePath(geometry, topoJson.arcs)
       return {

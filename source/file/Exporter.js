@@ -5,8 +5,9 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 
-import mapData from '../MapData'
 import hexagonGrid from '../HexagonGrid'
+
+export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
@@ -50,7 +51,7 @@ class Exporter {
     return {
       type: 'Topology',
       objects: {
-        [mapData.getObjectId()]: {
+        [OBJECT_ID]: {
           type: 'GeometryCollection',
           geometries,
         },
