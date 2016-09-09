@@ -32,10 +32,9 @@ a {
   bottom: 0;
   left: $sidebar-width;
   overflow: auto;
-  background-color: #f8f8f8;
   canvas {
     cursor: pointer;
-    background-color: white;
+    background-color: #f0f0f0;
   }
 }
 
