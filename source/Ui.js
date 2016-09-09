@@ -133,7 +133,7 @@ class Ui {
     ReactDOM.render(
       <div>
         <h1>
-          Tesselated Hexagon Cartogram Authoring Interface
+          Tessellagram Maker
         </h1>
         <h2>
           A project by
