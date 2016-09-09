@@ -79,10 +79,7 @@
 
 	function selectDataset(dataset) {
 	  _Ui2.default.setSelectedDataset(dataset);
-	  _Canvas2.default.computeCartogram({
-	    topoJson: _MapData2.default.getTopoJson(),
-	    properties: dataset
-	  });
+	  _Canvas2.default.computeCartogram({ properties: dataset });
 	}
 
 	function updateUi() {
@@ -124,7 +121,7 @@
 	  _Ui2.default.setExportCallback(function () {
 	    var json = _Exporter2.default.formatTopoJson(_Canvas2.default.getGrid().getTiles());
 	    (0, _utils.startDownload)({
-	      filename: 'hexagon-cartogram.json',
+	      filename: 'tiles.topo.json',
 	      mimeType: 'application/json',
 	      content: JSON.stringify(json)
 	    });
@@ -182,13 +179,13 @@
 	    _classCallCheck(this, Data);
 
 	    this._datasets = [{
-	      label: 'Population 2016',
+	      label: 'U.S. Population 2016',
 	      data: this.parseCsv(_populationByState2.default)
 	    }, {
-	      label: 'Electoral College 2016',
+	      label: 'U.S. Electoral College 2016',
 	      data: this.parseCsv(_electoralCollegeVotesByState2.default)
 	    }, {
-	      label: 'GDP 2015 (Millions)',
+	      label: 'U.S. GDP 2015 (Millions)',
 	      data: this.parseCsv(_gdpByState2.default)
 	    }];
 	    this._selectedDatasetIndex = 2;
@@ -513,6 +510,7 @@
 	      this._canvas.onmousedown = this._onMouseDown.bind(this);
 	      this._canvas.onmouseup = this._onMouseUp.bind(this);
 	      this._canvas.onmousemove = this._onMouseMove.bind(this);
+	      this._canvas.ondblclick = this._onDoubleClick.bind(this);
 
 	      document.onmouseup = this._bodyOnMouseUp.bind(this);
 	    }
@@ -563,6 +561,11 @@
 	    key: '_onMouseMove',
 	    value: function _onMouseMove(event) {
 	      this._gridGraphic.onMouseMove(event, this._ctx);
+	    }
+	  }, {
+	    key: '_onDoubleClick',
+	    value: function _onDoubleClick(event) {
+	      this._gridGraphic.onDoubleClick(event, this._ctx);
 	    }
 	  }, {
 	    key: '_bodyOnMouseUp',
@@ -822,6 +825,24 @@
 	      }
 	    }
 	  }, {
+	    key: 'onDoubleClick',
+	    value: function onDoubleClick(event) {
+	      var _this3 = this;
+
+	      if (this._tiles) {
+	        (function () {
+	          var position = _HexagonGrid2.default.rectToHexPosition(event.offsetX, event.offsetY);
+	          var tile = _this3._findTile(position);
+	          if (tile) {
+	            _this3._deselectTile();
+	            _this3._selectedTiles = _this3._tiles.filter(function (t) {
+	              return t.id === tile.id;
+	            });
+	          }
+	        })();
+	      }
+	    }
+	  }, {
 	    key: 'onHighlightGeo',
 	    value: function onHighlightGeo(id) {
 	      this._highlightId = id;
@@ -834,12 +855,12 @@
 	  }, {
 	    key: 'onkeydown',
 	    value: function onkeydown(event) {
-	      var _this3 = this;
+	      var _this4 = this;
 
 	      var key = event.keyCode || event.charCode;
 	      if (key === 8 || key === 46) {
 	        this._selectedTiles.forEach(function (tile) {
-	          _this3._deleteTile(tile);
+	          _this4._deleteTile(tile);
 	        });
 	        this._selectedTiles.length = 0;
 	        this.updateUi();
@@ -892,7 +913,7 @@
 	  }, {
 	    key: 'populateTiles',
 	    value: function populateTiles(mapGraphic) {
-	      var _this4 = this;
+	      var _this5 = this;
 
 	      this._tiles = [];
 	      this._deselectTile();
@@ -900,7 +921,7 @@
 	        var point = _HexagonGrid2.default.tileCenterPoint({ x: x, y: y });
 	        var feature = mapGraphic.getFeatureAtPoint(point);
 	        if (feature) {
-	          _this4._tiles.push({
+	          _this5._tiles.push({
 	            id: feature.id,
 	            position: { x: x, y: y }
 	          });
@@ -943,15 +964,15 @@
 	  }, {
 	    key: 'render',
 	    value: function render(ctx) {
-	      var _this5 = this;
+	      var _this6 = this;
 
 	      this._ctx = ctx;
 	      this._tiles.forEach(function (tile) {
 	        var color = (0, _utils.fipsColor)(tile.id);
-	        if (_this5._selectedTiles.includes(tile)) {
+	        if (_this6._selectedTiles.includes(tile)) {
 	          color = '#cccccc';
 	        }
-	        _this5._drawTile(tile.position, color);
+	        _this6._drawTile(tile.position, color);
 	      });
 
 	      if (this._highlightId) {
@@ -961,14 +982,14 @@
 	      if (this._selectedTiles.length > 0) {
 	        this._selectedTiles.forEach(function (tile) {
 	          var position = tile.position;
-	          if (_this5._draggingMultiSelect) {
+	          if (_this6._draggingMultiSelect) {
 	            var offset = {
-	              x: _this5._mouseAt.x - _this5._draggingMultiSelectOrigin.x,
-	              y: _this5._mouseAt.y - _this5._draggingMultiSelectOrigin.y
+	              x: _this6._mouseAt.x - _this6._draggingMultiSelectOrigin.x,
+	              y: _this6._mouseAt.y - _this6._draggingMultiSelectOrigin.y
 	            };
-	            if (_this5._selectedTiles[0] === _this5._newTile) {
-	              offset.x = _this5._mouseAt.x;
-	              offset.y = _this5._mouseAt.y;
+	            if (_this6._selectedTiles[0] === _this6._newTile) {
+	              offset.x = _this6._mouseAt.x;
+	              offset.y = _this6._mouseAt.y;
 	            }
 
 	            var tileXY = _HexagonGrid2.default.tileCenterPoint(position);
@@ -976,7 +997,7 @@
 	            tileXY.y = tileXY.y * 0.5 + offset.y;
 	            position = _HexagonGrid2.default.rectToHexPosition(tileXY.x, tileXY.y);
 	          }
-	          _this5._drawTile(position, (0, _utils.fipsColor)(tile.id), true);
+	          _this6._drawTile(position, (0, _utils.fipsColor)(tile.id), true);
 	        });
 	      }
 	      if (this._makingMarqueeSelection) {
@@ -1029,24 +1050,24 @@
 	  }, {
 	    key: '_drawGeoBorder',
 	    value: function _drawGeoBorder(id) {
-	      var _this6 = this;
+	      var _this7 = this;
 
 	      var tiles = this._getTilesById(id);
 	      var paths = this._computeOutlinePaths(tiles);
 	      paths.forEach(function (path) {
-	        _this6._ctx.beginPath();
+	        _this7._ctx.beginPath();
 	        path.forEach(function (point, index) {
 	          var _ctx7;
 
 	          var command = index === 0 ? 'moveTo' : 'lineTo';
-	          (_ctx7 = _this6._ctx)[command].apply(_ctx7, _toConsumableArray(point));
+	          (_ctx7 = _this7._ctx)[command].apply(_ctx7, _toConsumableArray(point));
 	        });
-	        _this6._ctx.closePath();
-	        _this6._ctx.globalAlpha = 0.75;
-	        _this6._ctx.strokeStyle = _constants.hoveredTileBorderColor;
-	        _this6._ctx.lineWidth = 3;
-	        _this6._ctx.stroke();
-	        _this6._ctx.globalAlpha = 1.0;
+	        _this7._ctx.closePath();
+	        _this7._ctx.globalAlpha = 0.75;
+	        _this7._ctx.strokeStyle = _constants.hoveredTileBorderColor;
+	        _this7._ctx.lineWidth = 3;
+	        _this7._ctx.stroke();
+	        _this7._ctx.globalAlpha = 1.0;
 	      });
 	    }
 
@@ -7483,7 +7504,6 @@
 
 	    /** Apply topogram on topoJson using data in properties */
 	    value: function computeCartogram(_ref) {
-	      var topoJson = _ref.topoJson;
 	      var properties = _ref.properties;
 
 	      topogram.value(function (feature) {
@@ -7493,7 +7513,7 @@
 	      });
 	      topogram.projection(this._buildPreProjection());
 	      topogram.iterations(15);
-	      this._stateFeatures = topogram(topoJson, topoJson.objects[_MapData2.default.getObjectId()].geometries);
+	      this._stateFeatures = topogram(_MapData2.default.getTopoJson(), _MapData2.default.getGeometries());
 
 	      this._precomputeBounds();
 	    }
@@ -11896,10 +11916,14 @@
 	      return this._topoJson;
 	    }
 	  }, {
+	    key: 'getGeometries',
+	    value: function getGeometries() {
+	      return this._topoJson.objects[OBJECT_ID].geometries;
+	    }
+	  }, {
 	    key: 'getUniqueFeatureIds',
 	    value: function getUniqueFeatureIds() {
-	      var geometries = this._topoJson.objects[OBJECT_ID].geometries;
-	      return [].concat(_toConsumableArray(new Set(geometries.map(function (feature) {
+	      return [].concat(_toConsumableArray(new Set(this.getGeometries().map(function (feature) {
 	        return feature.id;
 	      }))));
 	    }
@@ -19119,7 +19143,7 @@
 	        _react2.default.createElement(
 	          'h1',
 	          null,
-	          'Tesselated Hexagon Cartogram Authoring Interface'
+	          'Tessellagram Maker'
 	        ),
 	        _react2.default.createElement(
 	          'h2',
@@ -40638,7 +40662,7 @@
 	      return _react2.default.createElement(
 	        'select',
 	        {
-	          id: 'datasetSelectorSelect',
+	          className: 'dataset-select',
 	          value: this.state.selectedIndex,
 	          onChange: function onChange(event) {
 	            return _this2._onSelect(event);
@@ -40652,9 +40676,21 @@
 	    value: function _renderCsvInput() {
 	      return _react2.default.createElement(
 	        'div',
-	        null,
-	        'Paste CSV here:',
-	        _react2.default.createElement('br', null),
+	        { className: 'csv-input' },
+	        _react2.default.createElement(
+	          'div',
+	          { className: 'instruction' },
+	          'Paste custom CSV below. Csv should be formatted with no\n        headers and state id (fips) as the first column. Ex:',
+	          _react2.default.createElement(
+	            'div',
+	            { className: 'code' },
+	            '01,4858979',
+	            _react2.default.createElement('br', null),
+	            '02,738432',
+	            _react2.default.createElement('br', null),
+	            '04,6828065'
+	          )
+	        ),
 	        _react2.default.createElement('textarea', {
 	          rows: 5,
 	          onChange: this._onCustomCsv,
@@ -40816,14 +40852,13 @@
 	        null,
 	        _react2.default.createElement(
 	          'fieldset',
-	          null,
+	          { className: 'resolution-slider' },
 	          _react2.default.createElement(
 	            'label',
 	            { htmlFor: 'resolutionSlider' },
 	            'Resolution'
 	          ),
 	          _react2.default.createElement('input', {
-	            id: 'resolutionSlider',
 	            type: 'range',
 	            min: 1,
 	            max: 99,
@@ -40831,13 +40866,15 @@
 	              return _this2._triggerChangeFromSlider(event.target.value);
 	            },
 	            value: this.state.value
-	          }),
-	          _react2.default.createElement('br', null),
-	          _react2.default.createElement('br', null),
+	          })
+	        ),
+	        _react2.default.createElement(
+	          'fieldset',
+	          { className: 'resolution-input' },
 	          _react2.default.createElement(
 	            'label',
 	            { htmlFor: 'resolutionInput' },
-	            'Per tile:'
+	            'Per tile'
 	          ),
 	          _react2.default.createElement('input', {
 	            ref: function ref(_ref) {
@@ -44561,7 +44598,7 @@
 	      var metrics = this._getMetrics();
 	      return _react2.default.createElement(
 	        'div',
-	        null,
+	        { className: 'metrics' },
 	        _react2.default.createElement(
 	          'div',
 	          { id: 'metrics-header' },
@@ -44729,6 +44766,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.OBJECT_ID = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /**
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Exporter: output TopoJSON from hexagon grid
@@ -44736,10 +44774,6 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * Primary reference:
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * https://github.com/mbostock/topojson/wiki/Introduction
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
-
-	var _MapData = __webpack_require__(41);
-
-	var _MapData2 = _interopRequireDefault(_MapData);
 
 	var _HexagonGrid = __webpack_require__(26);
 
@@ -44750,6 +44784,8 @@
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var OBJECT_ID = exports.OBJECT_ID = 'tiles';
 
 	var Exporter = function () {
 	  function Exporter() {
@@ -44787,7 +44823,7 @@
 
 	      return {
 	        type: 'Topology',
-	        objects: _defineProperty({}, _MapData2.default.getObjectId(), {
+	        objects: _defineProperty({}, OBJECT_ID, {
 	          type: 'GeometryCollection',
 	          geometries: geometries
 	        }),
@@ -44820,13 +44856,9 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      * that grid in the offset coordinates that HexagonGrid uses.
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      */
 
-	var _MapData = __webpack_require__(41);
-
-	var _MapData2 = _interopRequireDefault(_MapData);
-
 	var _HexagonGrid = __webpack_require__(26);
 
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var _Exporter = __webpack_require__(227);
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -44844,7 +44876,7 @@
 	    value: function fromTopoJson(topoJson) {
 	      var _this = this;
 
-	      var geometries = topoJson.objects[_MapData2.default.getObjectId()].geometries;
+	      var geometries = topoJson.objects[_Exporter.OBJECT_ID].geometries;
 	      var tilePoints = geometries.map(function (geometry) {
 	        var path = _this._getAbsolutePath(geometry, topoJson.arcs);
 	        return {
@@ -45070,7 +45102,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Fira+Sans:400,500);", ""]);
 
 	// module
-	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif; }\n\na {\n  color: #1144bb;\n  margin: 0 5px;\n  cursor: pointer; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 280px;\n  overflow: auto;\n  background-color: #f8f8f8;\n  padding: 40px; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: white;\n    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1); }\n\n#ui {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 280px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto;\n  padding-top: 15px; }\n  #ui hr {\n    border: none;\n    height: 1px;\n    background-color: #444; }\n  #ui h1 {\n    font-size: 200%;\n    line-height: 1.2em; }\n  #ui h1, #ui h2 {\n    padding: 15px; }\n  #ui #metrics-header {\n    padding: 0.5em; }\n  #ui #metrics-ideal {\n    padding: 0.5em;\n    margin-bottom: 0.5em; }\n  #ui #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui #warning i {\n      padding-right: 0.5em; }\n\n.dg.ac {\n  z-index: 1;\n  pointer-events: none; }\n\nfieldset {\n  padding: 15px; }\n  fieldset label {\n    display: inline-block;\n    width: 84px; }\n  fieldset a.export {\n    background-color: #1144bb;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    color: white; }\n  fieldset a.import {\n    font-size: 80%; }\n  fieldset input.import {\n    margin: 10px 5px 0 5px; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade td:not(:first-child) {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n  table td:first-child {\n    width: 0%; }\n", ""]);
+	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif; }\n\na {\n  color: #5656f7;\n  margin: 0 5px;\n  cursor: pointer; }\n\n.code {\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: rgba(255, 255, 255, 0.1);\n  padding: 10px;\n  margin: 10px;\n  font-size: 80%;\n  line-height: 110%; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 280px;\n  overflow: auto;\n  background-color: #f8f8f8;\n  padding: 40px; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: white;\n    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1); }\n\n#ui {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 280px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto;\n  padding-top: 15px; }\n  #ui hr {\n    border: none;\n    height: 1px;\n    background-color: #444; }\n  #ui h1 {\n    font-size: 200%;\n    line-height: 1.2em; }\n  #ui h1, #ui h2 {\n    padding: 15px; }\n  #ui .csv-input {\n    margin-top: 15px; }\n    #ui .csv-input textarea {\n      width: 100%;\n      margin-top: 10px; }\n      #ui .csv-input textarea:focus {\n        outline: none; }\n  #ui .dataset-select {\n    width: 100%; }\n  #ui .instruction {\n    margin-top: 10px; }\n  #ui .resolution-slider input {\n    width: 100%; }\n  #ui .resolution-input label {\n    margin-bottom: 0; }\n  #ui .resolution-input input {\n    border: none;\n    font-size: 1.1em;\n    border-bottom: 1px solid #fff;\n    background-color: #1a1a1a;\n    color: #fff;\n    padding: 0px 0 3px 0;\n    width: 100%;\n    text-align: right; }\n    #ui .resolution-input input:focus {\n      outline: none;\n      border-bottom: 1px solid #5656f7; }\n  #ui .metrics {\n    padding: 8px; }\n  #ui #metrics-header {\n    padding-bottom: 0.5em; }\n  #ui #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui #warning i {\n      padding-right: 0.5em; }\n\nfieldset {\n  padding: 15px; }\n  fieldset label {\n    display: inline-block;\n    width: 84px;\n    margin-bottom: 6px; }\n  fieldset a.export {\n    background-color: #5656f7;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    color: white;\n    margin: 0;\n    font-size: 80%; }\n  fieldset a.import {\n    margin: 0; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade td:not(:first-child) {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n  table td:first-child {\n    width: 0%; }\n\n.dg.ac {\n  z-index: 1;\n  pointer-events: none; }\n", ""]);
 
 	// exports
 
