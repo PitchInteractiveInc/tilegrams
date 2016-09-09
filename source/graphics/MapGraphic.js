@@ -21,7 +21,7 @@ export default class MapGraphic extends Graphic {
     this._stateFeatures = null
     this._iterationCount = 0
 
-    topogram.projection(this._buildPreProjection())
+    this.updatePreProjection()
     topogram.iterations(1)
   }
 
@@ -60,6 +60,17 @@ export default class MapGraphic extends Graphic {
     this._precomputeBounds()
     this._iterationCount++
     return true
+  }
+
+  /** Apply projectiong _before_ cartogram computation */
+  updatePreProjection() {
+    const projection = geoAlbersUsa()
+      .scale(canvasDimensions.width)
+      .translate([
+        canvasDimensions.width * 0.5,
+        canvasDimensions.height * 0.5,
+      ])
+    topogram.projection(projection)
   }
 
   /** Pre-compute projected bounding boxes; filter out small-area paths */
@@ -116,16 +127,6 @@ export default class MapGraphic extends Graphic {
       )
       return matchingPath != null
     })
-  }
-
-  /** Build projection to apply _before_ cartogram computation */
-  _buildPreProjection() {
-    return geoAlbersUsa()
-      .scale(canvasDimensions.width)
-      .translate([
-        canvasDimensions.width * 0.5,
-        canvasDimensions.height * 0.5,
-      ])
   }
 
   computeCartogramArea() {

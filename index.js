@@ -4,6 +4,7 @@ import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import mapData from './source/MapData'
+import hexagonGrid from './source/HexagonGrid'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
 
@@ -77,6 +78,8 @@ function init() {
 function resize() {
   updateCanvasSize()
   canvas.resize()
+  hexagonGrid.resize()
+  canvas.getMap().updatePreProjection()
 }
 window.onresize = resize
 resize()

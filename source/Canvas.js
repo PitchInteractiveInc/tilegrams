@@ -51,6 +51,10 @@ class Canvas {
     return this._gridGraphic
   }
 
+  getMap() {
+    return this._mapGraphic
+  }
+
   resize() {
     function setCanvasAttribute(canvas, key, value) {
       const attribute = document.createAttribute(key)
