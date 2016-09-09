@@ -423,7 +423,10 @@ export default class GridGraphic extends Graphic {
     // return paths
     return clusters.map(clusterIndices => {
       const clusterPoints = clusterIndices.map(index => points[index])
-      return hull(clusterPoints)
+      return hull(
+        clusterPoints,
+        hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
+      )
     })
   }
 
