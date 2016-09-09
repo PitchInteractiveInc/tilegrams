@@ -25,6 +25,42 @@ a {
   line-height: 110%;
 }
 
+.padding-bottom {
+  padding-bottom: 20px;
+}
+
+.deselected {
+  opacity: 0.4;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.step {
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 10px;
+  p {
+    font-size: 1.25em;
+    padding: 15px;
+    span {
+      font-weight: bold;
+    }
+  }
+  .highlight-bar {
+    position: absolute;
+    bottom: 0px;
+    width: 6px;
+    background-color: $blue;
+    height: 0%;
+    transition: height 0.22s ease-in-out;
+  }
+  &.active {
+    .highlight-bar {
+      height: 100%;
+    }
+  }
+}
+
 #canvas {
   position: fixed;
   right: 0;
@@ -69,6 +105,12 @@ a {
   }
   h1 {
     padding: 15px;
+  }
+  .ui-controls {
+    padding: 0 10px;
+    .ui-control-type {
+      padding-bottom: 20px;
+    }
   }
   .csv-input {
     margin-top: 15px;
@@ -125,7 +167,7 @@ a {
 }
 
 fieldset {
-  padding: 15px;
+  padding: 10px 15px 10px 25px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
@@ -141,6 +183,9 @@ fieldset {
   }
   a.import {
     margin: 0;
+  }
+  input.import {
+    margin-top: 10px;
   }
 }
 
