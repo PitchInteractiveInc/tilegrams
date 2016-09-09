@@ -21,7 +21,6 @@ export default class MapGraphic extends Graphic {
     this._stateFeatures = null
     this._iterationCount = 0
 
-    this.updatePreProjection()
     topogram.iterations(1)
   }
 
@@ -32,13 +31,8 @@ export default class MapGraphic extends Graphic {
     )
     this._iterationCount = 0
 
-    // on subsequent runs, iterate and bail
-    if (this._stateFeatures !== null) {
-      this.iterateCartogram()
-      return
-    }
-
     // compute initial cartogram
+    this.updatePreProjection()
     this._stateFeatures = topogram(
       mapData.getTopoJson(),
       mapData.getGeometries()
