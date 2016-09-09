@@ -3,7 +3,7 @@ import Stats from 'stats-js'
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
 import hexagonGrid from './HexagonGrid'
-import {canvasDimensions, settings} from './constants'
+import {devicePixelRatio, canvasDimensions, settings} from './constants'
 import {createElement, isDevEnvironment} from './utils'
 
 class Canvas {
@@ -17,8 +17,8 @@ class Canvas {
     this._cartogramArea = null
   }
 
-  computeCartogram(options) {
-    this._mapGraphic.computeCartogram(options)
+  computeCartogram(properties) {
+    this._mapGraphic.computeCartogram(properties)
     this._setCartogramArea()
     this.updateTiles()
     this._cartogramReady = true
@@ -51,10 +51,7 @@ class Canvas {
     return this._gridGraphic
   }
 
-  _createCanvas() {
-    const container = createElement({id: 'canvas'})
-
-    this._canvas = document.createElement('canvas')
+  resize() {
     function setCanvasAttribute(canvas, key, value) {
       const attribute = document.createAttribute(key)
       attribute.value = value
@@ -62,7 +59,13 @@ class Canvas {
     }
     setCanvasAttribute(this._canvas, 'width', canvasDimensions.width)
     setCanvasAttribute(this._canvas, 'height', canvasDimensions.height)
-    this._canvas.style.width = `${canvasDimensions.width * 0.5}px`
+    this._canvas.style.width = `${canvasDimensions.width / devicePixelRatio}px`
+  }
+
+  _createCanvas() {
+    const container = createElement({id: 'canvas'})
+    this._canvas = document.createElement('canvas')
+    this.resize()
 
     container.appendChild(this._canvas)
     this._ctx = this._canvas.getContext('2d')

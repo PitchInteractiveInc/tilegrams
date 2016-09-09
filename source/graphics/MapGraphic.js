@@ -25,9 +25,8 @@ export default class MapGraphic extends Graphic {
     topogram.iterations(1)
   }
 
-  /** Apply topogram on TopoJSON using data in properties */
-  computeCartogram({properties}) {
-    // set topogram dataset
+  /** Apply topogram on topoJson using data in properties */
+  computeCartogram(properties) {
     topogram.value(
       feature => properties.find(property => property[0] === feature.id)[1]
     )

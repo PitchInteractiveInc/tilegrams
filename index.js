@@ -5,6 +5,7 @@ import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import mapData from './source/MapData'
 import {startDownload, isDevEnvironment} from './source/utils'
+import {updateCanvasSize} from './source/constants'
 
 require('./source/css/main.scss')
 require('font-awesome/scss/font-awesome.scss')
@@ -15,7 +16,7 @@ let cartogramComputeTimer
 
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)
-  canvas.computeCartogram({properties: dataset})
+  canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
     canvas.iterateCartogram()
@@ -37,8 +38,8 @@ function confirmNavigation(e) {
   return message
 }
 
-// wire up callbacks
 function init() {
+  // wire up callbacks
   canvas.getGrid().onChange(() => updateUi())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
   ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
@@ -72,5 +73,12 @@ function init() {
     window.addEventListener('beforeunload', confirmNavigation)
   }
 }
+
+function resize() {
+  updateCanvasSize()
+  canvas.resize()
+}
+window.onresize = resize
+resize()
 
 init()
