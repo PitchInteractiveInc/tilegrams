@@ -1,8 +1,15 @@
 import dat from 'dat-gui'
 
+const devicePixelRatio = 2.0
+
 const canvasDimensions = {
-  width: 960 * 2,
-  height: 720 * 2,
+  width: 0,
+  height: 0,
+}
+function updateCanvasSize() {
+  const canvasContainer = document.getElementById('canvas')
+  canvasDimensions.width = canvasContainer.offsetWidth * devicePixelRatio
+  canvasDimensions.height = canvasContainer.offsetHeight * devicePixelRatio
 }
 
 /**
@@ -30,7 +37,9 @@ dat.GUI.toggleHide()
 
 module.exports = {
   settings,
+  devicePixelRatio,
   canvasDimensions,
+  updateCanvasSize,
   nTileDomain,
   tileEdgeRange: {
     default: 20,

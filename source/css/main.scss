@@ -33,11 +33,9 @@ a {
   left: $sidebar-width;
   overflow: auto;
   background-color: #f8f8f8;
-  padding: 40px;
   canvas {
     cursor: pointer;
     background-color: white;
-    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -163,4 +161,3 @@ table {
   z-index: 1;
   pointer-events: none;
 }
-
