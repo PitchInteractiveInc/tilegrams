@@ -132,10 +132,26 @@ class Ui {
     }
     ReactDOM.render(
       <div>
-        <h1>
-          Tessellagram Maker
-        </h1>
-        <h2>
+        <div className='column'>
+          <h1>
+            Tessellagram Maker
+          </h1>
+          <ExportButton onClick={() => this._exportCallback()} />
+          <hr />
+          {tileGenerationControls}
+          <hr />
+          <HexMetrics
+            metricPerTile={this.metricPerTile}
+            dataset={this._selectedDataset}
+            geos={this._geos}
+            tiles={this._tiles}
+            originalTilesLength={this._originalTilesLength}
+            onAddTileMouseDown={this._addTileCallback}
+            onMetricMouseOver={this._highlightCallback}
+            onMetricMouseOut={this._unhighlightCallback}
+          />
+        </div>
+        <h2 className='credits'>
           A project by
           <a
             href='http://pitchinteractive.com/'
@@ -144,8 +160,7 @@ class Ui {
           >
             Pitch Interactive
           </a>
-          <br />
-          <br />
+          |
           View
           <a
             href='https://github.com/PitchInteractiveInc/hexagon-cartograms'
@@ -155,24 +170,7 @@ class Ui {
             source
           </a>
           on GitHub
-          <br />
-          <br />
-          Instructions forthcoming
         </h2>
-        <ExportButton onClick={() => this._exportCallback()} />
-        <hr />
-        {tileGenerationControls}
-        <hr />
-        <HexMetrics
-          metricPerTile={this.metricPerTile}
-          dataset={this._selectedDataset}
-          geos={this._geos}
-          tiles={this._tiles}
-          originalTilesLength={this._originalTilesLength}
-          onAddTileMouseDown={this._addTileCallback}
-          onMetricMouseOver={this._highlightCallback}
-          onMetricMouseOut={this._unhighlightCallback}
-        />
       </div>,
       this._container
     )
