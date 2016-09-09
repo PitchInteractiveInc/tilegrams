@@ -179,6 +179,19 @@ export default class GridGraphic extends Graphic {
     }
   }
 
+  onDoubleClick(event) {
+    if (this._tiles) {
+      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const tile = this._findTile(position)
+      if (tile) {
+        this._deselectTile()
+        this._selectedTiles = this._tiles.filter((t) => {
+          return t.id === tile.id
+        })
+      }
+    }
+  }
+
   onHighlightGeo(id) {
     this._highlightId = id
   }
