@@ -1,6 +1,6 @@
 import dat from 'dat-gui'
 
-const devicePixelRatio = 2.0
+const devicePixelRatio = window.devicePixelRatio
 
 const canvasDimensions = {
   width: 0,
