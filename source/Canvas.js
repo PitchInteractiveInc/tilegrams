@@ -24,12 +24,6 @@ class Canvas {
     this._cartogramReady = true
   }
 
-  iterateCartogram() {
-    this._mapGraphic.iterateCartogram()
-    this._setCartogramArea()
-    this.updateTiles()
-  }
-
   updateTiles() {
     this._gridGraphic.populateTiles(this._mapGraphic)
   }
