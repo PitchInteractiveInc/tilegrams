@@ -9,9 +9,17 @@ import {startDownload, isDevEnvironment} from './source/utils'
 require('./source/css/main.scss')
 require('font-awesome/scss/font-awesome.scss')
 
+const CARTOGRAM_COMPUTE_FPS = 60.0
+
+let cartogramComputeTimer
+
 function selectDataset(dataset) {
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram({properties: dataset})
+  clearInterval(cartogramComputeTimer)
+  cartogramComputeTimer = setInterval(() => {
+    canvas.iterateCartogram()
+  }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
 }
 
 function updateUi() {
@@ -42,7 +50,7 @@ function init() {
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setExportCallback(() => {
-    const json = exporter.formatTopoJson(canvas.getGrid().getTiles())
+    const json = exporter.fromTiles(canvas.getGrid().getTiles())
     startDownload({
       filename: 'tiles.topo.json',
       mimeType: 'application/json',
