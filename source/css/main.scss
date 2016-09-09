@@ -32,16 +32,22 @@ a {
   bottom: 0;
   left: $sidebar-width;
   overflow: auto;
-  background-color: #f8f8f8;
-  padding: 40px;
   canvas {
     cursor: pointer;
-    background-color: white;
-    box-shadow: 0 1px 25px 0 rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
   }
 }
 
-#ui {
+.credits {
+  position: fixed;
+  bottom: 5px;
+  left: 0;
+  right: 0;
+  font-size: 9pt;
+  text-align: center;
+}
+
+#ui .column {
   position: fixed;
   top: 0;
   left: 0;
@@ -61,7 +67,7 @@ a {
     font-size: 200%;
     line-height: 1.2em;
   }
-  h1, h2 {
+  h1 {
     padding: 15px;
   }
   .csv-input {
@@ -163,4 +169,3 @@ table {
   z-index: 1;
   pointer-events: none;
 }
-

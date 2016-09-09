@@ -3,7 +3,7 @@ import fipsHash from '../data/fips-to-state.json'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  return `hsl(${parseInt(fips, 10) * (settings.hueScalar % 25.5) * 10.0}, 90%, 70%)`
+  return `hsl(${parseInt(fips, 10) * (settings.hueScalar % 25.5) * 10.0}, 90%, 65%)`
 }
 
 /** Create DOM element. Options may include 'id' */

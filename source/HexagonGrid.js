@@ -19,22 +19,27 @@ class HexagonGrid {
 
   setTileEdge(tileEdge) {
     this._tileEdge = tileEdge
+    this.resize()
+  }
+
+  getTileEdge() {
+    return this._tileEdge
+  }
+
+  resize() {
     this._tileSize = {
-      width: 2.0 * tileEdge,
-      height: Math.sqrt(3.0) * tileEdge,
+      width: 2.0 * this._tileEdge,
+      height: Math.sqrt(3.0) * this._tileEdge,
     }
     this._tileCounts = {
       width: Math.floor(
-        (canvasDimensions.width / (this._tileSize.width * 0.75)) - (TILE_OFFSET * 2)
+        (canvasDimensions.width / (this._tileSize.width * 0.75)) -
+        (TILE_OFFSET * 2)
       ),
       height: Math.floor(
         (canvasDimensions.height / this._tileSize.height) - (TILE_OFFSET * 2)
       ),
     }
-  }
-
-  getTileEdge() {
-    return this._tileEdge
   }
 
   setTileEdgeFromMax(maxX, maxY) {

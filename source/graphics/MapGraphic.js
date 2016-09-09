@@ -21,25 +21,18 @@ export default class MapGraphic extends Graphic {
     this._stateFeatures = null
     this._iterationCount = 0
 
-    topogram.projection(this._buildPreProjection())
     topogram.iterations(1)
   }
 
-  /** Apply topogram on TopoJSON using data in properties */
-  computeCartogram({properties}) {
-    // set topogram dataset
+  /** Apply topogram on topoJson using data in properties */
+  computeCartogram(properties) {
     topogram.value(
       feature => properties.find(property => property[0] === feature.id)[1]
     )
     this._iterationCount = 0
 
-    // on subsequent runs, iterate and bail
-    if (this._stateFeatures !== null) {
-      this.iterateCartogram()
-      return
-    }
-
     // compute initial cartogram
+    this.updatePreProjection()
     this._stateFeatures = topogram(
       mapData.getTopoJson(),
       mapData.getGeometries()
@@ -61,6 +54,17 @@ export default class MapGraphic extends Graphic {
     this._precomputeBounds()
     this._iterationCount++
     return true
+  }
+
+  /** Apply projectiong _before_ cartogram computation */
+  updatePreProjection() {
+    const projection = geoAlbersUsa()
+      .scale(canvasDimensions.width)
+      .translate([
+        canvasDimensions.width * 0.5,
+        canvasDimensions.height * 0.5,
+      ])
+    topogram.projection(projection)
   }
 
   /** Pre-compute projected bounding boxes; filter out small-area paths */
@@ -117,16 +121,6 @@ export default class MapGraphic extends Graphic {
       )
       return matchingPath != null
     })
-  }
-
-  /** Build projection to apply _before_ cartogram computation */
-  _buildPreProjection() {
-    return geoAlbersUsa()
-      .scale(canvasDimensions.width)
-      .translate([
-        canvasDimensions.width * 0.5,
-        canvasDimensions.height * 0.5,
-      ])
   }
 
   computeCartogramArea() {
