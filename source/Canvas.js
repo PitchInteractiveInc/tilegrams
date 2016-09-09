@@ -25,9 +25,11 @@ class Canvas {
   }
 
   iterateCartogram() {
-    this._mapGraphic.iterateCartogram()
-    this._setCartogramArea()
-    this.updateTiles()
+    const iterated = this._mapGraphic.iterateCartogram()
+    if (iterated) {
+      this._setCartogramArea()
+      this.updateTiles()
+    }
   }
 
   updateTiles() {

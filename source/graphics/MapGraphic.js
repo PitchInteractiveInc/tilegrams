@@ -47,16 +47,20 @@ export default class MapGraphic extends Graphic {
     this._precomputeBounds()
   }
 
-  /** Calculate additional iteration cartogram after the initial one */
+  /**
+   * Calculate subsequent cartogram iterations.
+   * Return true if iteration was performed, false if not.
+   */
   iterateCartogram() {
     if (this._iterationCount > MAX_ITERATION_COUNT) {
-      return
+      return false
     }
     topogram.projection(x => x)
     const topoJson = exporter.fromGeoJSON(this._stateFeatures)
     this._stateFeatures = topogram(topoJson, topoJson.objects.states.geometries)
     this._precomputeBounds()
     this._iterationCount++
+    return true
   }
 
   /** Pre-compute projected bounding boxes; filter out small-area paths */
