@@ -41,7 +41,7 @@ a {
 .credits {
   position: fixed;
   bottom: 5px;
-  left: 0;
+  left: $sidebar-width;
   right: 0;
   font-size: 9pt;
   text-align: center;
