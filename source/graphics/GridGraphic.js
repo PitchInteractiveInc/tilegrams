@@ -350,15 +350,25 @@ export default class GridGraphic extends Graphic {
   }
 
   _drawMarqueeSelection() {
-    this._ctx.strokeStyle = 'black'
-    this._ctx.strokeRect(
+    const rect = [
       this._marqueeStart.x * devicePixelRatio,
       this._marqueeStart.y * devicePixelRatio,
       (this._mouseAt.x * devicePixelRatio) -
         (this._marqueeStart.x * devicePixelRatio),
       (this._mouseAt.y * devicePixelRatio) -
         (this._marqueeStart.y * devicePixelRatio)
-    )
+    ]
+
+    // stroke
+    this._ctx.strokeStyle = '#333'
+    this._ctx.lineWidth = 0.5
+    this._ctx.strokeRect(...rect)
+
+    // fill
+    this._ctx.globalAlpha = 0.1
+    this._ctx.fillStyle = '#666'
+    this._ctx.fillRect(...rect)
+    this._ctx.globalAlpha = 1.0
   }
 
   /** http://www.redblobgames.com/hexagonGrids/hexagons/#basics */
@@ -378,7 +388,7 @@ export default class GridGraphic extends Graphic {
     }
     if (superstroke) {
       this._ctx.strokeStyle = selectedTileBorderColor
-      this._ctx.lineWidth = 3
+      this._ctx.lineWidth = 1.5
       this._ctx.stroke()
     }
   }
@@ -396,7 +406,7 @@ export default class GridGraphic extends Graphic {
       this._ctx.closePath()
       this._ctx.globalAlpha = 0.75
       this._ctx.strokeStyle = hoveredTileBorderColor
-      this._ctx.lineWidth = 3
+      this._ctx.lineWidth = 2.0
       this._ctx.stroke()
       this._ctx.globalAlpha = 1.0
     })
