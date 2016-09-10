@@ -55,14 +55,15 @@ class Canvas {
     return this._mapGraphic
   }
 
+  _setCanvasAttribute(canvas, key, value) {
+    const attribute = document.createAttribute(key)
+    attribute.value = value
+    canvas.setAttributeNode(attribute)
+  }
+
   resize() {
-    function setCanvasAttribute(canvas, key, value) {
-      const attribute = document.createAttribute(key)
-      attribute.value = value
-      canvas.setAttributeNode(attribute)
-    }
-    setCanvasAttribute(this._canvas, 'width', canvasDimensions.width)
-    setCanvasAttribute(this._canvas, 'height', canvasDimensions.height)
+    this._setCanvasAttribute(this._canvas, 'width', canvasDimensions.width)
+    this._setCanvasAttribute(this._canvas, 'height', canvasDimensions.height)
     this._canvas.style.width = `${canvasDimensions.width / devicePixelRatio}px`
   }
 
