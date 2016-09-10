@@ -5,7 +5,7 @@
  * http://www.redblobgames.com/grids/hexagons/#coordinates
  */
 
-import {settings, tileEdgeRange, canvasDimensions} from './constants'
+import {canvasDimensions, tileScaleFromStyle, tileEdgeRange} from './constants'
 
 const TILE_OFFSET = 1
 
@@ -56,8 +56,8 @@ class HexagonGrid {
   }
 
   forEachTilePosition(iterator) {
-    for (let x = TILE_OFFSET; x < this._tileCounts.width; x++) {
-      for (let y = TILE_OFFSET; y < this._tileCounts.height; y++) {
+    for (let x = -1; x < this._tileCounts.width + 2; x++) {
+      for (let y = -1; y < this._tileCounts.height + 2; y++) {
         iterator(x, y)
       }
     }
@@ -75,48 +75,48 @@ class HexagonGrid {
     }
   }
 
-  getUpperLeftPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getUpperLeftPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x - (tileScale * this._tileSize.width * 0.25),
       center.y - (tileScale * this._tileSize.height * 0.5),
     ]
   }
 
-  getUpperRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getUpperRightPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x + (tileScale * this._tileSize.width * 0.25),
       center.y - (tileScale * this._tileSize.height * 0.5),
     ]
   }
 
-  getRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getRightPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x + (tileScale * this._tileSize.width * 0.5),
       center.y,
     ]
   }
 
-  getLowerRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getLowerRightPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x + (tileScale * this._tileSize.width * 0.25),
       center.y + (tileScale * this._tileSize.height * 0.5),
     ]
   }
 
-  getLowerLeftPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getLowerLeftPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x - (tileScale * this._tileSize.width * 0.25),
       center.y + (tileScale * this._tileSize.height * 0.5),
     ]
   }
 
-  getLeftPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
+  getLeftPoint(center, style) {
+    const tileScale = tileScaleFromStyle(style)
     return [
       center.x - (tileScale * this._tileSize.width * 0.5),
       center.y,

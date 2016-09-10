@@ -38,13 +38,13 @@ class Exporter {
         y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
       })
       arcs.push([
-        hexagonGrid.getLeftPoint(center, true),
-        hexagonGrid.getUpperLeftPoint(center, true),
-        hexagonGrid.getUpperRightPoint(center, true),
-        hexagonGrid.getRightPoint(center, true),
-        hexagonGrid.getLowerRightPoint(center, true),
-        hexagonGrid.getLowerLeftPoint(center, true),
-        hexagonGrid.getLeftPoint(center, true),
+        hexagonGrid.getLeftPoint(center),
+        hexagonGrid.getUpperLeftPoint(center),
+        hexagonGrid.getUpperRightPoint(center),
+        hexagonGrid.getRightPoint(center),
+        hexagonGrid.getLowerRightPoint(center),
+        hexagonGrid.getLowerLeftPoint(center),
+        hexagonGrid.getLeftPoint(center),
       ])
     })
 

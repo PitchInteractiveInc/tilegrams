@@ -18,6 +18,20 @@ function updateCanvasSize() {
  */
 const nTileDomain = [80, 8000]
 
+function tileScaleFromStyle(style) {
+  switch (style) {
+    case 'blank':
+      return 0.9
+    case 'outline':
+      return 0.98
+    case 'overlapping':
+      return 1.05
+    case 'contiguous':
+    default:
+      return 1.0
+  }
+}
+
 /** dat.gui for realtime updating of properties */
 class Settings {
   constructor() {
@@ -41,11 +55,14 @@ module.exports = {
   canvasDimensions,
   updateCanvasSize,
   nTileDomain,
+  tileScaleFromStyle,
   tileEdgeRange: {
     default: 20,
     min: 10,
     max: 40,
   },
+  canvasBackground: '#f0f0f0',
   selectedTileBorderColor: '#333333',
   hoveredTileBorderColor: '#333333',
+  movingTileColor: '#e0e0e0',
 }

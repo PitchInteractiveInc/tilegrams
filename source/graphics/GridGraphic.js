@@ -5,10 +5,14 @@ import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
 import hexagonGrid from '../HexagonGrid'
 import {
+  canvasDimensions,
   devicePixelRatio,
   selectedTileBorderColor,
   hoveredTileBorderColor,
+  movingTileColor,
+  canvasBackground,
 } from '../constants'
+import fipsHash from '../../data/fips-to-state.json'
 
 export default class GridGraphic extends Graphic {
   constructor() {
@@ -301,18 +305,36 @@ export default class GridGraphic extends Graphic {
 
   render(ctx) {
     this._ctx = ctx
+
+    // fill background
+    this._ctx.fillStyle = canvasBackground
+    this._ctx.fillRect(0, 0, canvasDimensions.width, canvasDimensions.height)
+
+    // fill empty tiles
+    hexagonGrid.forEachTilePosition((x, y) => {
+      this._drawTile({x, y}, '#f9f9f9', {style: 'blank'})
+    })
+
+    // fill occupied tiles
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
       if (this._selectedTiles.includes(tile)) {
-        color = '#cccccc'
+        color = movingTileColor
       }
-      this._drawTile(tile.position, color)
+      this._drawTile(tile.position, color, {style: 'overlapping'})
     })
 
+    // draw borders around geos
+    Object.keys(fipsHash).forEach(id => {
+      this._drawGeoBorder(id, canvasBackground, 1.0)
+    })
+
+    // draw highlighed border
     if (this._highlightId) {
-      this._drawGeoBorder(this._highlightId)
+      this._drawGeoBorder(this._highlightId, hoveredTileBorderColor, 2.0)
     }
 
+    // draw selected tiles
     if (this._selectedTiles.length > 0) {
       this._selectedTiles.forEach((tile) => {
         let position = tile.position
@@ -331,11 +353,7 @@ export default class GridGraphic extends Graphic {
           tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
           position = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
         }
-        this._drawTile(
-          position,
-          fipsColor(tile.id),
-          true
-        )
+        this._drawTile(position, fipsColor(tile.id), {drawStroke: true})
       })
     }
     if (this._makingMarqueeSelection) {
@@ -356,7 +374,7 @@ export default class GridGraphic extends Graphic {
       (this._mouseAt.x * devicePixelRatio) -
         (this._marqueeStart.x * devicePixelRatio),
       (this._mouseAt.y * devicePixelRatio) -
-        (this._marqueeStart.y * devicePixelRatio)
+        (this._marqueeStart.y * devicePixelRatio),
     ]
 
     // stroke
@@ -372,21 +390,24 @@ export default class GridGraphic extends Graphic {
   }
 
   /** http://www.redblobgames.com/hexagonGrids/hexagons/#basics */
-  _drawTile(position, fill, superstroke) {
+  _drawTile(position, fill, {drawStroke, style}) {
+    style = style || 'contiguous'
+    drawStroke = drawStroke || null
+
     const center = hexagonGrid.tileCenterPoint(position)
     this._ctx.beginPath()
-    this._ctx.moveTo(...hexagonGrid.getUpperLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getUpperRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLeftPoint(center))
+    this._ctx.moveTo(...hexagonGrid.getUpperLeftPoint(center, style))
+    this._ctx.lineTo(...hexagonGrid.getUpperRightPoint(center, style))
+    this._ctx.lineTo(...hexagonGrid.getRightPoint(center, style))
+    this._ctx.lineTo(...hexagonGrid.getLowerRightPoint(center, style))
+    this._ctx.lineTo(...hexagonGrid.getLowerLeftPoint(center, style))
+    this._ctx.lineTo(...hexagonGrid.getLeftPoint(center, style))
     this._ctx.closePath()
     if (fill) {
       this._ctx.fillStyle = fill
       this._ctx.fill()
     }
-    if (superstroke) {
+    if (drawStroke) {
       this._ctx.strokeStyle = selectedTileBorderColor
       this._ctx.lineWidth = 1.5
       this._ctx.stroke()
@@ -394,7 +415,7 @@ export default class GridGraphic extends Graphic {
   }
 
   /** Draw border around geo using convex hull algorithm */
-  _drawGeoBorder(id) {
+  _drawGeoBorder(id, color, lineWidth) {
     const tiles = this._getTilesById(id)
     const paths = this._computeOutlinePaths(tiles)
     paths.forEach(path => {
@@ -405,8 +426,8 @@ export default class GridGraphic extends Graphic {
       })
       this._ctx.closePath()
       this._ctx.globalAlpha = 0.75
-      this._ctx.strokeStyle = hoveredTileBorderColor
-      this._ctx.lineWidth = 2.0
+      this._ctx.strokeStyle = color
+      this._ctx.lineWidth = lineWidth
       this._ctx.stroke()
       this._ctx.globalAlpha = 1.0
     })
@@ -419,12 +440,12 @@ export default class GridGraphic extends Graphic {
     tiles.forEach(tile => {
       const center = hexagonGrid.tileCenterPoint(tile.position)
       const hexagonPoints = [
-        hexagonGrid.getUpperLeftPoint(center),
-        hexagonGrid.getUpperRightPoint(center),
-        hexagonGrid.getRightPoint(center),
-        hexagonGrid.getLowerRightPoint(center),
-        hexagonGrid.getLowerLeftPoint(center),
-        hexagonGrid.getLeftPoint(center),
+        hexagonGrid.getUpperLeftPoint(center, 'outline'),
+        hexagonGrid.getUpperRightPoint(center, 'outline'),
+        hexagonGrid.getRightPoint(center, 'outline'),
+        hexagonGrid.getLowerRightPoint(center, 'outline'),
+        hexagonGrid.getLowerLeftPoint(center, 'outline'),
+        hexagonGrid.getLeftPoint(center, 'outline'),
       ]
       hexagonPoints.forEach(point => {
         if (points.indexOf(point) === -1) {
