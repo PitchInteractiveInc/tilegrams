@@ -344,7 +344,7 @@ export default class GridGraphic extends Graphic {
 
     if (this._highlightId) {
       this._ctx.fillStyle = 'black'
-      this._ctx.font = '24px Arial'
+      this._ctx.font = `${12.0 * devicePixelRatio}px Arial`
       this._ctx.fillText(fipsToPostal(this._highlightId), 20, 40)
     }
   }
