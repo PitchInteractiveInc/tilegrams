@@ -125,10 +125,10 @@ class HexagonGrid {
 
   rectToHexPosition(rectX, rectY) {
     const x =
-      Math.round(rectX / (this._tileSize.width * 0.75 * 0.5)) -
+      Math.round(rectX / ((this._tileSize.width * 0.75) / devicePixelRatio)) -
       TILE_OFFSET
     const y = Math.round(
-      (rectY / (this._tileSize.height * 0.5)) -
+      (rectY / (this._tileSize.height / devicePixelRatio)) -
       (x % 2 === 0 ? 0.5 : 0)
     ) - TILE_OFFSET
     return {x, y}

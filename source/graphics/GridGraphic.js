@@ -4,7 +4,11 @@ import {DBSCAN} from 'density-clustering'
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
 import hexagonGrid from '../HexagonGrid'
-import {selectedTileBorderColor, hoveredTileBorderColor} from '../constants'
+import {
+  devicePixelRatio,
+  selectedTileBorderColor,
+  hoveredTileBorderColor,
+} from '../constants'
 
 export default class GridGraphic extends Graphic {
   constructor() {
@@ -31,9 +35,12 @@ export default class GridGraphic extends Graphic {
 
   _onArrowMouseDown(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position = hexagonGrid.rectToHexPosition(
+        event.offsetX,
+        event.offsetY
+      )
       const tile = this._findTile(position)
-      /** Deselect if clicking on null tile, otherwise select tile and/or allow drag */
+      // Deselect if clicking on null tile, otherwise select tile and/or allow drag
       if (tile == null) {
         this._selectedTiles.length = 0
         return
@@ -82,13 +89,11 @@ export default class GridGraphic extends Graphic {
         x2: Math.max(this._marqueeStart.x, this._mouseAt.x),
         y1: Math.min(this._marqueeStart.y, this._mouseAt.y),
         y2: Math.max(this._marqueeStart.y, this._mouseAt.y),
-
       }
       this._selectedTiles = this._tiles.filter((tile) => {
         const center = hexagonGrid.tileCenterPoint(tile.position)
-        // DPI fixes?
-        center.x /= 2
-        center.y /= 2
+        center.x /= devicePixelRatio
+        center.y /= devicePixelRatio
         return center.x > marqueeBounds.x1 && center.x < marqueeBounds.x2 &&
           center.y > marqueeBounds.y1 && center.y < marqueeBounds.y2
       })
@@ -115,8 +120,8 @@ export default class GridGraphic extends Graphic {
         // figure out where in XY space this tile currently is
         const tileXY = hexagonGrid.tileCenterPoint(tile.position)
         // add in the offset of the moved mouse (accounting for DPI)
-        tileXY.x = (tileXY.x * 0.5) + offset.x
-        tileXY.y = (tileXY.y * 0.5) + offset.y
+        tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
+        tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
         // convert back to hex coordinates
         tile.newPosition = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
         // check to see if a tile exists at that place
@@ -169,7 +174,10 @@ export default class GridGraphic extends Graphic {
         x: event.offsetX,
         y: event.offsetY,
       }
-      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position = hexagonGrid.rectToHexPosition(
+        this._mouseAt.x,
+        this._mouseAt.y
+      )
       const tile = this._findTile(position)
       if (!tile) {
         this._highlightId = null
@@ -181,7 +189,10 @@ export default class GridGraphic extends Graphic {
 
   onDoubleClick(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+      const position = hexagonGrid.rectToHexPosition(
+        event.offsetX,
+        event.offsetY
+      )
       const tile = this._findTile(position)
       if (tile) {
         this._deselectTile()
@@ -237,7 +248,6 @@ export default class GridGraphic extends Graphic {
       x: this._mouseAt.x,
       y: this._mouseAt.y,
     }
-    // this._mouseAt = {x: -1, y: -1}
     this._selectedTiles.length = 0
     this._selectedTiles.push(this._newTile)
   }
@@ -317,8 +327,8 @@ export default class GridGraphic extends Graphic {
           }
 
           const tileXY = hexagonGrid.tileCenterPoint(position)
-          tileXY.x = (tileXY.x * 0.5) + offset.x
-          tileXY.y = (tileXY.y * 0.5) + offset.y
+          tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
+          tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
           position = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
         }
         this._drawTile(
@@ -341,12 +351,13 @@ export default class GridGraphic extends Graphic {
 
   _drawMarqueeSelection() {
     this._ctx.strokeStyle = 'black'
-    // DPI fixes ?
     this._ctx.strokeRect(
-      this._marqueeStart.x * 2,
-      this._marqueeStart.y * 2,
-      (this._mouseAt.x * 2) - (this._marqueeStart.x * 2),
-      (this._mouseAt.y * 2) - (this._marqueeStart.y * 2)
+      this._marqueeStart.x * devicePixelRatio,
+      this._marqueeStart.y * devicePixelRatio,
+      (this._mouseAt.x * devicePixelRatio) -
+        (this._marqueeStart.x * devicePixelRatio),
+      (this._mouseAt.y * devicePixelRatio) -
+        (this._marqueeStart.y * devicePixelRatio)
     )
   }
 
