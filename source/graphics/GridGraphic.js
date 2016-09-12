@@ -158,12 +158,23 @@ export default class GridGraphic extends Graphic {
 
       // nothing is overlapping
       if (!overlaps) {
+        // check to see if has actually moved
+        const movedTilesLength = this._selectedTiles.filter(tile => {
+          return (
+            tile.position.x !== tile.newPosition.x &&
+            tile.position.y !== tile.newPosition.y
+          )
+        }).length
+        // if so, notify editing
+        if (movedTilesLength > 0) {
+          this._hasBeenEdited = true
+          this._setUiEditing()
+        }
         // actually update the tile positions
         this._selectedTiles.forEach((tile) => {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
-        this._hasBeenEdited = true // notify of edit
       } else if (this._selectedTiles[0] === this._newTile) {
         // there exists overlaps on a new tile, remove new tile
         this._newTile = null
@@ -174,6 +185,7 @@ export default class GridGraphic extends Graphic {
         // add new tile to list of tiles
         this._tiles.push(this._newTile)
         this._hasBeenEdited = true // notify of edit
+        this._setUiEditing() // move Ui to editing
         this.updateUi()
         this._newTile = null
       }
@@ -245,6 +257,7 @@ export default class GridGraphic extends Graphic {
       })
       this._selectedTiles.length = 0
       this._hasBeenEdited = true // notify of edit
+      this._setUiEditing() // move Ui to editing
       this.updateUi()
     }
   }
@@ -526,6 +539,10 @@ export default class GridGraphic extends Graphic {
     if (this._onChangeCallback) {
       this._onChangeCallback()
     }
+  }
+
+  setUiEditingCallback(callback) {
+    this._setUiEditing = callback
   }
 
   _getTilesById(id) {

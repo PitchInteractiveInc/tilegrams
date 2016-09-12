@@ -16,7 +16,7 @@ class Ui {
     this._originalTilesLength = null
     this._usingImportedTiles = false
     this._tileFilename = null
-    this._editing = false
+    this.editing = false
 
     this._resetImportedTiles = this._resetImportedTiles.bind(this)
     this._startOver = this._startOver.bind(this)
@@ -106,7 +106,7 @@ class Ui {
           return
         }
       }
-      this._editing = isEditing
+      this.editing = isEditing
       this.render()
     }
   }
@@ -126,7 +126,7 @@ class Ui {
   }
 
   _startOver() {
-    this._editing = false
+    this.editing = false
     this._showModal = false
     this.render()
   }
@@ -153,7 +153,7 @@ class Ui {
     )
     const generateOption = (
       <div
-        className={this._editing ? 'step' : 'active step'}
+        className={this.editing ? 'step' : 'active step'}
         onClick={this._setEditing(false)}
       >
         <div className='highlight-bar' />
@@ -162,7 +162,7 @@ class Ui {
     )
     const editOption = (
       <div
-        className={this._editing ? 'active step' : 'step'}
+        className={this.editing ? 'active step' : 'step'}
         onClick={this._setEditing(true)}
       >
         <div className='highlight-bar' />
@@ -188,12 +188,12 @@ class Ui {
           <ExportButton onClick={() => this._exportCallback()} />
           <hr />
           {generateOption}
-          <div className={this._editing ? 'deselected' : null} >
+          <div className={this.editing ? 'deselected' : null} >
             {tileGenerationControls}
           </div>
           <hr />
           {editOption}
-          <div className={this._editing ? null : 'deselected'}>
+          <div className={this.editing ? null : 'deselected'}>
             <HexMetrics
               metricPerTile={this.metricPerTile}
               dataset={this._selectedDataset}
