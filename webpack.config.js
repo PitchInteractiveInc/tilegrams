@@ -46,7 +46,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      title: "Tessellagram Maker",
+      title: "Tilegrams",
     }),
   ],
 }

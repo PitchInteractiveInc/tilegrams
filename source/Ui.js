@@ -134,7 +134,7 @@ class Ui {
       <div>
         <div className='column'>
           <h1>
-            Tessellagram Maker
+            Tilegrams
           </h1>
           <ExportButton onClick={() => this._exportCallback()} />
           <hr />
