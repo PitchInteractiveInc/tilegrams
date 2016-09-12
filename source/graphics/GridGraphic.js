@@ -338,13 +338,10 @@ export default class GridGraphic extends Graphic {
     })
   }
 
-<<<<<<< 96972a201175ef08dbfd60dba93c506356a68301
   _disableSelectionHighlight() {
     return this._highlightId !== null && this._highlightFromOutsideGrid
   }
 
-=======
->>>>>>> add warning for currently in progress work
   checkForEdits() {
     return this._hasBeenEdited
   }

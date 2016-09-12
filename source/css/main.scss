@@ -32,7 +32,6 @@ a {
 .deselected {
   opacity: 0.4;
   transition: opacity 0.3s ease-in-out;
-  pointer-events: none;
 }
 
 .step {
@@ -94,7 +93,6 @@ a {
   color: #fff;
   overflow-x: hidden;
   overflow-y: auto;
-  padding-top: 15px;
   hr {
     border: none;
     height: 1px;
@@ -102,11 +100,15 @@ a {
     background-color: #444;
   }
   h1 {
+    padding-top: 15px;
     font-size: 200%;
     line-height: 1.2em;
   }
   h1 {
     padding: 15px;
+  }
+  .scroll-ui {
+    overflow: scroll;
   }
   .ui-controls {
     padding: 0 10px;
@@ -153,7 +155,8 @@ a {
     }
   }
   .metrics {
-    padding: 8px;
+    padding: 0 8px;
+    overflow: scroll;
   }
   #metrics-header {
     padding-bottom: 0.5em;

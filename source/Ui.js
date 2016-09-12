@@ -21,6 +21,20 @@ class Ui {
     this._resetImportedTiles = this._resetImportedTiles.bind(this)
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
+    window.addEventListener('resize', this._resize)
+  }
+
+  _resize() {
+    const heightAvailable = Array.prototype.slice.call(
+      document.querySelectorAll('.no-scroll-ui')
+    ).reduce(
+      (remainingHeight, node) => {
+        const dimensions = node.getBoundingClientRect()
+        return remainingHeight - dimensions.height
+      },
+      window.innerHeight - 15
+    )
+    document.querySelector('.metrics').style.height = `${heightAvailable}px`
   }
 
   setGeos(geos) {
@@ -136,14 +150,11 @@ class Ui {
     this.render()
   }
 
-<<<<<<< 96972a201175ef08dbfd60dba93c506356a68301
   setEditingTrue() {
     this._editing = true
     this.render()
   }
 
-=======
->>>>>>> add warning for currently in progress work
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
@@ -190,17 +201,18 @@ class Ui {
       <div>
         {modal}
         <div className='column'>
-          <h1>
-            Tilegrams
-          </h1>
-          <ExportButton onClick={() => this._exportCallback()} />
-          <hr />
-          {generateOption}
-          <div className={this._editing ? 'deselected' : null} >
-            {tileGenerationControls}
+          <div className='no-scroll-ui'>
+            <h1 className='title'>
+              Tilegrams
+            </h1>
+            <hr />
+            {generateOption}
+            <div className={this._editing ? 'deselected' : null} >
+              {tileGenerationControls}
+            </div>
+            <hr />
+            {editOption}
           </div>
-          <hr />
-          {editOption}
           <div className={this._editing ? null : 'deselected'}>
             <HexMetrics
               metricPerTile={this.metricPerTile}
@@ -212,6 +224,9 @@ class Ui {
               onMetricMouseOver={this._highlightCallback}
               onMetricMouseOut={this._unhighlightCallback}
             />
+          </div>
+          <div className='no-scroll-ui'>
+            <ExportButton onClick={() => this._exportCallback()} />
           </div>
         </div>
         <h2 className='credits'>
@@ -237,6 +252,7 @@ class Ui {
       </div>,
       this._container
     )
+    this._resize()
   }
 }
 
