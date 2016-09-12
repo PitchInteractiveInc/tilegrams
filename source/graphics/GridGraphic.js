@@ -18,6 +18,7 @@ export default class GridGraphic extends Graphic {
     this._makingMarqueeSelection = false
     this._draggingMultiSelect = false
     this._selectedTiles = []
+    this._highlightFromOutsideGrid = false
     this._mouseAt = {x: 0, y: 0}
     document.body.onkeydown = this.onkeydown.bind(this)
   }
@@ -205,10 +206,12 @@ export default class GridGraphic extends Graphic {
 
   onHighlightGeo(id) {
     this._highlightId = id
+    this._highlightFromOutsideGrid = true
   }
 
   resetHighlightedGeo() {
     this._highlightId = null
+    this._highlightFromOutsideGrid = false
   }
 
   onkeydown(event) {
@@ -299,11 +302,15 @@ export default class GridGraphic extends Graphic {
     })
   }
 
+  _disableSelectionHighlight() {
+    return this._highlightId !== null && this._highlightFromOutsideGrid
+  }
+
   render(ctx) {
     this._ctx = ctx
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
-      if (this._selectedTiles.includes(tile)) {
+      if (!this._disableSelectionHighlight() && this._selectedTiles.includes(tile)) {
         color = '#cccccc'
       }
       this._drawTile(tile.position, color)
@@ -313,7 +320,7 @@ export default class GridGraphic extends Graphic {
       this._drawGeoBorder(this._highlightId)
     }
 
-    if (this._selectedTiles.length > 0) {
+    if (this._selectedTiles.length > 0 && !this._disableSelectionHighlight()) {
       this._selectedTiles.forEach((tile) => {
         let position = tile.position
         if (this._draggingMultiSelect) {
