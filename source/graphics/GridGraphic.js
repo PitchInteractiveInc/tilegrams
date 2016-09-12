@@ -363,7 +363,7 @@ export default class GridGraphic extends Graphic {
       (this._mouseAt.x * devicePixelRatio) -
         (this._marqueeStart.x * devicePixelRatio),
       (this._mouseAt.y * devicePixelRatio) -
-        (this._marqueeStart.y * devicePixelRatio)
+        (this._marqueeStart.y * devicePixelRatio),
     ]
 
     // stroke
