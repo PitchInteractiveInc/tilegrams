@@ -49,7 +49,7 @@ export default class HexMetrics extends React.Component {
         }
         stat.idealNHex = idealNHex
         stat.metric = metric
-        stat.deviation = idealNHex - d.value
+        stat.deviation = d.value - idealNHex
       }
       return stat
     })
