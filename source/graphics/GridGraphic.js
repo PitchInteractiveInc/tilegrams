@@ -350,10 +350,43 @@ export default class GridGraphic extends Graphic {
     }
 
     if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
+      this._ctx.textAlign = 'left'
+      this._ctx.textBaseline = 'alphabetic'
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Arial`
       this._ctx.fillText(fipsToPostal(this._highlightId), 20, 40)
     }
+
+    this._drawClusterLabels()
+  }
+
+  _drawClusterLabels() {
+    const ids = new Set(this._tiles.map(t => t.id))
+    ids.forEach((id) => {
+      const tiles = this._getTilesById(id)
+      const clusters = this._computeClusters(tiles)
+      let biggestCluster = []
+      clusters.forEach((cluster) => {
+        if (cluster.length > biggestCluster.length) {
+          biggestCluster = cluster
+        }
+      })
+      const clusterSum = biggestCluster.reduce(
+        (previous, point) => {
+          return [previous[0] + point[0], previous[1] + point[1]]
+        },
+        [0, 0]
+      )
+      const clusterAvg = [
+        clusterSum[0] / biggestCluster.length,
+        clusterSum[1] / biggestCluster.length,
+      ]
+      this._ctx.textAlign = 'center'
+      this._ctx.textBaseline = 'middle'
+      this._ctx.fillStyle = 'black'
+      this._ctx.font = `${12.0 * devicePixelRatio}px Arial`
+      this._ctx.fillText(fipsToPostal(id), clusterAvg[0], clusterAvg[1])
+    })
   }
 
   _drawMarqueeSelection() {
@@ -421,6 +454,15 @@ export default class GridGraphic extends Graphic {
 
   /** Compute contiguous outline (convex hull) of given tiles */
   _computeOutlinePaths(tiles) {
+    return this._clusters(tiles, true)
+  }
+
+  /** Compute clusters returning each cluster for given tiles */
+  _computeClusters(tiles) {
+    return this._clusters(tiles, false)
+  }
+
+  _clusters(tiles, returnHull = true) {
     // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {
@@ -447,14 +489,15 @@ export default class GridGraphic extends Graphic {
       hexagonGrid.getTileEdge(),  // neighborhood radius
       2                           // min points per cluster
     )
-
     // return paths
     return clusters.map(clusterIndices => {
       const clusterPoints = clusterIndices.map(index => points[index])
-      return hull(
-        clusterPoints,
-        hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
-      )
+      return returnHull ?
+        hull(
+          clusterPoints,
+          hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
+        ) :
+        clusterPoints
     })
   }
 
