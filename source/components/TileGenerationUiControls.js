@@ -4,7 +4,7 @@ import DatasetSelector from './DatasetSelector'
 import ResolutionSlider from './ResolutionSlider'
 import ImportButton from './ImportButton'
 
-export default class UiControls extends React.Component {
+export default class TileGenerationUiControls extends React.Component {
   constructor(props) {
     super(props)
 
@@ -73,7 +73,7 @@ export default class UiControls extends React.Component {
   }
 }
 
-UiControls.propTypes = {
+TileGenerationUiControls.propTypes = {
   labels: React.PropTypes.array,
   selectDataset: React.PropTypes.func,
   selectCustomDataset: React.PropTypes.func,
@@ -86,7 +86,7 @@ UiControls.propTypes = {
   usingImportedtiles: React.PropTypes.bool,
 }
 
-UiControls.defaultProps = {
+TileGenerationUiControls.defaultProps = {
   labels: [],
   selectDataset: () => {},
   selectCustomDataset: () => {},

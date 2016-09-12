@@ -32,11 +32,6 @@ function updateUi() {
   ui.render()
 }
 
-function setEditingTrue() {
-  ui.editing = true
-  ui.render()
-}
-
 function confirmNavigation(e) {
   // most browsers won't let you display custom text but have something like this anyway
   const message = 'Are you sure you want to leave this page? You will lose any unsaved work.'
@@ -47,7 +42,7 @@ function confirmNavigation(e) {
 function init() {
   // wire up callbacks
   canvas.getGrid().onChange(() => updateUi())
-  canvas.getGrid().setUiEditingCallback(() => setEditingTrue())
+  canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
   ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))

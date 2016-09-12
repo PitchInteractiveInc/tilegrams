@@ -167,8 +167,7 @@ export default class GridGraphic extends Graphic {
         }).length
         // if so, notify editing
         if (movedTilesLength > 0) {
-          this._hasBeenEdited = true
-          this._setUiEditing()
+          this._setToEditingMode()
         }
         // actually update the tile positions
         this._selectedTiles.forEach((tile) => {
@@ -184,8 +183,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTiles[0] === this._newTile) {
         // add new tile to list of tiles
         this._tiles.push(this._newTile)
-        this._hasBeenEdited = true // notify of edit
-        this._setUiEditing() // move Ui to editing
+        this._setToEditingMode()
         this.updateUi()
         this._newTile = null
       }
@@ -256,8 +254,7 @@ export default class GridGraphic extends Graphic {
         this._deleteTile(tile)
       })
       this._selectedTiles.length = 0
-      this._hasBeenEdited = true // notify of edit
-      this._setUiEditing() // move Ui to editing
+      this._setToEditingMode()
       this.updateUi()
     }
   }
@@ -539,6 +536,15 @@ export default class GridGraphic extends Graphic {
     if (this._onChangeCallback) {
       this._onChangeCallback()
     }
+  }
+
+  /**
+   * sets ._hasBeenEdited to true to notify user of possible edit loss
+   * ensures UI is in editing mode
+   */
+  _setToEditingMode() {
+    this._hasBeenEdited = true
+    this._setUiEditing()
   }
 
   setUiEditingCallback(callback) {

@@ -3,7 +3,7 @@ import React from 'react'
 const warningText = `You have made changes to your map.
  Editing the resolution or reimporting will overwrite those changes.`
 
-export default function Modal(props) {
+export default function EditWarningModal(props) {
   return (
     <div
       className='modal-edit-warning'
@@ -33,12 +33,12 @@ export default function Modal(props) {
   )
 }
 
-Modal.propTypes = {
+EditWarningModal.propTypes = {
   startOver: React.PropTypes.func,
   resumeEditing: React.PropTypes.func,
 }
 
-Modal.defaultProps = {
+EditWarningModal.defaultProps = {
   startOver: () => {},
   resumeEditing: () => {},
 }

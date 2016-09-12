@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom'
 
 import {createElement} from './utils'
 import {nTileDomain} from './constants'
-import UiControls from './components/UiControls'
+import TileGenerationUiControls from './components/TileGenerationUiControls'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
-import Modal from './components/Modal'
+import EditWarningModal from './components/EditWarningModal'
 
 class Ui {
   constructor() {
@@ -16,7 +16,7 @@ class Ui {
     this._originalTilesLength = null
     this._usingImportedTiles = false
     this._tileFilename = null
-    this.editing = false
+    this._editing = false
 
     this._resetImportedTiles = this._resetImportedTiles.bind(this)
     this._startOver = this._startOver.bind(this)
@@ -106,7 +106,7 @@ class Ui {
           return
         }
       }
-      this.editing = isEditing
+      this._editing = isEditing
       this.render()
     }
   }
@@ -126,7 +126,7 @@ class Ui {
   }
 
   _startOver() {
-    this.editing = false
+    this._editing = false
     this._showModal = false
     this.render()
   }
@@ -136,9 +136,14 @@ class Ui {
     this.render()
   }
 
+  setEditingTrue() {
+    this._editing = true
+    this.render()
+  }
+
   render() {
     const tileGenerationControls = (
-      <UiControls
+      <TileGenerationUiControls
         labels={this._datasetLabels}
         selectDataset={this._datasetSelectedCallback}
         selectCustomDataset={this._customDatasetCallback}
@@ -153,7 +158,7 @@ class Ui {
     )
     const generateOption = (
       <div
-        className={this.editing ? 'step' : 'active step'}
+        className={this._editing ? 'step' : 'active step'}
         onClick={this._setEditing(false)}
       >
         <div className='highlight-bar' />
@@ -162,7 +167,7 @@ class Ui {
     )
     const editOption = (
       <div
-        className={this.editing ? 'active step' : 'step'}
+        className={this._editing ? 'active step' : 'step'}
         onClick={this._setEditing(true)}
       >
         <div className='highlight-bar' />
@@ -172,7 +177,7 @@ class Ui {
     let modal = null
     if (this._showModal) {
       modal = (
-        <Modal
+        <EditWarningModal
           startOver={this._startOver}
           resumeEditing={this._resumeEditing}
         />
@@ -188,12 +193,12 @@ class Ui {
           <ExportButton onClick={() => this._exportCallback()} />
           <hr />
           {generateOption}
-          <div className={this.editing ? 'deselected' : null} >
+          <div className={this._editing ? 'deselected' : null} >
             {tileGenerationControls}
           </div>
           <hr />
           {editOption}
-          <div className={this.editing ? null : 'deselected'}>
+          <div className={this._editing ? null : 'deselected'}>
             <HexMetrics
               metricPerTile={this.metricPerTile}
               dataset={this._selectedDataset}
