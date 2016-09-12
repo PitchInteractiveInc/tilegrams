@@ -191,6 +191,9 @@ export default class GridGraphic extends Graphic {
         x: event.offsetX,
         y: event.offsetY,
       }
+      if (this._makingMarqueeSelection) {
+        this._selectedTiles = this._getMarqueeSelection()
+      }
       const position = hexagonGrid.rectToHexPosition(
         this._mouseAt.x,
         this._mouseAt.y
