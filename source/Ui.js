@@ -136,11 +136,14 @@ class Ui {
     this.render()
   }
 
+<<<<<<< 96972a201175ef08dbfd60dba93c506356a68301
   setEditingTrue() {
     this._editing = true
     this.render()
   }
 
+=======
+>>>>>>> add warning for currently in progress work
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls

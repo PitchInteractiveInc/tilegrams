@@ -174,6 +174,7 @@ export default class GridGraphic extends Graphic {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
+        this._hasBeenEdited = true // notify of edit
       } else if (this._selectedTiles[0] === this._newTile) {
         // there exists overlaps on a new tile, remove new tile
         this._newTile = null
@@ -337,10 +338,13 @@ export default class GridGraphic extends Graphic {
     })
   }
 
+<<<<<<< 96972a201175ef08dbfd60dba93c506356a68301
   _disableSelectionHighlight() {
     return this._highlightId !== null && this._highlightFromOutsideGrid
   }
 
+=======
+>>>>>>> add warning for currently in progress work
   checkForEdits() {
     return this._hasBeenEdited
   }
