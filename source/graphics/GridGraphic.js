@@ -436,7 +436,11 @@ export default class GridGraphic extends Graphic {
   /** Draw border around geo using convex hull algorithm */
   _drawGeoBorder(id) {
     const tiles = this._getTilesById(id)
-    const paths = this._computeOutlinePaths(tiles)
+    const clusters = this._computeClusters(tiles)
+    const paths = clusters.map(cluster => hull(
+      cluster,
+      hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
+    ))
     paths.forEach(path => {
       this._ctx.beginPath()
       path.forEach((point, index) => {
@@ -459,10 +463,6 @@ export default class GridGraphic extends Graphic {
 
   /** Compute clusters returning each cluster for given tiles */
   _computeClusters(tiles) {
-    return this._clusters(tiles, false)
-  }
-
-  _clusters(tiles, returnHull = true) {
     // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {
@@ -482,23 +482,15 @@ export default class GridGraphic extends Graphic {
       })
     })
 
-    // cluster points
+    // cluster points, returns clusters with indicies to original points
     const dbscan = new DBSCAN()
     const clusters = dbscan.run(
       points,
       hexagonGrid.getTileEdge(),  // neighborhood radius
       2                           // min points per cluster
     )
-    // return paths
-    return clusters.map(clusterIndices => {
-      const clusterPoints = clusterIndices.map(index => points[index])
-      return returnHull ?
-        hull(
-          clusterPoints,
-          hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
-        ) :
-        clusterPoints
-    })
+    // deindex and return clusters
+    return clusters.map(clusterIndices => clusterIndices.map(index => points[index]))
   }
 
   updateUi() {
