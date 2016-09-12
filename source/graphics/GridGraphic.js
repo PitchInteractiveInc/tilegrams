@@ -239,8 +239,8 @@ export default class GridGraphic extends Graphic {
     this._newTile = {
       id,
       position: {
-        x: null,
-        y: null,
+        x: -1,
+        y: -1,
       },
     }
     this._draggingMultiSelect = true
