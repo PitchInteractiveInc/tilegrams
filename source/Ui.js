@@ -6,6 +6,7 @@ import {nTileDomain} from './constants'
 import UiControls from './components/UiControls'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
+import Modal from './components/Modal'
 
 class Ui {
   constructor() {
@@ -18,6 +19,8 @@ class Ui {
     this._editing = false
 
     this._resetImportedTiles = this._resetImportedTiles.bind(this)
+    this._startOver = this._startOver.bind(this)
+    this._resumeEditing = this._resumeEditing.bind(this)
   }
 
   setGeos(geos) {
@@ -96,9 +99,20 @@ class Ui {
 
   _setEditing(isEditing) {
     return () => {
+      if (!isEditing) {
+        if (this._checkForUnsavedChanges()) {
+          this._showModal = true
+          this.render()
+          return
+        }
+      }
       this._editing = isEditing
       this.render()
     }
+  }
+
+  setUnsavedChangesCallback(callback) {
+    this._checkForUnsavedChanges = callback
   }
 
   _init() {
@@ -108,6 +122,17 @@ class Ui {
   _resetImportedTiles() {
     this._usingImportedTiles = false
     this._tileFilename = null
+    this.render()
+  }
+
+  _startOver() {
+    this._editing = false
+    this._showModal = false
+    this.render()
+  }
+
+  _resumeEditing() {
+    this._showModal = false
     this.render()
   }
 
@@ -144,8 +169,18 @@ class Ui {
         <p><span>Step 2:</span> Edit topogram and improve accuracy.</p>
       </div>
     )
+    let modal = null
+    if (this._showModal) {
+      modal = (
+        <Modal
+          startOver={this._startOver}
+          resumeEditing={this._resumeEditing}
+        />
+      )
+    }
     ReactDOM.render(
       <div>
+        {modal}
         <div className='column'>
           <h1>
             Tilegrams

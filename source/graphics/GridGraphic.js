@@ -21,6 +21,7 @@ export default class GridGraphic extends Graphic {
     this._selectedTiles = []
     this._highlightFromOutsideGrid = false
     this._mouseAt = {x: 0, y: 0}
+    this._hasBeenEdited = false
     document.body.onkeydown = this.onkeydown.bind(this)
   }
 
@@ -162,6 +163,7 @@ export default class GridGraphic extends Graphic {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
+        this._hasBeenEdited = true // notify of edit
       } else if (this._selectedTiles[0] === this._newTile) {
         // there exists overlaps on a new tile, remove new tile
         this._newTile = null
@@ -171,6 +173,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTiles[0] === this._newTile) {
         // add new tile to list of tiles
         this._tiles.push(this._newTile)
+        this._hasBeenEdited = true // notify of edit
         this.updateUi()
         this._newTile = null
       }
@@ -241,6 +244,7 @@ export default class GridGraphic extends Graphic {
         this._deleteTile(tile)
       })
       this._selectedTiles.length = 0
+      this._hasBeenEdited = true // notify of edit
       this.updateUi()
     }
   }
@@ -297,6 +301,7 @@ export default class GridGraphic extends Graphic {
     })
     // save tiles length so the stats does not have a moving target
     this.originalTilesLength = this._tiles.length
+    this._hasBeenEdited = false // reset edit state
     this.updateUi()
     return this._tiles
   }
@@ -324,6 +329,10 @@ export default class GridGraphic extends Graphic {
 
   _disableSelectionHighlight() {
     return this._highlightId !== null && this._highlightFromOutsideGrid
+  }
+
+  checkForEdits() {
+    return this._hasBeenEdited
   }
 
   render(ctx) {

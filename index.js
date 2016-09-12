@@ -51,6 +51,7 @@ function init() {
     ui.metricPerTile = metricPerTile
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
+  ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
     const json = exporter.fromTiles(canvas.getGrid().getTiles())
     startDownload({

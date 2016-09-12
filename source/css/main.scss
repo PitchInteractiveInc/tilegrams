@@ -40,9 +40,10 @@ a {
   cursor: pointer;
   margin-bottom: 10px;
   p {
-    font-size: 1.25em;
     padding: 15px;
+    line-height: 1.25em;
     span {
+      font-size: 1.25em;
       font-weight: bold;
     }
   }
@@ -97,6 +98,7 @@ a {
   hr {
     border: none;
     height: 1px;
+    margin-bottom: 0;
     background-color: #444;
   }
   h1 {
@@ -162,6 +164,30 @@ a {
     line-height: 1.2em;
     i {
       padding-right: 0.5em;
+    }
+  }
+}
+
+.modal-edit-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  background-color: rgba(0,0,0,0.3);
+  .warning-text {
+    position: relative;
+    max-width: 400px;
+    left: 50%;
+    top: 50%;
+    color: white;
+    padding: 15px;
+    font-size: 1.2em;
+    transform: translateX(-50%) translateY(-50%);
+    background-color: #1a1a1a;
+    a {
+      padding: 15px;
     }
   }
 }
