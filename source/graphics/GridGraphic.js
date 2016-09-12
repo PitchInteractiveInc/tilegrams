@@ -1,5 +1,6 @@
 import hull from 'hull.js'
 import {DBSCAN} from 'density-clustering'
+import polygonOverlap from 'polygon-overlap'
 
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
@@ -83,21 +84,37 @@ export default class GridGraphic extends Graphic {
     }
   }
 
+  _getMarqueeSelection() {
+    const marqueeBounds = {
+      x1: Math.min(this._marqueeStart.x * devicePixelRatio, this._mouseAt.x * devicePixelRatio),
+      x2: Math.max(this._marqueeStart.x * devicePixelRatio, this._mouseAt.x * devicePixelRatio),
+      y1: Math.min(this._marqueeStart.y * devicePixelRatio, this._mouseAt.y * devicePixelRatio),
+      y2: Math.max(this._marqueeStart.y * devicePixelRatio, this._mouseAt.y * devicePixelRatio),
+    }
+    return this._tiles.filter((tile) => {
+      const center = hexagonGrid.tileCenterPoint(tile.position)
+      return polygonOverlap(
+        [
+          [marqueeBounds.x1, marqueeBounds.y1],
+          [marqueeBounds.x2, marqueeBounds.y1],
+          [marqueeBounds.x2, marqueeBounds.y2],
+          [marqueeBounds.x1, marqueeBounds.y2],
+        ],
+        [
+          hexagonGrid.getUpperLeftPoint(center),
+          hexagonGrid.getUpperRightPoint(center),
+          hexagonGrid.getRightPoint(center),
+          hexagonGrid.getLowerRightPoint(center),
+          hexagonGrid.getLowerLeftPoint(center),
+          hexagonGrid.getLeftPoint(center),
+        ]
+      )
+    })
+  }
+
   onMouseUp(event) {
     if (this._makingMarqueeSelection) {
-      const marqueeBounds = {
-        x1: Math.min(this._marqueeStart.x, this._mouseAt.x),
-        x2: Math.max(this._marqueeStart.x, this._mouseAt.x),
-        y1: Math.min(this._marqueeStart.y, this._mouseAt.y),
-        y2: Math.max(this._marqueeStart.y, this._mouseAt.y),
-      }
-      this._selectedTiles = this._tiles.filter((tile) => {
-        const center = hexagonGrid.tileCenterPoint(tile.position)
-        center.x /= devicePixelRatio
-        center.y /= devicePixelRatio
-        return center.x > marqueeBounds.x1 && center.x < marqueeBounds.x2 &&
-          center.y > marqueeBounds.y1 && center.y < marqueeBounds.y2
-      })
+      this._selectedTiles = this._getMarqueeSelection()
       this._makingMarqueeSelection = false
     } else if (this._draggingMultiSelect) {
       // we need to offset each selected tile by the amount the mouse moved,
@@ -174,6 +191,9 @@ export default class GridGraphic extends Graphic {
       this._mouseAt = {
         x: event.offsetX,
         y: event.offsetY,
+      }
+      if (this._makingMarqueeSelection) {
+        this._selectedTiles = this._getMarqueeSelection()
       }
       const position = hexagonGrid.rectToHexPosition(
         this._mouseAt.x,
