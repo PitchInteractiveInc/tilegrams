@@ -309,7 +309,7 @@ export default class GridGraphic extends Graphic {
       this._drawTile(tile.position, color)
     })
 
-    if (this._highlightId) {
+    if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
       this._drawGeoBorder(this._highlightId)
     }
 
@@ -342,7 +342,7 @@ export default class GridGraphic extends Graphic {
       this._drawMarqueeSelection()
     }
 
-    if (this._highlightId) {
+    if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Arial`
       this._ctx.fillText(fipsToPostal(this._highlightId), 20, 40)
