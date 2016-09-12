@@ -25,6 +25,43 @@ a {
   line-height: 110%;
 }
 
+.padding-bottom {
+  padding-bottom: 20px;
+}
+
+.deselected {
+  opacity: 0.4;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.step {
+  position: relative;
+  cursor: pointer;
+  margin-bottom: 10px;
+  p {
+    padding: 15px;
+    line-height: 1.25em;
+    span {
+      font-size: 1.25em;
+      font-weight: bold;
+    }
+  }
+  .highlight-bar {
+    position: absolute;
+    bottom: 0px;
+    width: 6px;
+    background-color: $blue;
+    height: 0%;
+    transition: height 0.22s ease-in-out;
+  }
+  &.active {
+    .highlight-bar {
+      height: 100%;
+    }
+  }
+}
+
 #canvas {
   position: fixed;
   right: 0;
@@ -61,6 +98,7 @@ a {
   hr {
     border: none;
     height: 1px;
+    margin-bottom: 0;
     background-color: #444;
   }
   h1 {
@@ -69,6 +107,12 @@ a {
   }
   h1 {
     padding: 15px;
+  }
+  .ui-controls {
+    padding: 0 10px;
+    .ui-control-type {
+      padding-bottom: 20px;
+    }
   }
   .csv-input {
     margin-top: 15px;
@@ -124,8 +168,32 @@ a {
   }
 }
 
+.modal-edit-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99999;
+  background-color: rgba(0,0,0,0.3);
+  .warning-text {
+    position: relative;
+    max-width: 400px;
+    left: 50%;
+    top: 50%;
+    color: white;
+    padding: 15px;
+    font-size: 1.2em;
+    transform: translateX(-50%) translateY(-50%);
+    background-color: #1a1a1a;
+    a {
+      padding: 15px;
+    }
+  }
+}
+
 fieldset {
-  padding: 15px;
+  padding: 10px 15px 10px 25px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
@@ -141,6 +209,9 @@ fieldset {
   }
   a.import {
     margin: 0;
+  }
+  input.import {
+    margin-top: 10px;
   }
 }
 

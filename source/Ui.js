@@ -3,11 +3,10 @@ import ReactDOM from 'react-dom'
 
 import {createElement} from './utils'
 import {nTileDomain} from './constants'
-import DatasetSelector from './components/DatasetSelector'
-import ResolutionSlider from './components/ResolutionSlider'
+import TileGenerationUiControls from './components/TileGenerationUiControls'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
-import ImportButton from './components/ImportButton'
+import EditWarningModal from './components/EditWarningModal'
 
 class Ui {
   constructor() {
@@ -17,8 +16,11 @@ class Ui {
     this._originalTilesLength = null
     this._usingImportedTiles = false
     this._tileFilename = null
+    this._editing = false
 
     this._resetImportedTiles = this._resetImportedTiles.bind(this)
+    this._startOver = this._startOver.bind(this)
+    this._resumeEditing = this._resumeEditing.bind(this)
   }
 
   setGeos(geos) {
@@ -95,6 +97,24 @@ class Ui {
     }
   }
 
+  _setEditing(isEditing) {
+    return () => {
+      if (!isEditing) {
+        if (this._checkForUnsavedChanges()) {
+          this._showModal = true
+          this.render()
+          return
+        }
+      }
+      this._editing = isEditing
+      this.render()
+    }
+  }
+
+  setUnsavedChangesCallback(callback) {
+    this._checkForUnsavedChanges = callback
+  }
+
   _init() {
     this._container = createElement({id: 'ui'})
   }
@@ -105,51 +125,91 @@ class Ui {
     this.render()
   }
 
+  _startOver() {
+    this._editing = false
+    this._showModal = false
+    this.render()
+  }
+
+  _resumeEditing() {
+    this._showModal = false
+    this.render()
+  }
+
+  setEditingTrue() {
+    this._editing = true
+    this.render()
+  }
+
   render() {
-    let tileGenerationControls
-    if (this._usingImportedTiles) {
-      tileGenerationControls = (
-        <fieldset>
-          <span>Using {this._tileFilename}</span>
-          <a onClick={this._resetImportedTiles}>✕</a>
-        </fieldset>
-      )
-    } else {
-      tileGenerationControls = (
-        <div>
-          <DatasetSelector
-            labels={this._datasetLabels}
-            onDatasetSelected={index => this._datasetSelectedCallback(index)}
-            onCustomDataset={csv => this._customDatasetCallback(csv)}
-          />
-          <ResolutionSlider
-            metricDomain={this._metricDomain}
-            onChange={value => this._resolutionChangedCallback(value, this._selectedDatasetSum)}
-          />
-          <ImportButton onLoad={this._importCallback} />
-        </div>
+    const tileGenerationControls = (
+      <TileGenerationUiControls
+        labels={this._datasetLabels}
+        selectDataset={this._datasetSelectedCallback}
+        selectCustomDataset={this._customDatasetCallback}
+        importCustom={this._importCallback}
+        metricDomain={this._metricDomain}
+        changeResolution={this._resolutionChangedCallback}
+        datasetSum={this._selectedDatasetSum}
+        usingImportedtiles={this._usingImportedTiles}
+        tileFilename={this._tileFilename}
+        resetImportedTiles={this._resetImportedTiles}
+      />
+    )
+    const generateOption = (
+      <div
+        className={this._editing ? 'step' : 'active step'}
+        onClick={this._setEditing(false)}
+      >
+        <div className='highlight-bar' />
+        <p><span>Step 1:</span> Create new topogram.</p>
+      </div>
+    )
+    const editOption = (
+      <div
+        className={this._editing ? 'active step' : 'step'}
+        onClick={this._setEditing(true)}
+      >
+        <div className='highlight-bar' />
+        <p><span>Step 2:</span> Edit topogram and improve accuracy.</p>
+      </div>
+    )
+    let modal = null
+    if (this._showModal) {
+      modal = (
+        <EditWarningModal
+          startOver={this._startOver}
+          resumeEditing={this._resumeEditing}
+        />
       )
     }
     ReactDOM.render(
       <div>
+        {modal}
         <div className='column'>
           <h1>
             Tilegrams
           </h1>
           <ExportButton onClick={() => this._exportCallback()} />
           <hr />
-          {tileGenerationControls}
+          {generateOption}
+          <div className={this._editing ? 'deselected' : null} >
+            {tileGenerationControls}
+          </div>
           <hr />
-          <HexMetrics
-            metricPerTile={this.metricPerTile}
-            dataset={this._selectedDataset}
-            geos={this._geos}
-            tiles={this._tiles}
-            originalTilesLength={this._originalTilesLength}
-            onAddTileMouseDown={this._addTileCallback}
-            onMetricMouseOver={this._highlightCallback}
-            onMetricMouseOut={this._unhighlightCallback}
-          />
+          {editOption}
+          <div className={this._editing ? null : 'deselected'}>
+            <HexMetrics
+              metricPerTile={this.metricPerTile}
+              dataset={this._selectedDataset}
+              geos={this._geos}
+              tiles={this._tiles}
+              originalTilesLength={this._originalTilesLength}
+              onAddTileMouseDown={this._addTileCallback}
+              onMetricMouseOver={this._highlightCallback}
+              onMetricMouseOut={this._unhighlightCallback}
+            />
+          </div>
         </div>
         <h2 className='credits'>
           A project by

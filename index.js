@@ -42,6 +42,7 @@ function confirmNavigation(e) {
 function init() {
   // wire up callbacks
   canvas.getGrid().onChange(() => updateUi())
+  canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
   ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
@@ -51,6 +52,7 @@ function init() {
     ui.metricPerTile = metricPerTile
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
+  ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
     const json = exporter.fromTiles(canvas.getGrid().getTiles())
     startDownload({

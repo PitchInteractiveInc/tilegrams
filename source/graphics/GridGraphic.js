@@ -21,6 +21,7 @@ export default class GridGraphic extends Graphic {
     this._selectedTiles = []
     this._highlightFromOutsideGrid = false
     this._mouseAt = {x: 0, y: 0}
+    this._hasBeenEdited = false
     document.body.onkeydown = this.onkeydown.bind(this)
   }
 
@@ -157,6 +158,17 @@ export default class GridGraphic extends Graphic {
 
       // nothing is overlapping
       if (!overlaps) {
+        // check to see if has actually moved
+        const movedTilesLength = this._selectedTiles.filter(tile => {
+          return (
+            tile.position.x !== tile.newPosition.x &&
+            tile.position.y !== tile.newPosition.y
+          )
+        }).length
+        // if so, notify editing
+        if (movedTilesLength > 0) {
+          this._setToEditingMode()
+        }
         // actually update the tile positions
         this._selectedTiles.forEach((tile) => {
           tile.position = tile.newPosition
@@ -171,6 +183,7 @@ export default class GridGraphic extends Graphic {
       if (this._selectedTiles[0] === this._newTile) {
         // add new tile to list of tiles
         this._tiles.push(this._newTile)
+        this._setToEditingMode()
         this.updateUi()
         this._newTile = null
       }
@@ -241,6 +254,7 @@ export default class GridGraphic extends Graphic {
         this._deleteTile(tile)
       })
       this._selectedTiles.length = 0
+      this._setToEditingMode()
       this.updateUi()
     }
   }
@@ -297,6 +311,7 @@ export default class GridGraphic extends Graphic {
     })
     // save tiles length so the stats does not have a moving target
     this.originalTilesLength = this._tiles.length
+    this._hasBeenEdited = false // reset edit state
     this.updateUi()
     return this._tiles
   }
@@ -324,6 +339,10 @@ export default class GridGraphic extends Graphic {
 
   _disableSelectionHighlight() {
     return this._highlightId !== null && this._highlightFromOutsideGrid
+  }
+
+  checkForEdits() {
+    return this._hasBeenEdited
   }
 
   render(ctx) {
@@ -517,6 +536,19 @@ export default class GridGraphic extends Graphic {
     if (this._onChangeCallback) {
       this._onChangeCallback()
     }
+  }
+
+  /**
+   * sets ._hasBeenEdited to true to notify user of possible edit loss
+   * ensures UI is in editing mode
+   */
+  _setToEditingMode() {
+    this._hasBeenEdited = true
+    this._setUiEditing()
+  }
+
+  setUiEditingCallback(callback) {
+    this._setUiEditing = callback
   }
 
   _getTilesById(id) {
