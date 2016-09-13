@@ -55,14 +55,19 @@ a {
   .highlight-bar {
     position: absolute;
     bottom: 0px;
-    width: 6px;
+    width: 0px;
+    height: 100%;
     background-color: $blue;
-    height: 0%;
-    transition: height 0.22s ease-in-out;
+    transition: width 0.22s ease-in-out;
+  }
+  &:hover {
+    .highlight-bar {
+      width: 3px;
+    }
   }
   &.active {
     .highlight-bar {
-      height: 100%;
+      width: 6px;
     }
   }
 }
