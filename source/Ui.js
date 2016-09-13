@@ -122,6 +122,9 @@ class Ui {
       }
       this._editing = isEditing
       this.render()
+
+      // to allow CSS to paint
+      window.requestAnimationFrame(this.render.bind(this))
     }
   }
 
@@ -168,6 +171,7 @@ class Ui {
         usingImportedtiles={this._usingImportedTiles}
         tileFilename={this._tileFilename}
         resetImportedTiles={this._resetImportedTiles}
+        editing={this._editing}
       />
     )
     const generateOption = (

@@ -27,11 +27,17 @@ a {
 
 .padding-bottom {
   padding-bottom: 20px;
+  box-sizing: border-box;
 }
 
 .deselected {
   opacity: 0.4;
   transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.collapsed {
+  display: none;
 }
 
 .step {
