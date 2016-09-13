@@ -61,6 +61,16 @@ function init() {
       content: JSON.stringify(json),
     })
   })
+  ui.setExportSvgCallback(() => {
+    const svg = exporter.toSvg(canvas.getGrid().getTiles())
+    const header = '<?xml version="1.0" encoding="utf-8"?>'
+    const svgSerialized = header + new XMLSerializer().serializeToString(svg)
+    startDownload({
+      filename: 'tiles.svg',
+      mimeType: 'image/svg+xml',
+      content: svgSerialized,
+    })
+  })
   ui.setImportCallback(topoJson => {
     const tiles = importer.fromTopoJson(topoJson)
     canvas.getGrid().importTiles(tiles)

@@ -6,6 +6,7 @@
  */
 
 import hexagonGrid from '../HexagonGrid'
+import {fipsColor} from '../utils'
 
 export const OBJECT_ID = 'tiles'
 
@@ -58,6 +59,41 @@ class Exporter {
       },
       arcs,
     }
+  }
+
+  toSvg(tiles) {
+    // create svg
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    const canv = document.getElementById('canvas').getElementsByTagName('canvas')[0]
+    const width = canv.width
+    const height = canv.height
+    svg.setAttribute('width', width)
+    svg.setAttribute('height', height)
+
+    // add hexagons from tiles
+    tiles.forEach((tile) => {
+      const center = hexagonGrid.tileCenterPoint({
+        x: tile.position.x,
+        y: tile.position.y,
+      })
+      const arcPts = []
+      arcPts.push([
+        hexagonGrid.getLeftPoint(center, true),
+        hexagonGrid.getUpperLeftPoint(center, true),
+        hexagonGrid.getUpperRightPoint(center, true),
+        hexagonGrid.getRightPoint(center, true),
+        hexagonGrid.getLowerRightPoint(center, true),
+        hexagonGrid.getLowerLeftPoint(center, true),
+        hexagonGrid.getLeftPoint(center, true),
+      ])
+      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+      const points = arcPts.map((pt) => pt.join(',')).join(' ')
+      polygon.setAttributeNS(null, 'points', points)
+      polygon.setAttributeNS(null, 'fill', fipsColor(tile.id))
+      polygon.setAttribute('class', tile.id)
+      svg.appendChild(polygon)
+    })
+    return svg
   }
 
   /** Format TopoJSON from GeoJSON */
