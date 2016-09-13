@@ -174,7 +174,6 @@ export default class GridGraphic extends Graphic {
           tile.position = tile.newPosition
           delete tile.newPosition
         })
-        this._hasBeenEdited = true // notify of edit
       } else if (this._selectedTiles[0] === this._newTile) {
         // there exists overlaps on a new tile, remove new tile
         this._newTile = null
