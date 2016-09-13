@@ -34,9 +34,17 @@ export default class TileGenerationUiControls extends React.Component {
         </fieldset>
       )
     }
+
+    const generateCollapsedClass = this.state.selectedOption !== 'generate' && this.props.editing ?
+      'collapsed' :
+      ''
+    const importCollapsedClass = this.state.selectedOption !== 'import' && this.props.editing ?
+      'collapsed' :
+      ''
+
     return (
       <div className='ui-controls'>
-        <div className='padding-bottom'>
+        <div className={`padding-bottom ${generateCollapsedClass}`}>
           <input
             type='radio'
             name='tile-controls'
@@ -56,7 +64,7 @@ export default class TileGenerationUiControls extends React.Component {
             />
           </div>
         </div>
-        <div>
+        <div className={importCollapsedClass}>
           <input
             type='radio'
             name='tile-controls'
@@ -84,6 +92,7 @@ TileGenerationUiControls.propTypes = {
   tileFilename: React.PropTypes.string,
   resetImportedTiles: React.PropTypes.func,
   usingImportedtiles: React.PropTypes.bool,
+  editing: React.PropTypes.bool,
 }
 
 TileGenerationUiControls.defaultProps = {
@@ -94,4 +103,5 @@ TileGenerationUiControls.defaultProps = {
   changeResolution: () => {},
   resetImportedTiles: () => {},
   usingImportedtiles: false,
+  editing: false,
 }
