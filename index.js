@@ -54,11 +54,19 @@ function init() {
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
-    const json = exporter.fromTiles(canvas.getGrid().getTiles())
+    const json = exporter.toTopoJson(canvas.getGrid().getTiles())
     startDownload({
       filename: 'tiles.topo.json',
       mimeType: 'application/json',
       content: JSON.stringify(json),
+    })
+  })
+  ui.setExportSvgCallback(() => {
+    const svg = exporter.toSvg(canvas.getGrid().getTiles())
+    startDownload({
+      filename: 'tiles.svg',
+      mimeType: 'image/svg+xml',
+      content: svg,
     })
   })
   ui.setImportCallback(topoJson => {

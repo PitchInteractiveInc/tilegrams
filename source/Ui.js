@@ -103,6 +103,10 @@ class Ui {
     this._exportCallback = callback
   }
 
+  setExportSvgCallback(callback) {
+    this._exportSvgCallback = callback
+  }
+
   setImportCallback(callback) {
     this._importCallback = (tileFilename, topoJson) => {
       this._tileFilename = tileFilename
@@ -230,7 +234,14 @@ class Ui {
             />
           </div>
           <div className='no-scroll-ui'>
-            <ExportButton onClick={() => this._exportCallback()} />
+            <ExportButton
+              text='Export Svg'
+              onClick={() => this._exportSvgCallback()}
+            />
+            <ExportButton
+              text='Export TopoJSON'
+              onClick={() => this._exportCallback()}
+            />
           </div>
         </div>
         <h2 className='credits'>
