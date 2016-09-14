@@ -4,7 +4,7 @@
  * Primary reference:
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
-
+import {color} from 'd3-color'
 import hexagonGrid from '../HexagonGrid'
 import {fipsColor} from '../utils'
 
@@ -72,6 +72,8 @@ class Exporter {
 
     // add hexagons from tiles
     tiles.forEach((tile) => {
+      // convert from hsl to hex string for illustrator
+      const colorString = color(fipsColor(tile.id)).toString()
       const center = hexagonGrid.tileCenterPoint({
         x: tile.position.x,
         y: tile.position.y,
@@ -89,7 +91,7 @@ class Exporter {
       const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
       const points = arcPts.map((pt) => pt.join(',')).join(' ')
       polygon.setAttributeNS(null, 'points', points)
-      polygon.setAttributeNS(null, 'fill', fipsColor(tile.id))
+      polygon.setAttributeNS(null, 'fill', colorString)
       polygon.setAttribute('class', tile.id)
       svg.appendChild(polygon)
     })
