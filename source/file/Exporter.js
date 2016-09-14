@@ -12,7 +12,7 @@ export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  fromTiles(tiles) {
+  toTopoJson(tiles) {
     const geometries = []
     const arcs = []
 
@@ -95,7 +95,9 @@ class Exporter {
       polygon.setAttribute('class', tile.id)
       svg.appendChild(polygon)
     })
-    return svg
+    const header = '<?xml version="1.0" encoding="utf-8"?>'
+    const svgSerialized = header + new XMLSerializer().serializeToString(svg)
+    return svgSerialized
   }
 
   /** Format TopoJSON from GeoJSON */

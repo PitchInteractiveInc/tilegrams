@@ -54,7 +54,7 @@ function init() {
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
-    const json = exporter.fromTiles(canvas.getGrid().getTiles())
+    const json = exporter.toTopoJson(canvas.getGrid().getTiles())
     startDownload({
       filename: 'tiles.topo.json',
       mimeType: 'application/json',
@@ -63,12 +63,10 @@ function init() {
   })
   ui.setExportSvgCallback(() => {
     const svg = exporter.toSvg(canvas.getGrid().getTiles())
-    const header = '<?xml version="1.0" encoding="utf-8"?>'
-    const svgSerialized = header + new XMLSerializer().serializeToString(svg)
     startDownload({
       filename: 'tiles.svg',
       mimeType: 'image/svg+xml',
-      content: svgSerialized,
+      content: svg,
     })
   })
   ui.setImportCallback(topoJson => {
