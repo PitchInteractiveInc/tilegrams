@@ -78,7 +78,7 @@ a {
   top: 0;
   bottom: 0;
   left: $sidebar-width;
-  overflow: auto;
+  overflow: hidden;
   canvas {
     cursor: pointer;
     background-color: #f0f0f0;
@@ -92,6 +92,12 @@ a {
   right: 0;
   font-size: 9pt;
   text-align: center;
+
+  .gnl-logo {
+    display: inline-block;
+    height: 1.3em;
+    margin-bottom: -4px;
+  }
 }
 
 #ui .column {
