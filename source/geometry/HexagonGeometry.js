@@ -6,14 +6,14 @@
  */
 
 import {settings, tileEdgeRange, canvasDimensions} from '../constants'
-import FlatTopHexagonShape from './FlatTopHexagonShape'
+import PointyTopHexagonShape from './PointyTopHexagonShape'
 
 const TILE_OFFSET = 1
 
 // tile margins must be even to not break Importer._getTilePosition()
 export const IMPORT_TILE_MARGINS = 10
 
-const shape = new FlatTopHexagonShape()
+const shape = new PointyTopHexagonShape()
 
 class HexagonGeometry {
   constructor() {
@@ -68,9 +68,14 @@ class HexagonGeometry {
   tileCenterPoint(position) {
     const gridUnit = shape.getGridUnit()
     return {
-      x: ((position.x + TILE_OFFSET) * (gridUnit.width * this._tileSize.width)),
-      y: ((position.y + TILE_OFFSET) * (gridUnit.height * this._tileSize.height))
-       + (shape.getGridOffsetY(position.x) * this._tileSize.height),
+      x: this._tileSize.width * (
+        ((position.x + TILE_OFFSET) * gridUnit.width) +
+        shape.getGridOffsetX(position.y)
+      ),
+      y: this._tileSize.height * (
+        ((position.y + TILE_OFFSET) * gridUnit.height) +
+        shape.getGridOffsetY(position.x)
+      ),
     }
   }
 
@@ -83,17 +88,22 @@ class HexagonGeometry {
     return shape.getPointsAround(center, scaledSize)
   }
 
+  /**
+   * Return grid position, given screen coordinates
+   * NOTE: The order that X and Y can be calculated depends on the shape
+   * because of grid offsets.
+   */
   rectToHexPosition(rectX, rectY) {
     const gridUnit = shape.getGridUnit()
-    const x =
-      Math.round(
-        (rectX / ((this._tileSize.width * gridUnit.width) / devicePixelRatio))
-        - shape.getGridOffsetX()
-      ) - TILE_OFFSET
     const y =
       Math.round(
         (rectY / ((this._tileSize.height * gridUnit.height) / devicePixelRatio))
-        - shape.getGridOffsetY(x)
+        - shape.getGridOffsetY()
+      ) - TILE_OFFSET
+    const x =
+      Math.round(
+        (rectX / ((this._tileSize.width * gridUnit.width) / devicePixelRatio))
+        - shape.getGridOffsetX(y)
       ) - TILE_OFFSET
     return {x, y}
   }
