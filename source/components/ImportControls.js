@@ -24,7 +24,8 @@ export default class ImportControls extends React.Component {
       try {
         topoJson = JSON.parse(readEvent.target.result)
       } catch (e) {
-        alert("Faild to parse JSON")
+        // eslint-disable-next-line no-alert
+        alert('Faild to parse JSON')
       }
       this.props.onCustomImport(topoJson)
       this.setState({

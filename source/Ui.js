@@ -7,6 +7,7 @@ import TileGenerationUiControls from './components/TileGenerationUiControls'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
 import EditWarningModal from './components/EditWarningModal'
+import googleNewsLabLogo from './images/gnl-logo.png'
 
 class Ui {
   constructor() {
@@ -248,6 +249,14 @@ class Ui {
             rel='noopener noreferrer'
           >
             Pitch Interactive
+          </a>
+          in colloboration with
+          <a
+            href='https://newslab.withgoogle.com/'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            <img src={googleNewsLabLogo} className='gnl-logo' alt='Google News Lab' />
           </a>
           |
           View
