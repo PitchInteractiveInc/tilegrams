@@ -22,8 +22,25 @@ class GridGeometry {
     this.resize()
   }
 
+  setTileEdgeFromMax(maxX, maxY) {
+    const tileEdge = shape.getTileEdgeFromGridUnit({
+      width: canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS),
+      height: canvasDimensions.height / (maxY + IMPORT_TILE_MARGINS),
+    })
+    this.setTileEdge(tileEdge)
+  }
+
+  setTileEdgeFromArea(area) {
+    const tileEdge = shape.getTileEdgeFromArea(area)
+    this.setTileEdge(tileEdge)
+  }
+
   getTileEdge() {
     return this._tileEdge
+  }
+
+  getTileDimensions() {
+    return this._tileSize
   }
 
   resize() {
@@ -39,18 +56,6 @@ class GridGeometry {
         (TILE_OFFSET * 2)
       ),
     }
-  }
-
-  setTileEdgeFromMax(maxX, maxY) {
-    const tileEdge = shape.getTileEdgeFromGridUnit({
-      width: canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS),
-      height: canvasDimensions.height / (maxY + IMPORT_TILE_MARGINS),
-    })
-    this.setTileEdge(tileEdge)
-  }
-
-  getTileDimensions() {
-    return this._tileSize
   }
 
   forEachTilePosition(iterator) {
@@ -107,10 +112,6 @@ class GridGeometry {
         ) - shape.getGridOffsetX(y)
       ) - TILE_OFFSET
     return {x, y}
-  }
-
-  getTileEdgeFromArea(area) {
-    return shape.getTileEdgeFromArea(area)
   }
 }
 
