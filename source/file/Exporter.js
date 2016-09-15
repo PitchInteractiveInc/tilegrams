@@ -5,7 +5,7 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 import {color} from 'd3-color'
-import hexagonGrid from '../HexagonGrid'
+import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor} from '../utils'
 
 export const OBJECT_ID = 'tiles'
@@ -34,19 +34,13 @@ class Exporter {
         id: tile.id,
         arcs: [[tileIndex]],
       })
-      const center = hexagonGrid.tileCenterPoint({
+      const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
         y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
       })
-      arcs.push([
-        hexagonGrid.getLeftPoint(center, true),
-        hexagonGrid.getUpperLeftPoint(center, true),
-        hexagonGrid.getUpperRightPoint(center, true),
-        hexagonGrid.getRightPoint(center, true),
-        hexagonGrid.getLowerRightPoint(center, true),
-        hexagonGrid.getLowerLeftPoint(center, true),
-        hexagonGrid.getLeftPoint(center, true),
-      ])
+      const hexagonPoints = gridGeometry.getPointsAround(center, true)
+      hexagonPoints.push(hexagonPoints[0]) // close the loop
+      arcs.push(hexagonPoints)
     })
 
     return {
@@ -74,22 +68,14 @@ class Exporter {
     tiles.forEach((tile) => {
       // convert from hsl to hex string for illustrator
       const colorString = color(fipsColor(tile.id)).toString()
-      const center = hexagonGrid.tileCenterPoint({
+      const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
         y: tile.position.y,
       })
-      const arcPts = []
-      arcPts.push([
-        hexagonGrid.getLeftPoint(center, true),
-        hexagonGrid.getUpperLeftPoint(center, true),
-        hexagonGrid.getUpperRightPoint(center, true),
-        hexagonGrid.getRightPoint(center, true),
-        hexagonGrid.getLowerRightPoint(center, true),
-        hexagonGrid.getLowerLeftPoint(center, true),
-        hexagonGrid.getLeftPoint(center, true),
-      ])
+      const hexagonPoints = gridGeometry.getPointsAround(center, true)
+      hexagonPoints.push(hexagonPoints[0]) // close the loop
       const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      const points = arcPts.map((pt) => pt.join(',')).join(' ')
+      const points = hexagonPoints.join(',')
       polygon.setAttributeNS(null, 'points', points)
       polygon.setAttributeNS(null, 'fill', colorString)
       polygon.setAttribute('class', tile.id)

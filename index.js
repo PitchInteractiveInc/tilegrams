@@ -5,7 +5,7 @@ import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import mapData from './source/MapData'
 import tilegramData from './source/TilegramData'
-import hexagonGrid from './source/HexagonGrid'
+import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
 
@@ -96,7 +96,7 @@ function init() {
 function resize() {
   updateCanvasSize()
   canvas.resize()
-  hexagonGrid.resize()
+  gridGeometry.resize()
   canvas.getMap().updatePreProjection()
 }
 window.onresize = resize

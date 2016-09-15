@@ -4,7 +4,7 @@ import polygonOverlap from 'polygon-overlap'
 
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
-import hexagonGrid from '../HexagonGrid'
+import gridGeometry from '../geometry/GridGeometry'
 import {
   devicePixelRatio,
   selectedTileBorderColor,
@@ -27,7 +27,7 @@ export default class GridGraphic extends Graphic {
 
   onMouseDown(event) {
     event.preventDefault()
-    const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+    const position = gridGeometry.getPositionFromScreen(event.offsetX, event.offsetY)
     const tile = this._findTile(position)
     if (tile == null || this._selectedTiles.includes(tile)) {
       this._onMarqueeMouseDown(event)
@@ -38,7 +38,7 @@ export default class GridGraphic extends Graphic {
 
   _onArrowMouseDown(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(
+      const position = gridGeometry.getPositionFromScreen(
         event.offsetX,
         event.offsetY
       )
@@ -65,7 +65,7 @@ export default class GridGraphic extends Graphic {
       let createMarquee = true;
       // check if mouse on currently selected marquee tiles
       if (this._selectedTiles.length > 0) {
-        const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+        const position = gridGeometry.getPositionFromScreen(event.offsetX, event.offsetY)
         const tile = this._findTile(position)
         if (this._selectedTiles.includes(tile)) {
           createMarquee = false
@@ -93,7 +93,7 @@ export default class GridGraphic extends Graphic {
       y2: Math.max(this._marqueeStart.y * devicePixelRatio, this._mouseAt.y * devicePixelRatio),
     }
     return this._tiles.filter((tile) => {
-      const center = hexagonGrid.tileCenterPoint(tile.position)
+      const center = gridGeometry.tileCenterPoint(tile.position)
       return polygonOverlap(
         [
           [marqueeBounds.x1, marqueeBounds.y1],
@@ -101,14 +101,7 @@ export default class GridGraphic extends Graphic {
           [marqueeBounds.x2, marqueeBounds.y2],
           [marqueeBounds.x1, marqueeBounds.y2],
         ],
-        [
-          hexagonGrid.getUpperLeftPoint(center),
-          hexagonGrid.getUpperRightPoint(center),
-          hexagonGrid.getRightPoint(center),
-          hexagonGrid.getLowerRightPoint(center),
-          hexagonGrid.getLowerLeftPoint(center),
-          hexagonGrid.getLeftPoint(center),
-        ]
+        gridGeometry.getPointsAround(center)
       )
     })
   }
@@ -137,12 +130,12 @@ export default class GridGraphic extends Graphic {
       // determine where each tile is going to be moved to
       const overlaps = this._selectedTiles.some((tile) => {
         // figure out where in XY space this tile currently is
-        const tileXY = hexagonGrid.tileCenterPoint(tile.position)
+        const tileXY = gridGeometry.tileCenterPoint(tile.position)
         // add in the offset of the moved mouse (accounting for DPI)
         tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
         tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
         // convert back to hex coordinates
-        tile.newPosition = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
+        tile.newPosition = gridGeometry.getPositionFromScreen(tileXY.x, tileXY.y)
         // check to see if a tile exists at that place
         const overlappingTile = this._findTile(tile.newPosition)
         // if there is an overlapping tile
@@ -208,7 +201,7 @@ export default class GridGraphic extends Graphic {
       if (this._makingMarqueeSelection) {
         this._selectedTiles = this._getMarqueeSelection()
       }
-      const position = hexagonGrid.rectToHexPosition(
+      const position = gridGeometry.getPositionFromScreen(
         this._mouseAt.x,
         this._mouseAt.y
       )
@@ -223,7 +216,7 @@ export default class GridGraphic extends Graphic {
 
   onDoubleClick(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(
+      const position = gridGeometry.getPositionFromScreen(
         event.offsetX,
         event.offsetY
       )
@@ -299,8 +292,8 @@ export default class GridGraphic extends Graphic {
   populateTiles(mapGraphic) {
     this._tiles = []
     this._deselectTile()
-    hexagonGrid.forEachTilePosition((x, y) => {
-      const point = hexagonGrid.tileCenterPoint({x, y})
+    gridGeometry.forEachTilePosition((x, y) => {
+      const point = gridGeometry.tileCenterPoint({x, y})
       const feature = mapGraphic.getFeatureAtPoint(point)
       if (feature) {
         this._tiles.push({
@@ -319,7 +312,7 @@ export default class GridGraphic extends Graphic {
   importTiles(tiles) {
     const maxX = Math.max(...tiles.map(tile => tile.position.x))
     const maxY = Math.max(...tiles.map(tile => tile.position.y))
-    hexagonGrid.setTileEdgeFromMax(maxX, maxY)
+    gridGeometry.setTileEdgeFromMax(maxX, maxY)
     this._tiles = tiles
   }
 
@@ -372,10 +365,10 @@ export default class GridGraphic extends Graphic {
             offset.y = this._mouseAt.y
           }
 
-          const tileXY = hexagonGrid.tileCenterPoint(position)
+          const tileXY = gridGeometry.tileCenterPoint(position)
           tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
           tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
-          position = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
+          position = gridGeometry.getPositionFromScreen(tileXY.x, tileXY.y)
         }
         this._drawTile(
           position,
@@ -450,16 +443,15 @@ export default class GridGraphic extends Graphic {
     this._ctx.globalAlpha = 1.0
   }
 
-  /** http://www.redblobgames.com/hexagonGrids/hexagons/#basics */
+  /** http://www.redblobgames.com/gridGeometrys/hexagons/#basics */
   _drawTile(position, fill, superstroke) {
-    const center = hexagonGrid.tileCenterPoint(position)
+    const center = gridGeometry.tileCenterPoint(position)
+    const points = gridGeometry.getPointsAround(center)
     this._ctx.beginPath()
-    this._ctx.moveTo(...hexagonGrid.getUpperLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getUpperRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLeftPoint(center))
+    points.forEach((point, index) => {
+      const command = (index === 0) ? 'moveTo' : 'lineTo'
+      this._ctx[command](...point)
+    })
     this._ctx.closePath()
     if (fill) {
       this._ctx.fillStyle = fill
@@ -478,7 +470,7 @@ export default class GridGraphic extends Graphic {
     const clusters = this._computeClusters(tiles)
     const paths = clusters.map(cluster => hull(
       cluster,
-      hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
+      gridGeometry.getTileEdge() // 'concavity', a.k.a. max edge length
     ))
     paths.forEach(path => {
       this._ctx.beginPath()
@@ -505,15 +497,8 @@ export default class GridGraphic extends Graphic {
     // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {
-      const center = hexagonGrid.tileCenterPoint(tile.position)
-      const hexagonPoints = [
-        hexagonGrid.getUpperLeftPoint(center),
-        hexagonGrid.getUpperRightPoint(center),
-        hexagonGrid.getRightPoint(center),
-        hexagonGrid.getLowerRightPoint(center),
-        hexagonGrid.getLowerLeftPoint(center),
-        hexagonGrid.getLeftPoint(center),
-      ]
+      const center = gridGeometry.tileCenterPoint(tile.position)
+      const hexagonPoints = gridGeometry.getPointsAround(center)
       hexagonPoints.forEach(point => {
         if (points.indexOf(point) === -1) {
           points.push(point)
@@ -525,7 +510,7 @@ export default class GridGraphic extends Graphic {
     const dbscan = new DBSCAN()
     const clusters = dbscan.run(
       points,
-      hexagonGrid.getTileEdge(),  // neighborhood radius
+      gridGeometry.getTileEdge(),  // neighborhood radius
       2                           // min points per cluster
     )
     // deindex and return clusters
