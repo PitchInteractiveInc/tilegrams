@@ -101,14 +101,7 @@ export default class GridGraphic extends Graphic {
           [marqueeBounds.x2, marqueeBounds.y2],
           [marqueeBounds.x1, marqueeBounds.y2],
         ],
-        [
-          hexagonGrid.getUpperLeftPoint(center),
-          hexagonGrid.getUpperRightPoint(center),
-          hexagonGrid.getRightPoint(center),
-          hexagonGrid.getLowerRightPoint(center),
-          hexagonGrid.getLowerLeftPoint(center),
-          hexagonGrid.getLeftPoint(center),
-        ]
+        hexagonGrid.getPointsAround(center)
       )
     })
   }
@@ -453,13 +446,12 @@ export default class GridGraphic extends Graphic {
   /** http://www.redblobgames.com/hexagonGrids/hexagons/#basics */
   _drawTile(position, fill, superstroke) {
     const center = hexagonGrid.tileCenterPoint(position)
+    const points = hexagonGrid.getPointsAround(center)
     this._ctx.beginPath()
-    this._ctx.moveTo(...hexagonGrid.getUpperLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getUpperRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerRightPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLowerLeftPoint(center))
-    this._ctx.lineTo(...hexagonGrid.getLeftPoint(center))
+    points.forEach((point, index) => {
+      const command = (index === 0) ? 'moveTo' : 'lineTo'
+      this._ctx[command](...point)
+    })
     this._ctx.closePath()
     if (fill) {
       this._ctx.fillStyle = fill
@@ -506,14 +498,7 @@ export default class GridGraphic extends Graphic {
     const points = []
     tiles.forEach(tile => {
       const center = hexagonGrid.tileCenterPoint(tile.position)
-      const hexagonPoints = [
-        hexagonGrid.getUpperLeftPoint(center),
-        hexagonGrid.getUpperRightPoint(center),
-        hexagonGrid.getRightPoint(center),
-        hexagonGrid.getLowerRightPoint(center),
-        hexagonGrid.getLowerLeftPoint(center),
-        hexagonGrid.getLeftPoint(center),
-      ]
+      const hexagonPoints = hexagonGrid.getPointsAround(center)
       hexagonPoints.forEach(point => {
         if (points.indexOf(point) === -1) {
           points.push(point)

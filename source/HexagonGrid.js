@@ -75,7 +75,18 @@ class HexagonGrid {
     }
   }
 
-  getUpperLeftPoint(center, contiguous) {
+  getPointsAround(center, contiguous) {
+    return [
+      this._getUpperLeftPoint(center, contiguous),
+      this._getUpperRightPoint(center, contiguous),
+      this._getRightPoint(center, contiguous),
+      this._getLowerRightPoint(center, contiguous),
+      this._getLowerLeftPoint(center, contiguous),
+      this._getLeftPoint(center, contiguous),
+    ]
+  }
+
+  _getUpperLeftPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x - (tileScale * this._tileSize.width * 0.25),
@@ -83,7 +94,7 @@ class HexagonGrid {
     ]
   }
 
-  getUpperRightPoint(center, contiguous) {
+  _getUpperRightPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x + (tileScale * this._tileSize.width * 0.25),
@@ -91,7 +102,7 @@ class HexagonGrid {
     ]
   }
 
-  getRightPoint(center, contiguous) {
+  _getRightPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x + (tileScale * this._tileSize.width * 0.5),
@@ -99,7 +110,7 @@ class HexagonGrid {
     ]
   }
 
-  getLowerRightPoint(center, contiguous) {
+  _getLowerRightPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x + (tileScale * this._tileSize.width * 0.25),
@@ -107,7 +118,7 @@ class HexagonGrid {
     ]
   }
 
-  getLowerLeftPoint(center, contiguous) {
+  _getLowerLeftPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x - (tileScale * this._tileSize.width * 0.25),
@@ -115,7 +126,7 @@ class HexagonGrid {
     ]
   }
 
-  getLeftPoint(center, contiguous) {
+  _getLeftPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     return [
       center.x - (tileScale * this._tileSize.width * 0.5),

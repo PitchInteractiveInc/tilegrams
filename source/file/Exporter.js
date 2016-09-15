@@ -38,15 +38,9 @@ class Exporter {
         x: tile.position.x,
         y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
       })
-      arcs.push([
-        hexagonGrid.getLeftPoint(center, true),
-        hexagonGrid.getUpperLeftPoint(center, true),
-        hexagonGrid.getUpperRightPoint(center, true),
-        hexagonGrid.getRightPoint(center, true),
-        hexagonGrid.getLowerRightPoint(center, true),
-        hexagonGrid.getLowerLeftPoint(center, true),
-        hexagonGrid.getLeftPoint(center, true),
-      ])
+      const hexagonPoints = hexagonGrid.getPointsAround(center, true)
+      hexagonPoints.push(hexagonPoints[0]) // close the loop
+      arcs.push(hexagonPoints)
     })
 
     return {
@@ -78,18 +72,10 @@ class Exporter {
         x: tile.position.x,
         y: tile.position.y,
       })
-      const arcPts = []
-      arcPts.push([
-        hexagonGrid.getLeftPoint(center, true),
-        hexagonGrid.getUpperLeftPoint(center, true),
-        hexagonGrid.getUpperRightPoint(center, true),
-        hexagonGrid.getRightPoint(center, true),
-        hexagonGrid.getLowerRightPoint(center, true),
-        hexagonGrid.getLowerLeftPoint(center, true),
-        hexagonGrid.getLeftPoint(center, true),
-      ])
+      const hexagonPoints = hexagonGrid.getPointsAround(center, true)
+      hexagonPoints.push(hexagonPoints[0]) // close the loop
       const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      const points = arcPts.map((pt) => pt.join(',')).join(' ')
+      const points = hexagonPoints.join(',')
       polygon.setAttributeNS(null, 'points', points)
       polygon.setAttributeNS(null, 'fill', colorString)
       polygon.setAttribute('class', tile.id)
