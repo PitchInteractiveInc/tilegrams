@@ -20,7 +20,12 @@ export default class ImportControls extends React.Component {
     const file = event.target.files[0]
     const reader = new FileReader()
     reader.onload = readEvent => {
-      const topoJson = JSON.parse(readEvent.target.result)
+      let topoJson
+      try {
+        topoJson = JSON.parse(readEvent.target.result)
+      } catch (e) {
+        alert("Faild to parse JSON")
+      }
       this.props.onCustomImport(topoJson)
       this.setState({
         usingUpload: true,
