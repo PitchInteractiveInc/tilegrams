@@ -57,7 +57,7 @@ export default class TileGenerationUiControls extends React.Component {
 
     return (
       <div className='ui-controls'>
-        <div className={`padding-bottom ${generateCollapsedClass}`}>
+        <div className={`padding-bottom ${importCollapsedClass}`}>
           <input
             type='radio'
             name='tile-controls'
@@ -73,7 +73,7 @@ export default class TileGenerationUiControls extends React.Component {
             />
           </div>
         </div>
-        <div>
+        <div className={generateCollapsedClass}>
           <input
             type='radio'
             name='tile-controls'
@@ -108,6 +108,7 @@ TileGenerationUiControls.propTypes = {
   changeResolution: React.PropTypes.func,
   datasetSum: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
+  editing: React.PropTypes.bool,
 }
 
 TileGenerationUiControls.defaultProps = {
@@ -118,4 +119,5 @@ TileGenerationUiControls.defaultProps = {
   selectCustomDataset: () => {},
   importCustom: () => {},
   changeResolution: () => {},
+  editing: false,
 }
