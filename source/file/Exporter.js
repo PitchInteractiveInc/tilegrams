@@ -5,7 +5,7 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 import {color} from 'd3-color'
-import hexagonGrid from '../HexagonGrid'
+import hexagonGeometry from '../geometry/HexagonGeometry'
 import {fipsColor} from '../utils'
 
 export const OBJECT_ID = 'tiles'
@@ -34,11 +34,11 @@ class Exporter {
         id: tile.id,
         arcs: [[tileIndex]],
       })
-      const center = hexagonGrid.tileCenterPoint({
+      const center = hexagonGeometry.tileCenterPoint({
         x: tile.position.x,
         y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
       })
-      const hexagonPoints = hexagonGrid.getPointsAround(center, true)
+      const hexagonPoints = hexagonGeometry.getPointsAround(center, true)
       hexagonPoints.push(hexagonPoints[0]) // close the loop
       arcs.push(hexagonPoints)
     })
@@ -68,11 +68,11 @@ class Exporter {
     tiles.forEach((tile) => {
       // convert from hsl to hex string for illustrator
       const colorString = color(fipsColor(tile.id)).toString()
-      const center = hexagonGrid.tileCenterPoint({
+      const center = hexagonGeometry.tileCenterPoint({
         x: tile.position.x,
         y: tile.position.y,
       })
-      const hexagonPoints = hexagonGrid.getPointsAround(center, true)
+      const hexagonPoints = hexagonGeometry.getPointsAround(center, true)
       hexagonPoints.push(hexagonPoints[0]) // close the loop
       const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
       const points = hexagonPoints.join(',')

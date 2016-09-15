@@ -1,18 +1,18 @@
 /**
- * HexagonGrid: manage and convert hexagon coordinates
+ * HexagonGeometry: manage and convert hexagon coordinates
  *
  * Primary reference:
  * http://www.redblobgames.com/grids/hexagons/#coordinates
  */
 
-import {settings, tileEdgeRange, canvasDimensions} from './constants'
+import {settings, tileEdgeRange, canvasDimensions} from '../constants'
 
 const TILE_OFFSET = 1
 
 // tile margins must be even to not break Importer._getTilePosition()
 export const IMPORT_TILE_MARGINS = 10
 
-class HexagonGrid {
+class HexagonGeometry {
   constructor() {
     this.setTileEdge(tileEdgeRange.default)
   }
@@ -152,4 +152,4 @@ class HexagonGrid {
   }
 }
 
-export default new HexagonGrid()
+export default new HexagonGeometry()

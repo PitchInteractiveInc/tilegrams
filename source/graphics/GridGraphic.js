@@ -4,7 +4,7 @@ import polygonOverlap from 'polygon-overlap'
 
 import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
-import hexagonGrid from '../HexagonGrid'
+import hexagonGeometry from '../geometry/HexagonGeometry'
 import {
   devicePixelRatio,
   selectedTileBorderColor,
@@ -27,7 +27,7 @@ export default class GridGraphic extends Graphic {
 
   onMouseDown(event) {
     event.preventDefault()
-    const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+    const position = hexagonGeometry.rectToHexPosition(event.offsetX, event.offsetY)
     const tile = this._findTile(position)
     if (tile == null || this._selectedTiles.includes(tile)) {
       this._onMarqueeMouseDown(event)
@@ -38,7 +38,7 @@ export default class GridGraphic extends Graphic {
 
   _onArrowMouseDown(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(
+      const position = hexagonGeometry.rectToHexPosition(
         event.offsetX,
         event.offsetY
       )
@@ -65,7 +65,7 @@ export default class GridGraphic extends Graphic {
       let createMarquee = true;
       // check if mouse on currently selected marquee tiles
       if (this._selectedTiles.length > 0) {
-        const position = hexagonGrid.rectToHexPosition(event.offsetX, event.offsetY)
+        const position = hexagonGeometry.rectToHexPosition(event.offsetX, event.offsetY)
         const tile = this._findTile(position)
         if (this._selectedTiles.includes(tile)) {
           createMarquee = false
@@ -93,7 +93,7 @@ export default class GridGraphic extends Graphic {
       y2: Math.max(this._marqueeStart.y * devicePixelRatio, this._mouseAt.y * devicePixelRatio),
     }
     return this._tiles.filter((tile) => {
-      const center = hexagonGrid.tileCenterPoint(tile.position)
+      const center = hexagonGeometry.tileCenterPoint(tile.position)
       return polygonOverlap(
         [
           [marqueeBounds.x1, marqueeBounds.y1],
@@ -101,7 +101,7 @@ export default class GridGraphic extends Graphic {
           [marqueeBounds.x2, marqueeBounds.y2],
           [marqueeBounds.x1, marqueeBounds.y2],
         ],
-        hexagonGrid.getPointsAround(center)
+        hexagonGeometry.getPointsAround(center)
       )
     })
   }
@@ -130,12 +130,12 @@ export default class GridGraphic extends Graphic {
       // determine where each tile is going to be moved to
       const overlaps = this._selectedTiles.some((tile) => {
         // figure out where in XY space this tile currently is
-        const tileXY = hexagonGrid.tileCenterPoint(tile.position)
+        const tileXY = hexagonGeometry.tileCenterPoint(tile.position)
         // add in the offset of the moved mouse (accounting for DPI)
         tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
         tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
         // convert back to hex coordinates
-        tile.newPosition = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
+        tile.newPosition = hexagonGeometry.rectToHexPosition(tileXY.x, tileXY.y)
         // check to see if a tile exists at that place
         const overlappingTile = this._findTile(tile.newPosition)
         // if there is an overlapping tile
@@ -201,7 +201,7 @@ export default class GridGraphic extends Graphic {
       if (this._makingMarqueeSelection) {
         this._selectedTiles = this._getMarqueeSelection()
       }
-      const position = hexagonGrid.rectToHexPosition(
+      const position = hexagonGeometry.rectToHexPosition(
         this._mouseAt.x,
         this._mouseAt.y
       )
@@ -216,7 +216,7 @@ export default class GridGraphic extends Graphic {
 
   onDoubleClick(event) {
     if (this._tiles) {
-      const position = hexagonGrid.rectToHexPosition(
+      const position = hexagonGeometry.rectToHexPosition(
         event.offsetX,
         event.offsetY
       )
@@ -292,8 +292,8 @@ export default class GridGraphic extends Graphic {
   populateTiles(mapGraphic) {
     this._tiles = []
     this._deselectTile()
-    hexagonGrid.forEachTilePosition((x, y) => {
-      const point = hexagonGrid.tileCenterPoint({x, y})
+    hexagonGeometry.forEachTilePosition((x, y) => {
+      const point = hexagonGeometry.tileCenterPoint({x, y})
       const feature = mapGraphic.getFeatureAtPoint(point)
       if (feature) {
         this._tiles.push({
@@ -312,7 +312,7 @@ export default class GridGraphic extends Graphic {
   importTiles(tiles) {
     const maxX = Math.max(...tiles.map(tile => tile.position.x))
     const maxY = Math.max(...tiles.map(tile => tile.position.y))
-    hexagonGrid.setTileEdgeFromMax(maxX, maxY)
+    hexagonGeometry.setTileEdgeFromMax(maxX, maxY)
     this._tiles = tiles
   }
 
@@ -365,10 +365,10 @@ export default class GridGraphic extends Graphic {
             offset.y = this._mouseAt.y
           }
 
-          const tileXY = hexagonGrid.tileCenterPoint(position)
+          const tileXY = hexagonGeometry.tileCenterPoint(position)
           tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
           tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
-          position = hexagonGrid.rectToHexPosition(tileXY.x, tileXY.y)
+          position = hexagonGeometry.rectToHexPosition(tileXY.x, tileXY.y)
         }
         this._drawTile(
           position,
@@ -443,10 +443,10 @@ export default class GridGraphic extends Graphic {
     this._ctx.globalAlpha = 1.0
   }
 
-  /** http://www.redblobgames.com/hexagonGrids/hexagons/#basics */
+  /** http://www.redblobgames.com/hexagonGeometrys/hexagons/#basics */
   _drawTile(position, fill, superstroke) {
-    const center = hexagonGrid.tileCenterPoint(position)
-    const points = hexagonGrid.getPointsAround(center)
+    const center = hexagonGeometry.tileCenterPoint(position)
+    const points = hexagonGeometry.getPointsAround(center)
     this._ctx.beginPath()
     points.forEach((point, index) => {
       const command = (index === 0) ? 'moveTo' : 'lineTo'
@@ -470,7 +470,7 @@ export default class GridGraphic extends Graphic {
     const clusters = this._computeClusters(tiles)
     const paths = clusters.map(cluster => hull(
       cluster,
-      hexagonGrid.getTileEdge() // 'concavity', a.k.a. max edge length
+      hexagonGeometry.getTileEdge() // 'concavity', a.k.a. max edge length
     ))
     paths.forEach(path => {
       this._ctx.beginPath()
@@ -497,8 +497,8 @@ export default class GridGraphic extends Graphic {
     // collect unique points for tiles
     const points = []
     tiles.forEach(tile => {
-      const center = hexagonGrid.tileCenterPoint(tile.position)
-      const hexagonPoints = hexagonGrid.getPointsAround(center)
+      const center = hexagonGeometry.tileCenterPoint(tile.position)
+      const hexagonPoints = hexagonGeometry.getPointsAround(center)
       hexagonPoints.forEach(point => {
         if (points.indexOf(point) === -1) {
           points.push(point)
@@ -510,7 +510,7 @@ export default class GridGraphic extends Graphic {
     const dbscan = new DBSCAN()
     const clusters = dbscan.run(
       points,
-      hexagonGrid.getTileEdge(),  // neighborhood radius
+      hexagonGeometry.getTileEdge(),  // neighborhood radius
       2                           // min points per cluster
     )
     // deindex and return clusters
