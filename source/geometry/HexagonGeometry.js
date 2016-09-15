@@ -6,11 +6,14 @@
  */
 
 import {settings, tileEdgeRange, canvasDimensions} from '../constants'
+import FlatTopHexagonShape from './FlatTopHexagonShape'
 
 const TILE_OFFSET = 1
 
 // tile margins must be even to not break Importer._getTilePosition()
 export const IMPORT_TILE_MARGINS = 10
+
+const shape = new FlatTopHexagonShape()
 
 class HexagonGeometry {
   constructor() {
@@ -27,27 +30,25 @@ class HexagonGeometry {
   }
 
   resize() {
-    this._tileSize = {
-      width: 2.0 * this._tileEdge,
-      height: Math.sqrt(3.0) * this._tileEdge,
-    }
+    this._tileSize = shape.getTileSize(this._tileEdge)
+    const gridUnit = shape.getGridUnit()
     this._tileCounts = {
       width: Math.floor(
-        (canvasDimensions.width / (this._tileSize.width * 0.75)) -
+        (canvasDimensions.width / (this._tileSize.width * gridUnit.width)) -
         (TILE_OFFSET * 2)
       ),
       height: Math.floor(
-        (canvasDimensions.height / this._tileSize.height) - (TILE_OFFSET * 2)
+        (canvasDimensions.height / (this._tileSize.height * gridUnit.height)) -
+        (TILE_OFFSET * 2)
       ),
     }
   }
 
   setTileEdgeFromMax(maxX, maxY) {
-    const xSpace = canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS)
-    const xEdge = (xSpace / 3.0) * 2.0
-    const ySpace = canvasDimensions.height / (maxY + IMPORT_TILE_MARGINS)
-    const yEdge = ySpace / Math.sqrt(3.0)
-    const tileEdge = Math.min(xEdge, yEdge)
+    const tileEdge = shape.getTileEdgeFromGridUnit({
+      width: canvasDimensions.width / (maxX + IMPORT_TILE_MARGINS),
+      height: canvasDimensions.height / (maxY + IMPORT_TILE_MARGINS),
+    })
     this.setTileEdge(tileEdge)
   }
 
@@ -65,90 +66,40 @@ class HexagonGeometry {
 
   /** Return X/Y center point of tile at given position */
   tileCenterPoint(position) {
+    const gridUnit = shape.getGridUnit()
     return {
-      x: (position.x + TILE_OFFSET) * (0.75 * this._tileSize.width),
-      y: ((position.y + TILE_OFFSET) * this._tileSize.height) + (
-          position.x % 2 === 0 ?
-            this._tileSize.height * 0.5 :
-            0.0
-          ),
+      x: ((position.x + TILE_OFFSET) * (gridUnit.width * this._tileSize.width)),
+      y: ((position.y + TILE_OFFSET) * (gridUnit.height * this._tileSize.height))
+       + (shape.getGridOffsetY(position.x) * this._tileSize.height),
     }
   }
 
   getPointsAround(center, contiguous) {
-    return [
-      this._getUpperLeftPoint(center, contiguous),
-      this._getUpperRightPoint(center, contiguous),
-      this._getRightPoint(center, contiguous),
-      this._getLowerRightPoint(center, contiguous),
-      this._getLowerLeftPoint(center, contiguous),
-      this._getLeftPoint(center, contiguous),
-    ]
-  }
-
-  _getUpperLeftPoint(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x - (tileScale * this._tileSize.width * 0.25),
-      center.y - (tileScale * this._tileSize.height * 0.5),
-    ]
-  }
-
-  _getUpperRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x + (tileScale * this._tileSize.width * 0.25),
-      center.y - (tileScale * this._tileSize.height * 0.5),
-    ]
-  }
-
-  _getRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x + (tileScale * this._tileSize.width * 0.5),
-      center.y,
-    ]
-  }
-
-  _getLowerRightPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x + (tileScale * this._tileSize.width * 0.25),
-      center.y + (tileScale * this._tileSize.height * 0.5),
-    ]
-  }
-
-  _getLowerLeftPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x - (tileScale * this._tileSize.width * 0.25),
-      center.y + (tileScale * this._tileSize.height * 0.5),
-    ]
-  }
-
-  _getLeftPoint(center, contiguous) {
-    const tileScale = contiguous ? 1.0 : settings.tileScale
-    return [
-      center.x - (tileScale * this._tileSize.width * 0.5),
-      center.y,
-    ]
+    const scaledSize = {
+      width: this._tileSize.width * tileScale,
+      height: this._tileSize.height * tileScale,
+    }
+    return shape.getPointsAround(center, scaledSize)
   }
 
   rectToHexPosition(rectX, rectY) {
+    const gridUnit = shape.getGridUnit()
     const x =
-      Math.round(rectX / ((this._tileSize.width * 0.75) / devicePixelRatio)) -
-      TILE_OFFSET
-    const y = Math.round(
-      (rectY / (this._tileSize.height / devicePixelRatio)) -
-      (x % 2 === 0 ? 0.5 : 0)
-    ) - TILE_OFFSET
+      Math.round(
+        (rectX / ((this._tileSize.width * gridUnit.width) / devicePixelRatio))
+        - shape.getGridOffsetX()
+      ) - TILE_OFFSET
+    const y =
+      Math.round(
+        (rectY / ((this._tileSize.height * gridUnit.height) / devicePixelRatio))
+        - shape.getGridOffsetY(x)
+      ) - TILE_OFFSET
     return {x, y}
   }
 
   hexAreaToSide(area) {
-    return Math.sqrt(
-      (area * 2) / (Math.sqrt(3) * 3)
-    )
+    return shape.getTileEdgeFromArea(area)
   }
 }
 
