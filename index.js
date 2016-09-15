@@ -4,6 +4,7 @@ import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import mapData from './source/MapData'
+import tilegramData from './source/TilegramData'
 import hexagonGrid from './source/HexagonGrid'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
@@ -32,6 +33,12 @@ function updateUi() {
   ui.render()
 }
 
+function loadTopoJson(topoJson) {
+  const tiles = importer.fromTopoJson(topoJson)
+  canvas.importTiles(tiles)
+  updateUi()
+}
+
 function confirmNavigation(e) {
   // most browsers won't let you display custom text but have something like this anyway
   const message = 'Are you sure you want to leave this page? You will lose any unsaved work.'
@@ -45,6 +52,9 @@ function init() {
   canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
   ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
+  ui.setTilegramSelectedCallback(index => {
+    loadTopoJson(tilegramData.getTilegram(index))
+  })
   ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
@@ -69,16 +79,14 @@ function init() {
       content: svg,
     })
   })
-  ui.setImportCallback(topoJson => {
-    const tiles = importer.fromTopoJson(topoJson)
-    canvas.getGrid().importTiles(tiles)
-    updateUi()
-  })
+  ui.setImportCallback(loadTopoJson)
 
   // populate
   ui.setGeos(mapData.getUniqueFeatureIds())
   ui.setDatasetLabels(data.getLabels())
-  selectDataset(data.getDataset(0))
+  ui.setTilegramLabels(tilegramData.getLabels())
+  ui.setSelectedDataset(data.getDataset(0)) // FIXME: loading wrong data
+  loadTopoJson(tilegramData.getTilegram(0))
   updateUi()
   if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)

@@ -12,10 +12,6 @@ export default class ResolutionSlider extends React.Component {
     this._triggerChangeFromText = this._triggerChangeFromText.bind(this)
   }
 
-  componentDidMount() {
-    this._triggerChangeFromSlider(50) // reset slider to 50
-  }
-
   componentWillReceiveProps(nextProps) {
     if (JSON.stringify(nextProps.metricDomain) !== JSON.stringify(this.props.metricDomain)) {
       this.normalizeValue.domain(nextProps.metricDomain) // update the domain

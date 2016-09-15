@@ -32,6 +32,11 @@ class Canvas {
     }
   }
 
+  importTiles(tiles) {
+    this._gridGraphic.importTiles(tiles)
+    this._cartogramReady = true
+  }
+
   updateTiles() {
     this._gridGraphic.populateTiles(this._mapGraphic)
   }

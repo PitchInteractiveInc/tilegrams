@@ -45,6 +45,7 @@ export default class DatasetSelector extends React.Component {
     })
     return (
       <select
+        id='dataset-selector'
         className='dataset-select'
         value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
@@ -84,7 +85,7 @@ export default class DatasetSelector extends React.Component {
     }
     return (
       <fieldset>
-        <label htmlFor='datasetSelectorSelect'>Dataset</label>
+        <label htmlFor='dataset-selector'>Dataset</label>
         {this._renderMenu()}
         {csvInput}
       </fieldset>
@@ -99,4 +100,5 @@ DatasetSelector.propTypes = {
 DatasetSelector.defaultProps = {
   labels: [],
   onDatasetSelected: () => {},
+  onCustomDataset: () => {},
 }
