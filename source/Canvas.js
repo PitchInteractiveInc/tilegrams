@@ -43,8 +43,8 @@ class Canvas {
 
   updateTilesFromMetrics(metricPerTile, sumMetrics) {
     const idealHexArea = (this._cartogramArea * metricPerTile) / sumMetrics
-    const hexEdgeSize = hexagonGeometry.hexAreaToSide(idealHexArea)
-    hexagonGeometry.setTileEdge(hexEdgeSize)
+    const tileEdge = hexagonGeometry.getTileEdgeFromArea(idealHexArea)
+    hexagonGeometry.setTileEdge(tileEdge)
     this.updateTiles()
   }
 

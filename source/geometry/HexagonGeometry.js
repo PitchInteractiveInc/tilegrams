@@ -89,26 +89,30 @@ class HexagonGeometry {
   }
 
   /**
-   * Return grid position, given screen coordinates
+   * Return grid position, given screen coordinates.
    * NOTE: The order that X and Y can be calculated depends on the shape
    * because of grid offsets.
    */
-  rectToHexPosition(rectX, rectY) {
+  getPositionFromScreen(screenX, screenY) {
     const gridUnit = shape.getGridUnit()
     const y =
       Math.round(
-        (rectY / ((this._tileSize.height * gridUnit.height) / devicePixelRatio))
-        - shape.getGridOffsetY()
+        (
+          screenY /
+          ((this._tileSize.height * gridUnit.height) / devicePixelRatio)
+        ) - shape.getGridOffsetY()
       ) - TILE_OFFSET
     const x =
       Math.round(
-        (rectX / ((this._tileSize.width * gridUnit.width) / devicePixelRatio))
-        - shape.getGridOffsetX(y)
+        (
+          screenX /
+          ((this._tileSize.width * gridUnit.width) / devicePixelRatio)
+        ) - shape.getGridOffsetX(y)
       ) - TILE_OFFSET
     return {x, y}
   }
 
-  hexAreaToSide(area) {
+  getTileEdgeFromArea(area) {
     return shape.getTileEdgeFromArea(area)
   }
 }

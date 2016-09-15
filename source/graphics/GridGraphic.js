@@ -27,7 +27,7 @@ export default class GridGraphic extends Graphic {
 
   onMouseDown(event) {
     event.preventDefault()
-    const position = hexagonGeometry.rectToHexPosition(event.offsetX, event.offsetY)
+    const position = hexagonGeometry.getPositionFromScreen(event.offsetX, event.offsetY)
     const tile = this._findTile(position)
     if (tile == null || this._selectedTiles.includes(tile)) {
       this._onMarqueeMouseDown(event)
@@ -38,7 +38,7 @@ export default class GridGraphic extends Graphic {
 
   _onArrowMouseDown(event) {
     if (this._tiles) {
-      const position = hexagonGeometry.rectToHexPosition(
+      const position = hexagonGeometry.getPositionFromScreen(
         event.offsetX,
         event.offsetY
       )
@@ -65,7 +65,7 @@ export default class GridGraphic extends Graphic {
       let createMarquee = true;
       // check if mouse on currently selected marquee tiles
       if (this._selectedTiles.length > 0) {
-        const position = hexagonGeometry.rectToHexPosition(event.offsetX, event.offsetY)
+        const position = hexagonGeometry.getPositionFromScreen(event.offsetX, event.offsetY)
         const tile = this._findTile(position)
         if (this._selectedTiles.includes(tile)) {
           createMarquee = false
@@ -135,7 +135,7 @@ export default class GridGraphic extends Graphic {
         tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
         tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
         // convert back to hex coordinates
-        tile.newPosition = hexagonGeometry.rectToHexPosition(tileXY.x, tileXY.y)
+        tile.newPosition = hexagonGeometry.getPositionFromScreen(tileXY.x, tileXY.y)
         // check to see if a tile exists at that place
         const overlappingTile = this._findTile(tile.newPosition)
         // if there is an overlapping tile
@@ -201,7 +201,7 @@ export default class GridGraphic extends Graphic {
       if (this._makingMarqueeSelection) {
         this._selectedTiles = this._getMarqueeSelection()
       }
-      const position = hexagonGeometry.rectToHexPosition(
+      const position = hexagonGeometry.getPositionFromScreen(
         this._mouseAt.x,
         this._mouseAt.y
       )
@@ -216,7 +216,7 @@ export default class GridGraphic extends Graphic {
 
   onDoubleClick(event) {
     if (this._tiles) {
-      const position = hexagonGeometry.rectToHexPosition(
+      const position = hexagonGeometry.getPositionFromScreen(
         event.offsetX,
         event.offsetY
       )
@@ -368,7 +368,7 @@ export default class GridGraphic extends Graphic {
           const tileXY = hexagonGeometry.tileCenterPoint(position)
           tileXY.x = (tileXY.x / devicePixelRatio) + offset.x
           tileXY.y = (tileXY.y / devicePixelRatio) + offset.y
-          position = hexagonGeometry.rectToHexPosition(tileXY.x, tileXY.y)
+          position = hexagonGeometry.getPositionFromScreen(tileXY.x, tileXY.y)
         }
         this._drawTile(
           position,
