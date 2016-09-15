@@ -2,7 +2,7 @@ import Stats from 'stats-js'
 
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
-import hexagonGeometry from './geometry/HexagonGeometry'
+import gridGeometry from './geometry/GridGeometry'
 import {devicePixelRatio, canvasDimensions, settings} from './constants'
 import {createElement, isDevEnvironment} from './utils'
 
@@ -43,8 +43,8 @@ class Canvas {
 
   updateTilesFromMetrics(metricPerTile, sumMetrics) {
     const idealHexArea = (this._cartogramArea * metricPerTile) / sumMetrics
-    const tileEdge = hexagonGeometry.getTileEdgeFromArea(idealHexArea)
-    hexagonGeometry.setTileEdge(tileEdge)
+    const tileEdge = gridGeometry.getTileEdgeFromArea(idealHexArea)
+    gridGeometry.setTileEdge(tileEdge)
     this.updateTiles()
   }
 

@@ -1,12 +1,9 @@
 /**
- * HexagonGeometry: manage and convert hexagon coordinates
- *
- * Primary reference:
- * http://www.redblobgames.com/grids/hexagons/#coordinates
+ * GridGeometry: manage and convert grid coordinates
  */
 
 import {settings, tileEdgeRange, canvasDimensions} from '../constants'
-import PointyTopHexagonShape from './PointyTopHexagonShape'
+import PointyTopHexagonShape from './shapes/PointyTopHexagonShape'
 
 const TILE_OFFSET = 1
 
@@ -15,7 +12,7 @@ export const IMPORT_TILE_MARGINS = 10
 
 const shape = new PointyTopHexagonShape()
 
-class HexagonGeometry {
+class GridGeometry {
   constructor() {
     this.setTileEdge(tileEdgeRange.default)
   }
@@ -117,4 +114,4 @@ class HexagonGeometry {
   }
 }
 
-export default new HexagonGeometry()
+export default new GridGeometry()

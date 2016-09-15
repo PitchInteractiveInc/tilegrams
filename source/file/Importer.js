@@ -2,10 +2,10 @@
  * Importer: convert hex grid TopoJSON into hexagon grid coordinates
  *
  * Assume that TopoJSON is of a hex grid and use some fuzzy logic to re-generate
- * that grid in the offset coordinates that HexagonGeometry uses.
+ * that grid in the offset coordinates that GridGeometry uses.
  */
 
-import {IMPORT_TILE_MARGINS} from '../geometry/HexagonGeometry'
+import {IMPORT_TILE_MARGINS} from '../geometry/GridGeometry'
 import {OBJECT_ID} from './Exporter'
 
 class Importer {

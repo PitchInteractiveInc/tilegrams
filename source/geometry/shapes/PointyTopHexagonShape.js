@@ -1,3 +1,8 @@
+/**
+ * Primary geometry reference:
+ * http://www.redblobgames.com/grids/hexagons/#coordinates
+ */
+
 export default class PointyTopHexagonShape {
   /** Return tile maximum dimensions, point-to-point, given edge */
   getTileSize(tileEdge) {
