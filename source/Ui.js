@@ -171,6 +171,7 @@ class Ui {
         metricDomain={this._metricDomain}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
+        editing={this._editing}
       />
     )
     const generateOption = (
