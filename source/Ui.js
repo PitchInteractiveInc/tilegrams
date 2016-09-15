@@ -14,11 +14,8 @@ class Ui {
     this.metricPerTile = null
     this._tiles = null
     this._originalTilesLength = null
-    this._usingImportedTiles = false
-    this._tileFilename = null
     this._editing = false
 
-    this._resetImportedTiles = this._resetImportedTiles.bind(this)
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
     window.addEventListener('resize', this._resize)
@@ -54,6 +51,10 @@ class Ui {
     this._datasetLabels = datasetLabels
   }
 
+  setTilegramLabels(tilegramLabels) {
+    this._tilegramLabels = tilegramLabels
+  }
+
   setSelectedDataset(dataset) {
     this._selectedDataset = dataset
     this._selectedDatasetSum = this.getDatasetSum(dataset)
@@ -83,6 +84,10 @@ class Ui {
     this._datasetSelectedCallback = callback
   }
 
+  setTilegramSelectedCallback(callback) {
+    this._tilegramSelectedCallback = callback
+  }
+
   setCustomDatasetCallback(callback) {
     this._customDatasetCallback = callback
   }
@@ -108,9 +113,7 @@ class Ui {
   }
 
   setImportCallback(callback) {
-    this._importCallback = (tileFilename, topoJson) => {
-      this._tileFilename = tileFilename
-      this._usingImportedTiles = true
+    this._importCallback = (topoJson) => {
       callback(topoJson)
     }
   }
@@ -140,12 +143,6 @@ class Ui {
     this._container = createElement({id: 'ui'})
   }
 
-  _resetImportedTiles() {
-    this._usingImportedTiles = false
-    this._tileFilename = null
-    this.render()
-  }
-
   _startOver() {
     this._editing = false
     this._showModal = false
@@ -165,16 +162,15 @@ class Ui {
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
-        labels={this._datasetLabels}
+        datasetLabels={this._datasetLabels}
+        tilegramLabels={this._tilegramLabels}
         selectDataset={this._datasetSelectedCallback}
+        selectTilegram={this._tilegramSelectedCallback}
         selectCustomDataset={this._customDatasetCallback}
         importCustom={this._importCallback}
         metricDomain={this._metricDomain}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
-        usingImportedtiles={this._usingImportedTiles}
-        tileFilename={this._tileFilename}
-        resetImportedTiles={this._resetImportedTiles}
         editing={this._editing}
       />
     )

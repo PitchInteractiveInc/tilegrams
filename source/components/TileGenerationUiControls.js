@@ -2,39 +2,52 @@ import React from 'react'
 
 import DatasetSelector from './DatasetSelector'
 import ResolutionSlider from './ResolutionSlider'
-import ImportButton from './ImportButton'
+import ImportControls from './ImportControls'
 
 export default class TileGenerationUiControls extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      selectedOption: 'generate',
+      selectedOption: 'import',
     }
 
     this._changeOption = this._changeOption.bind(this)
+    this._onCustomImport = this._onCustomImport.bind(this)
+    this._onTilegramSelected = this._onTilegramSelected.bind(this)
+
+    this._restoreLastTilegramSelection = null
   }
 
   _changeOption(event) {
-    if (this.props.tileFilename || this.state.selectedOption === 'import') {
-      this.props.resetImportedTiles()
+    const selectedOption = event.target.value
+    const newState = {selectedOption}
+    if (selectedOption === 'import') {
+      if (this._restoreLastTilegramSelection) {
+        this._restoreLastTilegramSelection()
+      } else {
+        this.props.selectTilegram(0)
+      }
+    } else if (selectedOption === 'generate') {
+      this.props.selectDataset(0)
     }
-    this.setState({
-      selectedOption: event.target.value,
-    })
+    this.setState(newState)
+  }
+
+  _onCustomImport(topoJson) {
+    this._storeLastTilegramSelection(() => this.props.importCustom(topoJson))
+  }
+
+  _onTilegramSelected(index) {
+    this._storeLastTilegramSelection(() => this.props.selectTilegram(index))
+  }
+
+  _storeLastTilegramSelection(restoreLastTilegramSelection) {
+    this._restoreLastTilegramSelection = restoreLastTilegramSelection
+    this._restoreLastTilegramSelection()
   }
 
   render() {
-    let importControls = <ImportButton onLoad={this.props.importCustom} />
-    if (this.props.usingImportedtiles) {
-      importControls = (
-        <fieldset>
-          <span>Using {this.props.tileFilename}</span>
-          <a onClick={this.props.resetImportedTiles}>✕</a>
-        </fieldset>
-      )
-    }
-
     const generateCollapsedClass = this.state.selectedOption !== 'generate' && this.props.editing ?
       'collapsed' :
       ''
@@ -44,7 +57,23 @@ export default class TileGenerationUiControls extends React.Component {
 
     return (
       <div className='ui-controls'>
-        <div className={`padding-bottom ${generateCollapsedClass}`}>
+        <div className={`padding-bottom ${importCollapsedClass}`}>
+          <input
+            type='radio'
+            name='tile-controls'
+            value='import'
+            checked={this.state.selectedOption === 'import'}
+            onChange={this._changeOption}
+          /> Load tiled TopoJSON
+          <div className={this.state.selectedOption !== 'import' ? 'deselected' : null} >
+            <ImportControls
+              labels={this.props.tilegramLabels}
+              onCustomImport={this._onCustomImport}
+              onTilegramSelected={this._onTilegramSelected}
+            />
+          </div>
+        </div>
+        <div className={generateCollapsedClass}>
           <input
             type='radio'
             name='tile-controls'
@@ -54,7 +83,7 @@ export default class TileGenerationUiControls extends React.Component {
           /> Generate Cartogram From Data
           <div className={this.state.selectedOption !== 'generate' ? 'deselected' : null}>
             <DatasetSelector
-              labels={this.props.labels}
+              labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}
               onCustomDataset={csv => this.props.selectCustomDataset(csv)}
             />
@@ -64,44 +93,31 @@ export default class TileGenerationUiControls extends React.Component {
             />
           </div>
         </div>
-        <div className={importCollapsedClass}>
-          <input
-            type='radio'
-            name='tile-controls'
-            value='import'
-            checked={this.state.selectedOption === 'import'}
-            onChange={this._changeOption}
-          /> Import Project
-          <div className={this.state.selectedOption !== 'import' ? 'deselected' : null} >
-            {importControls}
-          </div>
-        </div>
       </div>
     )
   }
 }
 
 TileGenerationUiControls.propTypes = {
-  labels: React.PropTypes.array,
+  datasetLabels: React.PropTypes.array,
+  tilegramLabels: React.PropTypes.array,
   selectDataset: React.PropTypes.func,
+  selectTilegram: React.PropTypes.func,
   selectCustomDataset: React.PropTypes.func,
   importCustom: React.PropTypes.func,
   changeResolution: React.PropTypes.func,
   datasetSum: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
-  tileFilename: React.PropTypes.string,
-  resetImportedTiles: React.PropTypes.func,
-  usingImportedtiles: React.PropTypes.bool,
   editing: React.PropTypes.bool,
 }
 
 TileGenerationUiControls.defaultProps = {
-  labels: [],
+  datasetLabels: [],
+  tilegramLabels: [],
   selectDataset: () => {},
+  selectTilegram: () => {},
   selectCustomDataset: () => {},
   importCustom: () => {},
   changeResolution: () => {},
-  resetImportedTiles: () => {},
-  usingImportedtiles: false,
   editing: false,
 }
