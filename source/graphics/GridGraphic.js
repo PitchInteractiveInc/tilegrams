@@ -310,6 +310,7 @@ export default class GridGraphic extends Graphic {
   }
 
   importTiles(tiles) {
+    this._deselectTile()
     const maxX = Math.max(...tiles.map(tile => tile.position.x))
     const maxY = Math.max(...tiles.map(tile => tile.position.y))
     gridGeometry.setTileEdgeFromMax(maxX, maxY)
