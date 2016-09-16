@@ -35,7 +35,16 @@ function updateUi() {
 
 function loadTopoJson(topoJson) {
   const tiles = importer.fromTopoJson(topoJson)
-  canvas.importTiles(tiles)
+  const datasetMap = {}
+  tiles.forEach((tile) => {
+    datasetMap[tile.id] = [tile.id, tile.tilegramValue]
+  })
+  const dataset = Object.keys(datasetMap).map((row) => datasetMap[row])
+  ui.setSelectedDataset(dataset)
+  ui.metricPerTile = importer.metricPerTile
+  exporter.metricPerTile = importer.metricPerTile
+
+  canvas.importTiles(tiles, importer.cartogramArea)
   updateUi()
 }
 
@@ -60,6 +69,7 @@ function init() {
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
     ui.metricPerTile = metricPerTile
+    exporter.metricPerTile = metricPerTile
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
@@ -85,7 +95,6 @@ function init() {
   ui.setGeos(mapData.getUniqueFeatureIds())
   ui.setDatasetLabels(data.getLabels())
   ui.setTilegramLabels(tilegramData.getLabels())
-  ui.setSelectedDataset(data.getDataset(0)) // FIXME: loading wrong data
   loadTopoJson(tilegramData.getTilegram(0))
   updateUi()
   if (!isDevEnvironment()) {

@@ -30,11 +30,18 @@ class Exporter {
     })
 
     tiles.forEach((tile, tileIndex) => {
-      geometries.push({
+      const geometry = {
         type: 'Polygon',
         id: tile.id,
         arcs: [[tileIndex]],
       })
+      }
+      if (tile.tilegramValue) {
+        geometry.properties = {
+          tilegramValue: tile.tilegramValue,
+        }
+      }
+      geometries.push(geometry)
       const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
         y: (maxTileY - tile.position.y),
@@ -46,6 +53,11 @@ class Exporter {
 
     return {
       type: 'Topology',
+      properties: {
+        tilegramMetricPerTile: this.metricPerTile,
+        tilegramCartogramArea: this.cartogramArea,
+        tilegramVersion: '1.0.0',
+      },
       objects: {
         [OBJECT_ID]: {
           type: 'GeometryCollection',

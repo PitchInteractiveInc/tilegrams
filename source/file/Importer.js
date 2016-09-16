@@ -20,8 +20,11 @@ class Importer {
       return {
         id: geometry.id,
         point: this._hexagonCenterPoint(path),
+        tilegramValue: geometry.properties.tilegramValue,
       }
     })
+    this.metricPerTile = topoJson.properties.tilegramMetricPerTile
+    this.cartogramArea = topoJson.properties.tilegramCartogramArea
     const tiles = this._getTilePositions(tilePoints)
     return this._normalizeTilePosition(tiles)
   }
@@ -92,6 +95,7 @@ class Importer {
       return {
         id: tilePoint.id,
         position,
+        tilegramValue: tilePoint.tilegramValue,
       }
     })
   }
@@ -109,6 +113,7 @@ class Importer {
           x: (tile.position.x - minX) + IMPORT_TILE_MARGINS,
           y: ((maxY - minY) - (tile.position.y - minY)) + IMPORT_TILE_MARGINS,
         },
+        tilegramValue: tile.tilegramValue,
       }
     })
   }
