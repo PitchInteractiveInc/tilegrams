@@ -1,5 +1,7 @@
-import pitchPopulationTilegram from '../tilegrams/pitch-us-population-500k.json'
 import pitchGDPTilegram from '../tilegrams/gdp3.json'
+import pitchPopulationTilegram from '../tilegrams/pitch-us-population-500k.json'
+import nprOneToOneTilegram from '../tilegrams/npr-one-to-one.json'
+import fiveThirtyEightElectoralCollegeTilegram from '../tilegrams/fivethirtyeight-electoral-college-tilegram.json'
 
 class TilegramData {
   constructor() {
@@ -11,6 +13,14 @@ class TilegramData {
       {
         label: 'Pitch U.S. Population 2016',
         topoJson: pitchPopulationTilegram,
+      },
+      {
+        label: 'FiveThirtyEight Electoral College 2016',
+        topoJson: fiveThirtyEightElectoralCollegeTilegram,
+      },
+      {
+        label: 'NPR One-to-one',
+        topoJson: nprOneToOneTilegram,
       },
     ]
   }

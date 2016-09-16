@@ -147,7 +147,7 @@ class Importer {
       const deltaCounts = []
 
       // tally frequency of each delta over sample
-      for (let i = 0; i < Math.min(SAMPLE_COUNT, tilePoints.length); i++) {
+      for (let i = 0; i < Math.min(SAMPLE_COUNT, tilePoints.length - 1); i++) {
         const delta = Math.abs(
           tilePoints[i + 1].point[dimension] -
           tilePoints[i].point[dimension]
