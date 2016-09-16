@@ -5,11 +5,14 @@
  * that grid in the offset coordinates that GridGeometry uses.
  */
 
-import {IMPORT_TILE_MARGINS} from '../geometry/GridGeometry'
+import {
+  default as gridGeometry,
+  IMPORT_TILE_MARGINS,
+} from '../geometry/GridGeometry'
 import {OBJECT_ID} from './Exporter'
 
 class Importer {
-  /** Convert hex grid TopoJSON to hexagon offset coordinates */
+  /** Convert tilegram TopoJSON to grid coordinates */
   fromTopoJson(topoJson) {
     const geometries = topoJson.objects[OBJECT_ID].geometries
     const tilePoints = geometries.map(geometry => {
@@ -83,7 +86,7 @@ class Importer {
       [position, origin] = this._getTilePosition(
         tilePoint.point,
         origin,
-        xDelta,
+        xDelta * 2.0,
         yDelta
       )
       return {
@@ -116,12 +119,14 @@ class Importer {
     if (!origin) {
       origin = point
     } else {
-      position.x = Math.round((point.x - origin.x) / xDelta)
-      position.y = ((point.y - origin.y) / yDelta)
-      if (position.x % 2 === 1) {
-        position.y -= 0.5
-      }
-      position.y = Math.round(position.y)
+      position.y = Math.round(
+        ((point.y - origin.y) / yDelta) -
+        gridGeometry.getDrawOffsetY()
+      )
+      position.x = Math.floor(
+        ((point.x - origin.x) / xDelta) +
+        gridGeometry.getDrawOffsetX(position.y)
+      )
     }
     return [position, origin]
   }

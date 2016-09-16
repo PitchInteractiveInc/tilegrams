@@ -36,7 +36,7 @@ class Exporter {
       })
       const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
-        y: (maxTileY - tile.position.y) + ((tile.position.x % 2 === 0) ? 0 : 1),
+        y: (maxTileY - tile.position.y),
       })
       const hexagonPoints = gridGeometry.getPointsAround(center, true)
       hexagonPoints.push(hexagonPoints[0]) // close the loop
