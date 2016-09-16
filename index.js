@@ -16,7 +16,10 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 
 let cartogramComputeTimer
 
+let importing = false
+
 function selectDataset(dataset) {
+  importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
@@ -34,6 +37,7 @@ function updateUi() {
 }
 
 function loadTopoJson(topoJson) {
+  importing = true
   const tiles = importer.fromTopoJson(topoJson)
   const datasetMap = {}
   tiles.forEach((tile) => {
@@ -70,6 +74,9 @@ function init() {
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
     ui.metricPerTile = metricPerTile
     exporter.metricPerTile = metricPerTile
+    if (importing) {
+      return
+    }
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
