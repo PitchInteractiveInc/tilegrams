@@ -34,7 +34,6 @@ class Exporter {
         type: 'Polygon',
         id: tile.id,
         arcs: [[tileIndex]],
-      })
       }
       if (tile.tilegramValue) {
         geometry.properties = {
