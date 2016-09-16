@@ -33,11 +33,19 @@ export default class PointyTopHexagonShape {
     }
   }
 
-  getGridOffsetX(y) {
+  getUnitOffsetX(y) {
+    return (y % 2 === 0) ? 0 : 1
+  }
+
+  getUnitOffsetY() {
+    return 0.0
+  }
+
+  getDrawOffsetX(y) {
     return y % 2 === 0 ? 0.5 : 0
   }
 
-  getGridOffsetY() {
+  getDrawOffsetY() {
     return 0.0
   }
 

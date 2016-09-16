@@ -43,6 +43,22 @@ class GridGeometry {
     return this._tileSize
   }
 
+  getUnitOffsetX(y) {
+    return shape.getUnitOffsetX(y)
+  }
+
+  getUnitOffsetY(x) {
+    return shape.getUnitOffsetY(x)
+  }
+
+  getDrawOffsetX(y) {
+    return shape.getDrawOffsetX(y)
+  }
+
+  getDrawOffsetY(x) {
+    return shape.getDrawOffsetY(x)
+  }
+
   resize() {
     this._tileSize = shape.getTileSize(this._tileEdge)
     const gridUnit = shape.getGridUnit()
@@ -72,11 +88,11 @@ class GridGeometry {
     return {
       x: this._tileSize.width * (
         ((position.x + TILE_OFFSET) * gridUnit.width) +
-        shape.getGridOffsetX(position.y)
+        this.getDrawOffsetX(position.y)
       ),
       y: this._tileSize.height * (
         ((position.y + TILE_OFFSET) * gridUnit.height) +
-        shape.getGridOffsetY(position.x)
+        this.getDrawOffsetY(position.x)
       ),
     }
   }
@@ -102,14 +118,14 @@ class GridGeometry {
         (
           screenY /
           ((this._tileSize.height * gridUnit.height) / devicePixelRatio)
-        ) - shape.getGridOffsetY()
+        ) - this.getDrawOffsetY()
       ) - TILE_OFFSET
     const x =
       Math.round(
         (
           screenX /
           ((this._tileSize.width * gridUnit.width) / devicePixelRatio)
-        ) - shape.getGridOffsetX(y)
+        ) - this.getDrawOffsetX(y)
       ) - TILE_OFFSET
     return {x, y}
   }

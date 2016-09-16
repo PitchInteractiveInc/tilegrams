@@ -33,12 +33,20 @@ export default class FlatTopHexagonShape {
     }
   }
 
-  getGridOffsetX() {
+  getUnitOffsetX() {
     return 0.0
   }
 
-  getGridOffsetY(x) {
-    return (x % 2 === 0) ? 0.5 : 0
+  getUnitOffsetY(x) {
+    return (x % 2 === 0) ? 0 : 1
+  }
+
+  getDrawOffsetX() {
+    return 0.0
+  }
+
+  getDrawOffsetY(x) {
+    return x % 2 === 0 ? 0.5 : 0
   }
 
   getPointsAround(center, tileSize) {
