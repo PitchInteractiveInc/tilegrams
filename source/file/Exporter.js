@@ -5,6 +5,7 @@
  * https://github.com/mbostock/topojson/wiki/Introduction
  */
 import {color} from 'd3-color'
+import {nest} from 'd3-collection'
 import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor} from '../utils'
 
@@ -63,23 +64,29 @@ class Exporter {
     const height = canv.height
     svg.setAttribute('width', width)
     svg.setAttribute('height', height)
-
+    const groupedTiles = nest()
+      .key((d) => d.id)
+      .entries(tiles)
     // add hexagons from tiles
-    tiles.forEach((tile) => {
+    groupedTiles.forEach((group) => {
       // convert from hsl to hex string for illustrator
-      const colorString = color(fipsColor(tile.id)).toString()
-      const center = gridGeometry.tileCenterPoint({
-        x: tile.position.x,
-        y: tile.position.y,
+      const groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+      groupEl.setAttribute('id', group.key)
+      const colorString = color(fipsColor(group.key)).toString()
+      group.values.forEach((tile) => {
+        const center = gridGeometry.tileCenterPoint({
+          x: tile.position.x,
+          y: tile.position.y,
+        })
+        const hexagonPoints = gridGeometry.getPointsAround(center, true)
+        hexagonPoints.push(hexagonPoints[0]) // close the loop
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
+        const points = hexagonPoints.join(',')
+        polygon.setAttributeNS(null, 'points', points)
+        polygon.setAttributeNS(null, 'fill', colorString)
+        groupEl.appendChild(polygon)
       })
-      const hexagonPoints = gridGeometry.getPointsAround(center, true)
-      hexagonPoints.push(hexagonPoints[0]) // close the loop
-      const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon')
-      const points = hexagonPoints.join(',')
-      polygon.setAttributeNS(null, 'points', points)
-      polygon.setAttributeNS(null, 'fill', colorString)
-      polygon.setAttribute('class', tile.id)
-      svg.appendChild(polygon)
+      svg.appendChild(groupEl)
     })
     const header = '<?xml version="1.0" encoding="utf-8"?>'
     const svgSerialized = header + new XMLSerializer().serializeToString(svg)
