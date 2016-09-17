@@ -16,7 +16,10 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 
 let cartogramComputeTimer
 
+let importing = false
+
 function selectDataset(dataset) {
+  importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
@@ -34,8 +37,14 @@ function updateUi() {
 }
 
 function loadTopoJson(topoJson) {
-  const tiles = importer.fromTopoJson(topoJson)
-  canvas.importTiles(tiles)
+  importing = true
+  const {tiles, metricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
+  const dataset = data.buildDatasetFromTiles(tiles)
+
+  ui.setSelectedDataset(dataset)
+  ui.metricPerTile = metricPerTile
+
+  canvas.importTiles(tiles, cartogramArea)
   updateUi()
 }
 
@@ -60,11 +69,18 @@ function init() {
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
     ui.metricPerTile = metricPerTile
+    if (importing) {
+      return
+    }
     canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
-    const json = exporter.toTopoJson(canvas.getGrid().getTiles())
+    const json = exporter.toTopoJson(
+      canvas.getGrid().getTiles(),
+      ui.metricPerTile,
+      canvas.getCartogramArea()
+    )
     startDownload({
       filename: 'tiles.topo.json',
       mimeType: 'application/json',
@@ -85,7 +101,6 @@ function init() {
   ui.setGeos(mapData.getUniqueFeatureIds())
   ui.setDatasetLabels(data.getLabels())
   ui.setTilegramLabels(tilegramData.getLabels())
-  ui.setSelectedDataset(data.getDataset(0)) // FIXME: loading wrong data
   loadTopoJson(tilegramData.getTilegram(0))
   updateUi()
   if (!isDevEnvironment()) {

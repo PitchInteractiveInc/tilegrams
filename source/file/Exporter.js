@@ -6,6 +6,7 @@
  */
 import {color} from 'd3-color'
 import {nest} from 'd3-collection'
+import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor} from '../utils'
 
@@ -13,7 +14,7 @@ export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles) {
+  toTopoJson(tiles, metricPerTile, cartogramArea) {
     const geometries = []
     const arcs = []
 
@@ -30,11 +31,17 @@ class Exporter {
     })
 
     tiles.forEach((tile, tileIndex) => {
-      geometries.push({
+      const geometry = {
         type: 'Polygon',
         id: tile.id,
         arcs: [[tileIndex]],
-      })
+      }
+      if (tile.tilegramValue) {
+        geometry.properties = {
+          tilegramValue: tile.tilegramValue,
+        }
+      }
+      geometries.push(geometry)
       const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
         y: (maxTileY - tile.position.y),
@@ -46,6 +53,11 @@ class Exporter {
 
     return {
       type: 'Topology',
+      properties: {
+        tilegramMetricPerTile: metricPerTile,
+        tilegramCartogramArea: cartogramArea,
+        tilegramVersion: version,
+      },
       objects: {
         [OBJECT_ID]: {
           type: 'GeometryCollection',

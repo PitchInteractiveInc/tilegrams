@@ -289,17 +289,27 @@ export default class GridGraphic extends Graphic {
   }
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
-  populateTiles(mapGraphic) {
+  populateTiles(mapGraphic, properties) {
+    const hasProperties = Array.isArray(properties)
     this._tiles = []
     this._deselectTile()
     gridGeometry.forEachTilePosition((x, y) => {
       const point = gridGeometry.tileCenterPoint({x, y})
       const feature = mapGraphic.getFeatureAtPoint(point)
       if (feature) {
-        this._tiles.push({
+        const tile = {
           id: feature.id,
           position: {x, y},
-        })
+        }
+        if (hasProperties) {
+          const tileProperty = properties.find(property => {
+            return property[0] === feature.id
+          })
+          if (tileProperty) {
+            tile.tilegramValue = tileProperty[1]
+          }
+        }
+        this._tiles.push(tile)
       }
     })
     // save tiles length so the stats does not have a moving target

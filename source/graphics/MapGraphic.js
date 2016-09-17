@@ -20,7 +20,8 @@ export default class MapGraphic extends Graphic {
 
     this._stateFeatures = null
     this._iterationCount = 0
-
+    this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
+    this.getFeatureAtPoint = this.getFeatureAtPoint.bind(this)
     topogram.iterations(1)
   }
 
@@ -54,6 +55,10 @@ export default class MapGraphic extends Graphic {
     this._precomputeBounds()
     this._iterationCount++
     return true
+  }
+
+  resetBounds() {
+    this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
   }
 
   /** Apply projectiong _before_ cartogram computation */
@@ -113,7 +118,7 @@ export default class MapGraphic extends Graphic {
     // for each feature: check if point is within bounds, then within path
     return this._stateFeatures.features.find((feature, featureIndex) => {
       const bounds = this._projectedStates[featureIndex].bounds
-      if (!checkWithinBounds(pointDimensions, bounds)) {
+      if (!checkWithinBounds(pointDimensions, bounds || this._generalBounds)) {
         return false
       }
       const matchingPath = this._projectedStates[featureIndex].paths.find(

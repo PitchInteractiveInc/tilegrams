@@ -20,10 +20,15 @@ class Importer {
       return {
         id: geometry.id,
         point: this._hexagonCenterPoint(path),
+        tilegramValue: geometry.properties.tilegramValue,
       }
     })
     const tiles = this._getTilePositions(tilePoints)
-    return this._normalizeTilePosition(tiles)
+    return {
+      tiles: this._normalizeTilePosition(tiles),
+      metricPerTile: topoJson.properties.tilegramMetricPerTile,
+      cartogramArea: topoJson.properties.tilegramCartogramArea,
+    }
   }
 
   /** Determine path absolute points, given TopoJSON delta-encoded arcs */
@@ -92,6 +97,7 @@ class Importer {
       return {
         id: tilePoint.id,
         position,
+        tilegramValue: tilePoint.tilegramValue,
       }
     })
   }
@@ -109,6 +115,7 @@ class Importer {
           x: (tile.position.x - minX) + IMPORT_TILE_MARGINS,
           y: ((maxY - minY) - (tile.position.y - minY)) + IMPORT_TILE_MARGINS,
         },
+        tilegramValue: tile.tilegramValue,
       }
     })
   }
