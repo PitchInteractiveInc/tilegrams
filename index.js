@@ -38,17 +38,13 @@ function updateUi() {
 
 function loadTopoJson(topoJson) {
   importing = true
-  const tiles = importer.fromTopoJson(topoJson)
-  const datasetMap = {}
-  tiles.forEach((tile) => {
-    datasetMap[tile.id] = [tile.id, tile.tilegramValue]
-  })
-  const dataset = Object.keys(datasetMap).map((row) => datasetMap[row])
-  ui.setSelectedDataset(dataset)
-  ui.metricPerTile = importer.metricPerTile
-  exporter.metricPerTile = importer.metricPerTile
+  const {tiles, metricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
+  const dataset = data.buildDatasetFromTiles(tiles)
 
-  canvas.importTiles(tiles, importer.cartogramArea)
+  ui.setSelectedDataset(dataset)
+  ui.metricPerTile = metricPerTile
+
+  canvas.importTiles(tiles, cartogramArea)
   updateUi()
 }
 
@@ -73,7 +69,6 @@ function init() {
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
     ui.metricPerTile = metricPerTile
-    exporter.metricPerTile = metricPerTile
     if (importing) {
       return
     }
@@ -81,7 +76,11 @@ function init() {
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
-    const json = exporter.toTopoJson(canvas.getGrid().getTiles())
+    const json = exporter.toTopoJson(
+      canvas.getGrid().getTiles(),
+      ui.metricPerTile,
+      canvas.getCartogramArea()
+    )
     startDownload({
       filename: 'tiles.topo.json',
       mimeType: 'application/json',

@@ -34,6 +34,14 @@ class Data {
   getDataset(index) {
     return this._datasets[index].data
   }
+
+  buildDatasetFromTiles(tiles) {
+    const datasetMap = {}
+    tiles.forEach((tile) => {
+      datasetMap[tile.id] = [tile.id, tile.tilegramValue]
+    })
+    return Object.keys(datasetMap).map((row) => datasetMap[row])
+  }
 }
 
 export default new Data()

@@ -23,10 +23,12 @@ class Importer {
         tilegramValue: geometry.properties.tilegramValue,
       }
     })
-    this.metricPerTile = topoJson.properties.tilegramMetricPerTile
-    this.cartogramArea = topoJson.properties.tilegramCartogramArea
     const tiles = this._getTilePositions(tilePoints)
-    return this._normalizeTilePosition(tiles)
+    return {
+      tiles: this._normalizeTilePosition(tiles),
+      metricPerTile: topoJson.properties.tilegramMetricPerTile,
+      cartogramArea: topoJson.properties.tilegramCartogramArea,
+    }
   }
 
   /** Determine path absolute points, given TopoJSON delta-encoded arcs */

@@ -1,6 +1,5 @@
 import Stats from 'stats-js'
 
-import exporter from './file/Exporter'
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
 import gridGeometry from './geometry/GridGeometry'
@@ -37,7 +36,6 @@ class Canvas {
     this._mapGraphic.resetBounds()
     this._gridGraphic.importTiles(tiles)
     this._cartogramReady = cartogramArea
-    exporter.cartogramArea = this._cartogramArea
     this._cartogramReady = true
   }
 
@@ -56,7 +54,10 @@ class Canvas {
 
   _setCartogramArea() {
     this._cartogramArea = this._mapGraphic.computeCartogramArea()
-    exporter.cartogramArea = this._cartogramArea
+  }
+
+  getCartogramArea() {
+    return this._cartogramArea
   }
 
   getGrid() {

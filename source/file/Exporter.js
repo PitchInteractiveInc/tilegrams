@@ -6,6 +6,7 @@
  */
 import {color} from 'd3-color'
 import {nest} from 'd3-collection'
+import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor} from '../utils'
 
@@ -13,7 +14,7 @@ export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles) {
+  toTopoJson(tiles, metricPerTile, cartogramArea) {
     const geometries = []
     const arcs = []
 
@@ -53,9 +54,9 @@ class Exporter {
     return {
       type: 'Topology',
       properties: {
-        tilegramMetricPerTile: this.metricPerTile,
-        tilegramCartogramArea: this.cartogramArea,
-        tilegramVersion: '1.0.0',
+        tilegramMetricPerTile: metricPerTile,
+        tilegramCartogramArea: cartogramArea,
+        tilegramVersion: version,
       },
       objects: {
         [OBJECT_ID]: {
