@@ -20777,7 +20777,7 @@
 	            },
 	            'Pitch Interactive'
 	          ),
-	          'in colloboration with',
+	          'in association with',
 	          _react2.default.createElement(
 	            'a',
 	            {
