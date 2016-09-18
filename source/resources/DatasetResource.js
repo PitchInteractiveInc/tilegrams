@@ -1,10 +1,10 @@
 import {csvParseRows} from 'd3-dsv'
 
-import populationCsv from '../data/population-by-state.csv'
-import electoralCollegeCsv from '../data/electoral-college-votes-by-state.csv'
-import gdpCsv from '../data/gdp-by-state.csv'
+import populationCsv from '../../data/population-by-state.csv'
+import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
+import gdpCsv from '../../data/gdp-by-state.csv'
 
-class Data {
+class DatasetResource {
   constructor() {
     this._datasets = [
       {
@@ -44,4 +44,4 @@ class Data {
   }
 }
 
-export default new Data()
+export default new DatasetResource()

@@ -1,9 +1,9 @@
-import pitchPopulationTilegram from '../tilegrams/pitch-us-population-500k.json'
-import nprOneToOneTilegram from '../tilegrams/npr-one-to-one.json'
+import pitchPopulationTilegram from '../../tilegrams/pitch-us-population-500k.json'
+import nprOneToOneTilegram from '../../tilegrams/npr-one-to-one.json'
 import fiveThirtyEightElectoralCollegeTilegram from
-  '../tilegrams/fivethirtyeight-electoral-college-tilegram.json'
+  '../../tilegrams/fivethirtyeight-electoral-college-tilegram.json'
 
-class TilegramData {
+class TilegramResource {
   constructor() {
     this._tilegrams = [
       {
@@ -30,4 +30,4 @@ class TilegramData {
   }
 }
 
-export default new TilegramData()
+export default new TilegramResource()

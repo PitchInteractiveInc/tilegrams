@@ -1,10 +1,10 @@
-import data from './source/Data'
 import canvas from './source/Canvas'
 import ui from './source/Ui'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
-import mapData from './source/MapData'
-import tilegramData from './source/TilegramData'
+import datasetResource from './source/resources/DatasetResource'
+import mapResource from './source/resources/MapResource'
+import tilegramResource from './source/resources/TilegramResource'
 import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
@@ -39,7 +39,7 @@ function updateUi() {
 function loadTopoJson(topoJson) {
   importing = true
   const {tiles, metricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
-  const dataset = data.buildDatasetFromTiles(tiles)
+  const dataset = datasetResource.buildDatasetFromTiles(tiles)
 
   ui.setSelectedDataset(dataset)
   ui.metricPerTile = metricPerTile
@@ -60,11 +60,11 @@ function init() {
   canvas.getGrid().onChange(() => updateUi())
   canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
-  ui.setDatasetSelectedCallback(index => selectDataset(data.getDataset(index)))
+  ui.setDatasetSelectedCallback(index => selectDataset(datasetResource.getDataset(index)))
   ui.setTilegramSelectedCallback(index => {
-    loadTopoJson(tilegramData.getTilegram(index))
+    loadTopoJson(tilegramResource.getTilegram(index))
   })
-  ui.setCustomDatasetCallback(csv => selectDataset(data.parseCsv(csv)))
+  ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
@@ -98,10 +98,10 @@ function init() {
   ui.setImportCallback(loadTopoJson)
 
   // populate
-  ui.setGeos(mapData.getUniqueFeatureIds())
-  ui.setDatasetLabels(data.getLabels())
-  ui.setTilegramLabels(tilegramData.getLabels())
-  loadTopoJson(tilegramData.getTilegram(0))
+  ui.setGeos(mapResource.getUniqueFeatureIds())
+  ui.setDatasetLabels(datasetResource.getLabels())
+  ui.setTilegramLabels(tilegramResource.getLabels())
+  loadTopoJson(tilegramResource.getTilegram(0))
   updateUi()
   if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)

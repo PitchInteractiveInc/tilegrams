@@ -4,7 +4,7 @@ import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import mapData from '../MapData'
+import mapResource from '../resources/MapResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -35,8 +35,8 @@ export default class MapGraphic extends Graphic {
     // compute initial cartogram
     this.updatePreProjection()
     this._stateFeatures = topogram(
-      mapData.getTopoJson(),
-      mapData.getGeometries()
+      mapResource.getTopoJson(),
+      mapResource.getGeometries()
     )
     this._precomputeBounds()
   }
