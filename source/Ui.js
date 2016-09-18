@@ -250,7 +250,7 @@ class Ui {
           >
             Pitch Interactive
           </a>
-          in colloboration with
+          in association with
           <a
             href='https://newslab.withgoogle.com/'
             target='_blank'
