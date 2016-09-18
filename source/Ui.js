@@ -181,7 +181,7 @@ class Ui {
         onClick={this._setEditing(false)}
       >
         <div className='highlight-bar' />
-        <p><span>Step 1:</span> Create new topogram.</p>
+        <p><span>Step 1:</span> Choose a starting point</p>
       </div>
     )
     const editOption = (
@@ -190,7 +190,7 @@ class Ui {
         onClick={this._setEditing(true)}
       >
         <div className='highlight-bar' />
-        <p><span>Step 2:</span> Edit topogram and improve accuracy.</p>
+        <p><span>Step 2:</span> Edit your tilegram</p>
       </div>
     )
     let modal = null

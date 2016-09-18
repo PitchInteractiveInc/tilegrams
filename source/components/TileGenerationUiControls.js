@@ -48,24 +48,17 @@ export default class TileGenerationUiControls extends React.Component {
   }
 
   render() {
-    const generateCollapsedClass = this.state.selectedOption !== 'generate' && this.props.editing ?
-      'collapsed' :
-      ''
-    const importCollapsedClass = this.state.selectedOption !== 'import' && this.props.editing ?
-      'collapsed' :
-      ''
-
     return (
       <div className='ui-controls'>
-        <div className={`padding-bottom ${importCollapsedClass}`}>
+        <div className={`padding-bottom`}>
           <input
             type='radio'
             name='tile-controls'
             value='import'
             checked={this.state.selectedOption === 'import'}
             onChange={this._changeOption}
-          /> Load tiled TopoJSON
-          <div className={this.state.selectedOption !== 'import' ? 'deselected' : null} >
+          /> Load tilegram
+          <div className={this.state.selectedOption !== 'import' ? 'collapsed' : null} >
             <ImportControls
               labels={this.props.tilegramLabels}
               onCustomImport={this._onCustomImport}
@@ -73,7 +66,7 @@ export default class TileGenerationUiControls extends React.Component {
             />
           </div>
         </div>
-        <div className={generateCollapsedClass}>
+        <div>
           <input
             type='radio'
             name='tile-controls'
@@ -81,7 +74,7 @@ export default class TileGenerationUiControls extends React.Component {
             checked={this.state.selectedOption === 'generate'}
             onChange={this._changeOption}
           /> Generate Cartogram From Data
-          <div className={this.state.selectedOption !== 'generate' ? 'deselected' : null}>
+          <div className={this.state.selectedOption !== 'generate' ? 'collapsed' : null}>
             <DatasetSelector
               labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}

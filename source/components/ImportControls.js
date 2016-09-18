@@ -65,7 +65,6 @@ export default class ImportControls extends React.Component {
     })
     return (
       <select
-        id='map-selector'
         className='map-select'
         value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
@@ -93,7 +92,6 @@ export default class ImportControls extends React.Component {
       importControls = (
         <div>
           <fieldset>
-            <label htmlFor='map-selector'>Map</label>
             {this._renderMenu()}
           </fieldset>
           {customImportField}
