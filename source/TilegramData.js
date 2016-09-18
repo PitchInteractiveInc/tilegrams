@@ -1,17 +1,13 @@
-import pitchGDPTilegram from '../tilegrams/gdp3.json'
 import pitchPopulationTilegram from '../tilegrams/pitch-us-population-500k.json'
 import nprOneToOneTilegram from '../tilegrams/npr-one-to-one.json'
-import fiveThirtyEightElectoralCollegeTilegram from '../tilegrams/fivethirtyeight-electoral-college-tilegram.json'
+import fiveThirtyEightElectoralCollegeTilegram from
+  '../tilegrams/fivethirtyeight-electoral-college-tilegram.json'
 
 class TilegramData {
   constructor() {
     this._tilegrams = [
       {
-        label: 'Pitch GDP Population 2016',
-        topoJson: pitchGDPTilegram,
-      },
-      {
-        label: 'Pitch U.S. Population 2016',
+        label: 'Pitch U.S. Population 2016 v1',
         topoJson: pitchPopulationTilegram,
       },
       {
@@ -19,7 +15,7 @@ class TilegramData {
         topoJson: fiveThirtyEightElectoralCollegeTilegram,
       },
       {
-        label: 'NPR One-to-one',
+        label: 'NPR 1-to-1',
         topoJson: nprOneToOneTilegram,
       },
     ]
