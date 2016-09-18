@@ -50,7 +50,7 @@ export default class TileGenerationUiControls extends React.Component {
   render() {
     return (
       <div className='ui-controls'>
-        <div className={`padding-bottom`}>
+        <div className='padding-bottom'>
           <input
             type='radio'
             name='tile-controls'
