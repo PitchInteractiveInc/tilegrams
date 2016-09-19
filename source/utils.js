@@ -1,9 +1,10 @@
-import {settings} from './constants'
 import fipsHash from '../data/fips-to-state.json'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  return `hsl(${parseInt(fips, 10) * (settings.hueScalar % 25.5) * 10.0}, 90%, 65%)`
+  const number = parseInt(fips, 10)
+  const scalar = number / 56.0
+  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 70%, 65%)`
 }
 
 /** Create DOM element. Options may include 'id' */
