@@ -423,7 +423,7 @@ export default class GridGraphic extends Graphic {
       this._ctx.textAlign = 'center'
       this._ctx.textBaseline = 'middle'
       this._ctx.fillStyle = 'black'
-      this._ctx.font = `${12.0 * devicePixelRatio}px Arial`
+      this._ctx.font = `${12.0 * devicePixelRatio}px Fira Sans`
       this._ctx.fillText(fipsToPostal(id), clusterAvg[0], clusterAvg[1])
     })
   }
