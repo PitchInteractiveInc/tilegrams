@@ -59,6 +59,10 @@ class GridGeometry {
     return shape.getDrawOffsetY(x)
   }
 
+  getTileCounts() {
+    return this._tileCounts
+  }
+
   resize() {
     this._tileSize = shape.getTileSize(this._tileEdge)
     const gridUnit = shape.getGridUnit()

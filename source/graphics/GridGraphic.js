@@ -351,12 +351,16 @@ export default class GridGraphic extends Graphic {
 
   render(ctx) {
     this._ctx = ctx
+
+    this._populateTileIdArray()
+
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
       if (!this._disableSelectionHighlight() && this._selectedTiles.includes(tile)) {
         color = '#cccccc'
       }
-      this._drawTile(tile.position, color)
+      this._drawTile(tile.position, color, false)
+      this._drawInlandBoundaries(tile)
     })
 
     if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
@@ -518,6 +522,61 @@ export default class GridGraphic extends Graphic {
     )
     // deindex and return clusters
     return clusters.map(clusterIndices => clusterIndices.map(index => points[index]))
+  }
+
+  /** Check three of six hex sides and determine whether to draw a boundary */
+  _drawInlandBoundaries(tile) {
+    const {position, id} = tile
+    const center = gridGeometry.tileCenterPoint(position)
+    const points = gridGeometry.getPointsAround(center)
+
+    const adjacentRight = this._isAbutting(position, {x: 1, y: 0}, id)
+    const adjacentLowerRight = this._isAbutting(
+      position,
+      {x: ((position.y % 2 === 1) ? 0 : 1), y: 1},
+      id
+    )
+    const adjacentLowerLeft = this._isAbutting(
+      position,
+      {x: ((position.y % 2 === 0) ? 0 : -1), y: 1},
+      id
+    )
+
+    if (adjacentRight) {
+      this._drawBoundaryLine(points[2], points[3])
+    }
+    if (adjacentLowerRight) {
+      this._drawBoundaryLine(points[3], points[4])
+    }
+    if (adjacentLowerLeft) {
+      this._drawBoundaryLine(points[4], points[5])
+    }
+  }
+
+  _drawBoundaryLine(fromPoint, toPoint) {
+    this._ctx.beginPath()
+    this._ctx.moveTo(...fromPoint)
+    this._ctx.lineTo(...toPoint)
+    this._ctx.closePath()
+    this._ctx.strokeStyle = selectedTileBorderColor
+    this._ctx.lineWidth = 2
+    this._ctx.stroke()
+  }
+
+  /** Populate once to make boundary calculations faster */
+  _populateTileIdArray() {
+    const counts = gridGeometry.getTileCounts()
+    this._tileIdArray = new Array(counts.width).fill([]).map(() => {
+      return new Array(counts.height)
+    })
+    this._tiles.forEach(tile => {
+      this._tileIdArray[tile.position.x][tile.position.y] = tile.id
+    })
+  }
+
+  _isAbutting(position, offset, checkId) {
+    const id = this._tileIdArray[position.x + offset.x][position.y + offset.y]
+    return id != null && id !== checkId
   }
 
   updateUi() {
