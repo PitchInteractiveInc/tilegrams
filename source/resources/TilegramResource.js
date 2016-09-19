@@ -11,7 +11,7 @@ class TilegramResource {
         topoJson: pitchPopulationTilegram,
       },
       {
-        label: 'FiveThirtyEight Electoral College 2016',
+        label: 'FiveThirtyEight Electoral College',
         topoJson: fiveThirtyEightElectoralCollegeTilegram,
       },
       {
