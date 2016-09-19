@@ -4,7 +4,7 @@ import fipsHash from '../data/fips-to-state.json'
 function fipsColor(fips) {
   const number = parseInt(fips, 10)
   const scalar = number / 56.0
-  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 70%, 65%)`
+  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 85%, 70%)`
 }
 
 /** Create DOM element. Options may include 'id' */
