@@ -129,6 +129,7 @@ export default class GridGraphic extends Graphic {
       }
 
       // determine where each tile is going to be moved to
+      const counts = gridGeometry.getTileCounts()
       const overlaps = this._selectedTiles.some((tile) => {
         // figure out where in XY space this tile currently is
         const tileXY = gridGeometry.tileCenterPoint(tile.position)
@@ -146,6 +147,13 @@ export default class GridGraphic extends Graphic {
             // bail, we are moving a tile to where a tile already exists.
             return true
           }
+        }
+        if (
+          tile.newPosition.x > (counts.width) ||
+          tile.newPosition.y > (counts.height)
+        ) {
+          // bail, we are moving offscreen
+          return true
         }
         return false
       })
