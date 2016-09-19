@@ -6,6 +6,7 @@ import Graphic from './Graphic'
 import {fipsColor, fipsToPostal} from '../utils'
 import gridGeometry from '../geometry/GridGeometry'
 import {
+  canvasDimensions,
   devicePixelRatio,
   selectedTileBorderColor,
   hoveredTileBorderColor,
@@ -316,6 +317,7 @@ export default class GridGraphic extends Graphic {
     this.originalTilesLength = this._tiles.length
     this._hasBeenEdited = false // reset edit state
     this.updateUi()
+    this._renderBackgroundImage()
     return this._tiles
   }
 
@@ -325,6 +327,7 @@ export default class GridGraphic extends Graphic {
     const maxY = Math.max(...tiles.map(tile => tile.position.y))
     gridGeometry.setTileEdgeFromMax(maxX, maxY)
     this._tiles = tiles
+    this._renderBackgroundImage()
   }
 
   getTiles() {
@@ -349,24 +352,40 @@ export default class GridGraphic extends Graphic {
     return this._hasBeenEdited
   }
 
+  _renderBackgroundImage() {
+    this._backgroundCanvas = document.createElement('canvas')
+    this._backgroundCanvas.width = canvasDimensions.width
+    this._backgroundCanvas.height = canvasDimensions.height
+    const ctx = this._backgroundCanvas.getContext('2d')
+    gridGeometry.forEachTilePosition((x, y) => {
+      this._drawTile({x, y}, '#fff', {ctx})
+    })
+  }
+
   render(ctx) {
     this._ctx = ctx
 
     this._populateTileIdArray()
 
+    // background pattern
+    ctx.drawImage(this._backgroundCanvas, 0, 0);
+
+    // draw tiles and inland borders
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
       if (!this._disableSelectionHighlight() && this._selectedTiles.includes(tile)) {
         color = '#cccccc'
       }
-      this._drawTile(tile.position, color, false)
+      this._drawTile(tile.position, color, {})
       this._drawInlandBoundaries(tile)
     })
 
+    // draw highlighted region border
     if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
       this._drawGeoBorder(this._highlightId)
     }
 
+    // draw selected tiles
     if (this._selectedTiles.length > 0 && !this._disableSelectionHighlight()) {
       this._selectedTiles.forEach((tile) => {
         let position = tile.position
@@ -388,10 +407,12 @@ export default class GridGraphic extends Graphic {
         this._drawTile(
           position,
           fipsColor(tile.id),
-          true
+          {drawStroke: true}
         )
       })
     }
+
+    // draw marquee
     if (this._makingMarqueeSelection) {
       this._drawMarqueeSelection()
     }
@@ -451,23 +472,25 @@ export default class GridGraphic extends Graphic {
   }
 
   /** http://www.redblobgames.com/gridGeometrys/hexagons/#basics */
-  _drawTile(position, fill, superstroke) {
+  _drawTile(position, fill, {drawStroke, ctx}) {
+    drawStroke = drawStroke || false
+    ctx = ctx || this._ctx
     const center = gridGeometry.tileCenterPoint(position)
     const points = gridGeometry.getPointsAround(center)
-    this._ctx.beginPath()
+    ctx.beginPath()
     points.forEach((point, index) => {
       const command = (index === 0) ? 'moveTo' : 'lineTo'
-      this._ctx[command](...point)
+      ctx[command](...point)
     })
-    this._ctx.closePath()
+    ctx.closePath()
     if (fill) {
-      this._ctx.fillStyle = fill
-      this._ctx.fill()
+      ctx.fillStyle = fill
+      ctx.fill()
     }
-    if (superstroke) {
-      this._ctx.strokeStyle = selectedTileBorderColor
-      this._ctx.lineWidth = 1.5
-      this._ctx.stroke()
+    if (drawStroke) {
+      ctx.strokeStyle = selectedTileBorderColor
+      ctx.lineWidth = 1.5
+      ctx.stroke()
     }
   }
 
