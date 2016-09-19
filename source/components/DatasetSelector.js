@@ -35,7 +35,7 @@ export default class DatasetSelector extends React.Component {
 
   /** Return true if index is the 'Custom' option */
   _isCustomSelection(index) {
-    return (index || parseInt(this.state.selectedIndex, 10)) === this.props.labels.length
+    return parseInt(index || this.state.selectedIndex, 10) === this.props.labels.length
   }
 
   _renderMenu() {

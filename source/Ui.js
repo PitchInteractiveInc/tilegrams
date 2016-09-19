@@ -32,7 +32,10 @@ class Ui {
       },
       window.innerHeight - 15
     )
-    document.querySelector('.metrics').style.height = `${heightAvailable}px`
+    const ele = document.querySelector('.metrics')
+    if (ele) {
+      ele.style.height = `${heightAvailable}px`
+    }
   }
 
   setGeos(geos) {
@@ -60,6 +63,7 @@ class Ui {
     this._selectedDataset = dataset
     this._selectedDatasetSum = this.getDatasetSum(dataset)
     this._metricDomain = this._calculateIdealDomain()
+    this._resize()
   }
 
   /** calculate the slider's domain from the dataset */
@@ -82,15 +86,24 @@ class Ui {
   }
 
   setDatasetSelectedCallback(callback) {
-    this._datasetSelectedCallback = callback
+    this._datasetSelectedCallback = (index) => {
+      callback(index)
+      window.requestAnimationFrame(this._resize)
+    }
   }
 
   setTilegramSelectedCallback(callback) {
-    this._tilegramSelectedCallback = callback
+    this._tilegramSelectedCallback = (index) => {
+      callback(index)
+      window.requestAnimationFrame(this._resize)
+    }
   }
 
   setCustomDatasetCallback(callback) {
-    this._customDatasetCallback = callback
+    this._customDatasetCallback = (csv) => {
+      callback(csv)
+      window.requestAnimationFrame(this._resize)
+    }
   }
 
   setHightlightCallback(callback) {
