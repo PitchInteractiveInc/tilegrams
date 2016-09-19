@@ -231,14 +231,16 @@ class Ui {
             />
           </div>
           <div className='no-scroll-ui'>
-            <ExportButton
-              text='Export Svg'
-              onClick={() => this._exportSvgCallback()}
-            />
-            <ExportButton
-              text='Export TopoJSON'
-              onClick={() => this._exportCallback()}
-            />
+            <fieldset>
+              <ExportButton
+                text='Export TopoJSON'
+                onClick={() => this._exportCallback()}
+              />
+              <ExportButton
+                text='Export Svg'
+                onClick={() => this._exportSvgCallback()}
+              />
+            </fieldset>
           </div>
         </div>
         <h2 className='credits'>

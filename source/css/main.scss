@@ -2,7 +2,7 @@
 @import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
-$sidebar-width: 280px;
+$sidebar-width: 320px;
 $blue: #5656f7;
 
 body {
@@ -214,12 +214,12 @@ fieldset {
     margin-bottom: 6px;
   }
   a.export {
+    display: inline-block;
     background-color: $blue;
     border-radius: 5px;
     padding: 0.5em 0.75em;
+    margin: 0 0.5em;
     color: white;
-    margin: 0;
-    font-size: 80%;
   }
   a.import {
     margin: 0;
