@@ -72,6 +72,9 @@ class Canvas {
     this._canvas.width = canvasDimensions.width
     this._canvas.height = canvasDimensions.height
     this._canvas.style.width = `${canvasDimensions.width / devicePixelRatio}px`
+    if (this._gridGraphic) {
+      this._gridGraphic.renderBackgroundImage()
+    }
   }
 
   _createCanvas() {

@@ -317,7 +317,7 @@ export default class GridGraphic extends Graphic {
     this.originalTilesLength = this._tiles.length
     this._hasBeenEdited = false // reset edit state
     this.updateUi()
-    this._renderBackgroundImage()
+    this.renderBackgroundImage()
     return this._tiles
   }
 
@@ -327,7 +327,7 @@ export default class GridGraphic extends Graphic {
     const maxY = Math.max(...tiles.map(tile => tile.position.y))
     gridGeometry.setTileEdgeFromMax(maxX, maxY)
     this._tiles = tiles
-    this._renderBackgroundImage()
+    this.renderBackgroundImage()
   }
 
   getTiles() {
@@ -352,7 +352,7 @@ export default class GridGraphic extends Graphic {
     return this._hasBeenEdited
   }
 
-  _renderBackgroundImage() {
+  renderBackgroundImage() {
     this._backgroundCanvas = document.createElement('canvas')
     this._backgroundCanvas.width = canvasDimensions.width
     this._backgroundCanvas.height = canvasDimensions.height
