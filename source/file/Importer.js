@@ -11,6 +11,8 @@ import {
 } from '../geometry/GridGeometry'
 import {OBJECT_ID} from './Exporter'
 
+const LEFT_BIAS = 2
+
 class Importer {
   /** Convert tilegram TopoJSON to grid coordinates */
   fromTopoJson(topoJson) {
@@ -112,7 +114,7 @@ class Importer {
       return {
         id: tile.id,
         position: {
-          x: (tile.position.x - minX) + IMPORT_TILE_MARGINS,
+          x: (tile.position.x - minX) + (IMPORT_TILE_MARGINS - LEFT_BIAS),
           y: ((maxY - minY) - (tile.position.y - minY)) + IMPORT_TILE_MARGINS,
         },
         tilegramValue: tile.tilegramValue,
