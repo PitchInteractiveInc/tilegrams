@@ -209,7 +209,7 @@ class Ui {
         onClick={this._setEditing(true)}
       >
         <div className='highlight-bar' />
-        <p><span>2</span> Edit your tilegram</p>
+        <p><span>2</span> Refine your tilegram</p>
       </div>
     )
     let modal = null
@@ -230,8 +230,16 @@ class Ui {
               Make a Tilegram
             </h1>
             <p className='intro'>
-              A “tilegram” is a tiled cartogram: a map made of regular tiles
-              where the regions are sized proportionally to some dataset.
+              A “tilegram” is a map made of tiles
+              where regions are sized proportionally to a dataset.
+              <br />
+              <a
+                href='https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md'
+                target='_blank'
+                rel='noopener noreferrer'
+              >
+                Read the manual
+              </a>
             </p>
             <hr />
             {generateOption}

@@ -1,9 +1,12 @@
-# Hexagon Cartograms
+# Tilegrams
 
-The Maker is a Node.js front-end app for editing GeoJSON composed of hexagons.
+A “tilegram” is a map made of tiles
+where regions are sized proportionally to a dataset.
 
 One day, we got [really interested](https://twitter.com/pitchinc/status/765962981855199232)
 in cartograms made from hexagons.
+
+**Please read the [MANUAL](MANUAL.md)**
 
 ## Development
 
@@ -12,11 +15,6 @@ in cartograms made from hexagons.
 After cloning the repository, run:
 
     npm i
-
-Since [`topogram`](https://github.com/shawnbot/topogram)
-has not yet been published to `npm`, you'll need to clone it and check out the
-[`node-js`](https://github.com/shawnbot/topogram/tree/node-js) branch, and
-update the local path in `package.json`.
 
 ### Running
 
