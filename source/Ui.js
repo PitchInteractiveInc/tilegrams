@@ -19,6 +19,7 @@ class Ui {
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
+    this._resizeAfterPaint = this._resizeAfterPaint.bind(this)
     window.addEventListener('resize', this._resize)
   }
 
@@ -173,6 +174,10 @@ class Ui {
     this.render()
   }
 
+  _resizeAfterPaint() {
+    window.requestAnimationFrame(this._resize.bind(this))
+  }
+
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
@@ -185,6 +190,7 @@ class Ui {
         metricDomain={this._metricDomain}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
+        onResizeNeeded={this._resizeAfterPaint}
         editing={this._editing}
       />
     )

@@ -63,6 +63,7 @@ export default class TileGenerationUiControls extends React.Component {
               labels={this.props.tilegramLabels}
               onCustomImport={this._onCustomImport}
               onTilegramSelected={this._onTilegramSelected}
+              onResizeNeeded={this.props.onResizeNeeded}
             />
           </div>
         </div>
@@ -79,6 +80,7 @@ export default class TileGenerationUiControls extends React.Component {
               labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}
               onCustomDataset={csv => this.props.selectCustomDataset(csv)}
+              onResizeNeeded={this.props.onResizeNeeded}
             />
             <ResolutionSlider
               metricDomain={this.props.metricDomain}
@@ -102,6 +104,7 @@ TileGenerationUiControls.propTypes = {
   datasetSum: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
   editing: React.PropTypes.bool,
+  onResizeNeeded: React.PropTypes.func,
 }
 
 TileGenerationUiControls.defaultProps = {
@@ -113,4 +116,5 @@ TileGenerationUiControls.defaultProps = {
   importCustom: () => {},
   changeResolution: () => {},
   editing: false,
+  onResizeNeeded: () => {},
 }
