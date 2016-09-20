@@ -58,11 +58,11 @@
 
 	var _Exporter2 = _interopRequireDefault(_Exporter);
 
-	var _Importer = __webpack_require__(232);
+	var _Importer = __webpack_require__(231);
 
 	var _Importer2 = _interopRequireDefault(_Importer);
 
-	var _DatasetResource = __webpack_require__(233);
+	var _DatasetResource = __webpack_require__(232);
 
 	var _DatasetResource2 = _interopRequireDefault(_DatasetResource);
 
@@ -70,7 +70,7 @@
 
 	var _MapResource2 = _interopRequireDefault(_MapResource);
 
-	var _TilegramResource = __webpack_require__(238);
+	var _TilegramResource = __webpack_require__(237);
 
 	var _TilegramResource2 = _interopRequireDefault(_TilegramResource);
 
@@ -84,16 +84,14 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	__webpack_require__(242);
-	__webpack_require__(246);
+	__webpack_require__(241);
+	__webpack_require__(245);
 
 	var CARTOGRAM_COMPUTE_FPS = 60.0;
 
 	var cartogramComputeTimer = void 0;
 
 	var importing = false;
-	var metricPerTile = null;
-	var sumMetrics = null;
 
 	function selectDataset(dataset) {
 	  importing = false;
@@ -101,15 +99,12 @@
 	  _Canvas2.default.computeCartogram(dataset);
 	  clearInterval(cartogramComputeTimer);
 	  cartogramComputeTimer = setInterval(function () {
-	    var iterated = _Canvas2.default.iterateCartogram();
-	    if (iterated) {
-	      _Canvas2.default.updateTilesFromMetrics(metricPerTile, sumMetrics);
-	    }
+	    _Canvas2.default.iterateCartogram();
 	  }, 1000.0 / CARTOGRAM_COMPUTE_FPS);
 	}
 
 	function updateUi() {
-	  _Ui2.default.setTiles(_Canvas2.default.getGrid().getTiles());
+	  _Ui2.default.setTiles(_Canvas2.default.getGrid().getTiles(), _Canvas2.default.getGrid().getOriginalTilesLength());
 	  _Ui2.default.render();
 	}
 
@@ -119,13 +114,14 @@
 	  var _importer$fromTopoJso = _Importer2.default.fromTopoJson(topoJson);
 
 	  var tiles = _importer$fromTopoJso.tiles;
-	  var newMetricPerTile = _importer$fromTopoJso.newMetricPerTile;
+	  var metricPerTile = _importer$fromTopoJso.metricPerTile;
 	  var cartogramArea = _importer$fromTopoJso.cartogramArea;
 
 	  var dataset = _DatasetResource2.default.buildDatasetFromTiles(tiles);
 
 	  _Ui2.default.setSelectedDataset(dataset);
-	  _Ui2.default.metricPerTile = newMetricPerTile;
+	  _Ui2.default.metricPerTile = metricPerTile;
+
 	  _Canvas2.default.importTiles(tiles, cartogramArea);
 	  updateUi();
 	}
@@ -163,14 +159,12 @@
 	  _Ui2.default.setUnhighlightCallback(function () {
 	    return _Canvas2.default.getGrid().resetHighlightedGeo();
 	  });
-	  _Ui2.default.setResolutionChangedCallback(function (newMetricPerTile, newSumMetrics) {
+	  _Ui2.default.setResolutionChangedCallback(function (metricPerTile, sumMetrics) {
+	    _Ui2.default.metricPerTile = metricPerTile;
 	    if (importing) {
 	      return;
 	    }
-	    metricPerTile = newMetricPerTile; // for tile calculation
-	    sumMetrics = newSumMetrics;
-	    _Ui2.default.metricPerTile = newMetricPerTile;
-	    _Canvas2.default.updateTilesFromMetrics(newMetricPerTile, newSumMetrics);
+	    _Canvas2.default.updateTilesFromMetrics(metricPerTile, sumMetrics);
 	  });
 	  _Ui2.default.setUnsavedChangesCallback(function () {
 	    return _Canvas2.default.getGrid().checkForEdits();
@@ -278,8 +272,8 @@
 	      var iterated = this._mapGraphic.iterateCartogram();
 	      if (iterated) {
 	        this._setCartogramArea();
+	        this.updateTiles();
 	      }
-	      return iterated;
 	    }
 	  }, {
 	    key: 'importTiles',
@@ -483,6 +477,7 @@
 
 	    var _this = _possibleConstructorReturn(this, (GridGraphic.__proto__ || Object.getPrototypeOf(GridGraphic)).call(this));
 
+	    _this.originalTilesLength = 0;
 	    _this._highlightId = null;
 	    _this._makingMarqueeSelection = false;
 	    _this._draggingMultiSelect = false;
@@ -797,6 +792,8 @@
 	          _this5._tiles.push(tile);
 	        }
 	      });
+	      // save tiles length so the stats does not have a moving target
+	      this.originalTilesLength = this._tiles.length;
 	      this._hasBeenEdited = false; // reset edit state
 	      this.updateUi();
 	      this.renderBackgroundImage();
@@ -820,6 +817,11 @@
 	    key: 'getTiles',
 	    value: function getTiles() {
 	      return this._tiles;
+	    }
+	  }, {
+	    key: 'getOriginalTilesLength',
+	    value: function getOriginalTilesLength() {
+	      return this.originalTilesLength;
 	    }
 	  }, {
 	    key: '_findTile',
@@ -945,7 +947,7 @@
 
 	      // stroke
 	      this._ctx.strokeStyle = '#333';
-	      this._ctx.lineWidth = 0.5;
+	      this._ctx.lineWidth = 0.25 * _constants.devicePixelRatio;
 	      (_ctx = this._ctx).strokeRect.apply(_ctx, rect);
 
 	      // fill
@@ -981,7 +983,7 @@
 	      }
 	      if (drawStroke) {
 	        ctx.strokeStyle = _constants.selectedTileBorderColor;
-	        ctx.lineWidth = 1.5;
+	        ctx.lineWidth = 1.0 * _constants.devicePixelRatio;
 	        ctx.stroke();
 	      }
 	    }
@@ -1010,7 +1012,7 @@
 	        _this9._ctx.closePath();
 	        _this9._ctx.globalAlpha = 0.75;
 	        _this9._ctx.strokeStyle = _constants.hoveredTileBorderColor;
-	        _this9._ctx.lineWidth = 2.0;
+	        _this9._ctx.lineWidth = 1.0 * _constants.devicePixelRatio;
 	        _this9._ctx.stroke();
 	        _this9._ctx.globalAlpha = 1.0;
 	      });
@@ -1089,7 +1091,7 @@
 	      (_ctx6 = this._ctx).lineTo.apply(_ctx6, _toConsumableArray(toPoint));
 	      this._ctx.closePath();
 	      this._ctx.strokeStyle = _constants.selectedTileBorderColor;
-	      this._ctx.lineWidth = 2;
+	      this._ctx.lineWidth = 1.0 * _constants.devicePixelRatio;
 	      this._ctx.stroke();
 	    }
 
@@ -11415,547 +11417,549 @@
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.topojson = global.topojson || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  function noop() {}
+	function noop() {}
 
-	  function transformAbsolute(transform) {
-	    if (!transform) return noop;
-	    var x0,
-	        y0,
-	        kx = transform.scale[0],
-	        ky = transform.scale[1],
-	        dx = transform.translate[0],
-	        dy = transform.translate[1];
-	    return function(point, i) {
-	      if (!i) x0 = y0 = 0;
-	      point[0] = (x0 += point[0]) * kx + dx;
-	      point[1] = (y0 += point[1]) * ky + dy;
-	    };
+	function transformAbsolute(transform) {
+	  if (!transform) return noop;
+	  var x0,
+	      y0,
+	      kx = transform.scale[0],
+	      ky = transform.scale[1],
+	      dx = transform.translate[0],
+	      dy = transform.translate[1];
+	  return function(point, i) {
+	    if (!i) x0 = y0 = 0;
+	    point[0] = (x0 += point[0]) * kx + dx;
+	    point[1] = (y0 += point[1]) * ky + dy;
+	  };
+	}
+
+	function transformRelative(transform) {
+	  if (!transform) return noop;
+	  var x0,
+	      y0,
+	      kx = transform.scale[0],
+	      ky = transform.scale[1],
+	      dx = transform.translate[0],
+	      dy = transform.translate[1];
+	  return function(point, i) {
+	    if (!i) x0 = y0 = 0;
+	    var x1 = Math.round((point[0] - dx) / kx),
+	        y1 = Math.round((point[1] - dy) / ky);
+	    point[0] = x1 - x0;
+	    point[1] = y1 - y0;
+	    x0 = x1;
+	    y0 = y1;
+	  };
+	}
+
+	function reverse(array, n) {
+	  var t, j = array.length, i = j - n;
+	  while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+	}
+
+	function bisect(a, x) {
+	  var lo = 0, hi = a.length;
+	  while (lo < hi) {
+	    var mid = lo + hi >>> 1;
+	    if (a[mid] < x) lo = mid + 1;
+	    else hi = mid;
+	  }
+	  return lo;
+	}
+
+	function feature(topology, o) {
+	  return o.type === "GeometryCollection" ? {
+	    type: "FeatureCollection",
+	    features: o.geometries.map(function(o) { return feature$1(topology, o); })
+	  } : feature$1(topology, o);
+	}
+
+	function feature$1(topology, o) {
+	  var f = {
+	    type: "Feature",
+	    id: o.id,
+	    properties: o.properties || {},
+	    geometry: object(topology, o)
+	  };
+	  if (o.id == null) delete f.id;
+	  return f;
+	}
+
+	function object(topology, o) {
+	  var absolute = transformAbsolute(topology.transform),
+	      arcs = topology.arcs;
+
+	  function arc(i, points) {
+	    if (points.length) points.pop();
+	    for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
+	      points.push(p = a[k].slice());
+	      absolute(p, k);
+	    }
+	    if (i < 0) reverse(points, n);
 	  }
 
-	  function transformRelative(transform) {
-	    if (!transform) return noop;
-	    var x0,
-	        y0,
-	        kx = transform.scale[0],
-	        ky = transform.scale[1],
-	        dx = transform.translate[0],
-	        dy = transform.translate[1];
-	    return function(point, i) {
-	      if (!i) x0 = y0 = 0;
-	      var x1 = Math.round((point[0] - dx) / kx),
-	          y1 = Math.round((point[1] - dy) / ky);
-	      point[0] = x1 - x0;
-	      point[1] = y1 - y0;
-	      x0 = x1;
-	      y0 = y1;
-	    };
+	  function point(p) {
+	    p = p.slice();
+	    absolute(p, 0);
+	    return p;
 	  }
 
-	  function reverse(array, n) {
-	    var t, j = array.length, i = j - n;
-	    while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+	  function line(arcs) {
+	    var points = [];
+	    for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+	    if (points.length < 2) points.push(points[0].slice());
+	    return points;
 	  }
 
-	  function bisect(a, x) {
-	    var lo = 0, hi = a.length;
-	    while (lo < hi) {
-	      var mid = lo + hi >>> 1;
-	      if (a[mid] < x) lo = mid + 1;
-	      else hi = mid;
-	    }
-	    return lo;
+	  function ring(arcs) {
+	    var points = line(arcs);
+	    while (points.length < 4) points.push(points[0].slice());
+	    return points;
 	  }
 
-	  function feature(topology, o) {
-	    return o.type === "GeometryCollection" ? {
-	      type: "FeatureCollection",
-	      features: o.geometries.map(function(o) { return feature$1(topology, o); })
-	    } : feature$1(topology, o);
+	  function polygon(arcs) {
+	    return arcs.map(ring);
 	  }
 
-	  function feature$1(topology, o) {
-	    var f = {
-	      type: "Feature",
-	      id: o.id,
-	      properties: o.properties || {},
-	      geometry: object(topology, o)
-	    };
-	    if (o.id == null) delete f.id;
-	    return f;
+	  function geometry(o) {
+	    var t = o.type;
+	    return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
+	        : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
+	        : null;
 	  }
 
-	  function object(topology, o) {
-	    var absolute = transformAbsolute(topology.transform),
-	        arcs = topology.arcs;
+	  var geometryType = {
+	    Point: function(o) { return point(o.coordinates); },
+	    MultiPoint: function(o) { return o.coordinates.map(point); },
+	    LineString: function(o) { return line(o.arcs); },
+	    MultiLineString: function(o) { return o.arcs.map(line); },
+	    Polygon: function(o) { return polygon(o.arcs); },
+	    MultiPolygon: function(o) { return o.arcs.map(polygon); }
+	  };
 
-	    function arc(i, points) {
-	      if (points.length) points.pop();
-	      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
-	        points.push(p = a[k].slice());
-	        absolute(p, k);
-	      }
-	      if (i < 0) reverse(points, n);
+	  return geometry(o);
+	}
+
+	function stitchArcs(topology, arcs) {
+	  var stitchedArcs = {},
+	      fragmentByStart = {},
+	      fragmentByEnd = {},
+	      fragments = [],
+	      emptyIndex = -1;
+
+	  // Stitch empty arcs first, since they may be subsumed by other arcs.
+	  arcs.forEach(function(i, j) {
+	    var arc = topology.arcs[i < 0 ? ~i : i], t;
+	    if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
+	      t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
 	    }
+	  });
 
-	    function point(p) {
-	      p = p.slice();
-	      absolute(p, 0);
-	      return p;
-	    }
+	  arcs.forEach(function(i) {
+	    var e = ends(i),
+	        start = e[0],
+	        end = e[1],
+	        f, g;
 
-	    function line(arcs) {
-	      var points = [];
-	      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-	      if (points.length < 2) points.push(points[0].slice());
-	      return points;
-	    }
-
-	    function ring(arcs) {
-	      var points = line(arcs);
-	      while (points.length < 4) points.push(points[0].slice());
-	      return points;
-	    }
-
-	    function polygon(arcs) {
-	      return arcs.map(ring);
-	    }
-
-	    function geometry(o) {
-	      var t = o.type;
-	      return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
-	          : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
-	          : null;
-	    }
-
-	    var geometryType = {
-	      Point: function(o) { return point(o.coordinates); },
-	      MultiPoint: function(o) { return o.coordinates.map(point); },
-	      LineString: function(o) { return line(o.arcs); },
-	      MultiLineString: function(o) { return o.arcs.map(line); },
-	      Polygon: function(o) { return polygon(o.arcs); },
-	      MultiPolygon: function(o) { return o.arcs.map(polygon); }
-	    };
-
-	    return geometry(o);
-	  }
-
-	  function stitchArcs(topology, arcs) {
-	    var stitchedArcs = {},
-	        fragmentByStart = {},
-	        fragmentByEnd = {},
-	        fragments = [],
-	        emptyIndex = -1;
-
-	    // Stitch empty arcs first, since they may be subsumed by other arcs.
-	    arcs.forEach(function(i, j) {
-	      var arc = topology.arcs[i < 0 ? ~i : i], t;
-	      if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
-	        t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
-	      }
-	    });
-
-	    arcs.forEach(function(i) {
-	      var e = ends(i),
-	          start = e[0],
-	          end = e[1],
-	          f, g;
-
-	      if (f = fragmentByEnd[start]) {
-	        delete fragmentByEnd[f.end];
-	        f.push(i);
-	        f.end = end;
-	        if (g = fragmentByStart[end]) {
-	          delete fragmentByStart[g.start];
-	          var fg = g === f ? f : f.concat(g);
-	          fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
-	        } else {
-	          fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
-	        }
-	      } else if (f = fragmentByStart[end]) {
-	        delete fragmentByStart[f.start];
-	        f.unshift(i);
-	        f.start = start;
-	        if (g = fragmentByEnd[start]) {
-	          delete fragmentByEnd[g.end];
-	          var gf = g === f ? f : g.concat(f);
-	          fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
-	        } else {
-	          fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
-	        }
+	    if (f = fragmentByEnd[start]) {
+	      delete fragmentByEnd[f.end];
+	      f.push(i);
+	      f.end = end;
+	      if (g = fragmentByStart[end]) {
+	        delete fragmentByStart[g.start];
+	        var fg = g === f ? f : f.concat(g);
+	        fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
 	      } else {
-	        f = [i];
-	        fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
+	        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
 	      }
-	    });
-
-	    function ends(i) {
-	      var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
-	      if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
-	      else p1 = arc[arc.length - 1];
-	      return i < 0 ? [p1, p0] : [p0, p1];
-	    }
-
-	    function flush(fragmentByEnd, fragmentByStart) {
-	      for (var k in fragmentByEnd) {
-	        var f = fragmentByEnd[k];
-	        delete fragmentByStart[f.start];
-	        delete f.start;
-	        delete f.end;
-	        f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
-	        fragments.push(f);
+	    } else if (f = fragmentByStart[end]) {
+	      delete fragmentByStart[f.start];
+	      f.unshift(i);
+	      f.start = start;
+	      if (g = fragmentByEnd[start]) {
+	        delete fragmentByEnd[g.end];
+	        var gf = g === f ? f : g.concat(f);
+	        fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
+	      } else {
+	        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
 	      }
-	    }
-
-	    flush(fragmentByEnd, fragmentByStart);
-	    flush(fragmentByStart, fragmentByEnd);
-	    arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
-
-	    return fragments;
-	  }
-
-	  function mesh(topology) {
-	    return object(topology, meshArcs.apply(this, arguments));
-	  }
-
-	  function meshArcs(topology, o, filter) {
-	    var arcs = [];
-
-	    function arc(i) {
-	      var j = i < 0 ? ~i : i;
-	      (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
-	    }
-
-	    function line(arcs) {
-	      arcs.forEach(arc);
-	    }
-
-	    function polygon(arcs) {
-	      arcs.forEach(line);
-	    }
-
-	    function geometry(o) {
-	      if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
-	      else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
-	    }
-
-	    if (arguments.length > 1) {
-	      var geomsByArc = [],
-	          geom;
-
-	      var geometryType = {
-	        LineString: line,
-	        MultiLineString: polygon,
-	        Polygon: polygon,
-	        MultiPolygon: function(arcs) { arcs.forEach(polygon); }
-	      };
-
-	      geometry(o);
-
-	      geomsByArc.forEach(arguments.length < 3
-	          ? function(geoms) { arcs.push(geoms[0].i); }
-	          : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
 	    } else {
-	      for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
+	      f = [i];
+	      fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
 	    }
+	  });
 
-	    return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
+	  function ends(i) {
+	    var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
+	    if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+	    else p1 = arc[arc.length - 1];
+	    return i < 0 ? [p1, p0] : [p0, p1];
 	  }
 
-	  function cartesianTriangleArea(triangle) {
-	    var a = triangle[0], b = triangle[1], c = triangle[2];
-	    return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
+	  function flush(fragmentByEnd, fragmentByStart) {
+	    for (var k in fragmentByEnd) {
+	      var f = fragmentByEnd[k];
+	      delete fragmentByStart[f.start];
+	      delete f.start;
+	      delete f.end;
+	      f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
+	      fragments.push(f);
+	    }
 	  }
 
-	  function ring(ring) {
-	    var i = -1,
-	        n = ring.length,
-	        a,
-	        b = ring[n - 1],
-	        area = 0;
+	  flush(fragmentByEnd, fragmentByStart);
+	  flush(fragmentByStart, fragmentByEnd);
+	  arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
 
-	    while (++i < n) {
-	      a = b;
-	      b = ring[i];
-	      area += a[0] * b[1] - a[1] * b[0];
-	    }
+	  return fragments;
+	}
 
-	    return area / 2;
+	function mesh(topology) {
+	  return object(topology, meshArcs.apply(this, arguments));
+	}
+
+	function meshArcs(topology, o, filter) {
+	  var arcs = [];
+
+	  function arc(i) {
+	    var j = i < 0 ? ~i : i;
+	    (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
 	  }
 
-	  function merge(topology) {
-	    return object(topology, mergeArcs.apply(this, arguments));
+	  function line(arcs) {
+	    arcs.forEach(arc);
 	  }
 
-	  function mergeArcs(topology, objects) {
-	    var polygonsByArc = {},
-	        polygons = [],
-	        components = [];
-
-	    objects.forEach(function(o) {
-	      if (o.type === "Polygon") register(o.arcs);
-	      else if (o.type === "MultiPolygon") o.arcs.forEach(register);
-	    });
-
-	    function register(polygon) {
-	      polygon.forEach(function(ring$$) {
-	        ring$$.forEach(function(arc) {
-	          (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
-	        });
-	      });
-	      polygons.push(polygon);
-	    }
-
-	    function area(ring$$) {
-	      return Math.abs(ring(object(topology, {type: "Polygon", arcs: [ring$$]}).coordinates[0]));
-	    }
-
-	    polygons.forEach(function(polygon) {
-	      if (!polygon._) {
-	        var component = [],
-	            neighbors = [polygon];
-	        polygon._ = 1;
-	        components.push(component);
-	        while (polygon = neighbors.pop()) {
-	          component.push(polygon);
-	          polygon.forEach(function(ring$$) {
-	            ring$$.forEach(function(arc) {
-	              polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
-	                if (!polygon._) {
-	                  polygon._ = 1;
-	                  neighbors.push(polygon);
-	                }
-	              });
-	            });
-	          });
-	        }
-	      }
-	    });
-
-	    polygons.forEach(function(polygon) {
-	      delete polygon._;
-	    });
-
-	    return {
-	      type: "MultiPolygon",
-	      arcs: components.map(function(polygons) {
-	        var arcs = [], n;
-
-	        // Extract the exterior (unique) arcs.
-	        polygons.forEach(function(polygon) {
-	          polygon.forEach(function(ring$$) {
-	            ring$$.forEach(function(arc) {
-	              if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
-	                arcs.push(arc);
-	              }
-	            });
-	          });
-	        });
-
-	        // Stitch the arcs into one or more rings.
-	        arcs = stitchArcs(topology, arcs);
-
-	        // If more than one ring is returned,
-	        // at most one of these rings can be the exterior;
-	        // choose the one with the greatest absolute area.
-	        if ((n = arcs.length) > 1) {
-	          for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
-	            if ((ki = area(arcs[i])) > k) {
-	              t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
-	            }
-	          }
-	        }
-
-	        return arcs;
-	      })
-	    };
+	  function polygon(arcs) {
+	    arcs.forEach(line);
 	  }
 
-	  function neighbors(objects) {
-	    var indexesByArc = {}, // arc index -> array of object indexes
-	        neighbors = objects.map(function() { return []; });
+	  function geometry(o) {
+	    if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
+	    else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
+	  }
 
-	    function line(arcs, i) {
-	      arcs.forEach(function(a) {
-	        if (a < 0) a = ~a;
-	        var o = indexesByArc[a];
-	        if (o) o.push(i);
-	        else indexesByArc[a] = [i];
-	      });
-	    }
-
-	    function polygon(arcs, i) {
-	      arcs.forEach(function(arc) { line(arc, i); });
-	    }
-
-	    function geometry(o, i) {
-	      if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
-	      else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
-	    }
+	  if (arguments.length > 1) {
+	    var geomsByArc = [],
+	        geom;
 
 	    var geometryType = {
 	      LineString: line,
 	      MultiLineString: polygon,
 	      Polygon: polygon,
-	      MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+	      MultiPolygon: function(arcs) { arcs.forEach(polygon); }
 	    };
 
-	    objects.forEach(geometry);
+	    geometry(o);
 
-	    for (var i in indexesByArc) {
-	      for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
-	        for (var k = j + 1; k < m; ++k) {
-	          var ij = indexes[j], ik = indexes[k], n;
-	          if ((n = neighbors[ij])[i = bisect(n, ik)] !== ik) n.splice(i, 0, ik);
-	          if ((n = neighbors[ik])[i = bisect(n, ij)] !== ij) n.splice(i, 0, ij);
-	        }
-	      }
-	    }
-
-	    return neighbors;
+	    geomsByArc.forEach(arguments.length < 3
+	        ? function(geoms) { arcs.push(geoms[0].i); }
+	        : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
+	  } else {
+	    for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
 	  }
 
-	  function compareArea(a, b) {
-	    return a[1][2] - b[1][2];
+	  return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
+	}
+
+	function cartesianTriangleArea(triangle) {
+	  var a = triangle[0], b = triangle[1], c = triangle[2];
+	  return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
+	}
+
+	function ring(ring) {
+	  var i = -1,
+	      n = ring.length,
+	      a,
+	      b = ring[n - 1],
+	      area = 0;
+
+	  while (++i < n) {
+	    a = b;
+	    b = ring[i];
+	    area += a[0] * b[1] - a[1] * b[0];
 	  }
 
-	  function minAreaHeap() {
-	    var heap = {},
-	        array = [],
-	        size = 0;
+	  return area / 2;
+	}
 
-	    heap.push = function(object) {
-	      up(array[object._ = size] = object, size++);
-	      return size;
-	    };
+	function merge(topology) {
+	  return object(topology, mergeArcs.apply(this, arguments));
+	}
 
-	    heap.pop = function() {
-	      if (size <= 0) return;
-	      var removed = array[0], object;
-	      if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
-	      return removed;
-	    };
+	function mergeArcs(topology, objects) {
+	  var polygonsByArc = {},
+	      polygons = [],
+	      components = [];
 
-	    heap.remove = function(removed) {
-	      var i = removed._, object;
-	      if (array[i] !== removed) return; // invalid request
-	      if (i !== --size) object = array[size], (compareArea(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
-	      return i;
-	    };
+	  objects.forEach(function(o) {
+	    if (o.type === "Polygon") register(o.arcs);
+	    else if (o.type === "MultiPolygon") o.arcs.forEach(register);
+	  });
 
-	    function up(object, i) {
-	      while (i > 0) {
-	        var j = ((i + 1) >> 1) - 1,
-	            parent = array[j];
-	        if (compareArea(object, parent) >= 0) break;
-	        array[parent._ = i] = parent;
-	        array[object._ = i = j] = object;
-	      }
-	    }
-
-	    function down(object, i) {
-	      while (true) {
-	        var r = (i + 1) << 1,
-	            l = r - 1,
-	            j = i,
-	            child = array[j];
-	        if (l < size && compareArea(array[l], child) < 0) child = array[j = l];
-	        if (r < size && compareArea(array[r], child) < 0) child = array[j = r];
-	        if (j === i) break;
-	        array[child._ = i] = child;
-	        array[object._ = i = j] = object;
-	      }
-	    }
-
-	    return heap;
-	  }
-
-	  function presimplify(topology, triangleArea) {
-	    var absolute = transformAbsolute(topology.transform),
-	        relative = transformRelative(topology.transform),
-	        heap = minAreaHeap();
-
-	    if (!triangleArea) triangleArea = cartesianTriangleArea;
-
-	    topology.arcs.forEach(function(arc) {
-	      var triangles = [],
-	          maxArea = 0,
-	          triangle,
-	          i,
-	          n,
-	          p;
-
-	      // To store each point’s effective area, we create a new array rather than
-	      // extending the passed-in point to workaround a Chrome/V8 bug (getting
-	      // stuck in smi mode). For midpoints, the initial effective area of
-	      // Infinity will be computed in the next step.
-	      for (i = 0, n = arc.length; i < n; ++i) {
-	        p = arc[i];
-	        absolute(arc[i] = [p[0], p[1], Infinity], i);
-	      }
-
-	      for (i = 1, n = arc.length - 1; i < n; ++i) {
-	        triangle = arc.slice(i - 1, i + 2);
-	        triangle[1][2] = triangleArea(triangle);
-	        triangles.push(triangle);
-	        heap.push(triangle);
-	      }
-
-	      for (i = 0, n = triangles.length; i < n; ++i) {
-	        triangle = triangles[i];
-	        triangle.previous = triangles[i - 1];
-	        triangle.next = triangles[i + 1];
-	      }
-
-	      while (triangle = heap.pop()) {
-	        var previous = triangle.previous,
-	            next = triangle.next;
-
-	        // If the area of the current point is less than that of the previous point
-	        // to be eliminated, use the latter's area instead. This ensures that the
-	        // current point cannot be eliminated without eliminating previously-
-	        // eliminated points.
-	        if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
-	        else maxArea = triangle[1][2];
-
-	        if (previous) {
-	          previous.next = next;
-	          previous[2] = triangle[2];
-	          update(previous);
-	        }
-
-	        if (next) {
-	          next.previous = previous;
-	          next[0] = triangle[0];
-	          update(next);
-	        }
-	      }
-
-	      arc.forEach(relative);
+	  function register(polygon) {
+	    polygon.forEach(function(ring$$) {
+	      ring$$.forEach(function(arc) {
+	        (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
+	      });
 	    });
+	    polygons.push(polygon);
+	  }
 
-	    function update(triangle) {
-	      heap.remove(triangle);
+	  function area(ring$$) {
+	    return Math.abs(ring(object(topology, {type: "Polygon", arcs: [ring$$]}).coordinates[0]));
+	  }
+
+	  polygons.forEach(function(polygon) {
+	    if (!polygon._) {
+	      var component = [],
+	          neighbors = [polygon];
+	      polygon._ = 1;
+	      components.push(component);
+	      while (polygon = neighbors.pop()) {
+	        component.push(polygon);
+	        polygon.forEach(function(ring$$) {
+	          ring$$.forEach(function(arc) {
+	            polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
+	              if (!polygon._) {
+	                polygon._ = 1;
+	                neighbors.push(polygon);
+	              }
+	            });
+	          });
+	        });
+	      }
+	    }
+	  });
+
+	  polygons.forEach(function(polygon) {
+	    delete polygon._;
+	  });
+
+	  return {
+	    type: "MultiPolygon",
+	    arcs: components.map(function(polygons) {
+	      var arcs = [], n;
+
+	      // Extract the exterior (unique) arcs.
+	      polygons.forEach(function(polygon) {
+	        polygon.forEach(function(ring$$) {
+	          ring$$.forEach(function(arc) {
+	            if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
+	              arcs.push(arc);
+	            }
+	          });
+	        });
+	      });
+
+	      // Stitch the arcs into one or more rings.
+	      arcs = stitchArcs(topology, arcs);
+
+	      // If more than one ring is returned,
+	      // at most one of these rings can be the exterior;
+	      // choose the one with the greatest absolute area.
+	      if ((n = arcs.length) > 1) {
+	        for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
+	          if ((ki = area(arcs[i])) > k) {
+	            t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
+	          }
+	        }
+	      }
+
+	      return arcs;
+	    })
+	  };
+	}
+
+	function neighbors(objects) {
+	  var indexesByArc = {}, // arc index -> array of object indexes
+	      neighbors = objects.map(function() { return []; });
+
+	  function line(arcs, i) {
+	    arcs.forEach(function(a) {
+	      if (a < 0) a = ~a;
+	      var o = indexesByArc[a];
+	      if (o) o.push(i);
+	      else indexesByArc[a] = [i];
+	    });
+	  }
+
+	  function polygon(arcs, i) {
+	    arcs.forEach(function(arc) { line(arc, i); });
+	  }
+
+	  function geometry(o, i) {
+	    if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
+	    else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
+	  }
+
+	  var geometryType = {
+	    LineString: line,
+	    MultiLineString: polygon,
+	    Polygon: polygon,
+	    MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+	  };
+
+	  objects.forEach(geometry);
+
+	  for (var i in indexesByArc) {
+	    for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
+	      for (var k = j + 1; k < m; ++k) {
+	        var ij = indexes[j], ik = indexes[k], n;
+	        if ((n = neighbors[ij])[i = bisect(n, ik)] !== ik) n.splice(i, 0, ik);
+	        if ((n = neighbors[ik])[i = bisect(n, ij)] !== ij) n.splice(i, 0, ij);
+	      }
+	    }
+	  }
+
+	  return neighbors;
+	}
+
+	function compareArea(a, b) {
+	  return a[1][2] - b[1][2];
+	}
+
+	function minAreaHeap() {
+	  var heap = {},
+	      array = [],
+	      size = 0;
+
+	  heap.push = function(object) {
+	    up(array[object._ = size] = object, size++);
+	    return size;
+	  };
+
+	  heap.pop = function() {
+	    if (size <= 0) return;
+	    var removed = array[0], object;
+	    if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
+	    return removed;
+	  };
+
+	  heap.remove = function(removed) {
+	    var i = removed._, object;
+	    if (array[i] !== removed) return; // invalid request
+	    if (i !== --size) object = array[size], (compareArea(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
+	    return i;
+	  };
+
+	  function up(object, i) {
+	    while (i > 0) {
+	      var j = ((i + 1) >> 1) - 1,
+	          parent = array[j];
+	      if (compareArea(object, parent) >= 0) break;
+	      array[parent._ = i] = parent;
+	      array[object._ = i = j] = object;
+	    }
+	  }
+
+	  function down(object, i) {
+	    while (true) {
+	      var r = (i + 1) << 1,
+	          l = r - 1,
+	          j = i,
+	          child = array[j];
+	      if (l < size && compareArea(array[l], child) < 0) child = array[j = l];
+	      if (r < size && compareArea(array[r], child) < 0) child = array[j = r];
+	      if (j === i) break;
+	      array[child._ = i] = child;
+	      array[object._ = i = j] = object;
+	    }
+	  }
+
+	  return heap;
+	}
+
+	function presimplify(topology, triangleArea) {
+	  var absolute = transformAbsolute(topology.transform),
+	      relative = transformRelative(topology.transform),
+	      heap = minAreaHeap();
+
+	  if (!triangleArea) triangleArea = cartesianTriangleArea;
+
+	  topology.arcs.forEach(function(arc) {
+	    var triangles = [],
+	        maxArea = 0,
+	        triangle,
+	        i,
+	        n,
+	        p;
+
+	    // To store each point’s effective area, we create a new array rather than
+	    // extending the passed-in point to workaround a Chrome/V8 bug (getting
+	    // stuck in smi mode). For midpoints, the initial effective area of
+	    // Infinity will be computed in the next step.
+	    for (i = 0, n = arc.length; i < n; ++i) {
+	      p = arc[i];
+	      absolute(arc[i] = [p[0], p[1], Infinity], i);
+	    }
+
+	    for (i = 1, n = arc.length - 1; i < n; ++i) {
+	      triangle = arc.slice(i - 1, i + 2);
 	      triangle[1][2] = triangleArea(triangle);
+	      triangles.push(triangle);
 	      heap.push(triangle);
 	    }
 
-	    return topology;
+	    for (i = 0, n = triangles.length; i < n; ++i) {
+	      triangle = triangles[i];
+	      triangle.previous = triangles[i - 1];
+	      triangle.next = triangles[i + 1];
+	    }
+
+	    while (triangle = heap.pop()) {
+	      var previous = triangle.previous,
+	          next = triangle.next;
+
+	      // If the area of the current point is less than that of the previous point
+	      // to be eliminated, use the latter's area instead. This ensures that the
+	      // current point cannot be eliminated without eliminating previously-
+	      // eliminated points.
+	      if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
+	      else maxArea = triangle[1][2];
+
+	      if (previous) {
+	        previous.next = next;
+	        previous[2] = triangle[2];
+	        update(previous);
+	      }
+
+	      if (next) {
+	        next.previous = previous;
+	        next[0] = triangle[0];
+	        update(next);
+	      }
+	    }
+
+	    arc.forEach(relative);
+	  });
+
+	  function update(triangle) {
+	    heap.remove(triangle);
+	    triangle[1][2] = triangleArea(triangle);
+	    heap.push(triangle);
 	  }
 
-	  var version = "1.6.26";
+	  return topology;
+	}
 
-	  exports.version = version;
-	  exports.mesh = mesh;
-	  exports.meshArcs = meshArcs;
-	  exports.merge = merge;
-	  exports.mergeArcs = mergeArcs;
-	  exports.feature = feature;
-	  exports.neighbors = neighbors;
-	  exports.presimplify = presimplify;
+	var version = "1.6.27";
 
-	}));
+	exports.version = version;
+	exports.mesh = mesh;
+	exports.meshArcs = meshArcs;
+	exports.merge = merge;
+	exports.mergeArcs = mergeArcs;
+	exports.feature = feature;
+	exports.neighbors = neighbors;
+	exports.presimplify = presimplify;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+	})));
 
 /***/ },
 /* 33 */
@@ -20254,19 +20258,19 @@
 
 	var _TileGenerationUiControls2 = _interopRequireDefault(_TileGenerationUiControls);
 
-	var _HexMetrics = __webpack_require__(228);
+	var _HexMetrics = __webpack_require__(227);
 
 	var _HexMetrics2 = _interopRequireDefault(_HexMetrics);
 
-	var _ExportButton = __webpack_require__(229);
+	var _ExportButton = __webpack_require__(228);
 
 	var _ExportButton2 = _interopRequireDefault(_ExportButton);
 
-	var _EditWarningModal = __webpack_require__(230);
+	var _EditWarningModal = __webpack_require__(229);
 
 	var _EditWarningModal2 = _interopRequireDefault(_EditWarningModal);
 
-	var _gnlLogo = __webpack_require__(231);
+	var _gnlLogo = __webpack_require__(230);
 
 	var _gnlLogo2 = _interopRequireDefault(_gnlLogo);
 
@@ -20281,6 +20285,7 @@
 	    this._init();
 	    this.metricPerTile = null;
 	    this._tiles = null;
+	    this._originalTilesLength = null;
 	    this._editing = false;
 
 	    this._startOver = this._startOver.bind(this);
@@ -20308,8 +20313,9 @@
 	    }
 	  }, {
 	    key: 'setTiles',
-	    value: function setTiles(tiles) {
+	    value: function setTiles(tiles, originalTilesLength) {
 	      this._tiles = tiles;
+	      this._originalTilesLength = originalTilesLength;
 	    }
 	  }, {
 	    key: 'setAddTileCallback',
@@ -20491,7 +20497,6 @@
 	        selectCustomDataset: this._customDatasetCallback,
 	        importCustom: this._importCallback,
 	        metricDomain: this._metricDomain,
-	        metricPerTile: this.metricPerTile,
 	        changeResolution: this._resolutionChangedCallback,
 	        datasetSum: this._selectedDatasetSum,
 	        onResizeNeeded: this._resizeAfterPaint,
@@ -20530,7 +20535,7 @@
 	            null,
 	            '2'
 	          ),
-	          ' Edit your tilegram'
+	          ' Refine your tilegram'
 	        )
 	      );
 	      var modal = null;
@@ -20558,7 +20563,17 @@
 	            _react2.default.createElement(
 	              'p',
 	              { className: 'intro' },
-	              'A “tilegram” is a tiled cartogram: a map made of regular tiles where the regions are sized proportionally to some dataset.'
+	              'A “tilegram” is a map made of tiles where regions are sized proportionally to a dataset.',
+	              _react2.default.createElement('br', null),
+	              _react2.default.createElement(
+	                'a',
+	                {
+	                  href: 'https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md',
+	                  target: '_blank',
+	                  rel: 'noopener noreferrer'
+	                },
+	                'Read the manual'
+	              )
 	            ),
 	            _react2.default.createElement('hr', null),
 	            generateOption,
@@ -20578,6 +20593,7 @@
 	              dataset: this._selectedDataset,
 	              geos: this._geos,
 	              tiles: this._tiles,
+	              originalTilesLength: this._originalTilesLength,
 	              onAddTileMouseDown: this._addTileCallback,
 	              onMetricMouseOver: this._highlightCallback,
 	              onMetricMouseOut: this._unhighlightCallback
@@ -42044,7 +42060,7 @@
 
 	var _ResolutionSlider2 = _interopRequireDefault(_ResolutionSlider);
 
-	var _ImportControls = __webpack_require__(227);
+	var _ImportControls = __webpack_require__(226);
 
 	var _ImportControls2 = _interopRequireDefault(_ImportControls);
 
@@ -42089,7 +42105,6 @@
 	        }
 	      } else if (selectedOption === 'generate') {
 	        this.props.selectDataset(0);
-	        this.resetMetricDomain = true;
 	      }
 	      this.setState(newState);
 	    }
@@ -42122,8 +42137,6 @@
 	    value: function render() {
 	      var _this4 = this;
 
-	      var resetMetricDomain = this.resetMetricDomain;
-	      this.resetMetricDomain = false;
 	      return _react2.default.createElement(
 	        'div',
 	        { className: 'ui-controls' },
@@ -42184,7 +42197,6 @@
 	              onResizeNeeded: this.props.onResizeNeeded
 	            }),
 	            _react2.default.createElement(_ResolutionSlider2.default, {
-	              resetMetricDomain: resetMetricDomain,
 	              metricDomain: this.props.metricDomain,
 	              onChange: function onChange(value) {
 	                return _this4.props.changeResolution(value, _this4.props.datasetSum);
@@ -42212,7 +42224,6 @@
 	  changeResolution: _react2.default.PropTypes.func,
 	  datasetSum: _react2.default.PropTypes.number,
 	  metricDomain: _react2.default.PropTypes.array,
-	  metricPerTile: _react2.default.PropTypes.number,
 	  editing: _react2.default.PropTypes.bool,
 	  onResizeNeeded: _react2.default.PropTypes.func
 	};
@@ -42444,7 +42455,7 @@
 	  _createClass(ResolutionSlider, [{
 	    key: 'componentWillReceiveProps',
 	    value: function componentWillReceiveProps(nextProps) {
-	      if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
+	      if (JSON.stringify(nextProps.metricDomain) !== JSON.stringify(this.props.metricDomain)) {
 	        this.normalizeValue.domain(nextProps.metricDomain); // update the domain
 	        this._triggerChangeFromSlider(50);
 	      }
@@ -42574,7 +42585,7 @@
 
 	// https://d3js.org/d3-scale/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(222), __webpack_require__(224), __webpack_require__(225), __webpack_require__(226), __webpack_require__(223)) :
+	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(222), __webpack_require__(223), __webpack_require__(224), __webpack_require__(225), __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-collection', 'd3-interpolate', 'd3-format', 'd3-time', 'd3-time-format', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3,global.d3,global.d3,global.d3,global.d3));
 	}(this, function (exports,d3Array,d3Collection,d3Interpolate,d3Format,d3Time,d3TimeFormat,d3Color) { 'use strict';
@@ -43481,7 +43492,7 @@
 
 	// https://d3js.org/d3-interpolate/ Version 1.1.1. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(223)) :
+	   true ? factory(exports, __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Color) { 'use strict';
@@ -44026,528 +44037,6 @@
 /* 223 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-color/ Version 1.0.1. Copyright 2016 Mike Bostock.
-	(function (global, factory) {
-	   true ? factory(exports) :
-	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
-
-	  function define(constructor, factory, prototype) {
-	    constructor.prototype = factory.prototype = prototype;
-	    prototype.constructor = constructor;
-	  }
-
-	  function extend(parent, definition) {
-	    var prototype = Object.create(parent.prototype);
-	    for (var key in definition) prototype[key] = definition[key];
-	    return prototype;
-	  }
-
-	  function Color() {}
-
-	  var darker = 0.7;
-	  var brighter = 1 / darker;
-
-	  var reHex3 = /^#([0-9a-f]{3})$/;
-	  var reHex6 = /^#([0-9a-f]{6})$/;
-	  var reRgbInteger = /^rgb\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*\)$/;
-	  var reRgbPercent = /^rgb\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reRgbaInteger = /^rgba\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reRgbaPercent = /^rgba\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reHslPercent = /^hsl\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reHslaPercent = /^hsla\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var named = {
-	    aliceblue: 0xf0f8ff,
-	    antiquewhite: 0xfaebd7,
-	    aqua: 0x00ffff,
-	    aquamarine: 0x7fffd4,
-	    azure: 0xf0ffff,
-	    beige: 0xf5f5dc,
-	    bisque: 0xffe4c4,
-	    black: 0x000000,
-	    blanchedalmond: 0xffebcd,
-	    blue: 0x0000ff,
-	    blueviolet: 0x8a2be2,
-	    brown: 0xa52a2a,
-	    burlywood: 0xdeb887,
-	    cadetblue: 0x5f9ea0,
-	    chartreuse: 0x7fff00,
-	    chocolate: 0xd2691e,
-	    coral: 0xff7f50,
-	    cornflowerblue: 0x6495ed,
-	    cornsilk: 0xfff8dc,
-	    crimson: 0xdc143c,
-	    cyan: 0x00ffff,
-	    darkblue: 0x00008b,
-	    darkcyan: 0x008b8b,
-	    darkgoldenrod: 0xb8860b,
-	    darkgray: 0xa9a9a9,
-	    darkgreen: 0x006400,
-	    darkgrey: 0xa9a9a9,
-	    darkkhaki: 0xbdb76b,
-	    darkmagenta: 0x8b008b,
-	    darkolivegreen: 0x556b2f,
-	    darkorange: 0xff8c00,
-	    darkorchid: 0x9932cc,
-	    darkred: 0x8b0000,
-	    darksalmon: 0xe9967a,
-	    darkseagreen: 0x8fbc8f,
-	    darkslateblue: 0x483d8b,
-	    darkslategray: 0x2f4f4f,
-	    darkslategrey: 0x2f4f4f,
-	    darkturquoise: 0x00ced1,
-	    darkviolet: 0x9400d3,
-	    deeppink: 0xff1493,
-	    deepskyblue: 0x00bfff,
-	    dimgray: 0x696969,
-	    dimgrey: 0x696969,
-	    dodgerblue: 0x1e90ff,
-	    firebrick: 0xb22222,
-	    floralwhite: 0xfffaf0,
-	    forestgreen: 0x228b22,
-	    fuchsia: 0xff00ff,
-	    gainsboro: 0xdcdcdc,
-	    ghostwhite: 0xf8f8ff,
-	    gold: 0xffd700,
-	    goldenrod: 0xdaa520,
-	    gray: 0x808080,
-	    green: 0x008000,
-	    greenyellow: 0xadff2f,
-	    grey: 0x808080,
-	    honeydew: 0xf0fff0,
-	    hotpink: 0xff69b4,
-	    indianred: 0xcd5c5c,
-	    indigo: 0x4b0082,
-	    ivory: 0xfffff0,
-	    khaki: 0xf0e68c,
-	    lavender: 0xe6e6fa,
-	    lavenderblush: 0xfff0f5,
-	    lawngreen: 0x7cfc00,
-	    lemonchiffon: 0xfffacd,
-	    lightblue: 0xadd8e6,
-	    lightcoral: 0xf08080,
-	    lightcyan: 0xe0ffff,
-	    lightgoldenrodyellow: 0xfafad2,
-	    lightgray: 0xd3d3d3,
-	    lightgreen: 0x90ee90,
-	    lightgrey: 0xd3d3d3,
-	    lightpink: 0xffb6c1,
-	    lightsalmon: 0xffa07a,
-	    lightseagreen: 0x20b2aa,
-	    lightskyblue: 0x87cefa,
-	    lightslategray: 0x778899,
-	    lightslategrey: 0x778899,
-	    lightsteelblue: 0xb0c4de,
-	    lightyellow: 0xffffe0,
-	    lime: 0x00ff00,
-	    limegreen: 0x32cd32,
-	    linen: 0xfaf0e6,
-	    magenta: 0xff00ff,
-	    maroon: 0x800000,
-	    mediumaquamarine: 0x66cdaa,
-	    mediumblue: 0x0000cd,
-	    mediumorchid: 0xba55d3,
-	    mediumpurple: 0x9370db,
-	    mediumseagreen: 0x3cb371,
-	    mediumslateblue: 0x7b68ee,
-	    mediumspringgreen: 0x00fa9a,
-	    mediumturquoise: 0x48d1cc,
-	    mediumvioletred: 0xc71585,
-	    midnightblue: 0x191970,
-	    mintcream: 0xf5fffa,
-	    mistyrose: 0xffe4e1,
-	    moccasin: 0xffe4b5,
-	    navajowhite: 0xffdead,
-	    navy: 0x000080,
-	    oldlace: 0xfdf5e6,
-	    olive: 0x808000,
-	    olivedrab: 0x6b8e23,
-	    orange: 0xffa500,
-	    orangered: 0xff4500,
-	    orchid: 0xda70d6,
-	    palegoldenrod: 0xeee8aa,
-	    palegreen: 0x98fb98,
-	    paleturquoise: 0xafeeee,
-	    palevioletred: 0xdb7093,
-	    papayawhip: 0xffefd5,
-	    peachpuff: 0xffdab9,
-	    peru: 0xcd853f,
-	    pink: 0xffc0cb,
-	    plum: 0xdda0dd,
-	    powderblue: 0xb0e0e6,
-	    purple: 0x800080,
-	    rebeccapurple: 0x663399,
-	    red: 0xff0000,
-	    rosybrown: 0xbc8f8f,
-	    royalblue: 0x4169e1,
-	    saddlebrown: 0x8b4513,
-	    salmon: 0xfa8072,
-	    sandybrown: 0xf4a460,
-	    seagreen: 0x2e8b57,
-	    seashell: 0xfff5ee,
-	    sienna: 0xa0522d,
-	    silver: 0xc0c0c0,
-	    skyblue: 0x87ceeb,
-	    slateblue: 0x6a5acd,
-	    slategray: 0x708090,
-	    slategrey: 0x708090,
-	    snow: 0xfffafa,
-	    springgreen: 0x00ff7f,
-	    steelblue: 0x4682b4,
-	    tan: 0xd2b48c,
-	    teal: 0x008080,
-	    thistle: 0xd8bfd8,
-	    tomato: 0xff6347,
-	    turquoise: 0x40e0d0,
-	    violet: 0xee82ee,
-	    wheat: 0xf5deb3,
-	    white: 0xffffff,
-	    whitesmoke: 0xf5f5f5,
-	    yellow: 0xffff00,
-	    yellowgreen: 0x9acd32
-	  };
-
-	  define(Color, color, {
-	    displayable: function() {
-	      return this.rgb().displayable();
-	    },
-	    toString: function() {
-	      return this.rgb() + "";
-	    }
-	  });
-
-	  function color(format) {
-	    var m;
-	    format = (format + "").trim().toLowerCase();
-	    return (m = reHex3.exec(format)) ? (m = parseInt(m[1], 16), new Rgb((m >> 8 & 0xf) | (m >> 4 & 0x0f0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)) // #f00
-	        : (m = reHex6.exec(format)) ? rgbn(parseInt(m[1], 16)) // #ff0000
-	        : (m = reRgbInteger.exec(format)) ? new Rgb(m[1], m[2], m[3], 1) // rgb(255, 0, 0)
-	        : (m = reRgbPercent.exec(format)) ? new Rgb(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, 1) // rgb(100%, 0%, 0%)
-	        : (m = reRgbaInteger.exec(format)) ? rgba(m[1], m[2], m[3], m[4]) // rgba(255, 0, 0, 1)
-	        : (m = reRgbaPercent.exec(format)) ? rgba(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, m[4]) // rgb(100%, 0%, 0%, 1)
-	        : (m = reHslPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, 1) // hsl(120, 50%, 50%)
-	        : (m = reHslaPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, m[4]) // hsla(120, 50%, 50%, 1)
-	        : named.hasOwnProperty(format) ? rgbn(named[format])
-	        : format === "transparent" ? new Rgb(NaN, NaN, NaN, 0)
-	        : null;
-	  }
-
-	  function rgbn(n) {
-	    return new Rgb(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1);
-	  }
-
-	  function rgba(r, g, b, a) {
-	    if (a <= 0) r = g = b = NaN;
-	    return new Rgb(r, g, b, a);
-	  }
-
-	  function rgbConvert(o) {
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Rgb;
-	    o = o.rgb();
-	    return new Rgb(o.r, o.g, o.b, o.opacity);
-	  }
-
-	  function rgb(r, g, b, opacity) {
-	    return arguments.length === 1 ? rgbConvert(r) : new Rgb(r, g, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Rgb(r, g, b, opacity) {
-	    this.r = +r;
-	    this.g = +g;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Rgb, rgb, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    rgb: function() {
-	      return this;
-	    },
-	    displayable: function() {
-	      return (0 <= this.r && this.r <= 255)
-	          && (0 <= this.g && this.g <= 255)
-	          && (0 <= this.b && this.b <= 255)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    },
-	    toString: function() {
-	      var a = this.opacity; a = isNaN(a) ? 1 : Math.max(0, Math.min(1, a));
-	      return (a === 1 ? "rgb(" : "rgba(")
-	          + Math.max(0, Math.min(255, Math.round(this.r) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.g) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.b) || 0))
-	          + (a === 1 ? ")" : ", " + a + ")");
-	    }
-	  }));
-
-	  function hsla(h, s, l, a) {
-	    if (a <= 0) h = s = l = NaN;
-	    else if (l <= 0 || l >= 1) h = s = NaN;
-	    else if (s <= 0) h = NaN;
-	    return new Hsl(h, s, l, a);
-	  }
-
-	  function hslConvert(o) {
-	    if (o instanceof Hsl) return new Hsl(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Hsl;
-	    if (o instanceof Hsl) return o;
-	    o = o.rgb();
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        min = Math.min(r, g, b),
-	        max = Math.max(r, g, b),
-	        h = NaN,
-	        s = max - min,
-	        l = (max + min) / 2;
-	    if (s) {
-	      if (r === max) h = (g - b) / s + (g < b) * 6;
-	      else if (g === max) h = (b - r) / s + 2;
-	      else h = (r - g) / s + 4;
-	      s /= l < 0.5 ? max + min : 2 - max - min;
-	      h *= 60;
-	    } else {
-	      s = l > 0 && l < 1 ? 0 : h;
-	    }
-	    return new Hsl(h, s, l, o.opacity);
-	  }
-
-	  function hsl(h, s, l, opacity) {
-	    return arguments.length === 1 ? hslConvert(h) : new Hsl(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hsl(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hsl, hsl, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = this.h % 360 + (this.h < 0) * 360,
-	          s = isNaN(h) || isNaN(this.s) ? 0 : this.s,
-	          l = this.l,
-	          m2 = l + (l < 0.5 ? l : 1 - l) * s,
-	          m1 = 2 * l - m2;
-	      return new Rgb(
-	        hsl2rgb(h >= 240 ? h - 240 : h + 120, m1, m2),
-	        hsl2rgb(h, m1, m2),
-	        hsl2rgb(h < 120 ? h + 240 : h - 120, m1, m2),
-	        this.opacity
-	      );
-	    },
-	    displayable: function() {
-	      return (0 <= this.s && this.s <= 1 || isNaN(this.s))
-	          && (0 <= this.l && this.l <= 1)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    }
-	  }));
-
-	  /* From FvD 13.37, CSS Color Module Level 3 */
-	  function hsl2rgb(h, m1, m2) {
-	    return (h < 60 ? m1 + (m2 - m1) * h / 60
-	        : h < 180 ? m2
-	        : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60
-	        : m1) * 255;
-	  }
-
-	  var deg2rad = Math.PI / 180;
-	  var rad2deg = 180 / Math.PI;
-
-	  var Kn = 18;
-	  var Xn = 0.950470;
-	  var Yn = 1;
-	  var Zn = 1.088830;
-	  var t0 = 4 / 29;
-	  var t1 = 6 / 29;
-	  var t2 = 3 * t1 * t1;
-	  var t3 = t1 * t1 * t1;
-	  function labConvert(o) {
-	    if (o instanceof Lab) return new Lab(o.l, o.a, o.b, o.opacity);
-	    if (o instanceof Hcl) {
-	      var h = o.h * deg2rad;
-	      return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
-	    }
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var b = rgb2xyz(o.r),
-	        a = rgb2xyz(o.g),
-	        l = rgb2xyz(o.b),
-	        x = xyz2lab((0.4124564 * b + 0.3575761 * a + 0.1804375 * l) / Xn),
-	        y = xyz2lab((0.2126729 * b + 0.7151522 * a + 0.0721750 * l) / Yn),
-	        z = xyz2lab((0.0193339 * b + 0.1191920 * a + 0.9503041 * l) / Zn);
-	    return new Lab(116 * y - 16, 500 * (x - y), 200 * (y - z), o.opacity);
-	  }
-
-	  function lab(l, a, b, opacity) {
-	    return arguments.length === 1 ? labConvert(l) : new Lab(l, a, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Lab(l, a, b, opacity) {
-	    this.l = +l;
-	    this.a = +a;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Lab, lab, extend(Color, {
-	    brighter: function(k) {
-	      return new Lab(this.l + Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Lab(this.l - Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    rgb: function() {
-	      var y = (this.l + 16) / 116,
-	          x = isNaN(this.a) ? y : y + this.a / 500,
-	          z = isNaN(this.b) ? y : y - this.b / 200;
-	      y = Yn * lab2xyz(y);
-	      x = Xn * lab2xyz(x);
-	      z = Zn * lab2xyz(z);
-	      return new Rgb(
-	        xyz2rgb( 3.2404542 * x - 1.5371385 * y - 0.4985314 * z), // D65 -> sRGB
-	        xyz2rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z),
-	        xyz2rgb( 0.0556434 * x - 0.2040259 * y + 1.0572252 * z),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  function xyz2lab(t) {
-	    return t > t3 ? Math.pow(t, 1 / 3) : t / t2 + t0;
-	  }
-
-	  function lab2xyz(t) {
-	    return t > t1 ? t * t * t : t2 * (t - t0);
-	  }
-
-	  function xyz2rgb(x) {
-	    return 255 * (x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055);
-	  }
-
-	  function rgb2xyz(x) {
-	    return (x /= 255) <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
-	  }
-
-	  function hclConvert(o) {
-	    if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
-	    if (!(o instanceof Lab)) o = labConvert(o);
-	    var h = Math.atan2(o.b, o.a) * rad2deg;
-	    return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
-	  }
-
-	  function hcl(h, c, l, opacity) {
-	    return arguments.length === 1 ? hclConvert(h) : new Hcl(h, c, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hcl(h, c, l, opacity) {
-	    this.h = +h;
-	    this.c = +c;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hcl, hcl, extend(Color, {
-	    brighter: function(k) {
-	      return new Hcl(this.h, this.c, this.l + Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Hcl(this.h, this.c, this.l - Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    rgb: function() {
-	      return labConvert(this).rgb();
-	    }
-	  }));
-
-	  var A = -0.14861;
-	  var B = +1.78277;
-	  var C = -0.29227;
-	  var D = -0.90649;
-	  var E = +1.97294;
-	  var ED = E * D;
-	  var EB = E * B;
-	  var BC_DA = B * C - D * A;
-	  function cubehelixConvert(o) {
-	    if (o instanceof Cubehelix) return new Cubehelix(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        l = (BC_DA * b + ED * r - EB * g) / (BC_DA + ED - EB),
-	        bl = b - l,
-	        k = (E * (g - l) - C * bl) / D,
-	        s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)), // NaN if l=0 or l=1
-	        h = s ? Math.atan2(k, bl) * rad2deg - 120 : NaN;
-	    return new Cubehelix(h < 0 ? h + 360 : h, s, l, o.opacity);
-	  }
-
-	  function cubehelix(h, s, l, opacity) {
-	    return arguments.length === 1 ? cubehelixConvert(h) : new Cubehelix(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Cubehelix(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Cubehelix, cubehelix, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = isNaN(this.h) ? 0 : (this.h + 120) * deg2rad,
-	          l = +this.l,
-	          a = isNaN(this.s) ? 0 : this.s * l * (1 - l),
-	          cosh = Math.cos(h),
-	          sinh = Math.sin(h);
-	      return new Rgb(
-	        255 * (l + a * (A * cosh + B * sinh)),
-	        255 * (l + a * (C * cosh + D * sinh)),
-	        255 * (l + a * (E * cosh)),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  exports.color = color;
-	  exports.rgb = rgb;
-	  exports.hsl = hsl;
-	  exports.lab = lab;
-	  exports.hcl = hcl;
-	  exports.cubehelix = cubehelix;
-
-	  Object.defineProperty(exports, '__esModule', { value: true });
-
-	}));
-
-/***/ },
-/* 224 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// https://d3js.org/d3-format/ Version 1.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
@@ -44879,394 +44368,395 @@
 	}));
 
 /***/ },
-/* 225 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-time/ Version 1.0.2. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-time/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  var t0 = new Date;
-	  var t1 = new Date;
-	  function newInterval(floori, offseti, count, field) {
+	var t0 = new Date;
+	var t1 = new Date;
 
-	    function interval(date) {
-	      return floori(date = new Date(+date)), date;
-	    }
+	function newInterval(floori, offseti, count, field) {
 
-	    interval.floor = interval;
-
-	    interval.ceil = function(date) {
-	      return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
-	    };
-
-	    interval.round = function(date) {
-	      var d0 = interval(date),
-	          d1 = interval.ceil(date);
-	      return date - d0 < d1 - date ? d0 : d1;
-	    };
-
-	    interval.offset = function(date, step) {
-	      return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
-	    };
-
-	    interval.range = function(start, stop, step) {
-	      var range = [];
-	      start = interval.ceil(start);
-	      step = step == null ? 1 : Math.floor(step);
-	      if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
-	      do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
-	      return range;
-	    };
-
-	    interval.filter = function(test) {
-	      return newInterval(function(date) {
-	        while (floori(date), !test(date)) date.setTime(date - 1);
-	      }, function(date, step) {
-	        while (--step >= 0) while (offseti(date, 1), !test(date));
-	      });
-	    };
-
-	    if (count) {
-	      interval.count = function(start, end) {
-	        t0.setTime(+start), t1.setTime(+end);
-	        floori(t0), floori(t1);
-	        return Math.floor(count(t0, t1));
-	      };
-
-	      interval.every = function(step) {
-	        step = Math.floor(step);
-	        return !isFinite(step) || !(step > 0) ? null
-	            : !(step > 1) ? interval
-	            : interval.filter(field
-	                ? function(d) { return field(d) % step === 0; }
-	                : function(d) { return interval.count(0, d) % step === 0; });
-	      };
-	    }
-
-	    return interval;
+	  function interval(date) {
+	    return floori(date = new Date(+date)), date;
 	  }
 
-	  var millisecond = newInterval(function() {
-	    // noop
-	  }, function(date, step) {
-	    date.setTime(+date + step);
-	  }, function(start, end) {
-	    return end - start;
-	  });
+	  interval.floor = interval;
 
-	  // An optimized implementation for this simple case.
-	  millisecond.every = function(k) {
-	    k = Math.floor(k);
-	    if (!isFinite(k) || !(k > 0)) return null;
-	    if (!(k > 1)) return millisecond;
+	  interval.ceil = function(date) {
+	    return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
+	  };
+
+	  interval.round = function(date) {
+	    var d0 = interval(date),
+	        d1 = interval.ceil(date);
+	    return date - d0 < d1 - date ? d0 : d1;
+	  };
+
+	  interval.offset = function(date, step) {
+	    return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
+	  };
+
+	  interval.range = function(start, stop, step) {
+	    var range = [];
+	    start = interval.ceil(start);
+	    step = step == null ? 1 : Math.floor(step);
+	    if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
+	    do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
+	    return range;
+	  };
+
+	  interval.filter = function(test) {
 	    return newInterval(function(date) {
-	      date.setTime(Math.floor(date / k) * k);
+	      while (floori(date), !test(date)) date.setTime(date - 1);
 	    }, function(date, step) {
-	      date.setTime(+date + step * k);
-	    }, function(start, end) {
-	      return (end - start) / k;
+	      while (--step >= 0) while (offseti(date, 1), !test(date)) {} // eslint-disable-line no-empty
 	    });
 	  };
 
-	  var milliseconds = millisecond.range;
+	  if (count) {
+	    interval.count = function(start, end) {
+	      t0.setTime(+start), t1.setTime(+end);
+	      floori(t0), floori(t1);
+	      return Math.floor(count(t0, t1));
+	    };
 
-	  var durationSecond = 1e3;
-	  var durationMinute = 6e4;
-	  var durationHour = 36e5;
-	  var durationDay = 864e5;
-	  var durationWeek = 6048e5;
-
-	  var second = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationSecond) * durationSecond);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationSecond);
-	  }, function(start, end) {
-	    return (end - start) / durationSecond;
-	  }, function(date) {
-	    return date.getUTCSeconds();
-	  });
-
-	  var seconds = second.range;
-
-	  var minute = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationMinute) * durationMinute);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getMinutes();
-	  });
-
-	  var minutes = minute.range;
-
-	  var hour = newInterval(function(date) {
-	    var offset = date.getTimezoneOffset() * durationMinute % durationHour;
-	    if (offset < 0) offset += durationHour;
-	    date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getHours();
-	  });
-
-	  var hours = hour.range;
-
-	  var day = newInterval(function(date) {
-	    date.setHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setDate(date.getDate() + step);
-	  }, function(start, end) {
-	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
-	  }, function(date) {
-	    return date.getDate() - 1;
-	  });
-
-	  var days = day.range;
-
-	  function weekday(i) {
-	    return newInterval(function(date) {
-	      date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setDate(date.getDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
-	    });
+	    interval.every = function(step) {
+	      step = Math.floor(step);
+	      return !isFinite(step) || !(step > 0) ? null
+	          : !(step > 1) ? interval
+	          : interval.filter(field
+	              ? function(d) { return field(d) % step === 0; }
+	              : function(d) { return interval.count(0, d) % step === 0; });
+	    };
 	  }
 
-	  var sunday = weekday(0);
-	  var monday = weekday(1);
-	  var tuesday = weekday(2);
-	  var wednesday = weekday(3);
-	  var thursday = weekday(4);
-	  var friday = weekday(5);
-	  var saturday = weekday(6);
+	  return interval;
+	}
 
-	  var sundays = sunday.range;
-	  var mondays = monday.range;
-	  var tuesdays = tuesday.range;
-	  var wednesdays = wednesday.range;
-	  var thursdays = thursday.range;
-	  var fridays = friday.range;
-	  var saturdays = saturday.range;
+	var millisecond = newInterval(function() {
+	  // noop
+	}, function(date, step) {
+	  date.setTime(+date + step);
+	}, function(start, end) {
+	  return end - start;
+	});
 
-	  var month = newInterval(function(date) {
-	    date.setDate(1);
+	// An optimized implementation for this simple case.
+	millisecond.every = function(k) {
+	  k = Math.floor(k);
+	  if (!isFinite(k) || !(k > 0)) return null;
+	  if (!(k > 1)) return millisecond;
+	  return newInterval(function(date) {
+	    date.setTime(Math.floor(date / k) * k);
+	  }, function(date, step) {
+	    date.setTime(+date + step * k);
+	  }, function(start, end) {
+	    return (end - start) / k;
+	  });
+	};
+
+	var milliseconds = millisecond.range;
+
+	var durationSecond = 1e3;
+	var durationMinute = 6e4;
+	var durationHour = 36e5;
+	var durationDay = 864e5;
+	var durationWeek = 6048e5;
+
+	var second = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationSecond) * durationSecond);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationSecond);
+	}, function(start, end) {
+	  return (end - start) / durationSecond;
+	}, function(date) {
+	  return date.getUTCSeconds();
+	});
+
+	var seconds = second.range;
+
+	var minute = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationMinute) * durationMinute);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getMinutes();
+	});
+
+	var minutes = minute.range;
+
+	var hour = newInterval(function(date) {
+	  var offset = date.getTimezoneOffset() * durationMinute % durationHour;
+	  if (offset < 0) offset += durationHour;
+	  date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getHours();
+	});
+
+	var hours = hour.range;
+
+	var day = newInterval(function(date) {
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setDate(date.getDate() + step);
+	}, function(start, end) {
+	  return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
+	}, function(date) {
+	  return date.getDate() - 1;
+	});
+
+	var days = day.range;
+
+	function weekday(i) {
+	  return newInterval(function(date) {
+	    date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setMonth(date.getMonth() + step);
+	    date.setDate(date.getDate() + step * 7);
 	  }, function(start, end) {
-	    return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
-	  }, function(date) {
-	    return date.getMonth();
+	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
 	  });
+	}
 
-	  var months = month.range;
+	var sunday = weekday(0);
+	var monday = weekday(1);
+	var tuesday = weekday(2);
+	var wednesday = weekday(3);
+	var thursday = weekday(4);
+	var friday = weekday(5);
+	var saturday = weekday(6);
 
-	  var year = newInterval(function(date) {
+	var sundays = sunday.range;
+	var mondays = monday.range;
+	var tuesdays = tuesday.range;
+	var wednesdays = wednesday.range;
+	var thursdays = thursday.range;
+	var fridays = friday.range;
+	var saturdays = saturday.range;
+
+	var month = newInterval(function(date) {
+	  date.setDate(1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setMonth(date.getMonth() + step);
+	}, function(start, end) {
+	  return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
+	}, function(date) {
+	  return date.getMonth();
+	});
+
+	var months = month.range;
+
+	var year = newInterval(function(date) {
+	  date.setMonth(0, 1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setFullYear(date.getFullYear() + step);
+	}, function(start, end) {
+	  return end.getFullYear() - start.getFullYear();
+	}, function(date) {
+	  return date.getFullYear();
+	});
+
+	// An optimized implementation for this simple case.
+	year.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setFullYear(Math.floor(date.getFullYear() / k) * k);
 	    date.setMonth(0, 1);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setFullYear(date.getFullYear() + step);
-	  }, function(start, end) {
-	    return end.getFullYear() - start.getFullYear();
-	  }, function(date) {
-	    return date.getFullYear();
+	    date.setFullYear(date.getFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  year.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setFullYear(Math.floor(date.getFullYear() / k) * k);
-	      date.setMonth(0, 1);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setFullYear(date.getFullYear() + step * k);
-	    });
-	  };
+	var years = year.range;
 
-	  var years = year.range;
+	var utcMinute = newInterval(function(date) {
+	  date.setUTCSeconds(0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getUTCMinutes();
+	});
 
-	  var utcMinute = newInterval(function(date) {
-	    date.setUTCSeconds(0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getUTCMinutes();
-	  });
+	var utcMinutes = utcMinute.range;
 
-	  var utcMinutes = utcMinute.range;
+	var utcHour = newInterval(function(date) {
+	  date.setUTCMinutes(0, 0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getUTCHours();
+	});
 
-	  var utcHour = newInterval(function(date) {
-	    date.setUTCMinutes(0, 0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getUTCHours();
-	  });
+	var utcHours = utcHour.range;
 
-	  var utcHours = utcHour.range;
+	var utcDay = newInterval(function(date) {
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCDate(date.getUTCDate() + step);
+	}, function(start, end) {
+	  return (end - start) / durationDay;
+	}, function(date) {
+	  return date.getUTCDate() - 1;
+	});
 
-	  var utcDay = newInterval(function(date) {
+	var utcDays = utcDay.range;
+
+	function utcWeekday(i) {
+	  return newInterval(function(date) {
+	    date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCDate(date.getUTCDate() + step);
+	    date.setUTCDate(date.getUTCDate() + step * 7);
 	  }, function(start, end) {
-	    return (end - start) / durationDay;
-	  }, function(date) {
-	    return date.getUTCDate() - 1;
+	    return (end - start) / durationWeek;
 	  });
+	}
 
-	  var utcDays = utcDay.range;
+	var utcSunday = utcWeekday(0);
+	var utcMonday = utcWeekday(1);
+	var utcTuesday = utcWeekday(2);
+	var utcWednesday = utcWeekday(3);
+	var utcThursday = utcWeekday(4);
+	var utcFriday = utcWeekday(5);
+	var utcSaturday = utcWeekday(6);
 
-	  function utcWeekday(i) {
-	    return newInterval(function(date) {
-	      date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCDate(date.getUTCDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start) / durationWeek;
-	    });
-	  }
+	var utcSundays = utcSunday.range;
+	var utcMondays = utcMonday.range;
+	var utcTuesdays = utcTuesday.range;
+	var utcWednesdays = utcWednesday.range;
+	var utcThursdays = utcThursday.range;
+	var utcFridays = utcFriday.range;
+	var utcSaturdays = utcSaturday.range;
 
-	  var utcSunday = utcWeekday(0);
-	  var utcMonday = utcWeekday(1);
-	  var utcTuesday = utcWeekday(2);
-	  var utcWednesday = utcWeekday(3);
-	  var utcThursday = utcWeekday(4);
-	  var utcFriday = utcWeekday(5);
-	  var utcSaturday = utcWeekday(6);
+	var utcMonth = newInterval(function(date) {
+	  date.setUTCDate(1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCMonth(date.getUTCMonth() + step);
+	}, function(start, end) {
+	  return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
+	}, function(date) {
+	  return date.getUTCMonth();
+	});
 
-	  var utcSundays = utcSunday.range;
-	  var utcMondays = utcMonday.range;
-	  var utcTuesdays = utcTuesday.range;
-	  var utcWednesdays = utcWednesday.range;
-	  var utcThursdays = utcThursday.range;
-	  var utcFridays = utcFriday.range;
-	  var utcSaturdays = utcSaturday.range;
+	var utcMonths = utcMonth.range;
 
-	  var utcMonth = newInterval(function(date) {
-	    date.setUTCDate(1);
-	    date.setUTCHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setUTCMonth(date.getUTCMonth() + step);
-	  }, function(start, end) {
-	    return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
-	  }, function(date) {
-	    return date.getUTCMonth();
-	  });
+	var utcYear = newInterval(function(date) {
+	  date.setUTCMonth(0, 1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCFullYear(date.getUTCFullYear() + step);
+	}, function(start, end) {
+	  return end.getUTCFullYear() - start.getUTCFullYear();
+	}, function(date) {
+	  return date.getUTCFullYear();
+	});
 
-	  var utcMonths = utcMonth.range;
-
-	  var utcYear = newInterval(function(date) {
+	// An optimized implementation for this simple case.
+	utcYear.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
 	    date.setUTCMonth(0, 1);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCFullYear(date.getUTCFullYear() + step);
-	  }, function(start, end) {
-	    return end.getUTCFullYear() - start.getUTCFullYear();
-	  }, function(date) {
-	    return date.getUTCFullYear();
+	    date.setUTCFullYear(date.getUTCFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  utcYear.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
-	      date.setUTCMonth(0, 1);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCFullYear(date.getUTCFullYear() + step * k);
-	    });
-	  };
+	var utcYears = utcYear.range;
 
-	  var utcYears = utcYear.range;
+	exports.timeInterval = newInterval;
+	exports.timeMillisecond = millisecond;
+	exports.timeMilliseconds = milliseconds;
+	exports.utcMillisecond = millisecond;
+	exports.utcMilliseconds = milliseconds;
+	exports.timeSecond = second;
+	exports.timeSeconds = seconds;
+	exports.utcSecond = second;
+	exports.utcSeconds = seconds;
+	exports.timeMinute = minute;
+	exports.timeMinutes = minutes;
+	exports.timeHour = hour;
+	exports.timeHours = hours;
+	exports.timeDay = day;
+	exports.timeDays = days;
+	exports.timeWeek = sunday;
+	exports.timeWeeks = sundays;
+	exports.timeSunday = sunday;
+	exports.timeSundays = sundays;
+	exports.timeMonday = monday;
+	exports.timeMondays = mondays;
+	exports.timeTuesday = tuesday;
+	exports.timeTuesdays = tuesdays;
+	exports.timeWednesday = wednesday;
+	exports.timeWednesdays = wednesdays;
+	exports.timeThursday = thursday;
+	exports.timeThursdays = thursdays;
+	exports.timeFriday = friday;
+	exports.timeFridays = fridays;
+	exports.timeSaturday = saturday;
+	exports.timeSaturdays = saturdays;
+	exports.timeMonth = month;
+	exports.timeMonths = months;
+	exports.timeYear = year;
+	exports.timeYears = years;
+	exports.utcMinute = utcMinute;
+	exports.utcMinutes = utcMinutes;
+	exports.utcHour = utcHour;
+	exports.utcHours = utcHours;
+	exports.utcDay = utcDay;
+	exports.utcDays = utcDays;
+	exports.utcWeek = utcSunday;
+	exports.utcWeeks = utcSundays;
+	exports.utcSunday = utcSunday;
+	exports.utcSundays = utcSundays;
+	exports.utcMonday = utcMonday;
+	exports.utcMondays = utcMondays;
+	exports.utcTuesday = utcTuesday;
+	exports.utcTuesdays = utcTuesdays;
+	exports.utcWednesday = utcWednesday;
+	exports.utcWednesdays = utcWednesdays;
+	exports.utcThursday = utcThursday;
+	exports.utcThursdays = utcThursdays;
+	exports.utcFriday = utcFriday;
+	exports.utcFridays = utcFridays;
+	exports.utcSaturday = utcSaturday;
+	exports.utcSaturdays = utcSaturdays;
+	exports.utcMonth = utcMonth;
+	exports.utcMonths = utcMonths;
+	exports.utcYear = utcYear;
+	exports.utcYears = utcYears;
 
-	  exports.timeInterval = newInterval;
-	  exports.timeMillisecond = millisecond;
-	  exports.timeMilliseconds = milliseconds;
-	  exports.utcMillisecond = millisecond;
-	  exports.utcMilliseconds = milliseconds;
-	  exports.timeSecond = second;
-	  exports.timeSeconds = seconds;
-	  exports.utcSecond = second;
-	  exports.utcSeconds = seconds;
-	  exports.timeMinute = minute;
-	  exports.timeMinutes = minutes;
-	  exports.timeHour = hour;
-	  exports.timeHours = hours;
-	  exports.timeDay = day;
-	  exports.timeDays = days;
-	  exports.timeWeek = sunday;
-	  exports.timeWeeks = sundays;
-	  exports.timeSunday = sunday;
-	  exports.timeSundays = sundays;
-	  exports.timeMonday = monday;
-	  exports.timeMondays = mondays;
-	  exports.timeTuesday = tuesday;
-	  exports.timeTuesdays = tuesdays;
-	  exports.timeWednesday = wednesday;
-	  exports.timeWednesdays = wednesdays;
-	  exports.timeThursday = thursday;
-	  exports.timeThursdays = thursdays;
-	  exports.timeFriday = friday;
-	  exports.timeFridays = fridays;
-	  exports.timeSaturday = saturday;
-	  exports.timeSaturdays = saturdays;
-	  exports.timeMonth = month;
-	  exports.timeMonths = months;
-	  exports.timeYear = year;
-	  exports.timeYears = years;
-	  exports.utcMinute = utcMinute;
-	  exports.utcMinutes = utcMinutes;
-	  exports.utcHour = utcHour;
-	  exports.utcHours = utcHours;
-	  exports.utcDay = utcDay;
-	  exports.utcDays = utcDays;
-	  exports.utcWeek = utcSunday;
-	  exports.utcWeeks = utcSundays;
-	  exports.utcSunday = utcSunday;
-	  exports.utcSundays = utcSundays;
-	  exports.utcMonday = utcMonday;
-	  exports.utcMondays = utcMondays;
-	  exports.utcTuesday = utcTuesday;
-	  exports.utcTuesdays = utcTuesdays;
-	  exports.utcWednesday = utcWednesday;
-	  exports.utcWednesdays = utcWednesdays;
-	  exports.utcThursday = utcThursday;
-	  exports.utcThursdays = utcThursdays;
-	  exports.utcFriday = utcFriday;
-	  exports.utcFridays = utcFridays;
-	  exports.utcSaturday = utcSaturday;
-	  exports.utcSaturdays = utcSaturdays;
-	  exports.utcMonth = utcMonth;
-	  exports.utcMonths = utcMonths;
-	  exports.utcYear = utcYear;
-	  exports.utcYears = utcYears;
+	Object.defineProperty(exports, '__esModule', { value: true });
 
-	  Object.defineProperty(exports, '__esModule', { value: true });
-
-	}));
+	})));
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org/d3-time-format/ Version 2.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(225)) :
+	   true ? factory(exports, __webpack_require__(224)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-time'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Time) { 'use strict';
@@ -45848,7 +45338,7 @@
 	}));
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46036,7 +45526,7 @@
 	};
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46246,13 +45736,14 @@
 	  tiles: _react.PropTypes.array,
 	  geos: _react.PropTypes.array,
 	  metricPerTile: _react.PropTypes.number,
+	  originalTilesLength: _react.PropTypes.number,
 	  onAddTileMouseDown: _react.PropTypes.func,
 	  onMetricMouseOut: _react.PropTypes.func,
 	  onMetricMouseOver: _react.PropTypes.func
 	};
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46285,7 +45776,7 @@
 	};
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46352,13 +45843,13 @@
 	};
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0bbd7bcde71e350f93f6e44fa2635a8c.png";
 
 /***/ },
-/* 232 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46414,7 +45905,7 @@
 	      var tiles = this._getTilePositions(tilePoints);
 	      return {
 	        tiles: this._normalizeTilePosition(tiles),
-	        newMetricPerTile: topoJson.properties.tilegramMetricPerTile,
+	        metricPerTile: topoJson.properties.tilegramMetricPerTile,
 	        cartogramArea: topoJson.properties.tilegramCartogramArea
 	      };
 	    }
@@ -46597,7 +46088,7 @@
 	exports.default = new Importer();
 
 /***/ },
-/* 233 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46608,17 +46099,17 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _d3Dsv = __webpack_require__(234);
+	var _d3Dsv = __webpack_require__(233);
 
-	var _populationByState = __webpack_require__(235);
+	var _populationByState = __webpack_require__(234);
 
 	var _populationByState2 = _interopRequireDefault(_populationByState);
 
-	var _electoralCollegeVotesByState = __webpack_require__(236);
+	var _electoralCollegeVotesByState = __webpack_require__(235);
 
 	var _electoralCollegeVotesByState2 = _interopRequireDefault(_electoralCollegeVotesByState);
 
-	var _gdpByState = __webpack_require__(237);
+	var _gdpByState = __webpack_require__(236);
 
 	var _gdpByState2 = _interopRequireDefault(_gdpByState);
 
@@ -46681,199 +46172,199 @@
 	exports.default = new DatasetResource();
 
 /***/ },
-/* 234 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-dsv/ Version 1.0.1. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-dsv/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  function objectConverter(columns) {
-	    return new Function("d", "return {" + columns.map(function(name, i) {
-	      return JSON.stringify(name) + ": d[" + i + "]";
-	    }).join(",") + "}");
-	  }
+	function objectConverter(columns) {
+	  return new Function("d", "return {" + columns.map(function(name, i) {
+	    return JSON.stringify(name) + ": d[" + i + "]";
+	  }).join(",") + "}");
+	}
 
-	  function customConverter(columns, f) {
-	    var object = objectConverter(columns);
-	    return function(row, i) {
-	      return f(object(row), i, columns);
-	    };
-	  }
+	function customConverter(columns, f) {
+	  var object = objectConverter(columns);
+	  return function(row, i) {
+	    return f(object(row), i, columns);
+	  };
+	}
 
-	  // Compute unique columns in order of discovery.
-	  function inferColumns(rows) {
-	    var columnSet = Object.create(null),
-	        columns = [];
+	// Compute unique columns in order of discovery.
+	function inferColumns(rows) {
+	  var columnSet = Object.create(null),
+	      columns = [];
 
-	    rows.forEach(function(row) {
-	      for (var column in row) {
-	        if (!(column in columnSet)) {
-	          columns.push(columnSet[column] = column);
-	        }
+	  rows.forEach(function(row) {
+	    for (var column in row) {
+	      if (!(column in columnSet)) {
+	        columns.push(columnSet[column] = column);
 	      }
+	    }
+	  });
+
+	  return columns;
+	}
+
+	function dsv(delimiter) {
+	  var reFormat = new RegExp("[\"" + delimiter + "\n]"),
+	      delimiterCode = delimiter.charCodeAt(0);
+
+	  function parse(text, f) {
+	    var convert, columns, rows = parseRows(text, function(row, i) {
+	      if (convert) return convert(row, i - 1);
+	      columns = row, convert = f ? customConverter(row, f) : objectConverter(row);
 	    });
-
-	    return columns;
+	    rows.columns = columns;
+	    return rows;
 	  }
 
-	  function dsv(delimiter) {
-	    var reFormat = new RegExp("[\"" + delimiter + "\n]"),
-	        delimiterCode = delimiter.charCodeAt(0);
+	  function parseRows(text, f) {
+	    var EOL = {}, // sentinel value for end-of-line
+	        EOF = {}, // sentinel value for end-of-file
+	        rows = [], // output rows
+	        N = text.length,
+	        I = 0, // current character index
+	        n = 0, // the current line number
+	        t, // the current token
+	        eol; // is the current token followed by EOL?
 
-	    function parse(text, f) {
-	      var convert, columns, rows = parseRows(text, function(row, i) {
-	        if (convert) return convert(row, i - 1);
-	        columns = row, convert = f ? customConverter(row, f) : objectConverter(row);
-	      });
-	      rows.columns = columns;
-	      return rows;
-	    }
+	    function token() {
+	      if (I >= N) return EOF; // special case: end of file
+	      if (eol) return eol = false, EOL; // special case: end of line
 
-	    function parseRows(text, f) {
-	      var EOL = {}, // sentinel value for end-of-line
-	          EOF = {}, // sentinel value for end-of-file
-	          rows = [], // output rows
-	          N = text.length,
-	          I = 0, // current character index
-	          n = 0, // the current line number
-	          t, // the current token
-	          eol; // is the current token followed by EOL?
-
-	      function token() {
-	        if (I >= N) return EOF; // special case: end of file
-	        if (eol) return eol = false, EOL; // special case: end of line
-
-	        // special case: quotes
-	        var j = I, c;
-	        if (text.charCodeAt(j) === 34) {
-	          var i = j;
-	          while (i++ < N) {
-	            if (text.charCodeAt(i) === 34) {
-	              if (text.charCodeAt(i + 1) !== 34) break;
-	              ++i;
-	            }
+	      // special case: quotes
+	      var j = I, c;
+	      if (text.charCodeAt(j) === 34) {
+	        var i = j;
+	        while (i++ < N) {
+	          if (text.charCodeAt(i) === 34) {
+	            if (text.charCodeAt(i + 1) !== 34) break;
+	            ++i;
 	          }
-	          I = i + 2;
-	          c = text.charCodeAt(i + 1);
-	          if (c === 13) {
-	            eol = true;
-	            if (text.charCodeAt(i + 2) === 10) ++I;
-	          } else if (c === 10) {
-	            eol = true;
-	          }
-	          return text.slice(j + 1, i).replace(/""/g, "\"");
 	        }
-
-	        // common case: find next delimiter or newline
-	        while (I < N) {
-	          var k = 1;
-	          c = text.charCodeAt(I++);
-	          if (c === 10) eol = true; // \n
-	          else if (c === 13) { eol = true; if (text.charCodeAt(I) === 10) ++I, ++k; } // \r|\r\n
-	          else if (c !== delimiterCode) continue;
-	          return text.slice(j, I - k);
+	        I = i + 2;
+	        c = text.charCodeAt(i + 1);
+	        if (c === 13) {
+	          eol = true;
+	          if (text.charCodeAt(i + 2) === 10) ++I;
+	        } else if (c === 10) {
+	          eol = true;
 	        }
-
-	        // special case: last token before EOF
-	        return text.slice(j);
+	        return text.slice(j + 1, i).replace(/""/g, "\"");
 	      }
 
-	      while ((t = token()) !== EOF) {
-	        var a = [];
-	        while (t !== EOL && t !== EOF) {
-	          a.push(t);
-	          t = token();
-	        }
-	        if (f && (a = f(a, n++)) == null) continue;
-	        rows.push(a);
+	      // common case: find next delimiter or newline
+	      while (I < N) {
+	        var k = 1;
+	        c = text.charCodeAt(I++);
+	        if (c === 10) eol = true; // \n
+	        else if (c === 13) { eol = true; if (text.charCodeAt(I) === 10) ++I, ++k; } // \r|\r\n
+	        else if (c !== delimiterCode) continue;
+	        return text.slice(j, I - k);
 	      }
 
-	      return rows;
+	      // special case: last token before EOF
+	      return text.slice(j);
 	    }
 
-	    function format(rows, columns) {
-	      if (columns == null) columns = inferColumns(rows);
-	      return [columns.map(formatValue).join(delimiter)].concat(rows.map(function(row) {
-	        return columns.map(function(column) {
-	          return formatValue(row[column]);
-	        }).join(delimiter);
-	      })).join("\n");
+	    while ((t = token()) !== EOF) {
+	      var a = [];
+	      while (t !== EOL && t !== EOF) {
+	        a.push(t);
+	        t = token();
+	      }
+	      if (f && (a = f(a, n++)) == null) continue;
+	      rows.push(a);
 	    }
 
-	    function formatRows(rows) {
-	      return rows.map(formatRow).join("\n");
-	    }
-
-	    function formatRow(row) {
-	      return row.map(formatValue).join(delimiter);
-	    }
-
-	    function formatValue(text) {
-	      return text == null ? ""
-	          : reFormat.test(text += "") ? "\"" + text.replace(/\"/g, "\"\"") + "\""
-	          : text;
-	    }
-
-	    return {
-	      parse: parse,
-	      parseRows: parseRows,
-	      format: format,
-	      formatRows: formatRows
-	    };
+	    return rows;
 	  }
 
-	  var csv = dsv(",");
+	  function format(rows, columns) {
+	    if (columns == null) columns = inferColumns(rows);
+	    return [columns.map(formatValue).join(delimiter)].concat(rows.map(function(row) {
+	      return columns.map(function(column) {
+	        return formatValue(row[column]);
+	      }).join(delimiter);
+	    })).join("\n");
+	  }
 
-	  var csvParse = csv.parse;
-	  var csvParseRows = csv.parseRows;
-	  var csvFormat = csv.format;
-	  var csvFormatRows = csv.formatRows;
+	  function formatRows(rows) {
+	    return rows.map(formatRow).join("\n");
+	  }
 
-	  var tsv = dsv("\t");
+	  function formatRow(row) {
+	    return row.map(formatValue).join(delimiter);
+	  }
 
-	  var tsvParse = tsv.parse;
-	  var tsvParseRows = tsv.parseRows;
-	  var tsvFormat = tsv.format;
-	  var tsvFormatRows = tsv.formatRows;
+	  function formatValue(text) {
+	    return text == null ? ""
+	        : reFormat.test(text += "") ? "\"" + text.replace(/\"/g, "\"\"") + "\""
+	        : text;
+	  }
 
-	  exports.dsvFormat = dsv;
-	  exports.csvParse = csvParse;
-	  exports.csvParseRows = csvParseRows;
-	  exports.csvFormat = csvFormat;
-	  exports.csvFormatRows = csvFormatRows;
-	  exports.tsvParse = tsvParse;
-	  exports.tsvParseRows = tsvParseRows;
-	  exports.tsvFormat = tsvFormat;
-	  exports.tsvFormatRows = tsvFormatRows;
+	  return {
+	    parse: parse,
+	    parseRows: parseRows,
+	    format: format,
+	    formatRows: formatRows
+	  };
+	}
 
-	  Object.defineProperty(exports, '__esModule', { value: true });
+	var csv = dsv(",");
 
-	}));
+	var csvParse = csv.parse;
+	var csvParseRows = csv.parseRows;
+	var csvFormat = csv.format;
+	var csvFormatRows = csv.formatRows;
+
+	var tsv = dsv("\t");
+
+	var tsvParse = tsv.parse;
+	var tsvParseRows = tsv.parseRows;
+	var tsvFormat = tsv.format;
+	var tsvFormatRows = tsv.formatRows;
+
+	exports.dsvFormat = dsv;
+	exports.csvParse = csvParse;
+	exports.csvParseRows = csvParseRows;
+	exports.csvFormat = csvFormat;
+	exports.csvFormatRows = csvFormatRows;
+	exports.tsvParse = tsvParse;
+	exports.tsvParseRows = tsvParseRows;
+	exports.tsvFormat = tsvFormat;
+	exports.tsvFormatRows = tsvFormatRows;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+	})));
 
 /***/ },
-/* 235 */
+/* 234 */
 /***/ function(module, exports) {
 
 	module.exports = "01,4858979\r02,738432\r04,6828065\r05,2978204\r06,39144818\r08,5456574\r09,3590886\r10,945934\r11,672228\r12,20271272\r13,10214860\r15,1431603\r16,1654930\r17,12859995\r18,6619680\r19,3123899\r20,2911641\r21,4425092\r22,4670724\r23,1329328\r24,6006401\r25,6794422\r26,9922576\r27,5489594\r28,2992333\r29,6083672\r30,1032949\r31,1896190\r32,2890845\r33,1330608\r34,8958013\r35,2085109\r36,19795791\r37,10042802\r38,756927\r39,11613423\r40,3911338\r41,4028977\r42,12802503\r44,1056298\r45,4896146\r46,858469\r47,6600299\r48,27469114\r49,2995919\r50,626042\r51,8382993\r53,7170351\r54,1844128\r55,5771337\r56,586107"
 
 /***/ },
-/* 236 */
+/* 235 */
 /***/ function(module, exports) {
 
 	module.exports = "01,9\r02,3\r04,11\r05,6\r06,55\r08,9\r09,7\r10,3\r11,3\r12,29\r13,16\r15,4\r16,4\r17,20\r18,11\r19,6\r20,6\r21,8\r22,8\r23,4\r24,10\r25,11\r26,16\r27,10\r28,6\r29,10\r30,3\r31,5\r32,6\r33,4\r34,14\r35,5\r36,29\r37,15\r38,3\r39,18\r40,7\r41,7\r42,20\r44,4\r45,9\r46,3\r47,11\r48,38\r49,6\r50,3\r51,13\r53,12\r54,5\r55,10\r56,3\r"
 
 /***/ },
-/* 237 */
+/* 236 */
 /***/ function(module, exports) {
 
 	module.exports = "01,204235\r02,52804\r04,290578\r05,123207\r06,2458535\r08,314878\r09,258532\r10,68071\r11,122510\r12,882798\r13,495727\r15,79745\r16,65242\r17,775007\r18,336411\r19,174103\r20,147765\r21,194643\r22,243317\r23,56600\r24,363845\r25,476743\r26,466536\r27,333267\r28,107100\r29,293378\r30,45933\r31,113998\r32,141282\r33,72573\r34,568155\r35,92231\r36,1441003\r37,499449\r38,54830\r39,608109\r40,180425\r41,215331\r42,689173\r44,57049\r45,198714\r46,46674\r47,314191\r48,1586468\r49,147108\r50,30401\r51,479809\r53,443665\r54,73741\r55,305795\r56,38624"
 
 /***/ },
-/* 238 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46884,15 +46375,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _pitchUsPopulation500k = __webpack_require__(239);
+	var _pitchUsPopulation500k = __webpack_require__(238);
 
 	var _pitchUsPopulation500k2 = _interopRequireDefault(_pitchUsPopulation500k);
 
-	var _nprOneToOne = __webpack_require__(240);
+	var _nprOneToOne = __webpack_require__(239);
 
 	var _nprOneToOne2 = _interopRequireDefault(_nprOneToOne);
 
-	var _fivethirtyeightElectoralCollegeTilegram = __webpack_require__(241);
+	var _fivethirtyeightElectoralCollegeTilegram = __webpack_require__(240);
 
 	var _fivethirtyeightElectoralCollegeTilegram2 = _interopRequireDefault(_fivethirtyeightElectoralCollegeTilegram);
 
@@ -46936,7 +46427,7 @@
 	exports.default = new TilegramResource();
 
 /***/ },
-/* 239 */
+/* 238 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -74048,7 +73539,7 @@
 	};
 
 /***/ },
-/* 240 */
+/* 239 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -76212,7 +75703,7 @@
 	};
 
 /***/ },
-/* 241 */
+/* 240 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -98830,16 +98321,16 @@
 	};
 
 /***/ },
-/* 242 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(243);
+	var content = __webpack_require__(242);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(245)(content, {});
+	var update = __webpack_require__(244)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -98856,21 +98347,21 @@
 	}
 
 /***/ },
-/* 243 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(244)();
+	exports = module.exports = __webpack_require__(243)();
 	// imports
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700);", ""]);
 
 	// module
-	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif;\n  font-weight: 400; }\n\na {\n  color: #5656f7;\n  margin: 0 5px;\n  cursor: pointer; }\n\n.code {\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: rgba(255, 255, 255, 0.1);\n  padding: 10px;\n  margin: 10px;\n  font-size: 80%;\n  line-height: 110%; }\n\n.padding-bottom {\n  padding-bottom: 20px;\n  box-sizing: border-box; }\n\n.collapsed {\n  display: none; }\n\n.step {\n  position: relative;\n  cursor: pointer;\n  margin-bottom: 10px; }\n  .step p {\n    padding: 15px 25px;\n    line-height: 1.25em; }\n    .step p span {\n      margin-right: 0.5em;\n      font-weight: 700; }\n  .step .highlight-bar {\n    position: absolute;\n    bottom: 0px;\n    width: 0px;\n    height: 100%;\n    background-color: #5656f7;\n    transition: width 0.22s ease-in-out; }\n  .step:hover .highlight-bar {\n    width: 3px; }\n  .step.active .highlight-bar {\n    width: 6px; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 320px;\n  overflow: hidden; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: #f0f0f0; }\n\n.credits {\n  position: fixed;\n  bottom: 5px;\n  left: 320px;\n  right: 0;\n  font-size: 9pt;\n  text-align: center; }\n  .credits .gnl-logo {\n    display: inline-block;\n    height: 1.2em;\n    margin-bottom: -4px; }\n\n#ui .column {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 320px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto; }\n  #ui .column hr {\n    border: none;\n    height: 1px;\n    margin: 20px 0 0;\n    background-color: #444; }\n  #ui .column h1 {\n    font-size: 200%;\n    line-height: 1.2em;\n    padding: 25px; }\n  #ui .column p.intro {\n    margin: 0 25px;\n    font-weight: 300;\n    line-height: 1.5em;\n    opacity: 0.8; }\n    #ui .column p.intro a {\n      text-decoration: none;\n      font-weight: 400; }\n  #ui .column label.radio-label {\n    position: relative;\n    bottom: -0.1em;\n    left: 0.5em; }\n  #ui .column .scroll-ui {\n    overflow: scroll; }\n  #ui .column .ui-controls {\n    padding: 0 25px; }\n    #ui .column .ui-controls .ui-control-type {\n      padding-bottom: 20px; }\n  #ui .column .csv-input {\n    margin-top: 15px; }\n    #ui .column .csv-input textarea {\n      width: 100%;\n      margin-top: 10px; }\n      #ui .column .csv-input textarea:focus {\n        outline: none; }\n  #ui .column .dataset-select {\n    width: 100%; }\n  #ui .column .instruction {\n    margin-top: 10px; }\n  #ui .column .resolution-slider input {\n    width: 100%; }\n  #ui .column .resolution-input label {\n    margin-bottom: 0; }\n  #ui .column .resolution-input input {\n    border: none;\n    font-size: 1.1em;\n    border-bottom: 1px solid #fff;\n    background-color: #1a1a1a;\n    color: #fff;\n    padding: 0px 0 3px 0;\n    width: 100%;\n    text-align: right; }\n    #ui .column .resolution-input input:focus {\n      outline: none;\n      border-bottom: 1px solid #5656f7; }\n  #ui .column .metrics {\n    padding: 0 25px;\n    overflow: scroll; }\n  #ui .column #metrics-header {\n    margin-left: 0.5em;\n    padding-bottom: 0.5em; }\n  #ui .column #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui .column #warning i {\n      padding-right: 0.5em; }\n\n.modal-edit-warning {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 99999;\n  background-color: rgba(0, 0, 0, 0.3); }\n  .modal-edit-warning .warning-text {\n    position: relative;\n    max-width: 400px;\n    left: 50%;\n    top: 50%;\n    color: white;\n    padding: 50px;\n    font-size: 1.2em;\n    transform: translateX(-50%) translateY(-50%);\n    background-color: #1a1a1a; }\n    .modal-edit-warning .warning-text a {\n      padding: 2em 0.5em 0; }\n\nfieldset {\n  padding: 10px 15px 10px 25px; }\n  fieldset label {\n    display: inline-block;\n    width: 96px;\n    margin-bottom: 6px; }\n  fieldset select {\n    font-size: 125%; }\n  fieldset a.export {\n    display: inline-block;\n    background-color: #5656f7;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    margin: 0 0.25em;\n    color: white; }\n  fieldset a.import {\n    margin: 0; }\n  fieldset input.import {\n    margin-top: 10px; }\n\n.no-scroll-ui fieldset {\n  display: inline-block; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade td:not(:first-child) {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n  table td:first-child {\n    width: 0%; }\n\n.dg.ac {\n  z-index: 1;\n  pointer-events: none; }\n", ""]);
+	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Fira Sans\", sans-serif;\n  font-weight: 400; }\n\na {\n  color: #5656f7;\n  margin: 0 5px;\n  cursor: pointer; }\n\n.code {\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: rgba(255, 255, 255, 0.1);\n  padding: 10px;\n  margin: 10px;\n  font-size: 80%;\n  line-height: 110%; }\n\n.padding-bottom {\n  padding-bottom: 20px;\n  box-sizing: border-box; }\n\n.collapsed {\n  display: none; }\n\n.step {\n  position: relative;\n  cursor: pointer;\n  margin-bottom: 10px; }\n  .step p {\n    padding: 15px 25px;\n    line-height: 1.25em; }\n    .step p span {\n      margin-right: 0.5em;\n      font-weight: 700; }\n  .step .highlight-bar {\n    position: absolute;\n    bottom: 0px;\n    width: 0px;\n    height: 100%;\n    background-color: #5656f7;\n    transition: width 0.22s ease-in-out; }\n  .step:hover .highlight-bar {\n    width: 3px; }\n  .step.active .highlight-bar {\n    width: 6px; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 0;\n  bottom: 0;\n  left: 320px;\n  overflow: hidden; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: #f0f0f0; }\n\n.credits {\n  position: fixed;\n  bottom: 5px;\n  left: 320px;\n  right: 0;\n  font-size: 9pt;\n  text-align: center; }\n  .credits .gnl-logo {\n    display: inline-block;\n    height: 1.2em;\n    margin-bottom: -4px; }\n\n#ui .column {\n  position: fixed;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: calc(100% - 320px);\n  background-color: #1a1a1a;\n  color: #fff;\n  overflow-x: hidden;\n  overflow-y: auto; }\n  #ui .column hr {\n    border: none;\n    height: 1px;\n    margin: 20px 0 0;\n    background-color: #444; }\n  #ui .column h1 {\n    font-size: 200%;\n    line-height: 1.2em;\n    padding: 25px; }\n  #ui .column p.intro {\n    margin: 0 25px;\n    font-weight: 300;\n    line-height: 1.5em;\n    opacity: 0.8; }\n    #ui .column p.intro a {\n      text-decoration: none;\n      font-weight: 400;\n      margin: 0; }\n  #ui .column label.radio-label {\n    position: relative;\n    bottom: -0.1em;\n    left: 0.5em; }\n  #ui .column .scroll-ui {\n    overflow: scroll; }\n  #ui .column .ui-controls {\n    padding: 0 25px; }\n    #ui .column .ui-controls .ui-control-type {\n      padding-bottom: 20px; }\n  #ui .column .csv-input {\n    margin-top: 15px; }\n    #ui .column .csv-input textarea {\n      width: 100%;\n      margin-top: 10px; }\n      #ui .column .csv-input textarea:focus {\n        outline: none; }\n  #ui .column .dataset-select {\n    width: 100%; }\n  #ui .column .instruction {\n    margin-top: 10px; }\n  #ui .column .resolution-slider input {\n    width: 100%; }\n  #ui .column .resolution-input label {\n    margin-bottom: 0; }\n  #ui .column .resolution-input input {\n    border: none;\n    font-size: 1.1em;\n    border-bottom: 1px solid #fff;\n    background-color: #1a1a1a;\n    color: #fff;\n    padding: 0px 0 3px 0;\n    width: 100%;\n    text-align: right; }\n    #ui .column .resolution-input input:focus {\n      outline: none;\n      border-bottom: 1px solid #5656f7; }\n  #ui .column .metrics {\n    padding: 0 25px;\n    overflow: scroll; }\n  #ui .column #metrics-header {\n    margin-left: 0.5em;\n    padding-bottom: 0.5em; }\n  #ui .column #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui .column #warning i {\n      padding-right: 0.5em; }\n\n.modal-edit-warning {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 99999;\n  background-color: rgba(0, 0, 0, 0.3); }\n  .modal-edit-warning .warning-text {\n    position: relative;\n    max-width: 400px;\n    left: 50%;\n    top: 50%;\n    color: white;\n    padding: 50px;\n    font-size: 1.2em;\n    transform: translateX(-50%) translateY(-50%);\n    background-color: #1a1a1a; }\n    .modal-edit-warning .warning-text a {\n      padding: 2em 0.5em 0; }\n\nfieldset {\n  padding: 10px 15px 10px 25px; }\n  fieldset label {\n    display: inline-block;\n    width: 96px;\n    margin-bottom: 6px; }\n  fieldset select {\n    font-size: 125%; }\n  fieldset a.export {\n    display: inline-block;\n    background-color: #5656f7;\n    border-radius: 5px;\n    padding: 0.5em 0.75em;\n    margin: 0 0.25em;\n    color: white; }\n  fieldset a.import {\n    margin: 0; }\n  fieldset input.import {\n    margin-top: 10px; }\n\n.no-scroll-ui fieldset {\n  display: inline-block; }\n\ntable {\n  width: 100%;\n  table-layout: fixed;\n  text-align: center;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none; }\n  table tr.fade td:not(:first-child) {\n    opacity: 0.3; }\n  table td {\n    padding: 0.3em; }\n  table td:first-child {\n    width: 0%; }\n\n.dg.ac {\n  z-index: 1;\n  pointer-events: none; }\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 244 */
+/* 243 */
 /***/ function(module, exports) {
 
 	/*
@@ -98926,7 +98417,7 @@
 
 
 /***/ },
-/* 245 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -99178,16 +98669,16 @@
 
 
 /***/ },
-/* 246 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(247);
+	var content = __webpack_require__(246);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(245)(content, {});
+	var update = __webpack_require__(244)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -99204,18 +98695,24 @@
 	}
 
 /***/ },
-/* 247 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(244)();
+	exports = module.exports = __webpack_require__(243)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*!\n *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome\n *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)\n */\n/* FONT PATH\n * -------------------------- */\n@font-face {\n  font-family: 'FontAwesome';\n  src: url(" + __webpack_require__(248) + ");\n  src: url(" + __webpack_require__(249) + "?#iefix&v=4.6.3) format(\"embedded-opentype\"), url(" + __webpack_require__(250) + ") format(\"woff2\"), url(" + __webpack_require__(251) + ") format(\"woff\"), url(" + __webpack_require__(252) + ") format(\"truetype\"), url(" + __webpack_require__(253) + "#fontawesomeregular) format(\"svg\");\n  font-weight: normal;\n  font-style: normal; }\n\n.fa {\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale; }\n\n/* makes the font 33% larger relative to the icon container */\n.fa-lg {\n  font-size: 1.33333em;\n  line-height: 0.75em;\n  vertical-align: -15%; }\n\n.fa-2x {\n  font-size: 2em; }\n\n.fa-3x {\n  font-size: 3em; }\n\n.fa-4x {\n  font-size: 4em; }\n\n.fa-5x {\n  font-size: 5em; }\n\n.fa-fw {\n  width: 1.28571em;\n  text-align: center; }\n\n.fa-ul {\n  padding-left: 0;\n  margin-left: 2.14286em;\n  list-style-type: none; }\n  .fa-ul > li {\n    position: relative; }\n\n.fa-li {\n  position: absolute;\n  left: -2.14286em;\n  width: 2.14286em;\n  top: 0.14286em;\n  text-align: center; }\n  .fa-li.fa-lg {\n    left: -1.85714em; }\n\n.fa-border {\n  padding: .2em .25em .15em;\n  border: solid 0.08em #eee;\n  border-radius: .1em; }\n\n.fa-pull-left {\n  float: left; }\n\n.fa-pull-right {\n  float: right; }\n\n.fa.fa-pull-left {\n  margin-right: .3em; }\n\n.fa.fa-pull-right {\n  margin-left: .3em; }\n\n/* Deprecated as of 4.4.0 */\n.pull-right {\n  float: right; }\n\n.pull-left {\n  float: left; }\n\n.fa.pull-left {\n  margin-right: .3em; }\n\n.fa.pull-right {\n  margin-left: .3em; }\n\n.fa-spin {\n  -webkit-animation: fa-spin 2s infinite linear;\n  animation: fa-spin 2s infinite linear; }\n\n.fa-pulse {\n  -webkit-animation: fa-spin 1s infinite steps(8);\n  animation: fa-spin 1s infinite steps(8); }\n\n@-webkit-keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n@keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n.fa-rotate-90 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";\n  -webkit-transform: rotate(90deg);\n  -ms-transform: rotate(90deg);\n  transform: rotate(90deg); }\n\n.fa-rotate-180 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";\n  -webkit-transform: rotate(180deg);\n  -ms-transform: rotate(180deg);\n  transform: rotate(180deg); }\n\n.fa-rotate-270 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";\n  -webkit-transform: rotate(270deg);\n  -ms-transform: rotate(270deg);\n  transform: rotate(270deg); }\n\n.fa-flip-horizontal {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";\n  -webkit-transform: scale(-1, 1);\n  -ms-transform: scale(-1, 1);\n  transform: scale(-1, 1); }\n\n.fa-flip-vertical {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";\n  -webkit-transform: scale(1, -1);\n  -ms-transform: scale(1, -1);\n  transform: scale(1, -1); }\n\n:root .fa-rotate-90,\n:root .fa-rotate-180,\n:root .fa-rotate-270,\n:root .fa-flip-horizontal,\n:root .fa-flip-vertical {\n  filter: none; }\n\n.fa-stack {\n  position: relative;\n  display: inline-block;\n  width: 2em;\n  height: 2em;\n  line-height: 2em;\n  vertical-align: middle; }\n\n.fa-stack-1x, .fa-stack-2x {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  text-align: center; }\n\n.fa-stack-1x {\n  line-height: inherit; }\n\n.fa-stack-2x {\n  font-size: 2em; }\n\n.fa-inverse {\n  color: #fff; }\n\n/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen\n   readers do not read off random characters that represent icons */\n.fa-glass:before {\n  content: \"\\F000\"; }\n\n.fa-music:before {\n  content: \"\\F001\"; }\n\n.fa-search:before {\n  content: \"\\F002\"; }\n\n.fa-envelope-o:before {\n  content: \"\\F003\"; }\n\n.fa-heart:before {\n  content: \"\\F004\"; }\n\n.fa-star:before {\n  content: \"\\F005\"; }\n\n.fa-star-o:before {\n  content: \"\\F006\"; }\n\n.fa-user:before {\n  content: \"\\F007\"; }\n\n.fa-film:before {\n  content: \"\\F008\"; }\n\n.fa-th-large:before {\n  content: \"\\F009\"; }\n\n.fa-th:before {\n  content: \"\\F00A\"; }\n\n.fa-th-list:before {\n  content: \"\\F00B\"; }\n\n.fa-check:before {\n  content: \"\\F00C\"; }\n\n.fa-remove:before,\n.fa-close:before,\n.fa-times:before {\n  content: \"\\F00D\"; }\n\n.fa-search-plus:before {\n  content: \"\\F00E\"; }\n\n.fa-search-minus:before {\n  content: \"\\F010\"; }\n\n.fa-power-off:before {\n  content: \"\\F011\"; }\n\n.fa-signal:before {\n  content: \"\\F012\"; }\n\n.fa-gear:before,\n.fa-cog:before {\n  content: \"\\F013\"; }\n\n.fa-trash-o:before {\n  content: \"\\F014\"; }\n\n.fa-home:before {\n  content: \"\\F015\"; }\n\n.fa-file-o:before {\n  content: \"\\F016\"; }\n\n.fa-clock-o:before {\n  content: \"\\F017\"; }\n\n.fa-road:before {\n  content: \"\\F018\"; }\n\n.fa-download:before {\n  content: \"\\F019\"; }\n\n.fa-arrow-circle-o-down:before {\n  content: \"\\F01A\"; }\n\n.fa-arrow-circle-o-up:before {\n  content: \"\\F01B\"; }\n\n.fa-inbox:before {\n  content: \"\\F01C\"; }\n\n.fa-play-circle-o:before {\n  content: \"\\F01D\"; }\n\n.fa-rotate-right:before,\n.fa-repeat:before {\n  content: \"\\F01E\"; }\n\n.fa-refresh:before {\n  content: \"\\F021\"; }\n\n.fa-list-alt:before {\n  content: \"\\F022\"; }\n\n.fa-lock:before {\n  content: \"\\F023\"; }\n\n.fa-flag:before {\n  content: \"\\F024\"; }\n\n.fa-headphones:before {\n  content: \"\\F025\"; }\n\n.fa-volume-off:before {\n  content: \"\\F026\"; }\n\n.fa-volume-down:before {\n  content: \"\\F027\"; }\n\n.fa-volume-up:before {\n  content: \"\\F028\"; }\n\n.fa-qrcode:before {\n  content: \"\\F029\"; }\n\n.fa-barcode:before {\n  content: \"\\F02A\"; }\n\n.fa-tag:before {\n  content: \"\\F02B\"; }\n\n.fa-tags:before {\n  content: \"\\F02C\"; }\n\n.fa-book:before {\n  content: \"\\F02D\"; }\n\n.fa-bookmark:before {\n  content: \"\\F02E\"; }\n\n.fa-print:before {\n  content: \"\\F02F\"; }\n\n.fa-camera:before {\n  content: \"\\F030\"; }\n\n.fa-font:before {\n  content: \"\\F031\"; }\n\n.fa-bold:before {\n  content: \"\\F032\"; }\n\n.fa-italic:before {\n  content: \"\\F033\"; }\n\n.fa-text-height:before {\n  content: \"\\F034\"; }\n\n.fa-text-width:before {\n  content: \"\\F035\"; }\n\n.fa-align-left:before {\n  content: \"\\F036\"; }\n\n.fa-align-center:before {\n  content: \"\\F037\"; }\n\n.fa-align-right:before {\n  content: \"\\F038\"; }\n\n.fa-align-justify:before {\n  content: \"\\F039\"; }\n\n.fa-list:before {\n  content: \"\\F03A\"; }\n\n.fa-dedent:before,\n.fa-outdent:before {\n  content: \"\\F03B\"; }\n\n.fa-indent:before {\n  content: \"\\F03C\"; }\n\n.fa-video-camera:before {\n  content: \"\\F03D\"; }\n\n.fa-photo:before,\n.fa-image:before,\n.fa-picture-o:before {\n  content: \"\\F03E\"; }\n\n.fa-pencil:before {\n  content: \"\\F040\"; }\n\n.fa-map-marker:before {\n  content: \"\\F041\"; }\n\n.fa-adjust:before {\n  content: \"\\F042\"; }\n\n.fa-tint:before {\n  content: \"\\F043\"; }\n\n.fa-edit:before,\n.fa-pencil-square-o:before {\n  content: \"\\F044\"; }\n\n.fa-share-square-o:before {\n  content: \"\\F045\"; }\n\n.fa-check-square-o:before {\n  content: \"\\F046\"; }\n\n.fa-arrows:before {\n  content: \"\\F047\"; }\n\n.fa-step-backward:before {\n  content: \"\\F048\"; }\n\n.fa-fast-backward:before {\n  content: \"\\F049\"; }\n\n.fa-backward:before {\n  content: \"\\F04A\"; }\n\n.fa-play:before {\n  content: \"\\F04B\"; }\n\n.fa-pause:before {\n  content: \"\\F04C\"; }\n\n.fa-stop:before {\n  content: \"\\F04D\"; }\n\n.fa-forward:before {\n  content: \"\\F04E\"; }\n\n.fa-fast-forward:before {\n  content: \"\\F050\"; }\n\n.fa-step-forward:before {\n  content: \"\\F051\"; }\n\n.fa-eject:before {\n  content: \"\\F052\"; }\n\n.fa-chevron-left:before {\n  content: \"\\F053\"; }\n\n.fa-chevron-right:before {\n  content: \"\\F054\"; }\n\n.fa-plus-circle:before {\n  content: \"\\F055\"; }\n\n.fa-minus-circle:before {\n  content: \"\\F056\"; }\n\n.fa-times-circle:before {\n  content: \"\\F057\"; }\n\n.fa-check-circle:before {\n  content: \"\\F058\"; }\n\n.fa-question-circle:before {\n  content: \"\\F059\"; }\n\n.fa-info-circle:before {\n  content: \"\\F05A\"; }\n\n.fa-crosshairs:before {\n  content: \"\\F05B\"; }\n\n.fa-times-circle-o:before {\n  content: \"\\F05C\"; }\n\n.fa-check-circle-o:before {\n  content: \"\\F05D\"; }\n\n.fa-ban:before {\n  content: \"\\F05E\"; }\n\n.fa-arrow-left:before {\n  content: \"\\F060\"; }\n\n.fa-arrow-right:before {\n  content: \"\\F061\"; }\n\n.fa-arrow-up:before {\n  content: \"\\F062\"; }\n\n.fa-arrow-down:before {\n  content: \"\\F063\"; }\n\n.fa-mail-forward:before,\n.fa-share:before {\n  content: \"\\F064\"; }\n\n.fa-expand:before {\n  content: \"\\F065\"; }\n\n.fa-compress:before {\n  content: \"\\F066\"; }\n\n.fa-plus:before {\n  content: \"\\F067\"; }\n\n.fa-minus:before {\n  content: \"\\F068\"; }\n\n.fa-asterisk:before {\n  content: \"\\F069\"; }\n\n.fa-exclamation-circle:before {\n  content: \"\\F06A\"; }\n\n.fa-gift:before {\n  content: \"\\F06B\"; }\n\n.fa-leaf:before {\n  content: \"\\F06C\"; }\n\n.fa-fire:before {\n  content: \"\\F06D\"; }\n\n.fa-eye:before {\n  content: \"\\F06E\"; }\n\n.fa-eye-slash:before {\n  content: \"\\F070\"; }\n\n.fa-warning:before,\n.fa-exclamation-triangle:before {\n  content: \"\\F071\"; }\n\n.fa-plane:before {\n  content: \"\\F072\"; }\n\n.fa-calendar:before {\n  content: \"\\F073\"; }\n\n.fa-random:before {\n  content: \"\\F074\"; }\n\n.fa-comment:before {\n  content: \"\\F075\"; }\n\n.fa-magnet:before {\n  content: \"\\F076\"; }\n\n.fa-chevron-up:before {\n  content: \"\\F077\"; }\n\n.fa-chevron-down:before {\n  content: \"\\F078\"; }\n\n.fa-retweet:before {\n  content: \"\\F079\"; }\n\n.fa-shopping-cart:before {\n  content: \"\\F07A\"; }\n\n.fa-folder:before {\n  content: \"\\F07B\"; }\n\n.fa-folder-open:before {\n  content: \"\\F07C\"; }\n\n.fa-arrows-v:before {\n  content: \"\\F07D\"; }\n\n.fa-arrows-h:before {\n  content: \"\\F07E\"; }\n\n.fa-bar-chart-o:before,\n.fa-bar-chart:before {\n  content: \"\\F080\"; }\n\n.fa-twitter-square:before {\n  content: \"\\F081\"; }\n\n.fa-facebook-square:before {\n  content: \"\\F082\"; }\n\n.fa-camera-retro:before {\n  content: \"\\F083\"; }\n\n.fa-key:before {\n  content: \"\\F084\"; }\n\n.fa-gears:before,\n.fa-cogs:before {\n  content: \"\\F085\"; }\n\n.fa-comments:before {\n  content: \"\\F086\"; }\n\n.fa-thumbs-o-up:before {\n  content: \"\\F087\"; }\n\n.fa-thumbs-o-down:before {\n  content: \"\\F088\"; }\n\n.fa-star-half:before {\n  content: \"\\F089\"; }\n\n.fa-heart-o:before {\n  content: \"\\F08A\"; }\n\n.fa-sign-out:before {\n  content: \"\\F08B\"; }\n\n.fa-linkedin-square:before {\n  content: \"\\F08C\"; }\n\n.fa-thumb-tack:before {\n  content: \"\\F08D\"; }\n\n.fa-external-link:before {\n  content: \"\\F08E\"; }\n\n.fa-sign-in:before {\n  content: \"\\F090\"; }\n\n.fa-trophy:before {\n  content: \"\\F091\"; }\n\n.fa-github-square:before {\n  content: \"\\F092\"; }\n\n.fa-upload:before {\n  content: \"\\F093\"; }\n\n.fa-lemon-o:before {\n  content: \"\\F094\"; }\n\n.fa-phone:before {\n  content: \"\\F095\"; }\n\n.fa-square-o:before {\n  content: \"\\F096\"; }\n\n.fa-bookmark-o:before {\n  content: \"\\F097\"; }\n\n.fa-phone-square:before {\n  content: \"\\F098\"; }\n\n.fa-twitter:before {\n  content: \"\\F099\"; }\n\n.fa-facebook-f:before,\n.fa-facebook:before {\n  content: \"\\F09A\"; }\n\n.fa-github:before {\n  content: \"\\F09B\"; }\n\n.fa-unlock:before {\n  content: \"\\F09C\"; }\n\n.fa-credit-card:before {\n  content: \"\\F09D\"; }\n\n.fa-feed:before,\n.fa-rss:before {\n  content: \"\\F09E\"; }\n\n.fa-hdd-o:before {\n  content: \"\\F0A0\"; }\n\n.fa-bullhorn:before {\n  content: \"\\F0A1\"; }\n\n.fa-bell:before {\n  content: \"\\F0F3\"; }\n\n.fa-certificate:before {\n  content: \"\\F0A3\"; }\n\n.fa-hand-o-right:before {\n  content: \"\\F0A4\"; }\n\n.fa-hand-o-left:before {\n  content: \"\\F0A5\"; }\n\n.fa-hand-o-up:before {\n  content: \"\\F0A6\"; }\n\n.fa-hand-o-down:before {\n  content: \"\\F0A7\"; }\n\n.fa-arrow-circle-left:before {\n  content: \"\\F0A8\"; }\n\n.fa-arrow-circle-right:before {\n  content: \"\\F0A9\"; }\n\n.fa-arrow-circle-up:before {\n  content: \"\\F0AA\"; }\n\n.fa-arrow-circle-down:before {\n  content: \"\\F0AB\"; }\n\n.fa-globe:before {\n  content: \"\\F0AC\"; }\n\n.fa-wrench:before {\n  content: \"\\F0AD\"; }\n\n.fa-tasks:before {\n  content: \"\\F0AE\"; }\n\n.fa-filter:before {\n  content: \"\\F0B0\"; }\n\n.fa-briefcase:before {\n  content: \"\\F0B1\"; }\n\n.fa-arrows-alt:before {\n  content: \"\\F0B2\"; }\n\n.fa-group:before,\n.fa-users:before {\n  content: \"\\F0C0\"; }\n\n.fa-chain:before,\n.fa-link:before {\n  content: \"\\F0C1\"; }\n\n.fa-cloud:before {\n  content: \"\\F0C2\"; }\n\n.fa-flask:before {\n  content: \"\\F0C3\"; }\n\n.fa-cut:before,\n.fa-scissors:before {\n  content: \"\\F0C4\"; }\n\n.fa-copy:before,\n.fa-files-o:before {\n  content: \"\\F0C5\"; }\n\n.fa-paperclip:before {\n  content: \"\\F0C6\"; }\n\n.fa-save:before,\n.fa-floppy-o:before {\n  content: \"\\F0C7\"; }\n\n.fa-square:before {\n  content: \"\\F0C8\"; }\n\n.fa-navicon:before,\n.fa-reorder:before,\n.fa-bars:before {\n  content: \"\\F0C9\"; }\n\n.fa-list-ul:before {\n  content: \"\\F0CA\"; }\n\n.fa-list-ol:before {\n  content: \"\\F0CB\"; }\n\n.fa-strikethrough:before {\n  content: \"\\F0CC\"; }\n\n.fa-underline:before {\n  content: \"\\F0CD\"; }\n\n.fa-table:before {\n  content: \"\\F0CE\"; }\n\n.fa-magic:before {\n  content: \"\\F0D0\"; }\n\n.fa-truck:before {\n  content: \"\\F0D1\"; }\n\n.fa-pinterest:before {\n  content: \"\\F0D2\"; }\n\n.fa-pinterest-square:before {\n  content: \"\\F0D3\"; }\n\n.fa-google-plus-square:before {\n  content: \"\\F0D4\"; }\n\n.fa-google-plus:before {\n  content: \"\\F0D5\"; }\n\n.fa-money:before {\n  content: \"\\F0D6\"; }\n\n.fa-caret-down:before {\n  content: \"\\F0D7\"; }\n\n.fa-caret-up:before {\n  content: \"\\F0D8\"; }\n\n.fa-caret-left:before {\n  content: \"\\F0D9\"; }\n\n.fa-caret-right:before {\n  content: \"\\F0DA\"; }\n\n.fa-columns:before {\n  content: \"\\F0DB\"; }\n\n.fa-unsorted:before,\n.fa-sort:before {\n  content: \"\\F0DC\"; }\n\n.fa-sort-down:before,\n.fa-sort-desc:before {\n  content: \"\\F0DD\"; }\n\n.fa-sort-up:before,\n.fa-sort-asc:before {\n  content: \"\\F0DE\"; }\n\n.fa-envelope:before {\n  content: \"\\F0E0\"; }\n\n.fa-linkedin:before {\n  content: \"\\F0E1\"; }\n\n.fa-rotate-left:before,\n.fa-undo:before {\n  content: \"\\F0E2\"; }\n\n.fa-legal:before,\n.fa-gavel:before {\n  content: \"\\F0E3\"; }\n\n.fa-dashboard:before,\n.fa-tachometer:before {\n  content: \"\\F0E4\"; }\n\n.fa-comment-o:before {\n  content: \"\\F0E5\"; }\n\n.fa-comments-o:before {\n  content: \"\\F0E6\"; }\n\n.fa-flash:before,\n.fa-bolt:before {\n  content: \"\\F0E7\"; }\n\n.fa-sitemap:before {\n  content: \"\\F0E8\"; }\n\n.fa-umbrella:before {\n  content: \"\\F0E9\"; }\n\n.fa-paste:before,\n.fa-clipboard:before {\n  content: \"\\F0EA\"; }\n\n.fa-lightbulb-o:before {\n  content: \"\\F0EB\"; }\n\n.fa-exchange:before {\n  content: \"\\F0EC\"; }\n\n.fa-cloud-download:before {\n  content: \"\\F0ED\"; }\n\n.fa-cloud-upload:before {\n  content: \"\\F0EE\"; }\n\n.fa-user-md:before {\n  content: \"\\F0F0\"; }\n\n.fa-stethoscope:before {\n  content: \"\\F0F1\"; }\n\n.fa-suitcase:before {\n  content: \"\\F0F2\"; }\n\n.fa-bell-o:before {\n  content: \"\\F0A2\"; }\n\n.fa-coffee:before {\n  content: \"\\F0F4\"; }\n\n.fa-cutlery:before {\n  content: \"\\F0F5\"; }\n\n.fa-file-text-o:before {\n  content: \"\\F0F6\"; }\n\n.fa-building-o:before {\n  content: \"\\F0F7\"; }\n\n.fa-hospital-o:before {\n  content: \"\\F0F8\"; }\n\n.fa-ambulance:before {\n  content: \"\\F0F9\"; }\n\n.fa-medkit:before {\n  content: \"\\F0FA\"; }\n\n.fa-fighter-jet:before {\n  content: \"\\F0FB\"; }\n\n.fa-beer:before {\n  content: \"\\F0FC\"; }\n\n.fa-h-square:before {\n  content: \"\\F0FD\"; }\n\n.fa-plus-square:before {\n  content: \"\\F0FE\"; }\n\n.fa-angle-double-left:before {\n  content: \"\\F100\"; }\n\n.fa-angle-double-right:before {\n  content: \"\\F101\"; }\n\n.fa-angle-double-up:before {\n  content: \"\\F102\"; }\n\n.fa-angle-double-down:before {\n  content: \"\\F103\"; }\n\n.fa-angle-left:before {\n  content: \"\\F104\"; }\n\n.fa-angle-right:before {\n  content: \"\\F105\"; }\n\n.fa-angle-up:before {\n  content: \"\\F106\"; }\n\n.fa-angle-down:before {\n  content: \"\\F107\"; }\n\n.fa-desktop:before {\n  content: \"\\F108\"; }\n\n.fa-laptop:before {\n  content: \"\\F109\"; }\n\n.fa-tablet:before {\n  content: \"\\F10A\"; }\n\n.fa-mobile-phone:before,\n.fa-mobile:before {\n  content: \"\\F10B\"; }\n\n.fa-circle-o:before {\n  content: \"\\F10C\"; }\n\n.fa-quote-left:before {\n  content: \"\\F10D\"; }\n\n.fa-quote-right:before {\n  content: \"\\F10E\"; }\n\n.fa-spinner:before {\n  content: \"\\F110\"; }\n\n.fa-circle:before {\n  content: \"\\F111\"; }\n\n.fa-mail-reply:before,\n.fa-reply:before {\n  content: \"\\F112\"; }\n\n.fa-github-alt:before {\n  content: \"\\F113\"; }\n\n.fa-folder-o:before {\n  content: \"\\F114\"; }\n\n.fa-folder-open-o:before {\n  content: \"\\F115\"; }\n\n.fa-smile-o:before {\n  content: \"\\F118\"; }\n\n.fa-frown-o:before {\n  content: \"\\F119\"; }\n\n.fa-meh-o:before {\n  content: \"\\F11A\"; }\n\n.fa-gamepad:before {\n  content: \"\\F11B\"; }\n\n.fa-keyboard-o:before {\n  content: \"\\F11C\"; }\n\n.fa-flag-o:before {\n  content: \"\\F11D\"; }\n\n.fa-flag-checkered:before {\n  content: \"\\F11E\"; }\n\n.fa-terminal:before {\n  content: \"\\F120\"; }\n\n.fa-code:before {\n  content: \"\\F121\"; }\n\n.fa-mail-reply-all:before,\n.fa-reply-all:before {\n  content: \"\\F122\"; }\n\n.fa-star-half-empty:before,\n.fa-star-half-full:before,\n.fa-star-half-o:before {\n  content: \"\\F123\"; }\n\n.fa-location-arrow:before {\n  content: \"\\F124\"; }\n\n.fa-crop:before {\n  content: \"\\F125\"; }\n\n.fa-code-fork:before {\n  content: \"\\F126\"; }\n\n.fa-unlink:before,\n.fa-chain-broken:before {\n  content: \"\\F127\"; }\n\n.fa-question:before {\n  content: \"\\F128\"; }\n\n.fa-info:before {\n  content: \"\\F129\"; }\n\n.fa-exclamation:before {\n  content: \"\\F12A\"; }\n\n.fa-superscript:before {\n  content: \"\\F12B\"; }\n\n.fa-subscript:before {\n  content: \"\\F12C\"; }\n\n.fa-eraser:before {\n  content: \"\\F12D\"; }\n\n.fa-puzzle-piece:before {\n  content: \"\\F12E\"; }\n\n.fa-microphone:before {\n  content: \"\\F130\"; }\n\n.fa-microphone-slash:before {\n  content: \"\\F131\"; }\n\n.fa-shield:before {\n  content: \"\\F132\"; }\n\n.fa-calendar-o:before {\n  content: \"\\F133\"; }\n\n.fa-fire-extinguisher:before {\n  content: \"\\F134\"; }\n\n.fa-rocket:before {\n  content: \"\\F135\"; }\n\n.fa-maxcdn:before {\n  content: \"\\F136\"; }\n\n.fa-chevron-circle-left:before {\n  content: \"\\F137\"; }\n\n.fa-chevron-circle-right:before {\n  content: \"\\F138\"; }\n\n.fa-chevron-circle-up:before {\n  content: \"\\F139\"; }\n\n.fa-chevron-circle-down:before {\n  content: \"\\F13A\"; }\n\n.fa-html5:before {\n  content: \"\\F13B\"; }\n\n.fa-css3:before {\n  content: \"\\F13C\"; }\n\n.fa-anchor:before {\n  content: \"\\F13D\"; }\n\n.fa-unlock-alt:before {\n  content: \"\\F13E\"; }\n\n.fa-bullseye:before {\n  content: \"\\F140\"; }\n\n.fa-ellipsis-h:before {\n  content: \"\\F141\"; }\n\n.fa-ellipsis-v:before {\n  content: \"\\F142\"; }\n\n.fa-rss-square:before {\n  content: \"\\F143\"; }\n\n.fa-play-circle:before {\n  content: \"\\F144\"; }\n\n.fa-ticket:before {\n  content: \"\\F145\"; }\n\n.fa-minus-square:before {\n  content: \"\\F146\"; }\n\n.fa-minus-square-o:before {\n  content: \"\\F147\"; }\n\n.fa-level-up:before {\n  content: \"\\F148\"; }\n\n.fa-level-down:before {\n  content: \"\\F149\"; }\n\n.fa-check-square:before {\n  content: \"\\F14A\"; }\n\n.fa-pencil-square:before {\n  content: \"\\F14B\"; }\n\n.fa-external-link-square:before {\n  content: \"\\F14C\"; }\n\n.fa-share-square:before {\n  content: \"\\F14D\"; }\n\n.fa-compass:before {\n  content: \"\\F14E\"; }\n\n.fa-toggle-down:before,\n.fa-caret-square-o-down:before {\n  content: \"\\F150\"; }\n\n.fa-toggle-up:before,\n.fa-caret-square-o-up:before {\n  content: \"\\F151\"; }\n\n.fa-toggle-right:before,\n.fa-caret-square-o-right:before {\n  content: \"\\F152\"; }\n\n.fa-euro:before,\n.fa-eur:before {\n  content: \"\\F153\"; }\n\n.fa-gbp:before {\n  content: \"\\F154\"; }\n\n.fa-dollar:before,\n.fa-usd:before {\n  content: \"\\F155\"; }\n\n.fa-rupee:before,\n.fa-inr:before {\n  content: \"\\F156\"; }\n\n.fa-cny:before,\n.fa-rmb:before,\n.fa-yen:before,\n.fa-jpy:before {\n  content: \"\\F157\"; }\n\n.fa-ruble:before,\n.fa-rouble:before,\n.fa-rub:before {\n  content: \"\\F158\"; }\n\n.fa-won:before,\n.fa-krw:before {\n  content: \"\\F159\"; }\n\n.fa-bitcoin:before,\n.fa-btc:before {\n  content: \"\\F15A\"; }\n\n.fa-file:before {\n  content: \"\\F15B\"; }\n\n.fa-file-text:before {\n  content: \"\\F15C\"; }\n\n.fa-sort-alpha-asc:before {\n  content: \"\\F15D\"; }\n\n.fa-sort-alpha-desc:before {\n  content: \"\\F15E\"; }\n\n.fa-sort-amount-asc:before {\n  content: \"\\F160\"; }\n\n.fa-sort-amount-desc:before {\n  content: \"\\F161\"; }\n\n.fa-sort-numeric-asc:before {\n  content: \"\\F162\"; }\n\n.fa-sort-numeric-desc:before {\n  content: \"\\F163\"; }\n\n.fa-thumbs-up:before {\n  content: \"\\F164\"; }\n\n.fa-thumbs-down:before {\n  content: \"\\F165\"; }\n\n.fa-youtube-square:before {\n  content: \"\\F166\"; }\n\n.fa-youtube:before {\n  content: \"\\F167\"; }\n\n.fa-xing:before {\n  content: \"\\F168\"; }\n\n.fa-xing-square:before {\n  content: \"\\F169\"; }\n\n.fa-youtube-play:before {\n  content: \"\\F16A\"; }\n\n.fa-dropbox:before {\n  content: \"\\F16B\"; }\n\n.fa-stack-overflow:before {\n  content: \"\\F16C\"; }\n\n.fa-instagram:before {\n  content: \"\\F16D\"; }\n\n.fa-flickr:before {\n  content: \"\\F16E\"; }\n\n.fa-adn:before {\n  content: \"\\F170\"; }\n\n.fa-bitbucket:before {\n  content: \"\\F171\"; }\n\n.fa-bitbucket-square:before {\n  content: \"\\F172\"; }\n\n.fa-tumblr:before {\n  content: \"\\F173\"; }\n\n.fa-tumblr-square:before {\n  content: \"\\F174\"; }\n\n.fa-long-arrow-down:before {\n  content: \"\\F175\"; }\n\n.fa-long-arrow-up:before {\n  content: \"\\F176\"; }\n\n.fa-long-arrow-left:before {\n  content: \"\\F177\"; }\n\n.fa-long-arrow-right:before {\n  content: \"\\F178\"; }\n\n.fa-apple:before {\n  content: \"\\F179\"; }\n\n.fa-windows:before {\n  content: \"\\F17A\"; }\n\n.fa-android:before {\n  content: \"\\F17B\"; }\n\n.fa-linux:before {\n  content: \"\\F17C\"; }\n\n.fa-dribbble:before {\n  content: \"\\F17D\"; }\n\n.fa-skype:before {\n  content: \"\\F17E\"; }\n\n.fa-foursquare:before {\n  content: \"\\F180\"; }\n\n.fa-trello:before {\n  content: \"\\F181\"; }\n\n.fa-female:before {\n  content: \"\\F182\"; }\n\n.fa-male:before {\n  content: \"\\F183\"; }\n\n.fa-gittip:before,\n.fa-gratipay:before {\n  content: \"\\F184\"; }\n\n.fa-sun-o:before {\n  content: \"\\F185\"; }\n\n.fa-moon-o:before {\n  content: \"\\F186\"; }\n\n.fa-archive:before {\n  content: \"\\F187\"; }\n\n.fa-bug:before {\n  content: \"\\F188\"; }\n\n.fa-vk:before {\n  content: \"\\F189\"; }\n\n.fa-weibo:before {\n  content: \"\\F18A\"; }\n\n.fa-renren:before {\n  content: \"\\F18B\"; }\n\n.fa-pagelines:before {\n  content: \"\\F18C\"; }\n\n.fa-stack-exchange:before {\n  content: \"\\F18D\"; }\n\n.fa-arrow-circle-o-right:before {\n  content: \"\\F18E\"; }\n\n.fa-arrow-circle-o-left:before {\n  content: \"\\F190\"; }\n\n.fa-toggle-left:before,\n.fa-caret-square-o-left:before {\n  content: \"\\F191\"; }\n\n.fa-dot-circle-o:before {\n  content: \"\\F192\"; }\n\n.fa-wheelchair:before {\n  content: \"\\F193\"; }\n\n.fa-vimeo-square:before {\n  content: \"\\F194\"; }\n\n.fa-turkish-lira:before,\n.fa-try:before {\n  content: \"\\F195\"; }\n\n.fa-plus-square-o:before {\n  content: \"\\F196\"; }\n\n.fa-space-shuttle:before {\n  content: \"\\F197\"; }\n\n.fa-slack:before {\n  content: \"\\F198\"; }\n\n.fa-envelope-square:before {\n  content: \"\\F199\"; }\n\n.fa-wordpress:before {\n  content: \"\\F19A\"; }\n\n.fa-openid:before {\n  content: \"\\F19B\"; }\n\n.fa-institution:before,\n.fa-bank:before,\n.fa-university:before {\n  content: \"\\F19C\"; }\n\n.fa-mortar-board:before,\n.fa-graduation-cap:before {\n  content: \"\\F19D\"; }\n\n.fa-yahoo:before {\n  content: \"\\F19E\"; }\n\n.fa-google:before {\n  content: \"\\F1A0\"; }\n\n.fa-reddit:before {\n  content: \"\\F1A1\"; }\n\n.fa-reddit-square:before {\n  content: \"\\F1A2\"; }\n\n.fa-stumbleupon-circle:before {\n  content: \"\\F1A3\"; }\n\n.fa-stumbleupon:before {\n  content: \"\\F1A4\"; }\n\n.fa-delicious:before {\n  content: \"\\F1A5\"; }\n\n.fa-digg:before {\n  content: \"\\F1A6\"; }\n\n.fa-pied-piper-pp:before {\n  content: \"\\F1A7\"; }\n\n.fa-pied-piper-alt:before {\n  content: \"\\F1A8\"; }\n\n.fa-drupal:before {\n  content: \"\\F1A9\"; }\n\n.fa-joomla:before {\n  content: \"\\F1AA\"; }\n\n.fa-language:before {\n  content: \"\\F1AB\"; }\n\n.fa-fax:before {\n  content: \"\\F1AC\"; }\n\n.fa-building:before {\n  content: \"\\F1AD\"; }\n\n.fa-child:before {\n  content: \"\\F1AE\"; }\n\n.fa-paw:before {\n  content: \"\\F1B0\"; }\n\n.fa-spoon:before {\n  content: \"\\F1B1\"; }\n\n.fa-cube:before {\n  content: \"\\F1B2\"; }\n\n.fa-cubes:before {\n  content: \"\\F1B3\"; }\n\n.fa-behance:before {\n  content: \"\\F1B4\"; }\n\n.fa-behance-square:before {\n  content: \"\\F1B5\"; }\n\n.fa-steam:before {\n  content: \"\\F1B6\"; }\n\n.fa-steam-square:before {\n  content: \"\\F1B7\"; }\n\n.fa-recycle:before {\n  content: \"\\F1B8\"; }\n\n.fa-automobile:before,\n.fa-car:before {\n  content: \"\\F1B9\"; }\n\n.fa-cab:before,\n.fa-taxi:before {\n  content: \"\\F1BA\"; }\n\n.fa-tree:before {\n  content: \"\\F1BB\"; }\n\n.fa-spotify:before {\n  content: \"\\F1BC\"; }\n\n.fa-deviantart:before {\n  content: \"\\F1BD\"; }\n\n.fa-soundcloud:before {\n  content: \"\\F1BE\"; }\n\n.fa-database:before {\n  content: \"\\F1C0\"; }\n\n.fa-file-pdf-o:before {\n  content: \"\\F1C1\"; }\n\n.fa-file-word-o:before {\n  content: \"\\F1C2\"; }\n\n.fa-file-excel-o:before {\n  content: \"\\F1C3\"; }\n\n.fa-file-powerpoint-o:before {\n  content: \"\\F1C4\"; }\n\n.fa-file-photo-o:before,\n.fa-file-picture-o:before,\n.fa-file-image-o:before {\n  content: \"\\F1C5\"; }\n\n.fa-file-zip-o:before,\n.fa-file-archive-o:before {\n  content: \"\\F1C6\"; }\n\n.fa-file-sound-o:before,\n.fa-file-audio-o:before {\n  content: \"\\F1C7\"; }\n\n.fa-file-movie-o:before,\n.fa-file-video-o:before {\n  content: \"\\F1C8\"; }\n\n.fa-file-code-o:before {\n  content: \"\\F1C9\"; }\n\n.fa-vine:before {\n  content: \"\\F1CA\"; }\n\n.fa-codepen:before {\n  content: \"\\F1CB\"; }\n\n.fa-jsfiddle:before {\n  content: \"\\F1CC\"; }\n\n.fa-life-bouy:before,\n.fa-life-buoy:before,\n.fa-life-saver:before,\n.fa-support:before,\n.fa-life-ring:before {\n  content: \"\\F1CD\"; }\n\n.fa-circle-o-notch:before {\n  content: \"\\F1CE\"; }\n\n.fa-ra:before,\n.fa-resistance:before,\n.fa-rebel:before {\n  content: \"\\F1D0\"; }\n\n.fa-ge:before,\n.fa-empire:before {\n  content: \"\\F1D1\"; }\n\n.fa-git-square:before {\n  content: \"\\F1D2\"; }\n\n.fa-git:before {\n  content: \"\\F1D3\"; }\n\n.fa-y-combinator-square:before,\n.fa-yc-square:before,\n.fa-hacker-news:before {\n  content: \"\\F1D4\"; }\n\n.fa-tencent-weibo:before {\n  content: \"\\F1D5\"; }\n\n.fa-qq:before {\n  content: \"\\F1D6\"; }\n\n.fa-wechat:before,\n.fa-weixin:before {\n  content: \"\\F1D7\"; }\n\n.fa-send:before,\n.fa-paper-plane:before {\n  content: \"\\F1D8\"; }\n\n.fa-send-o:before,\n.fa-paper-plane-o:before {\n  content: \"\\F1D9\"; }\n\n.fa-history:before {\n  content: \"\\F1DA\"; }\n\n.fa-circle-thin:before {\n  content: \"\\F1DB\"; }\n\n.fa-header:before {\n  content: \"\\F1DC\"; }\n\n.fa-paragraph:before {\n  content: \"\\F1DD\"; }\n\n.fa-sliders:before {\n  content: \"\\F1DE\"; }\n\n.fa-share-alt:before {\n  content: \"\\F1E0\"; }\n\n.fa-share-alt-square:before {\n  content: \"\\F1E1\"; }\n\n.fa-bomb:before {\n  content: \"\\F1E2\"; }\n\n.fa-soccer-ball-o:before,\n.fa-futbol-o:before {\n  content: \"\\F1E3\"; }\n\n.fa-tty:before {\n  content: \"\\F1E4\"; }\n\n.fa-binoculars:before {\n  content: \"\\F1E5\"; }\n\n.fa-plug:before {\n  content: \"\\F1E6\"; }\n\n.fa-slideshare:before {\n  content: \"\\F1E7\"; }\n\n.fa-twitch:before {\n  content: \"\\F1E8\"; }\n\n.fa-yelp:before {\n  content: \"\\F1E9\"; }\n\n.fa-newspaper-o:before {\n  content: \"\\F1EA\"; }\n\n.fa-wifi:before {\n  content: \"\\F1EB\"; }\n\n.fa-calculator:before {\n  content: \"\\F1EC\"; }\n\n.fa-paypal:before {\n  content: \"\\F1ED\"; }\n\n.fa-google-wallet:before {\n  content: \"\\F1EE\"; }\n\n.fa-cc-visa:before {\n  content: \"\\F1F0\"; }\n\n.fa-cc-mastercard:before {\n  content: \"\\F1F1\"; }\n\n.fa-cc-discover:before {\n  content: \"\\F1F2\"; }\n\n.fa-cc-amex:before {\n  content: \"\\F1F3\"; }\n\n.fa-cc-paypal:before {\n  content: \"\\F1F4\"; }\n\n.fa-cc-stripe:before {\n  content: \"\\F1F5\"; }\n\n.fa-bell-slash:before {\n  content: \"\\F1F6\"; }\n\n.fa-bell-slash-o:before {\n  content: \"\\F1F7\"; }\n\n.fa-trash:before {\n  content: \"\\F1F8\"; }\n\n.fa-copyright:before {\n  content: \"\\F1F9\"; }\n\n.fa-at:before {\n  content: \"\\F1FA\"; }\n\n.fa-eyedropper:before {\n  content: \"\\F1FB\"; }\n\n.fa-paint-brush:before {\n  content: \"\\F1FC\"; }\n\n.fa-birthday-cake:before {\n  content: \"\\F1FD\"; }\n\n.fa-area-chart:before {\n  content: \"\\F1FE\"; }\n\n.fa-pie-chart:before {\n  content: \"\\F200\"; }\n\n.fa-line-chart:before {\n  content: \"\\F201\"; }\n\n.fa-lastfm:before {\n  content: \"\\F202\"; }\n\n.fa-lastfm-square:before {\n  content: \"\\F203\"; }\n\n.fa-toggle-off:before {\n  content: \"\\F204\"; }\n\n.fa-toggle-on:before {\n  content: \"\\F205\"; }\n\n.fa-bicycle:before {\n  content: \"\\F206\"; }\n\n.fa-bus:before {\n  content: \"\\F207\"; }\n\n.fa-ioxhost:before {\n  content: \"\\F208\"; }\n\n.fa-angellist:before {\n  content: \"\\F209\"; }\n\n.fa-cc:before {\n  content: \"\\F20A\"; }\n\n.fa-shekel:before,\n.fa-sheqel:before,\n.fa-ils:before {\n  content: \"\\F20B\"; }\n\n.fa-meanpath:before {\n  content: \"\\F20C\"; }\n\n.fa-buysellads:before {\n  content: \"\\F20D\"; }\n\n.fa-connectdevelop:before {\n  content: \"\\F20E\"; }\n\n.fa-dashcube:before {\n  content: \"\\F210\"; }\n\n.fa-forumbee:before {\n  content: \"\\F211\"; }\n\n.fa-leanpub:before {\n  content: \"\\F212\"; }\n\n.fa-sellsy:before {\n  content: \"\\F213\"; }\n\n.fa-shirtsinbulk:before {\n  content: \"\\F214\"; }\n\n.fa-simplybuilt:before {\n  content: \"\\F215\"; }\n\n.fa-skyatlas:before {\n  content: \"\\F216\"; }\n\n.fa-cart-plus:before {\n  content: \"\\F217\"; }\n\n.fa-cart-arrow-down:before {\n  content: \"\\F218\"; }\n\n.fa-diamond:before {\n  content: \"\\F219\"; }\n\n.fa-ship:before {\n  content: \"\\F21A\"; }\n\n.fa-user-secret:before {\n  content: \"\\F21B\"; }\n\n.fa-motorcycle:before {\n  content: \"\\F21C\"; }\n\n.fa-street-view:before {\n  content: \"\\F21D\"; }\n\n.fa-heartbeat:before {\n  content: \"\\F21E\"; }\n\n.fa-venus:before {\n  content: \"\\F221\"; }\n\n.fa-mars:before {\n  content: \"\\F222\"; }\n\n.fa-mercury:before {\n  content: \"\\F223\"; }\n\n.fa-intersex:before,\n.fa-transgender:before {\n  content: \"\\F224\"; }\n\n.fa-transgender-alt:before {\n  content: \"\\F225\"; }\n\n.fa-venus-double:before {\n  content: \"\\F226\"; }\n\n.fa-mars-double:before {\n  content: \"\\F227\"; }\n\n.fa-venus-mars:before {\n  content: \"\\F228\"; }\n\n.fa-mars-stroke:before {\n  content: \"\\F229\"; }\n\n.fa-mars-stroke-v:before {\n  content: \"\\F22A\"; }\n\n.fa-mars-stroke-h:before {\n  content: \"\\F22B\"; }\n\n.fa-neuter:before {\n  content: \"\\F22C\"; }\n\n.fa-genderless:before {\n  content: \"\\F22D\"; }\n\n.fa-facebook-official:before {\n  content: \"\\F230\"; }\n\n.fa-pinterest-p:before {\n  content: \"\\F231\"; }\n\n.fa-whatsapp:before {\n  content: \"\\F232\"; }\n\n.fa-server:before {\n  content: \"\\F233\"; }\n\n.fa-user-plus:before {\n  content: \"\\F234\"; }\n\n.fa-user-times:before {\n  content: \"\\F235\"; }\n\n.fa-hotel:before,\n.fa-bed:before {\n  content: \"\\F236\"; }\n\n.fa-viacoin:before {\n  content: \"\\F237\"; }\n\n.fa-train:before {\n  content: \"\\F238\"; }\n\n.fa-subway:before {\n  content: \"\\F239\"; }\n\n.fa-medium:before {\n  content: \"\\F23A\"; }\n\n.fa-yc:before,\n.fa-y-combinator:before {\n  content: \"\\F23B\"; }\n\n.fa-optin-monster:before {\n  content: \"\\F23C\"; }\n\n.fa-opencart:before {\n  content: \"\\F23D\"; }\n\n.fa-expeditedssl:before {\n  content: \"\\F23E\"; }\n\n.fa-battery-4:before,\n.fa-battery-full:before {\n  content: \"\\F240\"; }\n\n.fa-battery-3:before,\n.fa-battery-three-quarters:before {\n  content: \"\\F241\"; }\n\n.fa-battery-2:before,\n.fa-battery-half:before {\n  content: \"\\F242\"; }\n\n.fa-battery-1:before,\n.fa-battery-quarter:before {\n  content: \"\\F243\"; }\n\n.fa-battery-0:before,\n.fa-battery-empty:before {\n  content: \"\\F244\"; }\n\n.fa-mouse-pointer:before {\n  content: \"\\F245\"; }\n\n.fa-i-cursor:before {\n  content: \"\\F246\"; }\n\n.fa-object-group:before {\n  content: \"\\F247\"; }\n\n.fa-object-ungroup:before {\n  content: \"\\F248\"; }\n\n.fa-sticky-note:before {\n  content: \"\\F249\"; }\n\n.fa-sticky-note-o:before {\n  content: \"\\F24A\"; }\n\n.fa-cc-jcb:before {\n  content: \"\\F24B\"; }\n\n.fa-cc-diners-club:before {\n  content: \"\\F24C\"; }\n\n.fa-clone:before {\n  content: \"\\F24D\"; }\n\n.fa-balance-scale:before {\n  content: \"\\F24E\"; }\n\n.fa-hourglass-o:before {\n  content: \"\\F250\"; }\n\n.fa-hourglass-1:before,\n.fa-hourglass-start:before {\n  content: \"\\F251\"; }\n\n.fa-hourglass-2:before,\n.fa-hourglass-half:before {\n  content: \"\\F252\"; }\n\n.fa-hourglass-3:before,\n.fa-hourglass-end:before {\n  content: \"\\F253\"; }\n\n.fa-hourglass:before {\n  content: \"\\F254\"; }\n\n.fa-hand-grab-o:before,\n.fa-hand-rock-o:before {\n  content: \"\\F255\"; }\n\n.fa-hand-stop-o:before,\n.fa-hand-paper-o:before {\n  content: \"\\F256\"; }\n\n.fa-hand-scissors-o:before {\n  content: \"\\F257\"; }\n\n.fa-hand-lizard-o:before {\n  content: \"\\F258\"; }\n\n.fa-hand-spock-o:before {\n  content: \"\\F259\"; }\n\n.fa-hand-pointer-o:before {\n  content: \"\\F25A\"; }\n\n.fa-hand-peace-o:before {\n  content: \"\\F25B\"; }\n\n.fa-trademark:before {\n  content: \"\\F25C\"; }\n\n.fa-registered:before {\n  content: \"\\F25D\"; }\n\n.fa-creative-commons:before {\n  content: \"\\F25E\"; }\n\n.fa-gg:before {\n  content: \"\\F260\"; }\n\n.fa-gg-circle:before {\n  content: \"\\F261\"; }\n\n.fa-tripadvisor:before {\n  content: \"\\F262\"; }\n\n.fa-odnoklassniki:before {\n  content: \"\\F263\"; }\n\n.fa-odnoklassniki-square:before {\n  content: \"\\F264\"; }\n\n.fa-get-pocket:before {\n  content: \"\\F265\"; }\n\n.fa-wikipedia-w:before {\n  content: \"\\F266\"; }\n\n.fa-safari:before {\n  content: \"\\F267\"; }\n\n.fa-chrome:before {\n  content: \"\\F268\"; }\n\n.fa-firefox:before {\n  content: \"\\F269\"; }\n\n.fa-opera:before {\n  content: \"\\F26A\"; }\n\n.fa-internet-explorer:before {\n  content: \"\\F26B\"; }\n\n.fa-tv:before,\n.fa-television:before {\n  content: \"\\F26C\"; }\n\n.fa-contao:before {\n  content: \"\\F26D\"; }\n\n.fa-500px:before {\n  content: \"\\F26E\"; }\n\n.fa-amazon:before {\n  content: \"\\F270\"; }\n\n.fa-calendar-plus-o:before {\n  content: \"\\F271\"; }\n\n.fa-calendar-minus-o:before {\n  content: \"\\F272\"; }\n\n.fa-calendar-times-o:before {\n  content: \"\\F273\"; }\n\n.fa-calendar-check-o:before {\n  content: \"\\F274\"; }\n\n.fa-industry:before {\n  content: \"\\F275\"; }\n\n.fa-map-pin:before {\n  content: \"\\F276\"; }\n\n.fa-map-signs:before {\n  content: \"\\F277\"; }\n\n.fa-map-o:before {\n  content: \"\\F278\"; }\n\n.fa-map:before {\n  content: \"\\F279\"; }\n\n.fa-commenting:before {\n  content: \"\\F27A\"; }\n\n.fa-commenting-o:before {\n  content: \"\\F27B\"; }\n\n.fa-houzz:before {\n  content: \"\\F27C\"; }\n\n.fa-vimeo:before {\n  content: \"\\F27D\"; }\n\n.fa-black-tie:before {\n  content: \"\\F27E\"; }\n\n.fa-fonticons:before {\n  content: \"\\F280\"; }\n\n.fa-reddit-alien:before {\n  content: \"\\F281\"; }\n\n.fa-edge:before {\n  content: \"\\F282\"; }\n\n.fa-credit-card-alt:before {\n  content: \"\\F283\"; }\n\n.fa-codiepie:before {\n  content: \"\\F284\"; }\n\n.fa-modx:before {\n  content: \"\\F285\"; }\n\n.fa-fort-awesome:before {\n  content: \"\\F286\"; }\n\n.fa-usb:before {\n  content: \"\\F287\"; }\n\n.fa-product-hunt:before {\n  content: \"\\F288\"; }\n\n.fa-mixcloud:before {\n  content: \"\\F289\"; }\n\n.fa-scribd:before {\n  content: \"\\F28A\"; }\n\n.fa-pause-circle:before {\n  content: \"\\F28B\"; }\n\n.fa-pause-circle-o:before {\n  content: \"\\F28C\"; }\n\n.fa-stop-circle:before {\n  content: \"\\F28D\"; }\n\n.fa-stop-circle-o:before {\n  content: \"\\F28E\"; }\n\n.fa-shopping-bag:before {\n  content: \"\\F290\"; }\n\n.fa-shopping-basket:before {\n  content: \"\\F291\"; }\n\n.fa-hashtag:before {\n  content: \"\\F292\"; }\n\n.fa-bluetooth:before {\n  content: \"\\F293\"; }\n\n.fa-bluetooth-b:before {\n  content: \"\\F294\"; }\n\n.fa-percent:before {\n  content: \"\\F295\"; }\n\n.fa-gitlab:before {\n  content: \"\\F296\"; }\n\n.fa-wpbeginner:before {\n  content: \"\\F297\"; }\n\n.fa-wpforms:before {\n  content: \"\\F298\"; }\n\n.fa-envira:before {\n  content: \"\\F299\"; }\n\n.fa-universal-access:before {\n  content: \"\\F29A\"; }\n\n.fa-wheelchair-alt:before {\n  content: \"\\F29B\"; }\n\n.fa-question-circle-o:before {\n  content: \"\\F29C\"; }\n\n.fa-blind:before {\n  content: \"\\F29D\"; }\n\n.fa-audio-description:before {\n  content: \"\\F29E\"; }\n\n.fa-volume-control-phone:before {\n  content: \"\\F2A0\"; }\n\n.fa-braille:before {\n  content: \"\\F2A1\"; }\n\n.fa-assistive-listening-systems:before {\n  content: \"\\F2A2\"; }\n\n.fa-asl-interpreting:before,\n.fa-american-sign-language-interpreting:before {\n  content: \"\\F2A3\"; }\n\n.fa-deafness:before,\n.fa-hard-of-hearing:before,\n.fa-deaf:before {\n  content: \"\\F2A4\"; }\n\n.fa-glide:before {\n  content: \"\\F2A5\"; }\n\n.fa-glide-g:before {\n  content: \"\\F2A6\"; }\n\n.fa-signing:before,\n.fa-sign-language:before {\n  content: \"\\F2A7\"; }\n\n.fa-low-vision:before {\n  content: \"\\F2A8\"; }\n\n.fa-viadeo:before {\n  content: \"\\F2A9\"; }\n\n.fa-viadeo-square:before {\n  content: \"\\F2AA\"; }\n\n.fa-snapchat:before {\n  content: \"\\F2AB\"; }\n\n.fa-snapchat-ghost:before {\n  content: \"\\F2AC\"; }\n\n.fa-snapchat-square:before {\n  content: \"\\F2AD\"; }\n\n.fa-pied-piper:before {\n  content: \"\\F2AE\"; }\n\n.fa-first-order:before {\n  content: \"\\F2B0\"; }\n\n.fa-yoast:before {\n  content: \"\\F2B1\"; }\n\n.fa-themeisle:before {\n  content: \"\\F2B2\"; }\n\n.fa-google-plus-circle:before,\n.fa-google-plus-official:before {\n  content: \"\\F2B3\"; }\n\n.fa-fa:before,\n.fa-font-awesome:before {\n  content: \"\\F2B4\"; }\n\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0; }\n\n.sr-only-focusable:active, .sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto; }\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\n/*!\n *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome\n *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)\n */\n/* FONT PATH\n * -------------------------- */\n@font-face {\n  font-family: 'FontAwesome';\n  src: url(" + __webpack_require__(247) + ");\n  src: url(" + __webpack_require__(248) + "?#iefix&v=4.6.3) format(\"embedded-opentype\"), url(" + __webpack_require__(249) + ") format(\"woff2\"), url(" + __webpack_require__(250) + ") format(\"woff\"), url(" + __webpack_require__(251) + ") format(\"truetype\"), url(" + __webpack_require__(252) + "#fontawesomeregular) format(\"svg\");\n  font-weight: normal;\n  font-style: normal; }\n\n.fa {\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale; }\n\n/* makes the font 33% larger relative to the icon container */\n.fa-lg {\n  font-size: 1.33333em;\n  line-height: 0.75em;\n  vertical-align: -15%; }\n\n.fa-2x {\n  font-size: 2em; }\n\n.fa-3x {\n  font-size: 3em; }\n\n.fa-4x {\n  font-size: 4em; }\n\n.fa-5x {\n  font-size: 5em; }\n\n.fa-fw {\n  width: 1.28571em;\n  text-align: center; }\n\n.fa-ul {\n  padding-left: 0;\n  margin-left: 2.14286em;\n  list-style-type: none; }\n  .fa-ul > li {\n    position: relative; }\n\n.fa-li {\n  position: absolute;\n  left: -2.14286em;\n  width: 2.14286em;\n  top: 0.14286em;\n  text-align: center; }\n  .fa-li.fa-lg {\n    left: -1.85714em; }\n\n.fa-border {\n  padding: .2em .25em .15em;\n  border: solid 0.08em #eee;\n  border-radius: .1em; }\n\n.fa-pull-left {\n  float: left; }\n\n.fa-pull-right {\n  float: right; }\n\n.fa.fa-pull-left {\n  margin-right: .3em; }\n\n.fa.fa-pull-right {\n  margin-left: .3em; }\n\n/* Deprecated as of 4.4.0 */\n.pull-right {\n  float: right; }\n\n.pull-left {\n  float: left; }\n\n.fa.pull-left {\n  margin-right: .3em; }\n\n.fa.pull-right {\n  margin-left: .3em; }\n\n.fa-spin {\n  -webkit-animation: fa-spin 2s infinite linear;\n  animation: fa-spin 2s infinite linear; }\n\n.fa-pulse {\n  -webkit-animation: fa-spin 1s infinite steps(8);\n  animation: fa-spin 1s infinite steps(8); }\n\n@-webkit-keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n@keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n.fa-rotate-90 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";\n  -webkit-transform: rotate(90deg);\n  -ms-transform: rotate(90deg);\n  transform: rotate(90deg); }\n\n.fa-rotate-180 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";\n  -webkit-transform: rotate(180deg);\n  -ms-transform: rotate(180deg);\n  transform: rotate(180deg); }\n\n.fa-rotate-270 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";\n  -webkit-transform: rotate(270deg);\n  -ms-transform: rotate(270deg);\n  transform: rotate(270deg); }\n\n.fa-flip-horizontal {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";\n  -webkit-transform: scale(-1, 1);\n  -ms-transform: scale(-1, 1);\n  transform: scale(-1, 1); }\n\n.fa-flip-vertical {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";\n  -webkit-transform: scale(1, -1);\n  -ms-transform: scale(1, -1);\n  transform: scale(1, -1); }\n\n:root .fa-rotate-90,\n:root .fa-rotate-180,\n:root .fa-rotate-270,\n:root .fa-flip-horizontal,\n:root .fa-flip-vertical {\n  filter: none; }\n\n.fa-stack {\n  position: relative;\n  display: inline-block;\n  width: 2em;\n  height: 2em;\n  line-height: 2em;\n  vertical-align: middle; }\n\n.fa-stack-1x, .fa-stack-2x {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  text-align: center; }\n\n.fa-stack-1x {\n  line-height: inherit; }\n\n.fa-stack-2x {\n  font-size: 2em; }\n\n.fa-inverse {\n  color: #fff; }\n\n/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen\n   readers do not read off random characters that represent icons */\n.fa-glass:before {\n  content: \"\\F000\"; }\n\n.fa-music:before {\n  content: \"\\F001\"; }\n\n.fa-search:before {\n  content: \"\\F002\"; }\n\n.fa-envelope-o:before {\n  content: \"\\F003\"; }\n\n.fa-heart:before {\n  content: \"\\F004\"; }\n\n.fa-star:before {\n  content: \"\\F005\"; }\n\n.fa-star-o:before {\n  content: \"\\F006\"; }\n\n.fa-user:before {\n  content: \"\\F007\"; }\n\n.fa-film:before {\n  content: \"\\F008\"; }\n\n.fa-th-large:before {\n  content: \"\\F009\"; }\n\n.fa-th:before {\n  content: \"\\F00A\"; }\n\n.fa-th-list:before {\n  content: \"\\F00B\"; }\n\n.fa-check:before {\n  content: \"\\F00C\"; }\n\n.fa-remove:before,\n.fa-close:before,\n.fa-times:before {\n  content: \"\\F00D\"; }\n\n.fa-search-plus:before {\n  content: \"\\F00E\"; }\n\n.fa-search-minus:before {\n  content: \"\\F010\"; }\n\n.fa-power-off:before {\n  content: \"\\F011\"; }\n\n.fa-signal:before {\n  content: \"\\F012\"; }\n\n.fa-gear:before,\n.fa-cog:before {\n  content: \"\\F013\"; }\n\n.fa-trash-o:before {\n  content: \"\\F014\"; }\n\n.fa-home:before {\n  content: \"\\F015\"; }\n\n.fa-file-o:before {\n  content: \"\\F016\"; }\n\n.fa-clock-o:before {\n  content: \"\\F017\"; }\n\n.fa-road:before {\n  content: \"\\F018\"; }\n\n.fa-download:before {\n  content: \"\\F019\"; }\n\n.fa-arrow-circle-o-down:before {\n  content: \"\\F01A\"; }\n\n.fa-arrow-circle-o-up:before {\n  content: \"\\F01B\"; }\n\n.fa-inbox:before {\n  content: \"\\F01C\"; }\n\n.fa-play-circle-o:before {\n  content: \"\\F01D\"; }\n\n.fa-rotate-right:before,\n.fa-repeat:before {\n  content: \"\\F01E\"; }\n\n.fa-refresh:before {\n  content: \"\\F021\"; }\n\n.fa-list-alt:before {\n  content: \"\\F022\"; }\n\n.fa-lock:before {\n  content: \"\\F023\"; }\n\n.fa-flag:before {\n  content: \"\\F024\"; }\n\n.fa-headphones:before {\n  content: \"\\F025\"; }\n\n.fa-volume-off:before {\n  content: \"\\F026\"; }\n\n.fa-volume-down:before {\n  content: \"\\F027\"; }\n\n.fa-volume-up:before {\n  content: \"\\F028\"; }\n\n.fa-qrcode:before {\n  content: \"\\F029\"; }\n\n.fa-barcode:before {\n  content: \"\\F02A\"; }\n\n.fa-tag:before {\n  content: \"\\F02B\"; }\n\n.fa-tags:before {\n  content: \"\\F02C\"; }\n\n.fa-book:before {\n  content: \"\\F02D\"; }\n\n.fa-bookmark:before {\n  content: \"\\F02E\"; }\n\n.fa-print:before {\n  content: \"\\F02F\"; }\n\n.fa-camera:before {\n  content: \"\\F030\"; }\n\n.fa-font:before {\n  content: \"\\F031\"; }\n\n.fa-bold:before {\n  content: \"\\F032\"; }\n\n.fa-italic:before {\n  content: \"\\F033\"; }\n\n.fa-text-height:before {\n  content: \"\\F034\"; }\n\n.fa-text-width:before {\n  content: \"\\F035\"; }\n\n.fa-align-left:before {\n  content: \"\\F036\"; }\n\n.fa-align-center:before {\n  content: \"\\F037\"; }\n\n.fa-align-right:before {\n  content: \"\\F038\"; }\n\n.fa-align-justify:before {\n  content: \"\\F039\"; }\n\n.fa-list:before {\n  content: \"\\F03A\"; }\n\n.fa-dedent:before,\n.fa-outdent:before {\n  content: \"\\F03B\"; }\n\n.fa-indent:before {\n  content: \"\\F03C\"; }\n\n.fa-video-camera:before {\n  content: \"\\F03D\"; }\n\n.fa-photo:before,\n.fa-image:before,\n.fa-picture-o:before {\n  content: \"\\F03E\"; }\n\n.fa-pencil:before {\n  content: \"\\F040\"; }\n\n.fa-map-marker:before {\n  content: \"\\F041\"; }\n\n.fa-adjust:before {\n  content: \"\\F042\"; }\n\n.fa-tint:before {\n  content: \"\\F043\"; }\n\n.fa-edit:before,\n.fa-pencil-square-o:before {\n  content: \"\\F044\"; }\n\n.fa-share-square-o:before {\n  content: \"\\F045\"; }\n\n.fa-check-square-o:before {\n  content: \"\\F046\"; }\n\n.fa-arrows:before {\n  content: \"\\F047\"; }\n\n.fa-step-backward:before {\n  content: \"\\F048\"; }\n\n.fa-fast-backward:before {\n  content: \"\\F049\"; }\n\n.fa-backward:before {\n  content: \"\\F04A\"; }\n\n.fa-play:before {\n  content: \"\\F04B\"; }\n\n.fa-pause:before {\n  content: \"\\F04C\"; }\n\n.fa-stop:before {\n  content: \"\\F04D\"; }\n\n.fa-forward:before {\n  content: \"\\F04E\"; }\n\n.fa-fast-forward:before {\n  content: \"\\F050\"; }\n\n.fa-step-forward:before {\n  content: \"\\F051\"; }\n\n.fa-eject:before {\n  content: \"\\F052\"; }\n\n.fa-chevron-left:before {\n  content: \"\\F053\"; }\n\n.fa-chevron-right:before {\n  content: \"\\F054\"; }\n\n.fa-plus-circle:before {\n  content: \"\\F055\"; }\n\n.fa-minus-circle:before {\n  content: \"\\F056\"; }\n\n.fa-times-circle:before {\n  content: \"\\F057\"; }\n\n.fa-check-circle:before {\n  content: \"\\F058\"; }\n\n.fa-question-circle:before {\n  content: \"\\F059\"; }\n\n.fa-info-circle:before {\n  content: \"\\F05A\"; }\n\n.fa-crosshairs:before {\n  content: \"\\F05B\"; }\n\n.fa-times-circle-o:before {\n  content: \"\\F05C\"; }\n\n.fa-check-circle-o:before {\n  content: \"\\F05D\"; }\n\n.fa-ban:before {\n  content: \"\\F05E\"; }\n\n.fa-arrow-left:before {\n  content: \"\\F060\"; }\n\n.fa-arrow-right:before {\n  content: \"\\F061\"; }\n\n.fa-arrow-up:before {\n  content: \"\\F062\"; }\n\n.fa-arrow-down:before {\n  content: \"\\F063\"; }\n\n.fa-mail-forward:before,\n.fa-share:before {\n  content: \"\\F064\"; }\n\n.fa-expand:before {\n  content: \"\\F065\"; }\n\n.fa-compress:before {\n  content: \"\\F066\"; }\n\n.fa-plus:before {\n  content: \"\\F067\"; }\n\n.fa-minus:before {\n  content: \"\\F068\"; }\n\n.fa-asterisk:before {\n  content: \"\\F069\"; }\n\n.fa-exclamation-circle:before {\n  content: \"\\F06A\"; }\n\n.fa-gift:before {\n  content: \"\\F06B\"; }\n\n.fa-leaf:before {\n  content: \"\\F06C\"; }\n\n.fa-fire:before {\n  content: \"\\F06D\"; }\n\n.fa-eye:before {\n  content: \"\\F06E\"; }\n\n.fa-eye-slash:before {\n  content: \"\\F070\"; }\n\n.fa-warning:before,\n.fa-exclamation-triangle:before {\n  content: \"\\F071\"; }\n\n.fa-plane:before {\n  content: \"\\F072\"; }\n\n.fa-calendar:before {\n  content: \"\\F073\"; }\n\n.fa-random:before {\n  content: \"\\F074\"; }\n\n.fa-comment:before {\n  content: \"\\F075\"; }\n\n.fa-magnet:before {\n  content: \"\\F076\"; }\n\n.fa-chevron-up:before {\n  content: \"\\F077\"; }\n\n.fa-chevron-down:before {\n  content: \"\\F078\"; }\n\n.fa-retweet:before {\n  content: \"\\F079\"; }\n\n.fa-shopping-cart:before {\n  content: \"\\F07A\"; }\n\n.fa-folder:before {\n  content: \"\\F07B\"; }\n\n.fa-folder-open:before {\n  content: \"\\F07C\"; }\n\n.fa-arrows-v:before {\n  content: \"\\F07D\"; }\n\n.fa-arrows-h:before {\n  content: \"\\F07E\"; }\n\n.fa-bar-chart-o:before,\n.fa-bar-chart:before {\n  content: \"\\F080\"; }\n\n.fa-twitter-square:before {\n  content: \"\\F081\"; }\n\n.fa-facebook-square:before {\n  content: \"\\F082\"; }\n\n.fa-camera-retro:before {\n  content: \"\\F083\"; }\n\n.fa-key:before {\n  content: \"\\F084\"; }\n\n.fa-gears:before,\n.fa-cogs:before {\n  content: \"\\F085\"; }\n\n.fa-comments:before {\n  content: \"\\F086\"; }\n\n.fa-thumbs-o-up:before {\n  content: \"\\F087\"; }\n\n.fa-thumbs-o-down:before {\n  content: \"\\F088\"; }\n\n.fa-star-half:before {\n  content: \"\\F089\"; }\n\n.fa-heart-o:before {\n  content: \"\\F08A\"; }\n\n.fa-sign-out:before {\n  content: \"\\F08B\"; }\n\n.fa-linkedin-square:before {\n  content: \"\\F08C\"; }\n\n.fa-thumb-tack:before {\n  content: \"\\F08D\"; }\n\n.fa-external-link:before {\n  content: \"\\F08E\"; }\n\n.fa-sign-in:before {\n  content: \"\\F090\"; }\n\n.fa-trophy:before {\n  content: \"\\F091\"; }\n\n.fa-github-square:before {\n  content: \"\\F092\"; }\n\n.fa-upload:before {\n  content: \"\\F093\"; }\n\n.fa-lemon-o:before {\n  content: \"\\F094\"; }\n\n.fa-phone:before {\n  content: \"\\F095\"; }\n\n.fa-square-o:before {\n  content: \"\\F096\"; }\n\n.fa-bookmark-o:before {\n  content: \"\\F097\"; }\n\n.fa-phone-square:before {\n  content: \"\\F098\"; }\n\n.fa-twitter:before {\n  content: \"\\F099\"; }\n\n.fa-facebook-f:before,\n.fa-facebook:before {\n  content: \"\\F09A\"; }\n\n.fa-github:before {\n  content: \"\\F09B\"; }\n\n.fa-unlock:before {\n  content: \"\\F09C\"; }\n\n.fa-credit-card:before {\n  content: \"\\F09D\"; }\n\n.fa-feed:before,\n.fa-rss:before {\n  content: \"\\F09E\"; }\n\n.fa-hdd-o:before {\n  content: \"\\F0A0\"; }\n\n.fa-bullhorn:before {\n  content: \"\\F0A1\"; }\n\n.fa-bell:before {\n  content: \"\\F0F3\"; }\n\n.fa-certificate:before {\n  content: \"\\F0A3\"; }\n\n.fa-hand-o-right:before {\n  content: \"\\F0A4\"; }\n\n.fa-hand-o-left:before {\n  content: \"\\F0A5\"; }\n\n.fa-hand-o-up:before {\n  content: \"\\F0A6\"; }\n\n.fa-hand-o-down:before {\n  content: \"\\F0A7\"; }\n\n.fa-arrow-circle-left:before {\n  content: \"\\F0A8\"; }\n\n.fa-arrow-circle-right:before {\n  content: \"\\F0A9\"; }\n\n.fa-arrow-circle-up:before {\n  content: \"\\F0AA\"; }\n\n.fa-arrow-circle-down:before {\n  content: \"\\F0AB\"; }\n\n.fa-globe:before {\n  content: \"\\F0AC\"; }\n\n.fa-wrench:before {\n  content: \"\\F0AD\"; }\n\n.fa-tasks:before {\n  content: \"\\F0AE\"; }\n\n.fa-filter:before {\n  content: \"\\F0B0\"; }\n\n.fa-briefcase:before {\n  content: \"\\F0B1\"; }\n\n.fa-arrows-alt:before {\n  content: \"\\F0B2\"; }\n\n.fa-group:before,\n.fa-users:before {\n  content: \"\\F0C0\"; }\n\n.fa-chain:before,\n.fa-link:before {\n  content: \"\\F0C1\"; }\n\n.fa-cloud:before {\n  content: \"\\F0C2\"; }\n\n.fa-flask:before {\n  content: \"\\F0C3\"; }\n\n.fa-cut:before,\n.fa-scissors:before {\n  content: \"\\F0C4\"; }\n\n.fa-copy:before,\n.fa-files-o:before {\n  content: \"\\F0C5\"; }\n\n.fa-paperclip:before {\n  content: \"\\F0C6\"; }\n\n.fa-save:before,\n.fa-floppy-o:before {\n  content: \"\\F0C7\"; }\n\n.fa-square:before {\n  content: \"\\F0C8\"; }\n\n.fa-navicon:before,\n.fa-reorder:before,\n.fa-bars:before {\n  content: \"\\F0C9\"; }\n\n.fa-list-ul:before {\n  content: \"\\F0CA\"; }\n\n.fa-list-ol:before {\n  content: \"\\F0CB\"; }\n\n.fa-strikethrough:before {\n  content: \"\\F0CC\"; }\n\n.fa-underline:before {\n  content: \"\\F0CD\"; }\n\n.fa-table:before {\n  content: \"\\F0CE\"; }\n\n.fa-magic:before {\n  content: \"\\F0D0\"; }\n\n.fa-truck:before {\n  content: \"\\F0D1\"; }\n\n.fa-pinterest:before {\n  content: \"\\F0D2\"; }\n\n.fa-pinterest-square:before {\n  content: \"\\F0D3\"; }\n\n.fa-google-plus-square:before {\n  content: \"\\F0D4\"; }\n\n.fa-google-plus:before {\n  content: \"\\F0D5\"; }\n\n.fa-money:before {\n  content: \"\\F0D6\"; }\n\n.fa-caret-down:before {\n  content: \"\\F0D7\"; }\n\n.fa-caret-up:before {\n  content: \"\\F0D8\"; }\n\n.fa-caret-left:before {\n  content: \"\\F0D9\"; }\n\n.fa-caret-right:before {\n  content: \"\\F0DA\"; }\n\n.fa-columns:before {\n  content: \"\\F0DB\"; }\n\n.fa-unsorted:before,\n.fa-sort:before {\n  content: \"\\F0DC\"; }\n\n.fa-sort-down:before,\n.fa-sort-desc:before {\n  content: \"\\F0DD\"; }\n\n.fa-sort-up:before,\n.fa-sort-asc:before {\n  content: \"\\F0DE\"; }\n\n.fa-envelope:before {\n  content: \"\\F0E0\"; }\n\n.fa-linkedin:before {\n  content: \"\\F0E1\"; }\n\n.fa-rotate-left:before,\n.fa-undo:before {\n  content: \"\\F0E2\"; }\n\n.fa-legal:before,\n.fa-gavel:before {\n  content: \"\\F0E3\"; }\n\n.fa-dashboard:before,\n.fa-tachometer:before {\n  content: \"\\F0E4\"; }\n\n.fa-comment-o:before {\n  content: \"\\F0E5\"; }\n\n.fa-comments-o:before {\n  content: \"\\F0E6\"; }\n\n.fa-flash:before,\n.fa-bolt:before {\n  content: \"\\F0E7\"; }\n\n.fa-sitemap:before {\n  content: \"\\F0E8\"; }\n\n.fa-umbrella:before {\n  content: \"\\F0E9\"; }\n\n.fa-paste:before,\n.fa-clipboard:before {\n  content: \"\\F0EA\"; }\n\n.fa-lightbulb-o:before {\n  content: \"\\F0EB\"; }\n\n.fa-exchange:before {\n  content: \"\\F0EC\"; }\n\n.fa-cloud-download:before {\n  content: \"\\F0ED\"; }\n\n.fa-cloud-upload:before {\n  content: \"\\F0EE\"; }\n\n.fa-user-md:before {\n  content: \"\\F0F0\"; }\n\n.fa-stethoscope:before {\n  content: \"\\F0F1\"; }\n\n.fa-suitcase:before {\n  content: \"\\F0F2\"; }\n\n.fa-bell-o:before {\n  content: \"\\F0A2\"; }\n\n.fa-coffee:before {\n  content: \"\\F0F4\"; }\n\n.fa-cutlery:before {\n  content: \"\\F0F5\"; }\n\n.fa-file-text-o:before {\n  content: \"\\F0F6\"; }\n\n.fa-building-o:before {\n  content: \"\\F0F7\"; }\n\n.fa-hospital-o:before {\n  content: \"\\F0F8\"; }\n\n.fa-ambulance:before {\n  content: \"\\F0F9\"; }\n\n.fa-medkit:before {\n  content: \"\\F0FA\"; }\n\n.fa-fighter-jet:before {\n  content: \"\\F0FB\"; }\n\n.fa-beer:before {\n  content: \"\\F0FC\"; }\n\n.fa-h-square:before {\n  content: \"\\F0FD\"; }\n\n.fa-plus-square:before {\n  content: \"\\F0FE\"; }\n\n.fa-angle-double-left:before {\n  content: \"\\F100\"; }\n\n.fa-angle-double-right:before {\n  content: \"\\F101\"; }\n\n.fa-angle-double-up:before {\n  content: \"\\F102\"; }\n\n.fa-angle-double-down:before {\n  content: \"\\F103\"; }\n\n.fa-angle-left:before {\n  content: \"\\F104\"; }\n\n.fa-angle-right:before {\n  content: \"\\F105\"; }\n\n.fa-angle-up:before {\n  content: \"\\F106\"; }\n\n.fa-angle-down:before {\n  content: \"\\F107\"; }\n\n.fa-desktop:before {\n  content: \"\\F108\"; }\n\n.fa-laptop:before {\n  content: \"\\F109\"; }\n\n.fa-tablet:before {\n  content: \"\\F10A\"; }\n\n.fa-mobile-phone:before,\n.fa-mobile:before {\n  content: \"\\F10B\"; }\n\n.fa-circle-o:before {\n  content: \"\\F10C\"; }\n\n.fa-quote-left:before {\n  content: \"\\F10D\"; }\n\n.fa-quote-right:before {\n  content: \"\\F10E\"; }\n\n.fa-spinner:before {\n  content: \"\\F110\"; }\n\n.fa-circle:before {\n  content: \"\\F111\"; }\n\n.fa-mail-reply:before,\n.fa-reply:before {\n  content: \"\\F112\"; }\n\n.fa-github-alt:before {\n  content: \"\\F113\"; }\n\n.fa-folder-o:before {\n  content: \"\\F114\"; }\n\n.fa-folder-open-o:before {\n  content: \"\\F115\"; }\n\n.fa-smile-o:before {\n  content: \"\\F118\"; }\n\n.fa-frown-o:before {\n  content: \"\\F119\"; }\n\n.fa-meh-o:before {\n  content: \"\\F11A\"; }\n\n.fa-gamepad:before {\n  content: \"\\F11B\"; }\n\n.fa-keyboard-o:before {\n  content: \"\\F11C\"; }\n\n.fa-flag-o:before {\n  content: \"\\F11D\"; }\n\n.fa-flag-checkered:before {\n  content: \"\\F11E\"; }\n\n.fa-terminal:before {\n  content: \"\\F120\"; }\n\n.fa-code:before {\n  content: \"\\F121\"; }\n\n.fa-mail-reply-all:before,\n.fa-reply-all:before {\n  content: \"\\F122\"; }\n\n.fa-star-half-empty:before,\n.fa-star-half-full:before,\n.fa-star-half-o:before {\n  content: \"\\F123\"; }\n\n.fa-location-arrow:before {\n  content: \"\\F124\"; }\n\n.fa-crop:before {\n  content: \"\\F125\"; }\n\n.fa-code-fork:before {\n  content: \"\\F126\"; }\n\n.fa-unlink:before,\n.fa-chain-broken:before {\n  content: \"\\F127\"; }\n\n.fa-question:before {\n  content: \"\\F128\"; }\n\n.fa-info:before {\n  content: \"\\F129\"; }\n\n.fa-exclamation:before {\n  content: \"\\F12A\"; }\n\n.fa-superscript:before {\n  content: \"\\F12B\"; }\n\n.fa-subscript:before {\n  content: \"\\F12C\"; }\n\n.fa-eraser:before {\n  content: \"\\F12D\"; }\n\n.fa-puzzle-piece:before {\n  content: \"\\F12E\"; }\n\n.fa-microphone:before {\n  content: \"\\F130\"; }\n\n.fa-microphone-slash:before {\n  content: \"\\F131\"; }\n\n.fa-shield:before {\n  content: \"\\F132\"; }\n\n.fa-calendar-o:before {\n  content: \"\\F133\"; }\n\n.fa-fire-extinguisher:before {\n  content: \"\\F134\"; }\n\n.fa-rocket:before {\n  content: \"\\F135\"; }\n\n.fa-maxcdn:before {\n  content: \"\\F136\"; }\n\n.fa-chevron-circle-left:before {\n  content: \"\\F137\"; }\n\n.fa-chevron-circle-right:before {\n  content: \"\\F138\"; }\n\n.fa-chevron-circle-up:before {\n  content: \"\\F139\"; }\n\n.fa-chevron-circle-down:before {\n  content: \"\\F13A\"; }\n\n.fa-html5:before {\n  content: \"\\F13B\"; }\n\n.fa-css3:before {\n  content: \"\\F13C\"; }\n\n.fa-anchor:before {\n  content: \"\\F13D\"; }\n\n.fa-unlock-alt:before {\n  content: \"\\F13E\"; }\n\n.fa-bullseye:before {\n  content: \"\\F140\"; }\n\n.fa-ellipsis-h:before {\n  content: \"\\F141\"; }\n\n.fa-ellipsis-v:before {\n  content: \"\\F142\"; }\n\n.fa-rss-square:before {\n  content: \"\\F143\"; }\n\n.fa-play-circle:before {\n  content: \"\\F144\"; }\n\n.fa-ticket:before {\n  content: \"\\F145\"; }\n\n.fa-minus-square:before {\n  content: \"\\F146\"; }\n\n.fa-minus-square-o:before {\n  content: \"\\F147\"; }\n\n.fa-level-up:before {\n  content: \"\\F148\"; }\n\n.fa-level-down:before {\n  content: \"\\F149\"; }\n\n.fa-check-square:before {\n  content: \"\\F14A\"; }\n\n.fa-pencil-square:before {\n  content: \"\\F14B\"; }\n\n.fa-external-link-square:before {\n  content: \"\\F14C\"; }\n\n.fa-share-square:before {\n  content: \"\\F14D\"; }\n\n.fa-compass:before {\n  content: \"\\F14E\"; }\n\n.fa-toggle-down:before,\n.fa-caret-square-o-down:before {\n  content: \"\\F150\"; }\n\n.fa-toggle-up:before,\n.fa-caret-square-o-up:before {\n  content: \"\\F151\"; }\n\n.fa-toggle-right:before,\n.fa-caret-square-o-right:before {\n  content: \"\\F152\"; }\n\n.fa-euro:before,\n.fa-eur:before {\n  content: \"\\F153\"; }\n\n.fa-gbp:before {\n  content: \"\\F154\"; }\n\n.fa-dollar:before,\n.fa-usd:before {\n  content: \"\\F155\"; }\n\n.fa-rupee:before,\n.fa-inr:before {\n  content: \"\\F156\"; }\n\n.fa-cny:before,\n.fa-rmb:before,\n.fa-yen:before,\n.fa-jpy:before {\n  content: \"\\F157\"; }\n\n.fa-ruble:before,\n.fa-rouble:before,\n.fa-rub:before {\n  content: \"\\F158\"; }\n\n.fa-won:before,\n.fa-krw:before {\n  content: \"\\F159\"; }\n\n.fa-bitcoin:before,\n.fa-btc:before {\n  content: \"\\F15A\"; }\n\n.fa-file:before {\n  content: \"\\F15B\"; }\n\n.fa-file-text:before {\n  content: \"\\F15C\"; }\n\n.fa-sort-alpha-asc:before {\n  content: \"\\F15D\"; }\n\n.fa-sort-alpha-desc:before {\n  content: \"\\F15E\"; }\n\n.fa-sort-amount-asc:before {\n  content: \"\\F160\"; }\n\n.fa-sort-amount-desc:before {\n  content: \"\\F161\"; }\n\n.fa-sort-numeric-asc:before {\n  content: \"\\F162\"; }\n\n.fa-sort-numeric-desc:before {\n  content: \"\\F163\"; }\n\n.fa-thumbs-up:before {\n  content: \"\\F164\"; }\n\n.fa-thumbs-down:before {\n  content: \"\\F165\"; }\n\n.fa-youtube-square:before {\n  content: \"\\F166\"; }\n\n.fa-youtube:before {\n  content: \"\\F167\"; }\n\n.fa-xing:before {\n  content: \"\\F168\"; }\n\n.fa-xing-square:before {\n  content: \"\\F169\"; }\n\n.fa-youtube-play:before {\n  content: \"\\F16A\"; }\n\n.fa-dropbox:before {\n  content: \"\\F16B\"; }\n\n.fa-stack-overflow:before {\n  content: \"\\F16C\"; }\n\n.fa-instagram:before {\n  content: \"\\F16D\"; }\n\n.fa-flickr:before {\n  content: \"\\F16E\"; }\n\n.fa-adn:before {\n  content: \"\\F170\"; }\n\n.fa-bitbucket:before {\n  content: \"\\F171\"; }\n\n.fa-bitbucket-square:before {\n  content: \"\\F172\"; }\n\n.fa-tumblr:before {\n  content: \"\\F173\"; }\n\n.fa-tumblr-square:before {\n  content: \"\\F174\"; }\n\n.fa-long-arrow-down:before {\n  content: \"\\F175\"; }\n\n.fa-long-arrow-up:before {\n  content: \"\\F176\"; }\n\n.fa-long-arrow-left:before {\n  content: \"\\F177\"; }\n\n.fa-long-arrow-right:before {\n  content: \"\\F178\"; }\n\n.fa-apple:before {\n  content: \"\\F179\"; }\n\n.fa-windows:before {\n  content: \"\\F17A\"; }\n\n.fa-android:before {\n  content: \"\\F17B\"; }\n\n.fa-linux:before {\n  content: \"\\F17C\"; }\n\n.fa-dribbble:before {\n  content: \"\\F17D\"; }\n\n.fa-skype:before {\n  content: \"\\F17E\"; }\n\n.fa-foursquare:before {\n  content: \"\\F180\"; }\n\n.fa-trello:before {\n  content: \"\\F181\"; }\n\n.fa-female:before {\n  content: \"\\F182\"; }\n\n.fa-male:before {\n  content: \"\\F183\"; }\n\n.fa-gittip:before,\n.fa-gratipay:before {\n  content: \"\\F184\"; }\n\n.fa-sun-o:before {\n  content: \"\\F185\"; }\n\n.fa-moon-o:before {\n  content: \"\\F186\"; }\n\n.fa-archive:before {\n  content: \"\\F187\"; }\n\n.fa-bug:before {\n  content: \"\\F188\"; }\n\n.fa-vk:before {\n  content: \"\\F189\"; }\n\n.fa-weibo:before {\n  content: \"\\F18A\"; }\n\n.fa-renren:before {\n  content: \"\\F18B\"; }\n\n.fa-pagelines:before {\n  content: \"\\F18C\"; }\n\n.fa-stack-exchange:before {\n  content: \"\\F18D\"; }\n\n.fa-arrow-circle-o-right:before {\n  content: \"\\F18E\"; }\n\n.fa-arrow-circle-o-left:before {\n  content: \"\\F190\"; }\n\n.fa-toggle-left:before,\n.fa-caret-square-o-left:before {\n  content: \"\\F191\"; }\n\n.fa-dot-circle-o:before {\n  content: \"\\F192\"; }\n\n.fa-wheelchair:before {\n  content: \"\\F193\"; }\n\n.fa-vimeo-square:before {\n  content: \"\\F194\"; }\n\n.fa-turkish-lira:before,\n.fa-try:before {\n  content: \"\\F195\"; }\n\n.fa-plus-square-o:before {\n  content: \"\\F196\"; }\n\n.fa-space-shuttle:before {\n  content: \"\\F197\"; }\n\n.fa-slack:before {\n  content: \"\\F198\"; }\n\n.fa-envelope-square:before {\n  content: \"\\F199\"; }\n\n.fa-wordpress:before {\n  content: \"\\F19A\"; }\n\n.fa-openid:before {\n  content: \"\\F19B\"; }\n\n.fa-institution:before,\n.fa-bank:before,\n.fa-university:before {\n  content: \"\\F19C\"; }\n\n.fa-mortar-board:before,\n.fa-graduation-cap:before {\n  content: \"\\F19D\"; }\n\n.fa-yahoo:before {\n  content: \"\\F19E\"; }\n\n.fa-google:before {\n  content: \"\\F1A0\"; }\n\n.fa-reddit:before {\n  content: \"\\F1A1\"; }\n\n.fa-reddit-square:before {\n  content: \"\\F1A2\"; }\n\n.fa-stumbleupon-circle:before {\n  content: \"\\F1A3\"; }\n\n.fa-stumbleupon:before {\n  content: \"\\F1A4\"; }\n\n.fa-delicious:before {\n  content: \"\\F1A5\"; }\n\n.fa-digg:before {\n  content: \"\\F1A6\"; }\n\n.fa-pied-piper-pp:before {\n  content: \"\\F1A7\"; }\n\n.fa-pied-piper-alt:before {\n  content: \"\\F1A8\"; }\n\n.fa-drupal:before {\n  content: \"\\F1A9\"; }\n\n.fa-joomla:before {\n  content: \"\\F1AA\"; }\n\n.fa-language:before {\n  content: \"\\F1AB\"; }\n\n.fa-fax:before {\n  content: \"\\F1AC\"; }\n\n.fa-building:before {\n  content: \"\\F1AD\"; }\n\n.fa-child:before {\n  content: \"\\F1AE\"; }\n\n.fa-paw:before {\n  content: \"\\F1B0\"; }\n\n.fa-spoon:before {\n  content: \"\\F1B1\"; }\n\n.fa-cube:before {\n  content: \"\\F1B2\"; }\n\n.fa-cubes:before {\n  content: \"\\F1B3\"; }\n\n.fa-behance:before {\n  content: \"\\F1B4\"; }\n\n.fa-behance-square:before {\n  content: \"\\F1B5\"; }\n\n.fa-steam:before {\n  content: \"\\F1B6\"; }\n\n.fa-steam-square:before {\n  content: \"\\F1B7\"; }\n\n.fa-recycle:before {\n  content: \"\\F1B8\"; }\n\n.fa-automobile:before,\n.fa-car:before {\n  content: \"\\F1B9\"; }\n\n.fa-cab:before,\n.fa-taxi:before {\n  content: \"\\F1BA\"; }\n\n.fa-tree:before {\n  content: \"\\F1BB\"; }\n\n.fa-spotify:before {\n  content: \"\\F1BC\"; }\n\n.fa-deviantart:before {\n  content: \"\\F1BD\"; }\n\n.fa-soundcloud:before {\n  content: \"\\F1BE\"; }\n\n.fa-database:before {\n  content: \"\\F1C0\"; }\n\n.fa-file-pdf-o:before {\n  content: \"\\F1C1\"; }\n\n.fa-file-word-o:before {\n  content: \"\\F1C2\"; }\n\n.fa-file-excel-o:before {\n  content: \"\\F1C3\"; }\n\n.fa-file-powerpoint-o:before {\n  content: \"\\F1C4\"; }\n\n.fa-file-photo-o:before,\n.fa-file-picture-o:before,\n.fa-file-image-o:before {\n  content: \"\\F1C5\"; }\n\n.fa-file-zip-o:before,\n.fa-file-archive-o:before {\n  content: \"\\F1C6\"; }\n\n.fa-file-sound-o:before,\n.fa-file-audio-o:before {\n  content: \"\\F1C7\"; }\n\n.fa-file-movie-o:before,\n.fa-file-video-o:before {\n  content: \"\\F1C8\"; }\n\n.fa-file-code-o:before {\n  content: \"\\F1C9\"; }\n\n.fa-vine:before {\n  content: \"\\F1CA\"; }\n\n.fa-codepen:before {\n  content: \"\\F1CB\"; }\n\n.fa-jsfiddle:before {\n  content: \"\\F1CC\"; }\n\n.fa-life-bouy:before,\n.fa-life-buoy:before,\n.fa-life-saver:before,\n.fa-support:before,\n.fa-life-ring:before {\n  content: \"\\F1CD\"; }\n\n.fa-circle-o-notch:before {\n  content: \"\\F1CE\"; }\n\n.fa-ra:before,\n.fa-resistance:before,\n.fa-rebel:before {\n  content: \"\\F1D0\"; }\n\n.fa-ge:before,\n.fa-empire:before {\n  content: \"\\F1D1\"; }\n\n.fa-git-square:before {\n  content: \"\\F1D2\"; }\n\n.fa-git:before {\n  content: \"\\F1D3\"; }\n\n.fa-y-combinator-square:before,\n.fa-yc-square:before,\n.fa-hacker-news:before {\n  content: \"\\F1D4\"; }\n\n.fa-tencent-weibo:before {\n  content: \"\\F1D5\"; }\n\n.fa-qq:before {\n  content: \"\\F1D6\"; }\n\n.fa-wechat:before,\n.fa-weixin:before {\n  content: \"\\F1D7\"; }\n\n.fa-send:before,\n.fa-paper-plane:before {\n  content: \"\\F1D8\"; }\n\n.fa-send-o:before,\n.fa-paper-plane-o:before {\n  content: \"\\F1D9\"; }\n\n.fa-history:before {\n  content: \"\\F1DA\"; }\n\n.fa-circle-thin:before {\n  content: \"\\F1DB\"; }\n\n.fa-header:before {\n  content: \"\\F1DC\"; }\n\n.fa-paragraph:before {\n  content: \"\\F1DD\"; }\n\n.fa-sliders:before {\n  content: \"\\F1DE\"; }\n\n.fa-share-alt:before {\n  content: \"\\F1E0\"; }\n\n.fa-share-alt-square:before {\n  content: \"\\F1E1\"; }\n\n.fa-bomb:before {\n  content: \"\\F1E2\"; }\n\n.fa-soccer-ball-o:before,\n.fa-futbol-o:before {\n  content: \"\\F1E3\"; }\n\n.fa-tty:before {\n  content: \"\\F1E4\"; }\n\n.fa-binoculars:before {\n  content: \"\\F1E5\"; }\n\n.fa-plug:before {\n  content: \"\\F1E6\"; }\n\n.fa-slideshare:before {\n  content: \"\\F1E7\"; }\n\n.fa-twitch:before {\n  content: \"\\F1E8\"; }\n\n.fa-yelp:before {\n  content: \"\\F1E9\"; }\n\n.fa-newspaper-o:before {\n  content: \"\\F1EA\"; }\n\n.fa-wifi:before {\n  content: \"\\F1EB\"; }\n\n.fa-calculator:before {\n  content: \"\\F1EC\"; }\n\n.fa-paypal:before {\n  content: \"\\F1ED\"; }\n\n.fa-google-wallet:before {\n  content: \"\\F1EE\"; }\n\n.fa-cc-visa:before {\n  content: \"\\F1F0\"; }\n\n.fa-cc-mastercard:before {\n  content: \"\\F1F1\"; }\n\n.fa-cc-discover:before {\n  content: \"\\F1F2\"; }\n\n.fa-cc-amex:before {\n  content: \"\\F1F3\"; }\n\n.fa-cc-paypal:before {\n  content: \"\\F1F4\"; }\n\n.fa-cc-stripe:before {\n  content: \"\\F1F5\"; }\n\n.fa-bell-slash:before {\n  content: \"\\F1F6\"; }\n\n.fa-bell-slash-o:before {\n  content: \"\\F1F7\"; }\n\n.fa-trash:before {\n  content: \"\\F1F8\"; }\n\n.fa-copyright:before {\n  content: \"\\F1F9\"; }\n\n.fa-at:before {\n  content: \"\\F1FA\"; }\n\n.fa-eyedropper:before {\n  content: \"\\F1FB\"; }\n\n.fa-paint-brush:before {\n  content: \"\\F1FC\"; }\n\n.fa-birthday-cake:before {\n  content: \"\\F1FD\"; }\n\n.fa-area-chart:before {\n  content: \"\\F1FE\"; }\n\n.fa-pie-chart:before {\n  content: \"\\F200\"; }\n\n.fa-line-chart:before {\n  content: \"\\F201\"; }\n\n.fa-lastfm:before {\n  content: \"\\F202\"; }\n\n.fa-lastfm-square:before {\n  content: \"\\F203\"; }\n\n.fa-toggle-off:before {\n  content: \"\\F204\"; }\n\n.fa-toggle-on:before {\n  content: \"\\F205\"; }\n\n.fa-bicycle:before {\n  content: \"\\F206\"; }\n\n.fa-bus:before {\n  content: \"\\F207\"; }\n\n.fa-ioxhost:before {\n  content: \"\\F208\"; }\n\n.fa-angellist:before {\n  content: \"\\F209\"; }\n\n.fa-cc:before {\n  content: \"\\F20A\"; }\n\n.fa-shekel:before,\n.fa-sheqel:before,\n.fa-ils:before {\n  content: \"\\F20B\"; }\n\n.fa-meanpath:before {\n  content: \"\\F20C\"; }\n\n.fa-buysellads:before {\n  content: \"\\F20D\"; }\n\n.fa-connectdevelop:before {\n  content: \"\\F20E\"; }\n\n.fa-dashcube:before {\n  content: \"\\F210\"; }\n\n.fa-forumbee:before {\n  content: \"\\F211\"; }\n\n.fa-leanpub:before {\n  content: \"\\F212\"; }\n\n.fa-sellsy:before {\n  content: \"\\F213\"; }\n\n.fa-shirtsinbulk:before {\n  content: \"\\F214\"; }\n\n.fa-simplybuilt:before {\n  content: \"\\F215\"; }\n\n.fa-skyatlas:before {\n  content: \"\\F216\"; }\n\n.fa-cart-plus:before {\n  content: \"\\F217\"; }\n\n.fa-cart-arrow-down:before {\n  content: \"\\F218\"; }\n\n.fa-diamond:before {\n  content: \"\\F219\"; }\n\n.fa-ship:before {\n  content: \"\\F21A\"; }\n\n.fa-user-secret:before {\n  content: \"\\F21B\"; }\n\n.fa-motorcycle:before {\n  content: \"\\F21C\"; }\n\n.fa-street-view:before {\n  content: \"\\F21D\"; }\n\n.fa-heartbeat:before {\n  content: \"\\F21E\"; }\n\n.fa-venus:before {\n  content: \"\\F221\"; }\n\n.fa-mars:before {\n  content: \"\\F222\"; }\n\n.fa-mercury:before {\n  content: \"\\F223\"; }\n\n.fa-intersex:before,\n.fa-transgender:before {\n  content: \"\\F224\"; }\n\n.fa-transgender-alt:before {\n  content: \"\\F225\"; }\n\n.fa-venus-double:before {\n  content: \"\\F226\"; }\n\n.fa-mars-double:before {\n  content: \"\\F227\"; }\n\n.fa-venus-mars:before {\n  content: \"\\F228\"; }\n\n.fa-mars-stroke:before {\n  content: \"\\F229\"; }\n\n.fa-mars-stroke-v:before {\n  content: \"\\F22A\"; }\n\n.fa-mars-stroke-h:before {\n  content: \"\\F22B\"; }\n\n.fa-neuter:before {\n  content: \"\\F22C\"; }\n\n.fa-genderless:before {\n  content: \"\\F22D\"; }\n\n.fa-facebook-official:before {\n  content: \"\\F230\"; }\n\n.fa-pinterest-p:before {\n  content: \"\\F231\"; }\n\n.fa-whatsapp:before {\n  content: \"\\F232\"; }\n\n.fa-server:before {\n  content: \"\\F233\"; }\n\n.fa-user-plus:before {\n  content: \"\\F234\"; }\n\n.fa-user-times:before {\n  content: \"\\F235\"; }\n\n.fa-hotel:before,\n.fa-bed:before {\n  content: \"\\F236\"; }\n\n.fa-viacoin:before {\n  content: \"\\F237\"; }\n\n.fa-train:before {\n  content: \"\\F238\"; }\n\n.fa-subway:before {\n  content: \"\\F239\"; }\n\n.fa-medium:before {\n  content: \"\\F23A\"; }\n\n.fa-yc:before,\n.fa-y-combinator:before {\n  content: \"\\F23B\"; }\n\n.fa-optin-monster:before {\n  content: \"\\F23C\"; }\n\n.fa-opencart:before {\n  content: \"\\F23D\"; }\n\n.fa-expeditedssl:before {\n  content: \"\\F23E\"; }\n\n.fa-battery-4:before,\n.fa-battery-full:before {\n  content: \"\\F240\"; }\n\n.fa-battery-3:before,\n.fa-battery-three-quarters:before {\n  content: \"\\F241\"; }\n\n.fa-battery-2:before,\n.fa-battery-half:before {\n  content: \"\\F242\"; }\n\n.fa-battery-1:before,\n.fa-battery-quarter:before {\n  content: \"\\F243\"; }\n\n.fa-battery-0:before,\n.fa-battery-empty:before {\n  content: \"\\F244\"; }\n\n.fa-mouse-pointer:before {\n  content: \"\\F245\"; }\n\n.fa-i-cursor:before {\n  content: \"\\F246\"; }\n\n.fa-object-group:before {\n  content: \"\\F247\"; }\n\n.fa-object-ungroup:before {\n  content: \"\\F248\"; }\n\n.fa-sticky-note:before {\n  content: \"\\F249\"; }\n\n.fa-sticky-note-o:before {\n  content: \"\\F24A\"; }\n\n.fa-cc-jcb:before {\n  content: \"\\F24B\"; }\n\n.fa-cc-diners-club:before {\n  content: \"\\F24C\"; }\n\n.fa-clone:before {\n  content: \"\\F24D\"; }\n\n.fa-balance-scale:before {\n  content: \"\\F24E\"; }\n\n.fa-hourglass-o:before {\n  content: \"\\F250\"; }\n\n.fa-hourglass-1:before,\n.fa-hourglass-start:before {\n  content: \"\\F251\"; }\n\n.fa-hourglass-2:before,\n.fa-hourglass-half:before {\n  content: \"\\F252\"; }\n\n.fa-hourglass-3:before,\n.fa-hourglass-end:before {\n  content: \"\\F253\"; }\n\n.fa-hourglass:before {\n  content: \"\\F254\"; }\n\n.fa-hand-grab-o:before,\n.fa-hand-rock-o:before {\n  content: \"\\F255\"; }\n\n.fa-hand-stop-o:before,\n.fa-hand-paper-o:before {\n  content: \"\\F256\"; }\n\n.fa-hand-scissors-o:before {\n  content: \"\\F257\"; }\n\n.fa-hand-lizard-o:before {\n  content: \"\\F258\"; }\n\n.fa-hand-spock-o:before {\n  content: \"\\F259\"; }\n\n.fa-hand-pointer-o:before {\n  content: \"\\F25A\"; }\n\n.fa-hand-peace-o:before {\n  content: \"\\F25B\"; }\n\n.fa-trademark:before {\n  content: \"\\F25C\"; }\n\n.fa-registered:before {\n  content: \"\\F25D\"; }\n\n.fa-creative-commons:before {\n  content: \"\\F25E\"; }\n\n.fa-gg:before {\n  content: \"\\F260\"; }\n\n.fa-gg-circle:before {\n  content: \"\\F261\"; }\n\n.fa-tripadvisor:before {\n  content: \"\\F262\"; }\n\n.fa-odnoklassniki:before {\n  content: \"\\F263\"; }\n\n.fa-odnoklassniki-square:before {\n  content: \"\\F264\"; }\n\n.fa-get-pocket:before {\n  content: \"\\F265\"; }\n\n.fa-wikipedia-w:before {\n  content: \"\\F266\"; }\n\n.fa-safari:before {\n  content: \"\\F267\"; }\n\n.fa-chrome:before {\n  content: \"\\F268\"; }\n\n.fa-firefox:before {\n  content: \"\\F269\"; }\n\n.fa-opera:before {\n  content: \"\\F26A\"; }\n\n.fa-internet-explorer:before {\n  content: \"\\F26B\"; }\n\n.fa-tv:before,\n.fa-television:before {\n  content: \"\\F26C\"; }\n\n.fa-contao:before {\n  content: \"\\F26D\"; }\n\n.fa-500px:before {\n  content: \"\\F26E\"; }\n\n.fa-amazon:before {\n  content: \"\\F270\"; }\n\n.fa-calendar-plus-o:before {\n  content: \"\\F271\"; }\n\n.fa-calendar-minus-o:before {\n  content: \"\\F272\"; }\n\n.fa-calendar-times-o:before {\n  content: \"\\F273\"; }\n\n.fa-calendar-check-o:before {\n  content: \"\\F274\"; }\n\n.fa-industry:before {\n  content: \"\\F275\"; }\n\n.fa-map-pin:before {\n  content: \"\\F276\"; }\n\n.fa-map-signs:before {\n  content: \"\\F277\"; }\n\n.fa-map-o:before {\n  content: \"\\F278\"; }\n\n.fa-map:before {\n  content: \"\\F279\"; }\n\n.fa-commenting:before {\n  content: \"\\F27A\"; }\n\n.fa-commenting-o:before {\n  content: \"\\F27B\"; }\n\n.fa-houzz:before {\n  content: \"\\F27C\"; }\n\n.fa-vimeo:before {\n  content: \"\\F27D\"; }\n\n.fa-black-tie:before {\n  content: \"\\F27E\"; }\n\n.fa-fonticons:before {\n  content: \"\\F280\"; }\n\n.fa-reddit-alien:before {\n  content: \"\\F281\"; }\n\n.fa-edge:before {\n  content: \"\\F282\"; }\n\n.fa-credit-card-alt:before {\n  content: \"\\F283\"; }\n\n.fa-codiepie:before {\n  content: \"\\F284\"; }\n\n.fa-modx:before {\n  content: \"\\F285\"; }\n\n.fa-fort-awesome:before {\n  content: \"\\F286\"; }\n\n.fa-usb:before {\n  content: \"\\F287\"; }\n\n.fa-product-hunt:before {\n  content: \"\\F288\"; }\n\n.fa-mixcloud:before {\n  content: \"\\F289\"; }\n\n.fa-scribd:before {\n  content: \"\\F28A\"; }\n\n.fa-pause-circle:before {\n  content: \"\\F28B\"; }\n\n.fa-pause-circle-o:before {\n  content: \"\\F28C\"; }\n\n.fa-stop-circle:before {\n  content: \"\\F28D\"; }\n\n.fa-stop-circle-o:before {\n  content: \"\\F28E\"; }\n\n.fa-shopping-bag:before {\n  content: \"\\F290\"; }\n\n.fa-shopping-basket:before {\n  content: \"\\F291\"; }\n\n.fa-hashtag:before {\n  content: \"\\F292\"; }\n\n.fa-bluetooth:before {\n  content: \"\\F293\"; }\n\n.fa-bluetooth-b:before {\n  content: \"\\F294\"; }\n\n.fa-percent:before {\n  content: \"\\F295\"; }\n\n.fa-gitlab:before {\n  content: \"\\F296\"; }\n\n.fa-wpbeginner:before {\n  content: \"\\F297\"; }\n\n.fa-wpforms:before {\n  content: \"\\F298\"; }\n\n.fa-envira:before {\n  content: \"\\F299\"; }\n\n.fa-universal-access:before {\n  content: \"\\F29A\"; }\n\n.fa-wheelchair-alt:before {\n  content: \"\\F29B\"; }\n\n.fa-question-circle-o:before {\n  content: \"\\F29C\"; }\n\n.fa-blind:before {\n  content: \"\\F29D\"; }\n\n.fa-audio-description:before {\n  content: \"\\F29E\"; }\n\n.fa-volume-control-phone:before {\n  content: \"\\F2A0\"; }\n\n.fa-braille:before {\n  content: \"\\F2A1\"; }\n\n.fa-assistive-listening-systems:before {\n  content: \"\\F2A2\"; }\n\n.fa-asl-interpreting:before,\n.fa-american-sign-language-interpreting:before {\n  content: \"\\F2A3\"; }\n\n.fa-deafness:before,\n.fa-hard-of-hearing:before,\n.fa-deaf:before {\n  content: \"\\F2A4\"; }\n\n.fa-glide:before {\n  content: \"\\F2A5\"; }\n\n.fa-glide-g:before {\n  content: \"\\F2A6\"; }\n\n.fa-signing:before,\n.fa-sign-language:before {\n  content: \"\\F2A7\"; }\n\n.fa-low-vision:before {\n  content: \"\\F2A8\"; }\n\n.fa-viadeo:before {\n  content: \"\\F2A9\"; }\n\n.fa-viadeo-square:before {\n  content: \"\\F2AA\"; }\n\n.fa-snapchat:before {\n  content: \"\\F2AB\"; }\n\n.fa-snapchat-ghost:before {\n  content: \"\\F2AC\"; }\n\n.fa-snapchat-square:before {\n  content: \"\\F2AD\"; }\n\n.fa-pied-piper:before {\n  content: \"\\F2AE\"; }\n\n.fa-first-order:before {\n  content: \"\\F2B0\"; }\n\n.fa-yoast:before {\n  content: \"\\F2B1\"; }\n\n.fa-themeisle:before {\n  content: \"\\F2B2\"; }\n\n.fa-google-plus-circle:before,\n.fa-google-plus-official:before {\n  content: \"\\F2B3\"; }\n\n.fa-fa:before,\n.fa-font-awesome:before {\n  content: \"\\F2B4\"; }\n\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0; }\n\n.sr-only-focusable:active, .sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto; }\n", ""]);
 
 	// exports
 
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "25a32416abee198dd821b0b17a198a8f.eot";
 
 /***/ },
 /* 248 */
@@ -99227,28 +98724,22 @@
 /* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "25a32416abee198dd821b0b17a198a8f.eot";
+	module.exports = __webpack_require__.p + "e6cf7c6ec7c2d6f670ae9d762604cb0b.woff2";
 
 /***/ },
 /* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "e6cf7c6ec7c2d6f670ae9d762604cb0b.woff2";
+	module.exports = __webpack_require__.p + "c8ddf1e5e5bf3682bc7bebf30f394148.woff";
 
 /***/ },
 /* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "c8ddf1e5e5bf3682bc7bebf30f394148.woff";
-
-/***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = __webpack_require__.p + "1dc35d25e61d819a9c357074014867ab.ttf";
 
 /***/ },
-/* 253 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "d7c639084f684d66a1bc66855d193ed8.svg";
