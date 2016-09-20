@@ -19,6 +19,8 @@ export default class DatasetSelector extends React.Component {
     this.setState({selectedIndex, csvInputValue: ''})
     if (!this._isCustomSelection(selectedIndex)) {
       this.props.onDatasetSelected(selectedIndex)
+    } else {
+      this.props.onResizeNeeded()
     }
   }
 
@@ -35,7 +37,7 @@ export default class DatasetSelector extends React.Component {
 
   /** Return true if index is the 'Custom' option */
   _isCustomSelection(index) {
-    return (index || parseInt(this.state.selectedIndex, 10)) === this.props.labels.length
+    return parseInt(index || this.state.selectedIndex, 10) === this.props.labels.length
   }
 
   _renderMenu() {
@@ -96,9 +98,11 @@ DatasetSelector.propTypes = {
   labels: React.PropTypes.array,
   onDatasetSelected: React.PropTypes.func,
   onCustomDataset: React.PropTypes.func,
+  onResizeNeeded: React.PropTypes.func,
 }
 DatasetSelector.defaultProps = {
   labels: [],
   onDatasetSelected: () => {},
   onCustomDataset: () => {},
+  onResizeNeeded: () => {},
 }

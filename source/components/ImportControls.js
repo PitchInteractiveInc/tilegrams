@@ -50,6 +50,8 @@ export default class ImportControls extends React.Component {
     this.setState({selectedIndex})
     if (!this._isCustomSelection(selectedIndex)) {
       this.props.onTilegramSelected(selectedIndex)
+    } else {
+      this.props.onResizeNeeded()
     }
   }
 
@@ -112,9 +114,11 @@ ImportControls.propTypes = {
   labels: React.PropTypes.array,
   onTilegramSelected: React.PropTypes.func,
   onCustomImport: React.PropTypes.func,
+  onResizeNeeded: React.PropTypes.func,
 }
 ImportControls.defaultProps = {
   labels: [],
   onTilegramSelected: () => {},
   onCustomImport: () => {},
+  onResizeNeeded: () => {},
 }
