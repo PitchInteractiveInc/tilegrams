@@ -469,7 +469,7 @@ export default class GridGraphic extends Graphic {
 
     // stroke
     this._ctx.strokeStyle = '#333'
-    this._ctx.lineWidth = 0.5
+    this._ctx.lineWidth = 0.25 * devicePixelRatio
     this._ctx.strokeRect(...rect)
 
     // fill
@@ -497,7 +497,7 @@ export default class GridGraphic extends Graphic {
     }
     if (drawStroke) {
       ctx.strokeStyle = selectedTileBorderColor
-      ctx.lineWidth = 1.5
+      ctx.lineWidth = 1.0 * devicePixelRatio
       ctx.stroke()
     }
   }
@@ -519,7 +519,7 @@ export default class GridGraphic extends Graphic {
       this._ctx.closePath()
       this._ctx.globalAlpha = 0.75
       this._ctx.strokeStyle = hoveredTileBorderColor
-      this._ctx.lineWidth = 2.0
+      this._ctx.lineWidth = 1.0 * devicePixelRatio
       this._ctx.stroke()
       this._ctx.globalAlpha = 1.0
     })
@@ -590,7 +590,7 @@ export default class GridGraphic extends Graphic {
     this._ctx.lineTo(...toPoint)
     this._ctx.closePath()
     this._ctx.strokeStyle = selectedTileBorderColor
-    this._ctx.lineWidth = 2
+    this._ctx.lineWidth = 1.0 * devicePixelRatio
     this._ctx.stroke()
   }
 
