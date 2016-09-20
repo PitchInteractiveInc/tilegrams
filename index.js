@@ -17,6 +17,8 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 let cartogramComputeTimer
 
 let importing = false
+let metricPerTile = null
+let sumMetrics = null
 
 function selectDataset(dataset) {
   importing = false
@@ -24,26 +26,25 @@ function selectDataset(dataset) {
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
-    canvas.iterateCartogram()
+    const iterated = canvas.iterateCartogram()
+    if (iterated) {
+      canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
+    }
   }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
 }
 
 function updateUi() {
-  ui.setTiles(
-    canvas.getGrid().getTiles(),
-    canvas.getGrid().getOriginalTilesLength()
-  )
+  ui.setTiles(canvas.getGrid().getTiles())
   ui.render()
 }
 
 function loadTopoJson(topoJson) {
   importing = true
-  const {tiles, metricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
+  const {tiles, newMetricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
   const dataset = datasetResource.buildDatasetFromTiles(tiles)
 
   ui.setSelectedDataset(dataset)
-  ui.metricPerTile = metricPerTile
-
+  ui.metricPerTile = newMetricPerTile
   canvas.importTiles(tiles, cartogramArea)
   updateUi()
 }
@@ -67,12 +68,14 @@ function init() {
   ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
-  ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
-    ui.metricPerTile = metricPerTile
+  ui.setResolutionChangedCallback((newMetricPerTile, newSumMetrics) => {
     if (importing) {
       return
     }
-    canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
+    metricPerTile = newMetricPerTile // for tile calculation
+    sumMetrics = newSumMetrics
+    ui.metricPerTile = newMetricPerTile
+    canvas.updateTilesFromMetrics(newMetricPerTile, newSumMetrics)
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {

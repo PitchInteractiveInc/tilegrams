@@ -28,8 +28,8 @@ class Canvas {
     const iterated = this._mapGraphic.iterateCartogram()
     if (iterated) {
       this._setCartogramArea()
-      this.updateTiles()
     }
+    return iterated
   }
 
   importTiles(tiles, cartogramArea) {

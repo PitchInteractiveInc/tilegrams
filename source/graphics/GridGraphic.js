@@ -15,7 +15,6 @@ import {
 export default class GridGraphic extends Graphic {
   constructor() {
     super()
-    this.originalTilesLength = 0
     this._highlightId = null
     this._makingMarqueeSelection = false
     this._draggingMultiSelect = false
@@ -321,8 +320,6 @@ export default class GridGraphic extends Graphic {
         this._tiles.push(tile)
       }
     })
-    // save tiles length so the stats does not have a moving target
-    this.originalTilesLength = this._tiles.length
     this._hasBeenEdited = false // reset edit state
     this.updateUi()
     this.renderBackgroundImage()
@@ -340,10 +337,6 @@ export default class GridGraphic extends Graphic {
 
   getTiles() {
     return this._tiles
-  }
-
-  getOriginalTilesLength() {
-    return this.originalTilesLength
   }
 
   _findTile(position) {

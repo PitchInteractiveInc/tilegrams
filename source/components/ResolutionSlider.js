@@ -13,7 +13,7 @@ export default class ResolutionSlider extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (JSON.stringify(nextProps.metricDomain) !== JSON.stringify(this.props.metricDomain)) {
+    if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
       this.normalizeValue.domain(nextProps.metricDomain) // update the domain
       this._triggerChangeFromSlider(50)
     }

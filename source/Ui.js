@@ -14,7 +14,6 @@ class Ui {
     this._init()
     this.metricPerTile = null
     this._tiles = null
-    this._originalTilesLength = null
     this._editing = false
 
     this._startOver = this._startOver.bind(this)
@@ -43,9 +42,8 @@ class Ui {
     this._geos = geos
   }
 
-  setTiles(tiles, originalTilesLength) {
+  setTiles(tiles) {
     this._tiles = tiles
-    this._originalTilesLength = originalTilesLength
   }
 
   setAddTileCallback(callback) {
@@ -188,6 +186,7 @@ class Ui {
         selectCustomDataset={this._customDatasetCallback}
         importCustom={this._importCallback}
         metricDomain={this._metricDomain}
+        metricPerTile={this.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
         onResizeNeeded={this._resizeAfterPaint}
@@ -247,7 +246,6 @@ class Ui {
               dataset={this._selectedDataset}
               geos={this._geos}
               tiles={this._tiles}
-              originalTilesLength={this._originalTilesLength}
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
               onMetricMouseOut={this._unhighlightCallback}

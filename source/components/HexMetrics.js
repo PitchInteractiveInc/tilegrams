@@ -150,7 +150,6 @@ HexMetrics.propTypes = {
   tiles: PropTypes.array,
   geos: PropTypes.array,
   metricPerTile: PropTypes.number,
-  originalTilesLength: PropTypes.number,
   onAddTileMouseDown: PropTypes.func,
   onMetricMouseOut: PropTypes.func,
   onMetricMouseOver: PropTypes.func,
