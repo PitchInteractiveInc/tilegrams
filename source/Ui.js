@@ -200,7 +200,7 @@ class Ui {
         onClick={this._setEditing(false)}
       >
         <div className='highlight-bar' />
-        <p><span>Step 1:</span> Choose a tilegram</p>
+        <p><span>1</span> Begin with a tilegram</p>
       </div>
     )
     const editOption = (
@@ -209,7 +209,7 @@ class Ui {
         onClick={this._setEditing(true)}
       >
         <div className='highlight-bar' />
-        <p><span>Step 2:</span> Edit your tilegram</p>
+        <p><span>2</span> Edit your tilegram</p>
       </div>
     )
     let modal = null
@@ -227,8 +227,12 @@ class Ui {
         <div className='column'>
           <div className='no-scroll-ui'>
             <h1 className='title'>
-              Tilegrams
+              Make a Tilegram
             </h1>
+            <p className='intro'>
+              A “tilegram” is a tiled cartogram: a map made of regular tiles
+              where the regions are sized proportionally to some dataset.
+            </p>
             <hr />
             {generateOption}
             <div className={this._editing ? 'deselected' : null} >

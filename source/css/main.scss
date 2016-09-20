@@ -1,13 +1,16 @@
-@import url('https://fonts.googleapis.com/css?family=Fira+Sans:400,500');
+@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700');
 @import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
 $sidebar-width: 320px;
 $blue: #5656f7;
+$ui-background-color: #1a1a1a;
+$ui-margin: 25px;
 
 body {
   margin: 0;
   font-family: $font-stack;
+  font-weight: 400;
 }
 
 a {
@@ -39,11 +42,11 @@ a {
   cursor: pointer;
   margin-bottom: 10px;
   p {
-    padding: 15px;
+    padding: 15px $ui-margin;
     line-height: 1.25em;
     span {
-      font-size: 1.25em;
-      font-weight: bold;
+      margin-right: 0.5em;
+      font-weight: 700;
     }
   }
   .highlight-bar {
@@ -100,7 +103,7 @@ a {
   left: 0;
   bottom: 0;
   right: calc(100% - #{$sidebar-width});
-  background-color: #1a1a1a;
+  background-color: $ui-background-color;
   color: #fff;
   overflow-x: hidden;
   overflow-y: auto;
@@ -111,12 +114,19 @@ a {
     background-color: #444;
   }
   h1 {
-    padding-top: 15px;
     font-size: 200%;
     line-height: 1.2em;
+    padding: $ui-margin;
   }
-  h1 {
-    padding: 15px;
+  p.intro {
+    margin: 0 $ui-margin;
+    font-weight: 300;
+    line-height: 1.5em;
+    opacity: 0.8;
+    a {
+      text-decoration: none;
+      font-weight: 400;
+    }
   }
   label.radio-label {
     position: relative;
@@ -127,7 +137,7 @@ a {
     overflow: scroll;
   }
   .ui-controls {
-    padding: 0 10px;
+    padding: 0 $ui-margin;
     .ui-control-type {
       padding-bottom: 20px;
     }
@@ -171,10 +181,11 @@ a {
     }
   }
   .metrics {
-    padding: 0 8px;
+    padding: 0 $ui-margin;
     overflow: scroll;
   }
   #metrics-header {
+    margin-left: 0.5em;
     padding-bottom: 0.5em;
   }
   #warning {
