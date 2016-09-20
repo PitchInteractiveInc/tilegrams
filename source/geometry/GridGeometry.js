@@ -8,7 +8,7 @@ import PointyTopHexagonShape from './shapes/PointyTopHexagonShape'
 const TILE_OFFSET = 1
 
 // tile margins must be even to not break Importer._getTilePosition()
-export const IMPORT_TILE_MARGINS = 10
+export const IMPORT_TILE_MARGINS = 6
 
 const shape = new PointyTopHexagonShape()
 
