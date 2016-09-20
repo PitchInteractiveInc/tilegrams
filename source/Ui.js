@@ -256,7 +256,7 @@ class Ui {
                 onClick={() => this._exportCallback()}
               />
               <ExportButton
-                text='Export Svg'
+                text='Export SVG'
                 onClick={() => this._exportSvgCallback()}
               />
             </fieldset>
