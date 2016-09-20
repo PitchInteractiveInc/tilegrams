@@ -601,12 +601,20 @@ export default class GridGraphic extends Graphic {
       return new Array(counts.height)
     })
     this._tiles.forEach(tile => {
-      this._tileIdArray[tile.position.x][tile.position.y] = tile.id
+      const column = this._tileIdArray[tile.position.x]
+      if (!column) {
+        return
+      }
+      column[tile.position.y] = tile.id
     })
   }
 
   _isAbutting(position, offset, checkId) {
-    const id = this._tileIdArray[position.x + offset.x][position.y + offset.y]
+    const column = this._tileIdArray[position.x + offset.x]
+    if (!column) {
+      return
+    }
+    const id = column[position.y + offset.y]
     return id != null && id !== checkId
   }
 
