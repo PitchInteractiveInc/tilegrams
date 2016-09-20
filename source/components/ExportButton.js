@@ -2,11 +2,9 @@ import React from 'react'
 
 export default function ExportButton(props) {
   return (
-    <fieldset>
-      <a className='export' onClick={props.onClick}>
-        {props.text}
-      </a>
-    </fieldset>
+    <a className='export' onClick={props.onClick}>
+      {props.text}
+    </a>
   )
 }
 ExportButton.propTypes = {

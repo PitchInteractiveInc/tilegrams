@@ -2,7 +2,7 @@
 @import 'reset';
 
 $font-stack: 'Fira Sans', sans-serif;
-$sidebar-width: 280px;
+$sidebar-width: 320px;
 $blue: #5656f7;
 
 body {
@@ -90,7 +90,7 @@ a {
   .gnl-logo {
     display: inline-block;
     height: 1.2em;
-    margin-bottom: -3px;
+    margin-bottom: -4px;
   }
 }
 
@@ -218,13 +218,16 @@ fieldset {
     width: $sidebar-width * 0.3;
     margin-bottom: 6px;
   }
+  select {
+    font-size: 125%;
+  }
   a.export {
+    display: inline-block;
     background-color: $blue;
     border-radius: 5px;
     padding: 0.5em 0.75em;
+    margin: 0 0.5em;
     color: white;
-    margin: 0;
-    font-size: 80%;
   }
   a.import {
     margin: 0;

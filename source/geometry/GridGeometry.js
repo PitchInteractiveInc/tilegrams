@@ -59,6 +59,10 @@ class GridGeometry {
     return shape.getDrawOffsetY(x)
   }
 
+  getTileCounts() {
+    return this._tileCounts
+  }
+
   resize() {
     this._tileSize = shape.getTileSize(this._tileEdge)
     const gridUnit = shape.getGridUnit()
@@ -75,8 +79,8 @@ class GridGeometry {
   }
 
   forEachTilePosition(iterator) {
-    for (let x = TILE_OFFSET; x < this._tileCounts.width; x++) {
-      for (let y = TILE_OFFSET; y < this._tileCounts.height; y++) {
+    for (let x = TILE_OFFSET - 2; x < this._tileCounts.width + 3; x++) {
+      for (let y = TILE_OFFSET - 2; y < this._tileCounts.height + 3; y++) {
         iterator(x, y)
       }
     }

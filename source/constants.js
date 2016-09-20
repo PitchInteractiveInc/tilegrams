@@ -22,7 +22,6 @@ const nTileDomain = [80, 8000]
 class Settings {
   constructor() {
     this.tileScale = 0.95
-    this.hueScalar = 5
     this.displayMap = true
     this.displayGrid = true
   }
@@ -30,7 +29,6 @@ class Settings {
 const settings = new Settings()
 const gui = new dat.GUI()
 gui.add(settings, 'tileScale', 0.9, 1.0)
-gui.add(settings, 'hueScalar', 1, 10)
 gui.add(settings, 'displayMap')
 gui.add(settings, 'displayGrid')
 dat.GUI.toggleHide()
