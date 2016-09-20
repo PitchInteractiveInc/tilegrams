@@ -9,7 +9,7 @@ geographic maps, while still retaining a familiar appearance.
 
 This free, open-source tool enables news designers and developers
 to browse existing tilegrams or make their own for use in interactive
-and print publication.
+and print publications.
 
 Even with computer automation, tilegrams can be time-consuming to produce,
 because, to be effective, they require a human eye to verify that geographic
@@ -62,8 +62,8 @@ The number indicates the _delta inaccuracy_ between the number of tiles that
 region _currently_ has on the map and how many it _should_ have, based on the
 dataset. If the delta is positive, that region has too many tiles on the map.
 If the delta is negative, it doesn't have enough tiles on the map. If there
-is a warning sign, then that region has _no_ tiles on the map; that may be
-alright in certain situations, but unacceptable in others.
+If there is a warning sign, then that region doesn't have enough data for even a
+single tile on the map at the chosen resolution.
 
 (_Why does this happen?_ It is computationally very difficult to produce
 tilegrams which are accurate _and_ recognizable. As you begin to make
@@ -91,10 +91,14 @@ using US FIPS codes.
 Then you may alter the resolution in two ways. The most visually gratifying is
 to click and grab the **Resolution** slider and watch as the tiles are
 re-computed in realtime. The other, more statistically accurate way is to click
-into the **Per tile** field and entire your desired value per tile. For example,
-if you are using population to scale the regions of your tilegram, you might
-enter `500,000` so that each tile corresponds to (approximately) five hundred
-thousand people.
+into the **Per tile** field and entire your desired value per tile.
+
+For example, if you are using population to scale the regions of your tilegram,
+you might enter '500,000' so that each tile corresponds to (approximately) five
+hundred thousand people. Then, each region's number of tiles is rounded to the
+nearest multiple of that number. So, in this same example, if you have a region
+with 700,000 people, the metrics would show that you need one tile and if you
+have a region with 800,000 people it would round up to two tiles.
 
 As you adjust the **Dataset** and **Resolution**/**Per tile**, you'll notice
 that the _deltas_ under **State Tiles** update dynamically. Please remember
