@@ -559,7 +559,7 @@ export default class GridGraphic extends Graphic {
   _drawInlandBoundaries(tile) {
     const {position, id} = tile
     const center = gridGeometry.tileCenterPoint(position)
-    const points = gridGeometry.getPointsAround(center)
+    const points = gridGeometry.getPointsAround(center, true)
 
     const adjacentRight = this._isAbutting(position, {x: 1, y: 0}, id)
     const adjacentLowerRight = this._isAbutting(
