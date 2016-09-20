@@ -28,7 +28,7 @@ class Importer {
     const tiles = this._getTilePositions(tilePoints)
     return {
       tiles: this._normalizeTilePosition(tiles),
-      metricPerTile: topoJson.properties.tilegramMetricPerTile,
+      newMetricPerTile: topoJson.properties.tilegramMetricPerTile,
       cartogramArea: topoJson.properties.tilegramCartogramArea,
     }
   }
