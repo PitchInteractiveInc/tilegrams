@@ -52,12 +52,16 @@ export default class TileGenerationUiControls extends React.Component {
       <div className='ui-controls'>
         <div className='padding-bottom'>
           <input
+            id='load-tilegram'
             type='radio'
             name='tile-controls'
             value='import'
             checked={this.state.selectedOption === 'import'}
             onChange={this._changeOption}
-          /> Load tilegram
+          />
+          <label htmlFor='load-tilegram' className='radio-label'>
+            Load existing
+          </label>
           <div className={this.state.selectedOption !== 'import' ? 'collapsed' : null} >
             <ImportControls
               labels={this.props.tilegramLabels}
@@ -68,12 +72,16 @@ export default class TileGenerationUiControls extends React.Component {
         </div>
         <div>
           <input
+            id='generate-tilegram'
             type='radio'
             name='tile-controls'
             value='generate'
             checked={this.state.selectedOption === 'generate'}
             onChange={this._changeOption}
-          /> Generate Cartogram From Data
+          />
+          <label htmlFor='generate-tilegram' className='radio-label'>
+            Generate from data
+          </label>
           <div className={this.state.selectedOption !== 'generate' ? 'collapsed' : null}>
             <DatasetSelector
               labels={this.props.datasetLabels}

@@ -181,7 +181,7 @@ class Ui {
         onClick={this._setEditing(false)}
       >
         <div className='highlight-bar' />
-        <p><span>Step 1:</span> Choose a starting point</p>
+        <p><span>Step 1:</span> Choose a tilegram</p>
       </div>
     )
     const editOption = (
