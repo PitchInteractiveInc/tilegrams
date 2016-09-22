@@ -1,7 +1,7 @@
 {
-  "name": "hexagon-cartograms",
+  "name": "tilegrams",
   "version": "1.0.0",
-  "description": "Hexagon cartogram editor",
+  "description": "Make hexagonally tiled cartograms",
   "author": "Pitch Interactive, Inc.",
   "license": "ISC",
   "repository": {
