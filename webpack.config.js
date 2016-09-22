@@ -1,11 +1,13 @@
 var path = require('path')
 var webpack = require('webpack')
-var HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
-  entry: './index.js',
+  entry: {
+    javascript: './index.js',
+    html: './index.html',
+  },
   output: {
-    filename: '[name].js',
+    filename: 'main.js',
     path: 'dist',
   },
   module: {
@@ -24,6 +26,10 @@ module.exports = {
         query: {
           presets: ['es2015', 'react'],
         }
+      },
+      {
+        test: /\.html$/,
+        loader: "file?name=[name].[ext]"
       },
       {
         test: /\.json$/,
@@ -45,9 +51,4 @@ module.exports = {
       {test: /\.png(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader"}
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: "Tilegrams",
-    }),
-  ],
 }
