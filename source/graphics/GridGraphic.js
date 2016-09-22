@@ -189,6 +189,7 @@ export default class GridGraphic extends Graphic {
         this._newTile = null
       }
       this._draggingMultiSelect = false
+      this._positionClusterLabels()
     }
   }
 
@@ -323,6 +324,7 @@ export default class GridGraphic extends Graphic {
     this._hasBeenEdited = false // reset edit state
     this.updateUi()
     this.renderBackgroundImage()
+    this._positionClusterLabels()
     return this._tiles
   }
 
@@ -333,6 +335,7 @@ export default class GridGraphic extends Graphic {
     gridGeometry.setTileEdgeFromMax(maxX, maxY)
     this._tiles = tiles
     this.renderBackgroundImage()
+    this._positionClusterLabels()
   }
 
   getTiles() {
@@ -421,9 +424,9 @@ export default class GridGraphic extends Graphic {
     this._drawClusterLabels()
   }
 
-  _drawClusterLabels() {
+  _positionClusterLabels() {
     const ids = new Set(this._tiles.map(t => t.id))
-    ids.forEach((id) => {
+    this._labels = Array.from(ids).map((id) => {
       const tiles = this._getTilesById(id)
       const clusters = this._computeClusters(tiles)
       let biggestCluster = []
@@ -438,15 +441,27 @@ export default class GridGraphic extends Graphic {
         },
         [0, 0]
       )
-      const clusterAvg = [
-        clusterSum[0] / biggestCluster.length,
-        clusterSum[1] / biggestCluster.length,
-      ]
+      return {
+        id,
+        position: {
+          x: clusterSum[0] / biggestCluster.length,
+          y: clusterSum[1] / biggestCluster.length,
+        },
+      }
+    })
+  }
+
+  _drawClusterLabels() {
+    this._labels.forEach(label => {
       this._ctx.textAlign = 'center'
       this._ctx.textBaseline = 'middle'
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Fira Sans`
-      this._ctx.fillText(fipsToPostal(id), clusterAvg[0], clusterAvg[1])
+      this._ctx.fillText(
+        fipsToPostal(label.id),
+        label.position.x,
+        label.position.y
+      )
     })
   }
 
