@@ -605,7 +605,7 @@ export default class GridGraphic extends Graphic {
   _isAbutting(position, offset, checkId) {
     const column = this._tileIdArray[position.x + offset.x]
     if (!column) {
-      return
+      return false
     }
     const id = column[position.y + offset.y]
     return id != null && id !== checkId
