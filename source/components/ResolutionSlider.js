@@ -44,14 +44,13 @@ export default class ResolutionSlider extends React.Component {
     let sanitizedValue = null
     let typedValue = this.state.typedValue
     if (typeof typedValue === 'string') {
-      typedValue = typedValue.replace(/,/g, '') // remove typed commas
+      typedValue = parseFloat(typedValue.replace(/,/g, ''))
     }
+    sanitizedValue = typedValue
     if (typedValue < min) {
       sanitizedValue = min
     } else if (typedValue > max) {
       sanitizedValue = max
-    } else {
-      sanitizedValue = parseFloat(typedValue)
     }
     if (isNaN(typedValue)) { // catch any bad values and reset
       sanitizedValue = min
