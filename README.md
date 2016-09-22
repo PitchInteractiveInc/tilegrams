@@ -3,10 +3,9 @@
 A “tilegram” is a map made of tiles
 where regions are sized proportionally to a dataset.
 
-One day, we got [really interested](https://twitter.com/pitchinc/status/765962981855199232)
-in cartograms made from hexagons.
-
-**Please read the [MANUAL](MANUAL.md)**
+You can read more in
+[our blog post](pitchinteractive.com/latest/tilegrams-more-human-maps/)
+or the [manual](MANUAL.md).
 
 ## Development
 
