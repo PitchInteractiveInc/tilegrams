@@ -4,7 +4,7 @@ A “tilegram” is a map made of tiles
 where regions are sized proportionally to a dataset.
 
 You can read more in
-[our blog post](pitchinteractive.com/latest/tilegrams-more-human-maps/)
+[our blog post](http://pitchinteractive.com/latest/tilegrams-more-human-maps/)
 or the [manual](MANUAL.md).
 
 ## Development
