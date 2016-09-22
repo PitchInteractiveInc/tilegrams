@@ -30,6 +30,7 @@ export default class TileGenerationUiControls extends React.Component {
       }
     } else if (selectedOption === 'generate') {
       this.props.selectDataset(0)
+      this.resetMetricDomain = true
     }
     this.setState(newState)
   }
@@ -48,6 +49,8 @@ export default class TileGenerationUiControls extends React.Component {
   }
 
   render() {
+    const resetMetricDomain = this.resetMetricDomain
+    this.resetMetricDomain = false
     return (
       <div className='ui-controls'>
         <div className='padding-bottom'>
@@ -91,6 +94,7 @@ export default class TileGenerationUiControls extends React.Component {
               onResizeNeeded={this.props.onResizeNeeded}
             />
             <ResolutionSlider
+              resetMetricDomain={resetMetricDomain}
               metricDomain={this.props.metricDomain}
               onChange={value => this.props.changeResolution(value, this.props.datasetSum)}
             />
@@ -111,6 +115,7 @@ TileGenerationUiControls.propTypes = {
   changeResolution: React.PropTypes.func,
   datasetSum: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
+  metricPerTile: React.PropTypes.number,
   editing: React.PropTypes.bool,
   onResizeNeeded: React.PropTypes.func,
 }

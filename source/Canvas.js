@@ -3,6 +3,7 @@ import Stats from 'stats-js'
 import GridGraphic from './graphics/GridGraphic'
 import MapGraphic from './graphics/MapGraphic'
 import gridGeometry from './geometry/GridGeometry'
+import metrics from './Metrics'
 import {devicePixelRatio, canvasDimensions, settings} from './constants'
 import {createElement, isDevEnvironment} from './utils'
 
@@ -28,8 +29,8 @@ class Canvas {
     const iterated = this._mapGraphic.iterateCartogram()
     if (iterated) {
       this._setCartogramArea()
-      this.updateTiles()
     }
+    return iterated
   }
 
   importTiles(tiles, cartogramArea) {
@@ -46,8 +47,9 @@ class Canvas {
     this._gridGraphic.populateTiles(this._mapGraphic, this._properties)
   }
 
-  updateTilesFromMetrics(metricPerTile, sumMetrics) {
-    const idealHexArea = (this._cartogramArea * metricPerTile) / sumMetrics
+  updateTilesFromMetrics() {
+    const idealHexArea =
+      (this._cartogramArea * metrics.metricPerTile) / metrics.sumMetrics
     gridGeometry.setTileEdgeFromArea(idealHexArea)
     this.updateTiles()
   }

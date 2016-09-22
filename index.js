@@ -1,5 +1,6 @@
 import canvas from './source/Canvas'
 import ui from './source/Ui'
+import metrics from './source/Metrics'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import datasetResource from './source/resources/DatasetResource'
@@ -24,15 +25,15 @@ function selectDataset(dataset) {
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
-    canvas.iterateCartogram()
+    const iterated = canvas.iterateCartogram()
+    if (iterated) {
+      canvas.updateTilesFromMetrics()
+    }
   }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
 }
 
 function updateUi() {
-  ui.setTiles(
-    canvas.getGrid().getTiles(),
-    canvas.getGrid().getOriginalTilesLength()
-  )
+  ui.setTiles(canvas.getGrid().getTiles())
   ui.render()
 }
 
@@ -42,8 +43,7 @@ function loadTopoJson(topoJson) {
   const dataset = datasetResource.buildDatasetFromTiles(tiles)
 
   ui.setSelectedDataset(dataset)
-  ui.metricPerTile = metricPerTile
-
+  metrics.metricPerTile = metricPerTile
   canvas.importTiles(tiles, cartogramArea)
   updateUi()
 }
@@ -68,17 +68,18 @@ function init() {
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
-    ui.metricPerTile = metricPerTile
     if (importing) {
       return
     }
-    canvas.updateTilesFromMetrics(metricPerTile, sumMetrics)
+    metrics.metricPerTile = metricPerTile
+    metrics.sumMetrics = sumMetrics
+    canvas.updateTilesFromMetrics()
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setExportCallback(() => {
     const json = exporter.toTopoJson(
       canvas.getGrid().getTiles(),
-      ui.metricPerTile,
+      metrics.metricPerTile,
       canvas.getCartogramArea()
     )
     startDownload({

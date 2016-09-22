@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
+import metrics from './Metrics'
 import {createElement} from './utils'
 import {nTileDomain} from './constants'
 import TileGenerationUiControls from './components/TileGenerationUiControls'
@@ -12,9 +13,7 @@ import googleNewsLabLogo from './images/gnl-logo.png'
 class Ui {
   constructor() {
     this._init()
-    this.metricPerTile = null
     this._tiles = null
-    this._originalTilesLength = null
     this._editing = false
 
     this._startOver = this._startOver.bind(this)
@@ -43,9 +42,8 @@ class Ui {
     this._geos = geos
   }
 
-  setTiles(tiles, originalTilesLength) {
+  setTiles(tiles) {
     this._tiles = tiles
-    this._originalTilesLength = originalTilesLength
   }
 
   setAddTileCallback(callback) {
@@ -188,6 +186,7 @@ class Ui {
         selectCustomDataset={this._customDatasetCallback}
         importCustom={this._importCallback}
         metricDomain={this._metricDomain}
+        metricPerTile={metrics.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
         onResizeNeeded={this._resizeAfterPaint}
@@ -251,11 +250,10 @@ class Ui {
           </div>
           <div className={this._editing ? null : 'deselected'}>
             <HexMetrics
-              metricPerTile={this.metricPerTile}
+              metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
               geos={this._geos}
               tiles={this._tiles}
-              originalTilesLength={this._originalTilesLength}
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
               onMetricMouseOut={this._unhighlightCallback}
