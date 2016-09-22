@@ -79,7 +79,7 @@ export default class ImportControls extends React.Component {
 
   render() {
     let importControls
-    let resolution = (
+    const resolution = (
       <fieldset>
         <span className='import-metric'>
           Resolution: {commaNumber(this.props.metricPerTile)} per tile
