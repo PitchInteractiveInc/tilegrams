@@ -71,6 +71,7 @@ export default class TileGenerationUiControls extends React.Component {
               onCustomImport={this._onCustomImport}
               onTilegramSelected={this._onTilegramSelected}
               onResizeNeeded={this.props.onResizeNeeded}
+              metricPerTile={this.props.metricPerTile}
             />
           </div>
         </div>
@@ -128,6 +129,7 @@ TileGenerationUiControls.defaultProps = {
   selectCustomDataset: () => {},
   importCustom: () => {},
   changeResolution: () => {},
+  metricPerTile: 1,
   editing: false,
   onResizeNeeded: () => {},
 }

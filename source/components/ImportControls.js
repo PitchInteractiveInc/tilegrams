@@ -1,4 +1,5 @@
 import React from 'react'
+import commaNumber from 'comma-number'
 
 const CUSTOM_LABEL = 'Upload custom'
 
@@ -78,6 +79,13 @@ export default class ImportControls extends React.Component {
 
   render() {
     let importControls
+    let resolution = (
+      <fieldset>
+        <span className='import-metric'>
+          Resolution: {commaNumber(this.props.metricPerTile)} per tile
+        </span>
+      </fieldset>
+    )
     if (!this.state.usingUpload) {
       let customImportField
       if (this._isCustomSelection()) {
@@ -97,14 +105,18 @@ export default class ImportControls extends React.Component {
             {this._renderMenu()}
           </fieldset>
           {customImportField}
+          {resolution}
         </div>
       )
     } else {
       importControls = (
-        <fieldset>
-          <span>Using {this.state.uploadedFilename}</span>
-          <a onClick={this._resetUpload}>✕</a>
-        </fieldset>
+        <div>
+          <fieldset>
+            <span>Using {this.state.uploadedFilename}</span>
+            <a onClick={this._resetUpload}>✕</a>
+          </fieldset>
+          {resolution}
+        </div>
       )
     }
     return importControls
@@ -115,10 +127,12 @@ ImportControls.propTypes = {
   onTilegramSelected: React.PropTypes.func,
   onCustomImport: React.PropTypes.func,
   onResizeNeeded: React.PropTypes.func,
+  metricPerTile: React.PropTypes.number,
 }
 ImportControls.defaultProps = {
   labels: [],
   onTilegramSelected: () => {},
   onCustomImport: () => {},
   onResizeNeeded: () => {},
+  metricPerTile: 1,
 }
