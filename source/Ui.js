@@ -292,7 +292,7 @@ class Ui {
           |
           View
           <a
-            href='https://github.com/PitchInteractiveInc/hexagon-cartograms'
+            href='https://github.com/PitchInteractiveInc/tilegrams'
             target='_blank'
             rel='noopener noreferrer'
           >
