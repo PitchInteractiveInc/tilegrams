@@ -39,12 +39,12 @@ function updateUi() {
 
 function loadTopoJson(topoJson) {
   importing = true
-  const {tiles, metricPerTile, cartogramArea} = importer.fromTopoJson(topoJson)
+  const {tiles, metricPerTile} = importer.fromTopoJson(topoJson)
   const dataset = datasetResource.buildDatasetFromTiles(tiles)
 
   ui.setSelectedDataset(dataset)
   metrics.metricPerTile = metricPerTile
-  canvas.importTiles(tiles, cartogramArea)
+  canvas.importTiles(tiles)
   updateUi()
 }
 
@@ -79,8 +79,7 @@ function init() {
   ui.setExportCallback(() => {
     const json = exporter.toTopoJson(
       canvas.getGrid().getTiles(),
-      metrics.metricPerTile,
-      canvas.getCartogramArea()
+      metrics.metricPerTile
     )
     startDownload({
       filename: 'tiles.topo.json',

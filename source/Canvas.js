@@ -33,10 +33,9 @@ class Canvas {
     return iterated
   }
 
-  importTiles(tiles, cartogramArea) {
+  importTiles(tiles) {
     this._mapGraphic.resetBounds()
     this._gridGraphic.importTiles(tiles)
-    this._cartogramReady = cartogramArea
     this._cartogramReady = true
   }
 
@@ -56,10 +55,6 @@ class Canvas {
 
   _setCartogramArea() {
     this._cartogramArea = this._mapGraphic.computeCartogramArea()
-  }
-
-  getCartogramArea() {
-    return this._cartogramArea
   }
 
   getGrid() {

@@ -14,7 +14,7 @@ export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles, metricPerTile, cartogramArea) {
+  toTopoJson(tiles, metricPerTile) {
     const geometries = []
     const arcs = []
 
@@ -57,7 +57,6 @@ class Exporter {
       type: 'Topology',
       properties: {
         tilegramMetricPerTile: metricPerTile,
-        tilegramCartogramArea: cartogramArea,
         tilegramVersion: version,
       },
       objects: {
