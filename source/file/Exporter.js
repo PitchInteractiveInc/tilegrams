@@ -42,8 +42,8 @@ class Exporter {
         }
       }
       geometries.push(geometry)
-      // if tileY is even, then subtract position from maxTile
-      // if tileY is odd, then subtract one to maintain correct staggering
+      // if maxTileY is even, then subtract position from maxTile
+      // if maxTileY is odd, then subtract one to maintain correct staggering
       const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
         y: maxTileY % 2 === 0 ? maxTileY - tile.position.y : maxTileY - tile.position.y - 1,
