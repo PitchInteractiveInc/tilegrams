@@ -29,7 +29,6 @@ class Importer {
     return {
       tiles: this._normalizeTilePosition(tiles),
       metricPerTile: topoJson.properties.tilegramMetricPerTile,
-      cartogramArea: topoJson.properties.tilegramCartogramArea,
     }
   }
 
