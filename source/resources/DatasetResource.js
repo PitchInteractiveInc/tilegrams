@@ -3,6 +3,7 @@ import {csvParseRows} from 'd3-dsv'
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
+import congressionalDistrictsCsv from '../../data/congressional-districts-by-state.csv'
 
 class DatasetResource {
   constructor() {
@@ -18,6 +19,10 @@ class DatasetResource {
       {
         label: 'U.S. GDP 2015 (Millions)',
         data: this.parseCsv(gdpCsv),
+      },
+      {
+        label: 'U.S. Congressional Districts 2010 Census',
+        data: this.parseCsv(congressionalDistrictsCsv),
       },
     ]
     this._selectedDatasetIndex = 2
