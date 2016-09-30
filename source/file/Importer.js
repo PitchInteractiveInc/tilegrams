@@ -110,12 +110,14 @@ class Importer {
     const minY = Math.min(...tileYs)
     const maxY = Math.max(...tileYs)
     const minX = Math.min(...tiles.map(tile => tile.position.x))
+    const yRange = maxY - minY
     return tiles.map(tile => {
       return {
         id: tile.id,
         position: {
           x: (tile.position.x - minX) + (IMPORT_TILE_MARGINS - LEFT_BIAS),
-          y: ((maxY - minY) - (tile.position.y - minY)) + IMPORT_TILE_MARGINS,
+          y: ((yRange - (tile.position.y - minY)) - (yRange % 2))
+             + IMPORT_TILE_MARGINS,
         },
         tilegramValue: tile.tilegramValue,
       }
