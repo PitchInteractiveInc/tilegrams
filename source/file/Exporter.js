@@ -46,7 +46,7 @@ class Exporter {
       // if maxTileY is odd, then subtract one to maintain correct staggering
       const center = gridGeometry.tileCenterPoint({
         x: tile.position.x,
-        y: maxTileY % 2 === 0 ? maxTileY - tile.position.y : maxTileY - tile.position.y - 1,
+        y: (maxTileY - tile.position.y) - (maxTileY % 2),
       })
       const hexagonPoints = gridGeometry.getPointsAround(center, true)
       hexagonPoints.push(hexagonPoints[0]) // close the loop
