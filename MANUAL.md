@@ -17,6 +17,9 @@ contours will be recognizable and meaningful to a general readership. For this
 reason, you're encouraged to begin with existing tilegrams before authoring
 your own.
 
+You can read more about the project in our announcement
+[blog post](http://pitchinteractive.com/latest/tilegrams-more-human-maps/).
+
 This manual proceeds from the most basic to the most advanced usage case.
 
 ## Exporting existing tilegrams
