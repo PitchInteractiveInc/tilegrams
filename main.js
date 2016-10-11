@@ -62,11 +62,11 @@
 
 	var _Exporter2 = _interopRequireDefault(_Exporter);
 
-	var _Importer = __webpack_require__(234);
+	var _Importer = __webpack_require__(233);
 
 	var _Importer2 = _interopRequireDefault(_Importer);
 
-	var _DatasetResource = __webpack_require__(235);
+	var _DatasetResource = __webpack_require__(234);
 
 	var _DatasetResource2 = _interopRequireDefault(_DatasetResource);
 
@@ -74,7 +74,7 @@
 
 	var _MapResource2 = _interopRequireDefault(_MapResource);
 
-	var _TilegramResource = __webpack_require__(240);
+	var _TilegramResource = __webpack_require__(239);
 
 	var _TilegramResource2 = _interopRequireDefault(_TilegramResource);
 
@@ -88,8 +88,8 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	__webpack_require__(244);
-	__webpack_require__(248);
+	__webpack_require__(243);
+	__webpack_require__(247);
 
 	var CARTOGRAM_COMPUTE_FPS = 60.0;
 
@@ -7949,7 +7949,7 @@
 /* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-geo/ Version 1.2.4. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-geo/ Version 1.2.6. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports, __webpack_require__(28)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-array'], factory) :
@@ -7963,9 +7963,9 @@
 	// Code adapted from GeographicLib by Charles F. F. Karney,
 	// http://geographiclib.sourceforge.net/
 
-	function adder() {
+	var adder = function() {
 	  return new Adder;
-	}
+	};
 
 	function Adder() {
 	  this.reset();
@@ -8013,6 +8013,7 @@
 	var cos = Math.cos;
 	var ceil = Math.ceil;
 	var exp = Math.exp;
+
 	var log = Math.log;
 	var pow = Math.pow;
 	var sin = Math.sin;
@@ -8096,13 +8097,13 @@
 	  stream.polygonEnd();
 	}
 
-	function geoStream(object, stream) {
+	var geoStream = function(object, stream) {
 	  if (object && streamObjectType.hasOwnProperty(object.type)) {
 	    streamObjectType[object.type](object, stream);
 	  } else {
 	    streamGeometry(object, stream);
 	  }
-	}
+	};
 
 	var areaRingSum = adder();
 
@@ -8112,6 +8113,7 @@
 	var lambda0;
 	var cosPhi0;
 	var sinPhi0;
+
 	var areaStream = {
 	  point: noop,
 	  lineStart: noop,
@@ -8167,11 +8169,11 @@
 	  lambda0 = lambda, cosPhi0 = cosPhi, sinPhi0 = sinPhi;
 	}
 
-	function area(object) {
+	var area = function(object) {
 	  areaSum.reset();
 	  geoStream(object, areaStream);
 	  return areaSum * 2;
-	}
+	};
 
 	function spherical(cartesian) {
 	  return [atan2(cartesian[1], cartesian[0]), asin(cartesian[2])];
@@ -8216,6 +8218,7 @@
 	var deltaSum = adder();
 	var ranges;
 	var range$1;
+
 	var boundsStream = {
 	  point: boundsPoint,
 	  lineStart: boundsLineStart,
@@ -8254,14 +8257,14 @@
 	    cartesianNormalizeInPlace(inflection);
 	    inflection = spherical(inflection);
 	    var delta = lambda - lambda2,
-	        sign = delta > 0 ? 1 : -1,
-	        lambdai = inflection[0] * degrees * sign,
+	        sign$$1 = delta > 0 ? 1 : -1,
+	        lambdai = inflection[0] * degrees * sign$$1,
 	        phii,
 	        antimeridian = abs(delta) > 180;
-	    if (antimeridian ^ (sign * lambda2 < lambdai && lambdai < sign * lambda)) {
+	    if (antimeridian ^ (sign$$1 * lambda2 < lambdai && lambdai < sign$$1 * lambda)) {
 	      phii = inflection[1] * degrees;
 	      if (phii > phi1) phi1 = phii;
-	    } else if (lambdai = (lambdai + 360) % 360 - 180, antimeridian ^ (sign * lambda2 < lambdai && lambdai < sign * lambda)) {
+	    } else if (lambdai = (lambdai + 360) % 360 - 180, antimeridian ^ (sign$$1 * lambda2 < lambdai && lambdai < sign$$1 * lambda)) {
 	      phii = -inflection[1] * degrees;
 	      if (phii < phi0) phi0 = phii;
 	    } else {
@@ -8336,11 +8339,11 @@
 	  return a[0] - b[0];
 	}
 
-	function rangeContains(range, x) {
-	  return range[0] <= range[1] ? range[0] <= x && x <= range[1] : x < range[0] || range[1] < x;
+	function rangeContains(range$$1, x) {
+	  return range$$1[0] <= range$$1[1] ? range$$1[0] <= x && x <= range$$1[1] : x < range$$1[0] || range$$1[1] < x;
 	}
 
-	function bounds(feature) {
+	var bounds = function(feature) {
 	  var i, n, a, b, merged, deltaMax, delta;
 
 	  phi1 = lambda1 = -(lambda0$1 = phi0 = Infinity);
@@ -8375,7 +8378,7 @@
 	  return lambda0$1 === Infinity || phi0 === Infinity
 	      ? [[NaN, NaN], [NaN, NaN]]
 	      : [[lambda0$1, phi0], [lambda1, phi1]];
-	}
+	};
 
 	var W0;
 	var W1;
@@ -8392,8 +8395,7 @@
 	var phi00$2;
 	var x0;
 	var y0;
-	var z0;
-	// previous point
+	var z0; // previous point
 
 	var centroidStream = {
 	  sphere: noop,
@@ -8501,7 +8503,7 @@
 	  centroidPointCartesian(x0, y0, z0);
 	}
 
-	function centroid(object) {
+	var centroid = function(object) {
 	  W0 = W1 =
 	  X0 = Y0 = Z0 =
 	  X1 = Y1 = Z1 =
@@ -8524,15 +8526,15 @@
 	  }
 
 	  return [atan2(y, x) * degrees, asin(z / sqrt(m)) * degrees];
-	}
+	};
 
-	function constant(x) {
+	var constant = function(x) {
 	  return function() {
 	    return x;
 	  };
-	}
+	};
 
-	function compose(a, b) {
+	var compose = function(a, b) {
 
 	  function compose(x, y) {
 	    return x = a(x, y), b(x[0], x[1]);
@@ -8543,7 +8545,7 @@
 	  };
 
 	  return compose;
-	}
+	};
 
 	function rotationIdentity(lambda, phi) {
 	  return [lambda > pi ? lambda - tau : lambda < -pi ? lambda + tau : lambda, phi];
@@ -8603,7 +8605,7 @@
 	  return rotation;
 	}
 
-	function rotation(rotate) {
+	var rotation = function(rotate) {
 	  rotate = rotateRadians(rotate[0] * radians, rotate[1] * radians, rotate.length > 2 ? rotate[2] * radians : 0);
 
 	  function forward(coordinates) {
@@ -8617,7 +8619,7 @@
 	  };
 
 	  return forward;
-	}
+	};
 
 	// Generates a circle centered at [0°, 0°], with a given radius and precision.
 	function circleStream(stream, radius, delta, direction, t0, t1) {
@@ -8647,7 +8649,7 @@
 	  return ((-point[2] < 0 ? -radius : radius) + tau - epsilon) % tau;
 	}
 
-	function circle() {
+	var circle = function() {
 	  var center = constant([0, 0]),
 	      radius = constant(90),
 	      precision = constant(6),
@@ -8685,9 +8687,9 @@
 	  };
 
 	  return circle;
-	}
+	};
 
-	function clipBuffer() {
+	var clipBuffer = function() {
 	  var lines = [],
 	      line;
 	  return {
@@ -8708,9 +8710,9 @@
 	      return result;
 	    }
 	  };
-	}
+	};
 
-	function clipLine(a, b, x0, y0, x1, y1) {
+	var clipLine = function(a, b, x0, y0, x1, y1) {
 	  var ax = a[0],
 	      ay = a[1],
 	      bx = b[0],
@@ -8768,11 +8770,11 @@
 	  if (t0 > 0) a[0] = ax + t0 * dx, a[1] = ay + t0 * dy;
 	  if (t1 < 1) b[0] = ax + t1 * dx, b[1] = ay + t1 * dy;
 	  return true;
-	}
+	};
 
-	function pointEqual(a, b) {
+	var pointEqual = function(a, b) {
 	  return abs(a[0] - b[0]) < epsilon && abs(a[1] - b[1]) < epsilon;
-	}
+	};
 
 	function Intersection(point, points, other, entry) {
 	  this.x = point;
@@ -8786,7 +8788,7 @@
 	// A generalized polygon clipping algorithm: given a polygon that has been cut
 	// into its visible line segments, and rejoins the segments by interpolating
 	// along the clip edge.
-	function clipPolygon(segments, compareIntersection, startInside, interpolate, stream) {
+	var clipPolygon = function(segments, compareIntersection, startInside, interpolate, stream) {
 	  var subject = [],
 	      clip = [],
 	      i,
@@ -8857,7 +8859,7 @@
 	    } while (!current.v);
 	    stream.lineEnd();
 	  }
-	}
+	};
 
 	function link(array) {
 	  if (!(n = array.length)) return;
@@ -8876,6 +8878,7 @@
 
 	var clipMax = 1e9;
 	var clipMin = -clipMax;
+
 	// TODO Use d3-polygon’s polygonContains here for the ring check?
 	// TODO Eliminate duplicate buffering in clipBuffer and polygon.push?
 
@@ -9037,7 +9040,7 @@
 	  };
 	}
 
-	function extent() {
+	var extent = function() {
 	  var x0 = 0,
 	      y0 = 0,
 	      x1 = 960,
@@ -9054,12 +9057,13 @@
 	      return arguments.length ? (x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1], cache = cacheStream = null, clip) : [[x0, y0], [x1, y1]];
 	    }
 	  };
-	}
+	};
 
 	var lengthSum = adder();
 	var lambda0$2;
 	var sinPhi0$1;
 	var cosPhi0$1;
+
 	var lengthStream = {
 	  sphere: noop,
 	  point: noop,
@@ -9098,19 +9102,20 @@
 	  lambda0$2 = lambda, sinPhi0$1 = sinPhi, cosPhi0$1 = cosPhi;
 	}
 
-	function length(object) {
+	var length = function(object) {
 	  lengthSum.reset();
 	  geoStream(object, lengthStream);
 	  return +lengthSum;
-	}
+	};
 
 	var coordinates = [null, null];
 	var object = {type: "LineString", coordinates: coordinates};
-	function distance(a, b) {
+
+	var distance = function(a, b) {
 	  coordinates[0] = a;
 	  coordinates[1] = b;
 	  return length(object);
-	}
+	};
 
 	function graticuleX(y0, y1, dy) {
 	  var y = d3Array.range(y0, y1 - epsilon, dy).concat(y1);
@@ -9122,7 +9127,7 @@
 	  return function(y) { return x.map(function(x) { return [x, y]; }); };
 	}
 
-	function graticule() {
+	var graticule = function() {
 	  var x1, x0, X1, X0,
 	      y1, y0, Y1, Y0,
 	      dx = 10, dy = dx, DX = 90, DY = 360,
@@ -9209,9 +9214,9 @@
 	  return graticule
 	      .extentMajor([[-180, -90 + epsilon], [180, 90 - epsilon]])
 	      .extentMinor([[-180, -80 - epsilon], [180, 80 + epsilon]]);
-	}
+	};
 
-	function interpolate(a, b) {
+	var interpolate = function(a, b) {
 	  var x0 = a[0] * radians,
 	      y0 = a[1] * radians,
 	      x1 = b[0] * radians,
@@ -9244,11 +9249,11 @@
 	  interpolate.distance = d;
 
 	  return interpolate;
-	}
+	};
 
-	function identity(x) {
+	var identity = function(x) {
 	  return x;
-	}
+	};
 
 	var areaSum$1 = adder();
 	var areaRingSum$1 = adder();
@@ -9256,6 +9261,7 @@
 	var y00;
 	var x0$1;
 	var y0$1;
+
 	var areaStream$1 = {
 	  point: noop,
 	  lineStart: noop,
@@ -9298,6 +9304,7 @@
 	var y0$2 = x0$2;
 	var x1 = -x0$2;
 	var y1 = x1;
+
 	var boundsStream$1 = {
 	  point: boundsPoint$1,
 	  lineStart: noop,
@@ -9318,6 +9325,8 @@
 	  if (y > y1) y1 = y;
 	}
 
+	// TODO Enforce positive area for exterior, negative area for interior?
+
 	var X0$1 = 0;
 	var Y0$1 = 0;
 	var Z0$1 = 0;
@@ -9331,6 +9340,7 @@
 	var y00$1;
 	var x0$3;
 	var y0$3;
+
 	var centroidStream$1 = {
 	  point: centroidPoint$1,
 	  lineStart: centroidLineStart$1,
@@ -9510,7 +9520,7 @@
 	      + "z";
 	}
 
-	function index() {
+	var index = function() {
 	  var pointRadius = 4.5,
 	      projection,
 	      projectionStream,
@@ -9558,11 +9568,11 @@
 	  };
 
 	  return path.projection(null).context(null);
-	}
+	};
 
 	var sum = adder();
 
-	function polygonContains(polygon, point) {
+	var polygonContains = function(polygon, point) {
 	  var lambda = point[0],
 	      phi = point[1],
 	      normal = [sin(lambda), -cos(lambda), 0],
@@ -9588,13 +9598,13 @@
 	          sinPhi1 = sin(phi1),
 	          cosPhi1 = cos(phi1),
 	          delta = lambda1 - lambda0,
-	          sign = delta >= 0 ? 1 : -1,
-	          absDelta = sign * delta,
+	          sign$$1 = delta >= 0 ? 1 : -1,
+	          absDelta = sign$$1 * delta,
 	          antimeridian = absDelta > pi,
 	          k = sinPhi0 * sinPhi1;
 
-	      sum.add(atan2(k * sign * sin(absDelta), cosPhi0 * cosPhi1 + k * cos(absDelta)));
-	      angle += antimeridian ? delta + sign * tau : delta;
+	      sum.add(atan2(k * sign$$1 * sin(absDelta), cosPhi0 * cosPhi1 + k * cos(absDelta)));
+	      angle += antimeridian ? delta + sign$$1 * tau : delta;
 
 	      // Are the longitudes either side of the point’s meridian (lambda),
 	      // and are the latitudes smaller than the parallel (phi)?
@@ -9623,9 +9633,9 @@
 	  // same side as the South pole.
 
 	  return (angle < -epsilon || angle < epsilon && sum < -epsilon) ^ (winding & 1);
-	}
+	};
 
-	function clip(pointVisible, clipLine, interpolate, start) {
+	var clip = function(pointVisible, clipLine, interpolate, start) {
 	  return function(rotate, sink) {
 	    var line = clipLine(sink),
 	        rotatedStart = rotate.invert(start[0], start[1]),
@@ -9742,7 +9752,7 @@
 
 	    return clip;
 	  };
-	}
+	};
 
 	function validSegment(segment) {
 	  return segment.length > 1;
@@ -9845,7 +9855,7 @@
 	  }
 	}
 
-	function clipCircle(radius, delta) {
+	var clipCircle = function(radius, delta) {
 	  var cr = cos(radius),
 	      smallRadius = cr > 0,
 	      notHemisphere = abs(cr) > epsilon; // TODO optimise for this common case
@@ -10019,13 +10029,13 @@
 	  }
 
 	  return clip(visible, clipLine, interpolate, smallRadius ? [0, -radius] : [-pi, radius - pi]);
-	}
+	};
 
-	function transform(prototype) {
+	var transform = function(prototype) {
 	  return {
 	    stream: transform$1(prototype)
 	  };
-	}
+	};
 
 	function transform$1(prototype) {
 	  function T() {}
@@ -10087,12 +10097,11 @@
 	}
 
 	var maxDepth = 16;
-	var cosMinDistance = cos(30 * radians);
-	// cos(minimum angular distance)
+	var cosMinDistance = cos(30 * radians); // cos(minimum angular distance)
 
-	function resample(project, delta2) {
+	var resample = function(project, delta2) {
 	  return +delta2 ? resample$1(project, delta2) : resampleNone(project);
-	}
+	};
 
 	function resampleNone(project) {
 	  return transform$1({
@@ -10291,11 +10300,27 @@
 	  return p;
 	}
 
+	function cylindricalEqualAreaRaw(phi0) {
+	  var cosPhi0 = cos(phi0);
+
+	  function forward(lambda, phi) {
+	    return [lambda * cosPhi0, sin(phi) / cosPhi0];
+	  }
+
+	  forward.invert = function(x, y) {
+	    return [x / cosPhi0, asin(y * cosPhi0)];
+	  };
+
+	  return forward;
+	}
+
 	function conicEqualAreaRaw(y0, y1) {
-	  var sy0 = sin(y0),
-	      n = (sy0 + sin(y1)) / 2,
-	      c = 1 + sy0 * (2 * n - sy0),
-	      r0 = sqrt(c) / n;
+	  var sy0 = sin(y0), n = (sy0 + sin(y1)) / 2;
+
+	  // Are the parallels symmetrical around the Equator?
+	  if (abs(n) < epsilon) return cylindricalEqualAreaRaw(y0);
+
+	  var c = 1 + sy0 * (2 * n - sy0), r0 = sqrt(c) / n;
 
 	  function project(x, y) {
 	    var r = sqrt(c - 2 * n * sin(y)) / n;
@@ -10304,26 +10329,26 @@
 
 	  project.invert = function(x, y) {
 	    var r0y = r0 - y;
-	    return [atan2(x, r0y) / n, asin((c - (x * x + r0y * r0y) * n * n) / (2 * n))];
+	    return [atan2(x, abs(r0y)) / n * sign(r0y), asin((c - (x * x + r0y * r0y) * n * n) / (2 * n))];
 	  };
 
 	  return project;
 	}
 
-	function conicEqualArea() {
+	var conicEqualArea = function() {
 	  return conicProjection(conicEqualAreaRaw)
 	      .scale(155.424)
 	      .center([0, 33.6442]);
-	}
+	};
 
-	function albers() {
+	var albers = function() {
 	  return conicEqualArea()
 	      .parallels([29.5, 45.5])
 	      .scale(1070)
 	      .translate([480, 250])
 	      .rotate([96, 0])
 	      .center([-0.6, 38.7]);
-	}
+	};
 
 	// The projections must have mutually exclusive clip regions on the sphere,
 	// as this will avoid emitting interleaving lines and polygons.
@@ -10344,7 +10369,7 @@
 	// scale to 1285 and adjust the translate accordingly. The set of standard
 	// parallels for each region comes from USGS, which is published here:
 	// http://egsc.usgs.gov/isb/pubs/MapProjections/projections.html#albers
-	function albersUsa() {
+	var albersUsa = function() {
 	  var cache,
 	      cacheStream,
 	      lower48 = albers(), lower48Point,
@@ -10377,7 +10402,7 @@
 	  albersUsa.precision = function(_) {
 	    if (!arguments.length) return lower48.precision();
 	    lower48.precision(_), alaska.precision(_), hawaii.precision(_);
-	    return albersUsa;
+	    return reset();
 	  };
 
 	  albersUsa.scale = function(_) {
@@ -10405,15 +10430,20 @@
 	        .clipExtent([[x - 0.214 * k + epsilon, y + 0.166 * k + epsilon], [x - 0.115 * k - epsilon, y + 0.234 * k - epsilon]])
 	        .stream(pointStream);
 
-	    return albersUsa;
+	    return reset();
 	  };
 
 	  albersUsa.fitExtent = fitExtent(albersUsa);
 
 	  albersUsa.fitSize = fitSize(albersUsa);
 
+	  function reset() {
+	    cache = cacheStream = null;
+	    return albersUsa;
+	  }
+
 	  return albersUsa.scale(1070);
-	}
+	};
 
 	function azimuthalRaw(scale) {
 	  return function(x, y) {
@@ -10448,11 +10478,11 @@
 	  return 2 * asin(z / 2);
 	});
 
-	function azimuthalEqualArea() {
+	var azimuthalEqualArea = function() {
 	  return projection(azimuthalEqualAreaRaw)
 	      .scale(124.75)
 	      .clipAngle(180 - 1e-3);
-	}
+	};
 
 	var azimuthalEquidistantRaw = azimuthalRaw(function(c) {
 	  return (c = acos(c)) && c / sin(c);
@@ -10462,11 +10492,11 @@
 	  return z;
 	});
 
-	function azimuthalEquidistant() {
+	var azimuthalEquidistant = function() {
 	  return projection(azimuthalEquidistantRaw)
 	      .scale(79.4188)
 	      .clipAngle(180 - 1e-3);
-	}
+	};
 
 	function mercatorRaw(lambda, phi) {
 	  return [lambda, log(tan((halfPi + phi) / 2))];
@@ -10476,10 +10506,10 @@
 	  return [x, 2 * atan(exp(y)) - halfPi];
 	};
 
-	function mercator() {
+	var mercator = function() {
 	  return mercatorProjection(mercatorRaw)
 	      .scale(961 / tau);
-	}
+	};
 
 	function mercatorProjection(project) {
 	  var m = projection(project),
@@ -10530,17 +10560,17 @@
 
 	  project.invert = function(x, y) {
 	    var fy = f - y, r = sign(n) * sqrt(x * x + fy * fy);
-	    return [atan2(x, fy) / n, 2 * atan(pow(f / r, 1 / n)) - halfPi];
+	    return [atan2(x, abs(fy)) / n * sign(fy), 2 * atan(pow(f / r, 1 / n)) - halfPi];
 	  };
 
 	  return project;
 	}
 
-	function conicConformal() {
+	var conicConformal = function() {
 	  return conicProjection(conicConformalRaw)
 	      .scale(109.5)
 	      .parallels([30, 30]);
-	}
+	};
 
 	function equirectangularRaw(lambda, phi) {
 	  return [lambda, phi];
@@ -10548,10 +10578,10 @@
 
 	equirectangularRaw.invert = equirectangularRaw;
 
-	function equirectangular() {
+	var equirectangular = function() {
 	  return projection(equirectangularRaw)
 	      .scale(152.63);
-	}
+	};
 
 	function conicEquidistantRaw(y0, y1) {
 	  var cy0 = cos(y0),
@@ -10567,17 +10597,17 @@
 
 	  project.invert = function(x, y) {
 	    var gy = g - y;
-	    return [atan2(x, gy) / n, g - sign(n) * sqrt(x * x + gy * gy)];
+	    return [atan2(x, abs(gy)) / n * sign(gy), g - sign(n) * sqrt(x * x + gy * gy)];
 	  };
 
 	  return project;
 	}
 
-	function conicEquidistant() {
+	var conicEquidistant = function() {
 	  return conicProjection(conicEquidistantRaw)
 	      .scale(131.154)
 	      .center([0, 13.9389]);
-	}
+	};
 
 	function gnomonicRaw(x, y) {
 	  var cy = cos(y), k = cos(x) * cy;
@@ -10586,11 +10616,11 @@
 
 	gnomonicRaw.invert = azimuthalInvert(atan);
 
-	function gnomonic() {
+	var gnomonic = function() {
 	  return projection(gnomonicRaw)
 	      .scale(144.049)
 	      .clipAngle(60);
-	}
+	};
 
 	function orthographicRaw(x, y) {
 	  return [cos(y) * sin(x), sin(y)];
@@ -10598,11 +10628,11 @@
 
 	orthographicRaw.invert = azimuthalInvert(asin);
 
-	function orthographic() {
+	var orthographic = function() {
 	  return projection(orthographicRaw)
 	      .scale(249.5)
 	      .clipAngle(90 + epsilon);
-	}
+	};
 
 	function stereographicRaw(x, y) {
 	  var cy = cos(y), k = 1 + cos(x) * cy;
@@ -10613,11 +10643,11 @@
 	  return 2 * atan(z);
 	});
 
-	function stereographic() {
+	var stereographic = function() {
 	  return projection(stereographicRaw)
 	      .scale(250)
 	      .clipAngle(142);
-	}
+	};
 
 	function transverseMercatorRaw(lambda, phi) {
 	  return [log(tan((halfPi + phi) / 2)), -lambda];
@@ -10627,7 +10657,7 @@
 	  return [-y, 2 * atan(exp(x)) - halfPi];
 	};
 
-	function transverseMercator() {
+	var transverseMercator = function() {
 	  var m = mercatorProjection(transverseMercatorRaw),
 	      center = m.center,
 	      rotate = m.rotate;
@@ -10642,7 +10672,7 @@
 
 	  return rotate([0, 0, 90])
 	      .scale(159.155);
-	}
+	};
 
 	exports.geoArea = area;
 	exports.geoBounds = bounds;
@@ -10687,6 +10717,7 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 	})));
+
 
 /***/ },
 /* 28 */
@@ -19322,12 +19353,13 @@
 	        var geometry = {
 	          type: 'Polygon',
 	          id: tile.id,
-	          arcs: [[tileIndex]]
+	          arcs: [[tileIndex]],
+	          properties: {
+	            state: (0, _utils.fipsToPostal)(tile.id)
+	          }
 	        };
 	        if (tile.tilegramValue) {
-	          geometry.properties = {
-	            tilegramValue: tile.tilegramValue
-	          };
+	          geometry.properties.tilegramValue = tile.tilegramValue;
 	        }
 	        geometries.push(geometry);
 	        // if maxTileY is even, then subtract position from maxTile
@@ -19371,7 +19403,7 @@
 	      groupedTiles.forEach(function (group) {
 	        // convert from hsl to hex string for illustrator
 	        var groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-	        groupEl.setAttribute('id', group.key);
+	        groupEl.setAttribute('id', (0, _utils.fipsToPostal)(group.key));
 	        var colorString = (0, _d3Color.color)((0, _utils.fipsColor)(group.key)).toString();
 	        group.values.forEach(function (tile) {
 	          var center = _GridGeometry2.default.tileCenterPoint({
@@ -20195,7 +20227,7 @@
 
 	module.exports = {
 		"name": "tilegrams",
-		"version": "1.0.1",
+		"version": "1.0.2",
 		"description": "Make hexagonally tiled cartograms",
 		"author": "Pitch Interactive, Inc.",
 		"license": "ISC",
@@ -20305,19 +20337,19 @@
 
 	var _TileGenerationUiControls2 = _interopRequireDefault(_TileGenerationUiControls);
 
-	var _HexMetrics = __webpack_require__(230);
+	var _HexMetrics = __webpack_require__(229);
 
 	var _HexMetrics2 = _interopRequireDefault(_HexMetrics);
 
-	var _ExportButton = __webpack_require__(231);
+	var _ExportButton = __webpack_require__(230);
 
 	var _ExportButton2 = _interopRequireDefault(_ExportButton);
 
-	var _EditWarningModal = __webpack_require__(232);
+	var _EditWarningModal = __webpack_require__(231);
 
 	var _EditWarningModal2 = _interopRequireDefault(_EditWarningModal);
 
-	var _gnlLogo = __webpack_require__(233);
+	var _gnlLogo = __webpack_require__(232);
 
 	var _gnlLogo2 = _interopRequireDefault(_gnlLogo);
 
@@ -20608,7 +20640,7 @@
 	            _react2.default.createElement(
 	              'p',
 	              { className: 'intro' },
-	              'A “tilegram” is a map made of tiles where regions are sized proportionally to a dataset.',
+	              'A \u201Ctilegram\u201D is a map made of tiles where regions are sized proportionally to a dataset.',
 	              _react2.default.createElement('br', null),
 	              _react2.default.createElement(
 	                'a',
@@ -21706,14 +21738,6 @@
 	  var source = null;
 
 	  if (config != null) {
-	    if (process.env.NODE_ENV !== 'production') {
-	      process.env.NODE_ENV !== 'production' ? warning(
-	      /* eslint-disable no-proto */
-	      config.__proto__ == null || config.__proto__ === Object.prototype,
-	      /* eslint-enable no-proto */
-	      'React.createElement(...): Expected props argument to be a plain object. ' + 'Properties defined in its prototype chain will be ignored.') : void 0;
-	    }
-
 	    if (hasValidRef(config)) {
 	      ref = config.ref;
 	    }
@@ -21814,14 +21838,6 @@
 	  var owner = element._owner;
 
 	  if (config != null) {
-	    if (process.env.NODE_ENV !== 'production') {
-	      process.env.NODE_ENV !== 'production' ? warning(
-	      /* eslint-disable no-proto */
-	      config.__proto__ == null || config.__proto__ === Object.prototype,
-	      /* eslint-enable no-proto */
-	      'React.cloneElement(...): Expected props argument to be a plain object. ' + 'Properties defined in its prototype chain will be ignored.') : void 0;
-	    }
-
 	    if (hasValidRef(config)) {
 	      // Silently steal the ref from the parent.
 	      ref = config.ref;
@@ -24855,7 +24871,7 @@
 
 	'use strict';
 
-	module.exports = '15.3.1';
+	module.exports = '15.3.2';
 
 /***/ },
 /* 80 */
@@ -25837,8 +25853,10 @@
 	function getFallbackBeforeInputChars(topLevelType, nativeEvent) {
 	  // If we are currently composing (IME) and using a fallback to do so,
 	  // try to extract the composed characters from the fallback object.
+	  // If composition event is available, we extract a string only at
+	  // compositionevent, otherwise extract it at fallback events.
 	  if (currentComposition) {
-	    if (topLevelType === topLevelTypes.topCompositionEnd || isFallbackCompositionEnd(topLevelType, nativeEvent)) {
+	    if (topLevelType === topLevelTypes.topCompositionEnd || !canUseCompositionEvent && isFallbackCompositionEnd(topLevelType, nativeEvent)) {
 	      var chars = currentComposition.getData();
 	      FallbackCompositionState.release(currentComposition);
 	      currentComposition = null;
@@ -27447,7 +27465,8 @@
 
 	    if (event.preventDefault) {
 	      event.preventDefault();
-	    } else {
+	    } else if (typeof event.returnValue !== 'unknown') {
+	      // eslint-disable-line valid-typeof
 	      event.returnValue = false;
 	    }
 	    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;
@@ -27704,7 +27723,7 @@
 	var doesChangeEventBubble = false;
 	if (ExecutionEnvironment.canUseDOM) {
 	  // See `handleChange` comment below
-	  doesChangeEventBubble = isEventSupported('change') && (!('documentMode' in document) || document.documentMode > 8);
+	  doesChangeEventBubble = isEventSupported('change') && (!document.documentMode || document.documentMode > 8);
 	}
 
 	function manualDispatchChangeEvent(nativeEvent) {
@@ -27770,7 +27789,7 @@
 	  // deleting text, so we ignore its input events.
 	  // IE10+ fire input events to often, such when a placeholder
 	  // changes or when an input with a placeholder is focused.
-	  isInputEventSupported = isEventSupported('input') && (!('documentMode' in document) || document.documentMode > 11);
+	  isInputEventSupported = isEventSupported('input') && (!document.documentMode || document.documentMode > 11);
 	}
 
 	/**
@@ -28999,12 +29018,6 @@
 	    endLifeCycleTimer(debugID, timerType);
 	    emitEvent('onEndLifeCycleTimer', debugID, timerType);
 	  },
-	  onError: function (debugID) {
-	    if (currentTimerDebugID != null) {
-	      endLifeCycleTimer(currentTimerDebugID, currentTimerType);
-	    }
-	    emitEvent('onError', debugID);
-	  },
 	  onBeginProcessingChildContext: function () {
 	    emitEvent('onBeginProcessingChildContext');
 	  },
@@ -30078,6 +30091,8 @@
 	    allowFullScreen: HAS_BOOLEAN_VALUE,
 	    allowTransparency: 0,
 	    alt: 0,
+	    // specifies target context for links with `preload` type
+	    as: 0,
 	    async: HAS_BOOLEAN_VALUE,
 	    autoComplete: 0,
 	    // autoFocus is polyfilled/normalized by AutoFocusUtils
@@ -30158,6 +30173,7 @@
 	    optimum: 0,
 	    pattern: 0,
 	    placeholder: 0,
+	    playsInline: HAS_BOOLEAN_VALUE,
 	    poster: 0,
 	    preload: 0,
 	    profile: 0,
@@ -30680,9 +30696,9 @@
 	  if (node.namespaceURI === DOMNamespaces.svg && !('innerHTML' in node)) {
 	    reusableSVGContainer = reusableSVGContainer || document.createElement('div');
 	    reusableSVGContainer.innerHTML = '<svg>' + html + '</svg>';
-	    var newNodes = reusableSVGContainer.firstChild.childNodes;
-	    for (var i = 0; i < newNodes.length; i++) {
-	      node.appendChild(newNodes[i]);
+	    var svgNode = reusableSVGContainer.firstChild;
+	    while (svgNode.firstChild) {
+	      node.appendChild(svgNode.firstChild);
 	    }
 	  } else {
 	    node.innerHTML = html;
@@ -31610,9 +31626,9 @@
 	  ReactDOMOption.postMountWrapper(inst);
 	}
 
-	var setContentChildForInstrumentation = emptyFunction;
+	var setAndValidateContentChildDev = emptyFunction;
 	if (process.env.NODE_ENV !== 'production') {
-	  setContentChildForInstrumentation = function (content) {
+	  setAndValidateContentChildDev = function (content) {
 	    var hasExistingContent = this._contentDebugID != null;
 	    var debugID = this._debugID;
 	    // This ID represents the inlined child that has no backing instance:
@@ -31626,6 +31642,7 @@
 	      return;
 	    }
 
+	    validateDOMNesting(null, String(content), this, this._ancestorInfo);
 	    this._contentDebugID = contentDebugID;
 	    if (hasExistingContent) {
 	      ReactInstrumentation.debugTool.onBeforeUpdateComponent(contentDebugID, content);
@@ -31800,7 +31817,7 @@
 	  this._flags = 0;
 	  if (process.env.NODE_ENV !== 'production') {
 	    this._ancestorInfo = null;
-	    setContentChildForInstrumentation.call(this, null);
+	    setAndValidateContentChildDev.call(this, null);
 	  }
 	}
 
@@ -31900,7 +31917,7 @@
 	      if (parentInfo) {
 	        // parentInfo should always be present except for the top-level
 	        // component when server rendering
-	        validateDOMNesting(this._tag, this, parentInfo);
+	        validateDOMNesting(this._tag, null, this, parentInfo);
 	      }
 	      this._ancestorInfo = validateDOMNesting.updatedAncestorInfo(parentInfo, this._tag, this);
 	    }
@@ -32069,7 +32086,7 @@
 	        // TODO: Validate that text is allowed as a child of this node
 	        ret = escapeTextContentForBrowser(contentToUse);
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, contentToUse);
+	          setAndValidateContentChildDev.call(this, contentToUse);
 	        }
 	      } else if (childrenToUse != null) {
 	        var mountImages = this.mountChildren(childrenToUse, transaction, context);
@@ -32106,7 +32123,7 @@
 	      if (contentToUse != null) {
 	        // TODO: Validate that text is allowed as a child of this node
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, contentToUse);
+	          setAndValidateContentChildDev.call(this, contentToUse);
 	        }
 	        DOMLazyTree.queueText(lazyTree, contentToUse);
 	      } else if (childrenToUse != null) {
@@ -32338,7 +32355,7 @@
 	      if (lastContent !== nextContent) {
 	        this.updateTextContent('' + nextContent);
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, nextContent);
+	          setAndValidateContentChildDev.call(this, nextContent);
 	        }
 	      }
 	    } else if (nextHtml != null) {
@@ -32350,7 +32367,7 @@
 	      }
 	    } else if (nextChildren != null) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        setContentChildForInstrumentation.call(this, null);
+	        setAndValidateContentChildDev.call(this, null);
 	      }
 
 	      this.updateChildren(nextChildren, transaction, context);
@@ -32405,7 +32422,7 @@
 	    this._wrapperState = null;
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      setContentChildForInstrumentation.call(this, null);
+	      setAndValidateContentChildDev.call(this, null);
 	    }
 	  },
 
@@ -33678,6 +33695,19 @@
 	  },
 
 	  /**
+	   * Protect against document.createEvent() returning null
+	   * Some popup blocker extensions appear to do this:
+	   * https://github.com/facebook/react/issues/6887
+	   */
+	  supportsEventPageXY: function () {
+	    if (!document.createEvent) {
+	      return false;
+	    }
+	    var ev = document.createEvent('MouseEvent');
+	    return ev != null && 'pageX' in ev;
+	  },
+
+	  /**
 	   * Listens to window scroll and resize events. We cache scroll values so that
 	   * application code can access them without triggering reflows.
 	   *
@@ -33690,7 +33720,7 @@
 	   */
 	  ensureScrollValueMonitoring: function () {
 	    if (hasEventPageXY === undefined) {
-	      hasEventPageXY = document.createEvent && 'pageX' in document.createEvent('MouseEvent');
+	      hasEventPageXY = ReactBrowserEventEmitter.supportsEventPageXY();
 	    }
 	    if (!hasEventPageXY && !isMonitoringScrollValue) {
 	      var refresh = ViewportMetrics.refreshScrollValues;
@@ -33976,7 +34006,7 @@
 
 	function isControlled(props) {
 	  var usesChecked = props.type === 'checkbox' || props.type === 'radio';
-	  return usesChecked ? props.checked !== undefined : props.value !== undefined;
+	  return usesChecked ? props.checked != null : props.value != null;
 	}
 
 	/**
@@ -35749,34 +35779,29 @@
 	  }
 	}
 
-	function invokeComponentDidMountWithTimer() {
-	  var publicInstance = this._instance;
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentDidMount');
-	  }
-	  publicInstance.componentDidMount();
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentDidMount');
-	  }
-	}
-
-	function invokeComponentDidUpdateWithTimer(prevProps, prevState, prevContext) {
-	  var publicInstance = this._instance;
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentDidUpdate');
-	  }
-	  publicInstance.componentDidUpdate(prevProps, prevState, prevContext);
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentDidUpdate');
-	  }
-	}
-
 	function shouldConstruct(Component) {
 	  return !!(Component.prototype && Component.prototype.isReactComponent);
 	}
 
 	function isPureComponent(Component) {
 	  return !!(Component.prototype && Component.prototype.isPureReactComponent);
+	}
+
+	// Separated into a function to contain deoptimizations caused by try/finally.
+	function measureLifeCyclePerf(fn, debugID, timerType) {
+	  if (debugID === 0) {
+	    // Top-level wrappers (see ReactMount) and empty components (see
+	    // ReactDOMEmptyComponent) are invisible to hooks and devtools.
+	    // Both are implementation details that should go away in the future.
+	    return fn();
+	  }
+
+	  ReactInstrumentation.debugTool.onBeginLifeCycleTimer(debugID, timerType);
+	  try {
+	    return fn();
+	  } finally {
+	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(debugID, timerType);
+	  }
 	}
 
 	/**
@@ -35870,6 +35895,8 @@
 	   * @internal
 	   */
 	  mountComponent: function (transaction, hostParent, hostContainerInfo, context) {
+	    var _this = this;
+
 	    this._context = context;
 	    this._mountOrder = nextMountID++;
 	    this._hostParent = hostParent;
@@ -35959,7 +35986,11 @@
 
 	    if (inst.componentDidMount) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        transaction.getReactMountReady().enqueue(invokeComponentDidMountWithTimer, this);
+	        transaction.getReactMountReady().enqueue(function () {
+	          measureLifeCyclePerf(function () {
+	            return inst.componentDidMount();
+	          }, _this._debugID, 'componentDidMount');
+	        });
 	      } else {
 	        transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);
 	      }
@@ -35983,35 +36014,26 @@
 
 	  _constructComponentWithoutOwner: function (doConstruct, publicProps, publicContext, updateQueue) {
 	    var Component = this._currentElement.type;
-	    var instanceOrElement;
+
 	    if (doConstruct) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'ctor');
-	        }
-	      }
-	      instanceOrElement = new Component(publicProps, publicContext, updateQueue);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'ctor');
-	        }
-	      }
-	    } else {
-	      // This can still be an instance in case of factory components
-	      // but we'll count this as time spent rendering as the more common case.
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'render');
-	        }
-	      }
-	      instanceOrElement = Component(publicProps, publicContext, updateQueue);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'render');
-	        }
+	        return measureLifeCyclePerf(function () {
+	          return new Component(publicProps, publicContext, updateQueue);
+	        }, this._debugID, 'ctor');
+	      } else {
+	        return new Component(publicProps, publicContext, updateQueue);
 	      }
 	    }
-	    return instanceOrElement;
+
+	    // This can still be an instance in case of factory components
+	    // but we'll count this as time spent rendering as the more common case.
+	    if (process.env.NODE_ENV !== 'production') {
+	      return measureLifeCyclePerf(function () {
+	        return Component(publicProps, publicContext, updateQueue);
+	      }, this._debugID, 'render');
+	    } else {
+	      return Component(publicProps, publicContext, updateQueue);
+	    }
 	  },
 
 	  performInitialMountWithErrorHandling: function (renderedElement, hostParent, hostContainerInfo, transaction, context) {
@@ -36020,11 +36042,6 @@
 	    try {
 	      markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
 	    } catch (e) {
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onError();
-	        }
-	      }
 	      // Roll back to checkpoint, handle error (which may add items to the transaction), and take a new checkpoint
 	      transaction.rollback(checkpoint);
 	      this._instance.unstable_handleError(e);
@@ -36045,17 +36062,19 @@
 
 	  performInitialMount: function (renderedElement, hostParent, hostContainerInfo, transaction, context) {
 	    var inst = this._instance;
+
+	    var debugID = 0;
+	    if (process.env.NODE_ENV !== 'production') {
+	      debugID = this._debugID;
+	    }
+
 	    if (inst.componentWillMount) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillMount');
-	        }
-	      }
-	      inst.componentWillMount();
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillMount');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillMount();
+	        }, debugID, 'componentWillMount');
+	      } else {
+	        inst.componentWillMount();
 	      }
 	      // When mounting, calls to `setState` by `componentWillMount` will set
 	      // `this._pendingStateQueue` without triggering a re-render.
@@ -36075,15 +36094,12 @@
 	    );
 	    this._renderedComponent = child;
 
-	    var selfDebugID = 0;
-	    if (process.env.NODE_ENV !== 'production') {
-	      selfDebugID = this._debugID;
-	    }
-	    var markup = ReactReconciler.mountComponent(child, transaction, hostParent, hostContainerInfo, this._processChildContext(context), selfDebugID);
+	    var markup = ReactReconciler.mountComponent(child, transaction, hostParent, hostContainerInfo, this._processChildContext(context), debugID);
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onSetChildren(this._debugID, child._debugID !== 0 ? [child._debugID] : []);
+	      if (debugID !== 0) {
+	        var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
+	        ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
 	      }
 	    }
 
@@ -36104,24 +36120,22 @@
 	    if (!this._renderedComponent) {
 	      return;
 	    }
+
 	    var inst = this._instance;
 
 	    if (inst.componentWillUnmount && !inst._calledComponentWillUnmount) {
 	      inst._calledComponentWillUnmount = true;
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillUnmount');
-	        }
-	      }
+
 	      if (safely) {
 	        var name = this.getName() + '.componentWillUnmount()';
 	        ReactErrorUtils.invokeGuardedCallback(name, inst.componentWillUnmount.bind(inst));
 	      } else {
-	        inst.componentWillUnmount();
-	      }
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillUnmount');
+	        if (process.env.NODE_ENV !== 'production') {
+	          measureLifeCyclePerf(function () {
+	            return inst.componentWillUnmount();
+	          }, this._debugID, 'componentWillUnmount');
+	        } else {
+	          inst.componentWillUnmount();
 	        }
 	      }
 	    }
@@ -36208,13 +36222,21 @@
 	  _processChildContext: function (currentContext) {
 	    var Component = this._currentElement.type;
 	    var inst = this._instance;
-	    if (process.env.NODE_ENV !== 'production') {
-	      ReactInstrumentation.debugTool.onBeginProcessingChildContext();
+	    var childContext;
+
+	    if (inst.getChildContext) {
+	      if (process.env.NODE_ENV !== 'production') {
+	        ReactInstrumentation.debugTool.onBeginProcessingChildContext();
+	        try {
+	          childContext = inst.getChildContext();
+	        } finally {
+	          ReactInstrumentation.debugTool.onEndProcessingChildContext();
+	        }
+	      } else {
+	        childContext = inst.getChildContext();
+	      }
 	    }
-	    var childContext = inst.getChildContext && inst.getChildContext();
-	    if (process.env.NODE_ENV !== 'production') {
-	      ReactInstrumentation.debugTool.onEndProcessingChildContext();
-	    }
+
 	    if (childContext) {
 	      !(typeof Component.childContextTypes === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, '%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().', this.getName() || 'ReactCompositeComponent') : _prodInvariant('107', this.getName() || 'ReactCompositeComponent') : void 0;
 	      if (process.env.NODE_ENV !== 'production') {
@@ -36309,15 +36331,11 @@
 	    // immediately reconciled instead of waiting for the next batch.
 	    if (willReceive && inst.componentWillReceiveProps) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillReceiveProps');
-	        }
-	      }
-	      inst.componentWillReceiveProps(nextProps, nextContext);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillReceiveProps');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillReceiveProps(nextProps, nextContext);
+	        }, this._debugID, 'componentWillReceiveProps');
+	      } else {
+	        inst.componentWillReceiveProps(nextProps, nextContext);
 	      }
 	    }
 
@@ -36327,15 +36345,11 @@
 	    if (!this._pendingForceUpdate) {
 	      if (inst.shouldComponentUpdate) {
 	        if (process.env.NODE_ENV !== 'production') {
-	          if (this._debugID !== 0) {
-	            ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'shouldComponentUpdate');
-	          }
-	        }
-	        shouldUpdate = inst.shouldComponentUpdate(nextProps, nextState, nextContext);
-	        if (process.env.NODE_ENV !== 'production') {
-	          if (this._debugID !== 0) {
-	            ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'shouldComponentUpdate');
-	          }
+	          shouldUpdate = measureLifeCyclePerf(function () {
+	            return inst.shouldComponentUpdate(nextProps, nextState, nextContext);
+	          }, this._debugID, 'shouldComponentUpdate');
+	        } else {
+	          shouldUpdate = inst.shouldComponentUpdate(nextProps, nextState, nextContext);
 	        }
 	      } else {
 	        if (this._compositeType === CompositeTypes.PureClass) {
@@ -36401,6 +36415,8 @@
 	   * @private
 	   */
 	  _performComponentUpdate: function (nextElement, nextProps, nextState, nextContext, transaction, unmaskedContext) {
+	    var _this2 = this;
+
 	    var inst = this._instance;
 
 	    var hasComponentDidUpdate = Boolean(inst.componentDidUpdate);
@@ -36415,15 +36431,11 @@
 
 	    if (inst.componentWillUpdate) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillUpdate');
-	        }
-	      }
-	      inst.componentWillUpdate(nextProps, nextState, nextContext);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillUpdate');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillUpdate(nextProps, nextState, nextContext);
+	        }, this._debugID, 'componentWillUpdate');
+	      } else {
+	        inst.componentWillUpdate(nextProps, nextState, nextContext);
 	      }
 	    }
 
@@ -36437,7 +36449,9 @@
 
 	    if (hasComponentDidUpdate) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        transaction.getReactMountReady().enqueue(invokeComponentDidUpdateWithTimer.bind(this, prevProps, prevState, prevContext), this);
+	        transaction.getReactMountReady().enqueue(function () {
+	          measureLifeCyclePerf(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), _this2._debugID, 'componentDidUpdate');
+	        });
 	      } else {
 	        transaction.getReactMountReady().enqueue(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), inst);
 	      }
@@ -36454,6 +36468,12 @@
 	    var prevComponentInstance = this._renderedComponent;
 	    var prevRenderedElement = prevComponentInstance._currentElement;
 	    var nextRenderedElement = this._renderValidatedComponent();
+
+	    var debugID = 0;
+	    if (process.env.NODE_ENV !== 'production') {
+	      debugID = this._debugID;
+	    }
+
 	    if (shouldUpdateReactComponent(prevRenderedElement, nextRenderedElement)) {
 	      ReactReconciler.receiveComponent(prevComponentInstance, nextRenderedElement, transaction, this._processChildContext(context));
 	    } else {
@@ -36466,15 +36486,12 @@
 	      );
 	      this._renderedComponent = child;
 
-	      var selfDebugID = 0;
-	      if (process.env.NODE_ENV !== 'production') {
-	        selfDebugID = this._debugID;
-	      }
-	      var nextMarkup = ReactReconciler.mountComponent(child, transaction, this._hostParent, this._hostContainerInfo, this._processChildContext(context), selfDebugID);
+	      var nextMarkup = ReactReconciler.mountComponent(child, transaction, this._hostParent, this._hostContainerInfo, this._processChildContext(context), debugID);
 
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onSetChildren(this._debugID, child._debugID !== 0 ? [child._debugID] : []);
+	        if (debugID !== 0) {
+	          var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
+	          ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
 	        }
 	      }
 
@@ -36496,17 +36513,14 @@
 	   */
 	  _renderValidatedComponentWithoutOwnerOrContext: function () {
 	    var inst = this._instance;
+	    var renderedComponent;
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'render');
-	      }
-	    }
-	    var renderedComponent = inst.render();
-	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'render');
-	      }
+	      renderedComponent = measureLifeCyclePerf(function () {
+	        return inst.render();
+	      }, this._debugID, 'render');
+	    } else {
+	      renderedComponent = inst.render();
 	    }
 
 	    if (process.env.NODE_ENV !== 'production') {
@@ -36557,7 +36571,7 @@
 	    var publicComponentInstance = component.getPublicInstance();
 	    if (process.env.NODE_ENV !== 'production') {
 	      var componentName = component && component.getName ? component.getName() : 'a component';
-	      process.env.NODE_ENV !== 'production' ? warning(publicComponentInstance != null, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : void 0;
+	      process.env.NODE_ENV !== 'production' ? warning(publicComponentInstance != null || component._compositeType !== CompositeTypes.StatelessFunctional, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : void 0;
 	    }
 	    var refs = inst.refs === emptyObject ? inst.refs = {} : inst.refs;
 	    refs[ref] = publicComponentInstance;
@@ -36694,7 +36708,8 @@
 	  if (x === y) {
 	    // Steps 1-5, 7-10
 	    // Steps 6.b-6.e: +0 != -0
-	    return x !== 0 || 1 / x === 1 / y;
+	    // Added the nonzero y check to make Flow happy, but it is redundant
+	    return x !== 0 || y !== 0 || 1 / x === 1 / y;
 	  } else {
 	    // Step 6.a: NaN == NaN
 	    return x !== x && y !== y;
@@ -37748,10 +37763,15 @@
 
 	  var didWarn = {};
 
-	  validateDOMNesting = function (childTag, childInstance, ancestorInfo) {
+	  validateDOMNesting = function (childTag, childText, childInstance, ancestorInfo) {
 	    ancestorInfo = ancestorInfo || emptyAncestorInfo;
 	    var parentInfo = ancestorInfo.current;
 	    var parentTag = parentInfo && parentInfo.tag;
+
+	    if (childText != null) {
+	      process.env.NODE_ENV !== 'production' ? warning(childTag == null, 'validateDOMNesting: when childText is passed, childTag should be null') : void 0;
+	      childTag = '#text';
+	    }
 
 	    var invalidParent = isTagValidWithParent(childTag, parentTag) ? null : parentInfo;
 	    var invalidAncestor = invalidParent ? null : findInvalidAncestorForTag(childTag, ancestorInfo);
@@ -37800,7 +37820,15 @@
 	      didWarn[warnKey] = true;
 
 	      var tagDisplayName = childTag;
-	      if (childTag !== '#text') {
+	      var whitespaceInfo = '';
+	      if (childTag === '#text') {
+	        if (/\S/.test(childText)) {
+	          tagDisplayName = 'Text nodes';
+	        } else {
+	          tagDisplayName = 'Whitespace text nodes';
+	          whitespaceInfo = ' Make sure you don\'t have any extra whitespace between tags on ' + 'each line of your source code.';
+	        }
+	      } else {
 	        tagDisplayName = '<' + childTag + '>';
 	      }
 
@@ -37809,7 +37837,7 @@
 	        if (ancestorTag === 'table' && childTag === 'tr') {
 	          info += ' Add a <tbody> to your code to match the DOM tree generated by ' + 'the browser.';
 	        }
-	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a child of <%s>. ' + 'See %s.%s', tagDisplayName, ancestorTag, ownerInfo, info) : void 0;
+	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a child of <%s>.%s ' + 'See %s.%s', tagDisplayName, ancestorTag, whitespaceInfo, ownerInfo, info) : void 0;
 	      } else {
 	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a descendant of ' + '<%s>. See %s.', tagDisplayName, ancestorTag, ownerInfo) : void 0;
 	      }
@@ -38116,7 +38144,7 @@
 	      if (parentInfo) {
 	        // parentInfo should always be present except for the top-level
 	        // component when server rendering
-	        validateDOMNesting('#text', this, parentInfo);
+	        validateDOMNesting(null, this._stringText, this, parentInfo);
 	      }
 	    }
 
@@ -39709,7 +39737,7 @@
 	      bubbled: keyOf({ onSelect: null }),
 	      captured: keyOf({ onSelectCapture: null })
 	    },
-	    dependencies: [topLevelTypes.topBlur, topLevelTypes.topContextMenu, topLevelTypes.topFocus, topLevelTypes.topKeyDown, topLevelTypes.topMouseDown, topLevelTypes.topMouseUp, topLevelTypes.topSelectionChange]
+	    dependencies: [topLevelTypes.topBlur, topLevelTypes.topContextMenu, topLevelTypes.topFocus, topLevelTypes.topKeyDown, topLevelTypes.topKeyUp, topLevelTypes.topMouseDown, topLevelTypes.topMouseUp, topLevelTypes.topSelectionChange]
 	  }
 	};
 
@@ -42104,7 +42132,7 @@
 
 	var _ResolutionSlider2 = _interopRequireDefault(_ResolutionSlider);
 
-	var _ImportControls = __webpack_require__(228);
+	var _ImportControls = __webpack_require__(227);
 
 	var _ImportControls2 = _interopRequireDefault(_ImportControls);
 
@@ -42403,7 +42431,7 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'instruction' },
-	          'Paste custom CSV below. Csv should be formatted with no\n        headers and state id (fips) as the first column. Ex:',
+	          'Paste custom CSV below. Csv should be formatted with no\n          headers and state id (fips) as the first column. Ex:',
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'code' },
@@ -42643,7 +42671,7 @@
 
 	// https://d3js.org/d3-scale/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(223), __webpack_require__(225), __webpack_require__(226), __webpack_require__(227), __webpack_require__(224)) :
+	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(223), __webpack_require__(224), __webpack_require__(225), __webpack_require__(226), __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-collection', 'd3-interpolate', 'd3-format', 'd3-time', 'd3-time-format', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3,global.d3,global.d3,global.d3,global.d3));
 	}(this, function (exports,d3Array,d3Collection,d3Interpolate,d3Format,d3Time,d3TimeFormat,d3Color) { 'use strict';
@@ -43550,7 +43578,7 @@
 
 	// https://d3js.org/d3-interpolate/ Version 1.1.1. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(224)) :
+	   true ? factory(exports, __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Color) { 'use strict';
@@ -44095,528 +44123,6 @@
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-color/ Version 1.0.1. Copyright 2016 Mike Bostock.
-	(function (global, factory) {
-	   true ? factory(exports) :
-	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
-
-	  function define(constructor, factory, prototype) {
-	    constructor.prototype = factory.prototype = prototype;
-	    prototype.constructor = constructor;
-	  }
-
-	  function extend(parent, definition) {
-	    var prototype = Object.create(parent.prototype);
-	    for (var key in definition) prototype[key] = definition[key];
-	    return prototype;
-	  }
-
-	  function Color() {}
-
-	  var darker = 0.7;
-	  var brighter = 1 / darker;
-
-	  var reHex3 = /^#([0-9a-f]{3})$/;
-	  var reHex6 = /^#([0-9a-f]{6})$/;
-	  var reRgbInteger = /^rgb\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*\)$/;
-	  var reRgbPercent = /^rgb\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reRgbaInteger = /^rgba\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reRgbaPercent = /^rgba\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reHslPercent = /^hsl\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reHslaPercent = /^hsla\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var named = {
-	    aliceblue: 0xf0f8ff,
-	    antiquewhite: 0xfaebd7,
-	    aqua: 0x00ffff,
-	    aquamarine: 0x7fffd4,
-	    azure: 0xf0ffff,
-	    beige: 0xf5f5dc,
-	    bisque: 0xffe4c4,
-	    black: 0x000000,
-	    blanchedalmond: 0xffebcd,
-	    blue: 0x0000ff,
-	    blueviolet: 0x8a2be2,
-	    brown: 0xa52a2a,
-	    burlywood: 0xdeb887,
-	    cadetblue: 0x5f9ea0,
-	    chartreuse: 0x7fff00,
-	    chocolate: 0xd2691e,
-	    coral: 0xff7f50,
-	    cornflowerblue: 0x6495ed,
-	    cornsilk: 0xfff8dc,
-	    crimson: 0xdc143c,
-	    cyan: 0x00ffff,
-	    darkblue: 0x00008b,
-	    darkcyan: 0x008b8b,
-	    darkgoldenrod: 0xb8860b,
-	    darkgray: 0xa9a9a9,
-	    darkgreen: 0x006400,
-	    darkgrey: 0xa9a9a9,
-	    darkkhaki: 0xbdb76b,
-	    darkmagenta: 0x8b008b,
-	    darkolivegreen: 0x556b2f,
-	    darkorange: 0xff8c00,
-	    darkorchid: 0x9932cc,
-	    darkred: 0x8b0000,
-	    darksalmon: 0xe9967a,
-	    darkseagreen: 0x8fbc8f,
-	    darkslateblue: 0x483d8b,
-	    darkslategray: 0x2f4f4f,
-	    darkslategrey: 0x2f4f4f,
-	    darkturquoise: 0x00ced1,
-	    darkviolet: 0x9400d3,
-	    deeppink: 0xff1493,
-	    deepskyblue: 0x00bfff,
-	    dimgray: 0x696969,
-	    dimgrey: 0x696969,
-	    dodgerblue: 0x1e90ff,
-	    firebrick: 0xb22222,
-	    floralwhite: 0xfffaf0,
-	    forestgreen: 0x228b22,
-	    fuchsia: 0xff00ff,
-	    gainsboro: 0xdcdcdc,
-	    ghostwhite: 0xf8f8ff,
-	    gold: 0xffd700,
-	    goldenrod: 0xdaa520,
-	    gray: 0x808080,
-	    green: 0x008000,
-	    greenyellow: 0xadff2f,
-	    grey: 0x808080,
-	    honeydew: 0xf0fff0,
-	    hotpink: 0xff69b4,
-	    indianred: 0xcd5c5c,
-	    indigo: 0x4b0082,
-	    ivory: 0xfffff0,
-	    khaki: 0xf0e68c,
-	    lavender: 0xe6e6fa,
-	    lavenderblush: 0xfff0f5,
-	    lawngreen: 0x7cfc00,
-	    lemonchiffon: 0xfffacd,
-	    lightblue: 0xadd8e6,
-	    lightcoral: 0xf08080,
-	    lightcyan: 0xe0ffff,
-	    lightgoldenrodyellow: 0xfafad2,
-	    lightgray: 0xd3d3d3,
-	    lightgreen: 0x90ee90,
-	    lightgrey: 0xd3d3d3,
-	    lightpink: 0xffb6c1,
-	    lightsalmon: 0xffa07a,
-	    lightseagreen: 0x20b2aa,
-	    lightskyblue: 0x87cefa,
-	    lightslategray: 0x778899,
-	    lightslategrey: 0x778899,
-	    lightsteelblue: 0xb0c4de,
-	    lightyellow: 0xffffe0,
-	    lime: 0x00ff00,
-	    limegreen: 0x32cd32,
-	    linen: 0xfaf0e6,
-	    magenta: 0xff00ff,
-	    maroon: 0x800000,
-	    mediumaquamarine: 0x66cdaa,
-	    mediumblue: 0x0000cd,
-	    mediumorchid: 0xba55d3,
-	    mediumpurple: 0x9370db,
-	    mediumseagreen: 0x3cb371,
-	    mediumslateblue: 0x7b68ee,
-	    mediumspringgreen: 0x00fa9a,
-	    mediumturquoise: 0x48d1cc,
-	    mediumvioletred: 0xc71585,
-	    midnightblue: 0x191970,
-	    mintcream: 0xf5fffa,
-	    mistyrose: 0xffe4e1,
-	    moccasin: 0xffe4b5,
-	    navajowhite: 0xffdead,
-	    navy: 0x000080,
-	    oldlace: 0xfdf5e6,
-	    olive: 0x808000,
-	    olivedrab: 0x6b8e23,
-	    orange: 0xffa500,
-	    orangered: 0xff4500,
-	    orchid: 0xda70d6,
-	    palegoldenrod: 0xeee8aa,
-	    palegreen: 0x98fb98,
-	    paleturquoise: 0xafeeee,
-	    palevioletred: 0xdb7093,
-	    papayawhip: 0xffefd5,
-	    peachpuff: 0xffdab9,
-	    peru: 0xcd853f,
-	    pink: 0xffc0cb,
-	    plum: 0xdda0dd,
-	    powderblue: 0xb0e0e6,
-	    purple: 0x800080,
-	    rebeccapurple: 0x663399,
-	    red: 0xff0000,
-	    rosybrown: 0xbc8f8f,
-	    royalblue: 0x4169e1,
-	    saddlebrown: 0x8b4513,
-	    salmon: 0xfa8072,
-	    sandybrown: 0xf4a460,
-	    seagreen: 0x2e8b57,
-	    seashell: 0xfff5ee,
-	    sienna: 0xa0522d,
-	    silver: 0xc0c0c0,
-	    skyblue: 0x87ceeb,
-	    slateblue: 0x6a5acd,
-	    slategray: 0x708090,
-	    slategrey: 0x708090,
-	    snow: 0xfffafa,
-	    springgreen: 0x00ff7f,
-	    steelblue: 0x4682b4,
-	    tan: 0xd2b48c,
-	    teal: 0x008080,
-	    thistle: 0xd8bfd8,
-	    tomato: 0xff6347,
-	    turquoise: 0x40e0d0,
-	    violet: 0xee82ee,
-	    wheat: 0xf5deb3,
-	    white: 0xffffff,
-	    whitesmoke: 0xf5f5f5,
-	    yellow: 0xffff00,
-	    yellowgreen: 0x9acd32
-	  };
-
-	  define(Color, color, {
-	    displayable: function() {
-	      return this.rgb().displayable();
-	    },
-	    toString: function() {
-	      return this.rgb() + "";
-	    }
-	  });
-
-	  function color(format) {
-	    var m;
-	    format = (format + "").trim().toLowerCase();
-	    return (m = reHex3.exec(format)) ? (m = parseInt(m[1], 16), new Rgb((m >> 8 & 0xf) | (m >> 4 & 0x0f0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)) // #f00
-	        : (m = reHex6.exec(format)) ? rgbn(parseInt(m[1], 16)) // #ff0000
-	        : (m = reRgbInteger.exec(format)) ? new Rgb(m[1], m[2], m[3], 1) // rgb(255, 0, 0)
-	        : (m = reRgbPercent.exec(format)) ? new Rgb(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, 1) // rgb(100%, 0%, 0%)
-	        : (m = reRgbaInteger.exec(format)) ? rgba(m[1], m[2], m[3], m[4]) // rgba(255, 0, 0, 1)
-	        : (m = reRgbaPercent.exec(format)) ? rgba(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, m[4]) // rgb(100%, 0%, 0%, 1)
-	        : (m = reHslPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, 1) // hsl(120, 50%, 50%)
-	        : (m = reHslaPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, m[4]) // hsla(120, 50%, 50%, 1)
-	        : named.hasOwnProperty(format) ? rgbn(named[format])
-	        : format === "transparent" ? new Rgb(NaN, NaN, NaN, 0)
-	        : null;
-	  }
-
-	  function rgbn(n) {
-	    return new Rgb(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1);
-	  }
-
-	  function rgba(r, g, b, a) {
-	    if (a <= 0) r = g = b = NaN;
-	    return new Rgb(r, g, b, a);
-	  }
-
-	  function rgbConvert(o) {
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Rgb;
-	    o = o.rgb();
-	    return new Rgb(o.r, o.g, o.b, o.opacity);
-	  }
-
-	  function rgb(r, g, b, opacity) {
-	    return arguments.length === 1 ? rgbConvert(r) : new Rgb(r, g, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Rgb(r, g, b, opacity) {
-	    this.r = +r;
-	    this.g = +g;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Rgb, rgb, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    rgb: function() {
-	      return this;
-	    },
-	    displayable: function() {
-	      return (0 <= this.r && this.r <= 255)
-	          && (0 <= this.g && this.g <= 255)
-	          && (0 <= this.b && this.b <= 255)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    },
-	    toString: function() {
-	      var a = this.opacity; a = isNaN(a) ? 1 : Math.max(0, Math.min(1, a));
-	      return (a === 1 ? "rgb(" : "rgba(")
-	          + Math.max(0, Math.min(255, Math.round(this.r) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.g) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.b) || 0))
-	          + (a === 1 ? ")" : ", " + a + ")");
-	    }
-	  }));
-
-	  function hsla(h, s, l, a) {
-	    if (a <= 0) h = s = l = NaN;
-	    else if (l <= 0 || l >= 1) h = s = NaN;
-	    else if (s <= 0) h = NaN;
-	    return new Hsl(h, s, l, a);
-	  }
-
-	  function hslConvert(o) {
-	    if (o instanceof Hsl) return new Hsl(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Hsl;
-	    if (o instanceof Hsl) return o;
-	    o = o.rgb();
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        min = Math.min(r, g, b),
-	        max = Math.max(r, g, b),
-	        h = NaN,
-	        s = max - min,
-	        l = (max + min) / 2;
-	    if (s) {
-	      if (r === max) h = (g - b) / s + (g < b) * 6;
-	      else if (g === max) h = (b - r) / s + 2;
-	      else h = (r - g) / s + 4;
-	      s /= l < 0.5 ? max + min : 2 - max - min;
-	      h *= 60;
-	    } else {
-	      s = l > 0 && l < 1 ? 0 : h;
-	    }
-	    return new Hsl(h, s, l, o.opacity);
-	  }
-
-	  function hsl(h, s, l, opacity) {
-	    return arguments.length === 1 ? hslConvert(h) : new Hsl(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hsl(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hsl, hsl, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = this.h % 360 + (this.h < 0) * 360,
-	          s = isNaN(h) || isNaN(this.s) ? 0 : this.s,
-	          l = this.l,
-	          m2 = l + (l < 0.5 ? l : 1 - l) * s,
-	          m1 = 2 * l - m2;
-	      return new Rgb(
-	        hsl2rgb(h >= 240 ? h - 240 : h + 120, m1, m2),
-	        hsl2rgb(h, m1, m2),
-	        hsl2rgb(h < 120 ? h + 240 : h - 120, m1, m2),
-	        this.opacity
-	      );
-	    },
-	    displayable: function() {
-	      return (0 <= this.s && this.s <= 1 || isNaN(this.s))
-	          && (0 <= this.l && this.l <= 1)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    }
-	  }));
-
-	  /* From FvD 13.37, CSS Color Module Level 3 */
-	  function hsl2rgb(h, m1, m2) {
-	    return (h < 60 ? m1 + (m2 - m1) * h / 60
-	        : h < 180 ? m2
-	        : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60
-	        : m1) * 255;
-	  }
-
-	  var deg2rad = Math.PI / 180;
-	  var rad2deg = 180 / Math.PI;
-
-	  var Kn = 18;
-	  var Xn = 0.950470;
-	  var Yn = 1;
-	  var Zn = 1.088830;
-	  var t0 = 4 / 29;
-	  var t1 = 6 / 29;
-	  var t2 = 3 * t1 * t1;
-	  var t3 = t1 * t1 * t1;
-	  function labConvert(o) {
-	    if (o instanceof Lab) return new Lab(o.l, o.a, o.b, o.opacity);
-	    if (o instanceof Hcl) {
-	      var h = o.h * deg2rad;
-	      return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
-	    }
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var b = rgb2xyz(o.r),
-	        a = rgb2xyz(o.g),
-	        l = rgb2xyz(o.b),
-	        x = xyz2lab((0.4124564 * b + 0.3575761 * a + 0.1804375 * l) / Xn),
-	        y = xyz2lab((0.2126729 * b + 0.7151522 * a + 0.0721750 * l) / Yn),
-	        z = xyz2lab((0.0193339 * b + 0.1191920 * a + 0.9503041 * l) / Zn);
-	    return new Lab(116 * y - 16, 500 * (x - y), 200 * (y - z), o.opacity);
-	  }
-
-	  function lab(l, a, b, opacity) {
-	    return arguments.length === 1 ? labConvert(l) : new Lab(l, a, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Lab(l, a, b, opacity) {
-	    this.l = +l;
-	    this.a = +a;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Lab, lab, extend(Color, {
-	    brighter: function(k) {
-	      return new Lab(this.l + Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Lab(this.l - Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    rgb: function() {
-	      var y = (this.l + 16) / 116,
-	          x = isNaN(this.a) ? y : y + this.a / 500,
-	          z = isNaN(this.b) ? y : y - this.b / 200;
-	      y = Yn * lab2xyz(y);
-	      x = Xn * lab2xyz(x);
-	      z = Zn * lab2xyz(z);
-	      return new Rgb(
-	        xyz2rgb( 3.2404542 * x - 1.5371385 * y - 0.4985314 * z), // D65 -> sRGB
-	        xyz2rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z),
-	        xyz2rgb( 0.0556434 * x - 0.2040259 * y + 1.0572252 * z),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  function xyz2lab(t) {
-	    return t > t3 ? Math.pow(t, 1 / 3) : t / t2 + t0;
-	  }
-
-	  function lab2xyz(t) {
-	    return t > t1 ? t * t * t : t2 * (t - t0);
-	  }
-
-	  function xyz2rgb(x) {
-	    return 255 * (x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055);
-	  }
-
-	  function rgb2xyz(x) {
-	    return (x /= 255) <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
-	  }
-
-	  function hclConvert(o) {
-	    if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
-	    if (!(o instanceof Lab)) o = labConvert(o);
-	    var h = Math.atan2(o.b, o.a) * rad2deg;
-	    return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
-	  }
-
-	  function hcl(h, c, l, opacity) {
-	    return arguments.length === 1 ? hclConvert(h) : new Hcl(h, c, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hcl(h, c, l, opacity) {
-	    this.h = +h;
-	    this.c = +c;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hcl, hcl, extend(Color, {
-	    brighter: function(k) {
-	      return new Hcl(this.h, this.c, this.l + Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Hcl(this.h, this.c, this.l - Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    rgb: function() {
-	      return labConvert(this).rgb();
-	    }
-	  }));
-
-	  var A = -0.14861;
-	  var B = +1.78277;
-	  var C = -0.29227;
-	  var D = -0.90649;
-	  var E = +1.97294;
-	  var ED = E * D;
-	  var EB = E * B;
-	  var BC_DA = B * C - D * A;
-	  function cubehelixConvert(o) {
-	    if (o instanceof Cubehelix) return new Cubehelix(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        l = (BC_DA * b + ED * r - EB * g) / (BC_DA + ED - EB),
-	        bl = b - l,
-	        k = (E * (g - l) - C * bl) / D,
-	        s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)), // NaN if l=0 or l=1
-	        h = s ? Math.atan2(k, bl) * rad2deg - 120 : NaN;
-	    return new Cubehelix(h < 0 ? h + 360 : h, s, l, o.opacity);
-	  }
-
-	  function cubehelix(h, s, l, opacity) {
-	    return arguments.length === 1 ? cubehelixConvert(h) : new Cubehelix(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Cubehelix(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Cubehelix, cubehelix, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = isNaN(this.h) ? 0 : (this.h + 120) * deg2rad,
-	          l = +this.l,
-	          a = isNaN(this.s) ? 0 : this.s * l * (1 - l),
-	          cosh = Math.cos(h),
-	          sinh = Math.sin(h);
-	      return new Rgb(
-	        255 * (l + a * (A * cosh + B * sinh)),
-	        255 * (l + a * (C * cosh + D * sinh)),
-	        255 * (l + a * (E * cosh)),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  exports.color = color;
-	  exports.rgb = rgb;
-	  exports.hsl = hsl;
-	  exports.lab = lab;
-	  exports.hcl = hcl;
-	  exports.cubehelix = cubehelix;
-
-	  Object.defineProperty(exports, '__esModule', { value: true });
-
-	}));
-
-/***/ },
-/* 225 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// https://d3js.org/d3-format/ Version 1.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
@@ -44948,394 +44454,396 @@
 	}));
 
 /***/ },
-/* 226 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-time/ Version 1.0.2. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-time/ Version 1.0.4. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  var t0 = new Date;
-	  var t1 = new Date;
-	  function newInterval(floori, offseti, count, field) {
+	var t0 = new Date;
+	var t1 = new Date;
 
-	    function interval(date) {
-	      return floori(date = new Date(+date)), date;
-	    }
+	function newInterval(floori, offseti, count, field) {
 
-	    interval.floor = interval;
-
-	    interval.ceil = function(date) {
-	      return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
-	    };
-
-	    interval.round = function(date) {
-	      var d0 = interval(date),
-	          d1 = interval.ceil(date);
-	      return date - d0 < d1 - date ? d0 : d1;
-	    };
-
-	    interval.offset = function(date, step) {
-	      return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
-	    };
-
-	    interval.range = function(start, stop, step) {
-	      var range = [];
-	      start = interval.ceil(start);
-	      step = step == null ? 1 : Math.floor(step);
-	      if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
-	      do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
-	      return range;
-	    };
-
-	    interval.filter = function(test) {
-	      return newInterval(function(date) {
-	        while (floori(date), !test(date)) date.setTime(date - 1);
-	      }, function(date, step) {
-	        while (--step >= 0) while (offseti(date, 1), !test(date));
-	      });
-	    };
-
-	    if (count) {
-	      interval.count = function(start, end) {
-	        t0.setTime(+start), t1.setTime(+end);
-	        floori(t0), floori(t1);
-	        return Math.floor(count(t0, t1));
-	      };
-
-	      interval.every = function(step) {
-	        step = Math.floor(step);
-	        return !isFinite(step) || !(step > 0) ? null
-	            : !(step > 1) ? interval
-	            : interval.filter(field
-	                ? function(d) { return field(d) % step === 0; }
-	                : function(d) { return interval.count(0, d) % step === 0; });
-	      };
-	    }
-
-	    return interval;
+	  function interval(date) {
+	    return floori(date = new Date(+date)), date;
 	  }
 
-	  var millisecond = newInterval(function() {
-	    // noop
-	  }, function(date, step) {
-	    date.setTime(+date + step);
-	  }, function(start, end) {
-	    return end - start;
-	  });
+	  interval.floor = interval;
 
-	  // An optimized implementation for this simple case.
-	  millisecond.every = function(k) {
-	    k = Math.floor(k);
-	    if (!isFinite(k) || !(k > 0)) return null;
-	    if (!(k > 1)) return millisecond;
+	  interval.ceil = function(date) {
+	    return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
+	  };
+
+	  interval.round = function(date) {
+	    var d0 = interval(date),
+	        d1 = interval.ceil(date);
+	    return date - d0 < d1 - date ? d0 : d1;
+	  };
+
+	  interval.offset = function(date, step) {
+	    return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
+	  };
+
+	  interval.range = function(start, stop, step) {
+	    var range = [];
+	    start = interval.ceil(start);
+	    step = step == null ? 1 : Math.floor(step);
+	    if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
+	    do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
+	    return range;
+	  };
+
+	  interval.filter = function(test) {
 	    return newInterval(function(date) {
-	      date.setTime(Math.floor(date / k) * k);
+	      if (date >= date) while (floori(date), !test(date)) date.setTime(date - 1);
 	    }, function(date, step) {
-	      date.setTime(+date + step * k);
-	    }, function(start, end) {
-	      return (end - start) / k;
+	      if (date >= date) while (--step >= 0) while (offseti(date, 1), !test(date)) {} // eslint-disable-line no-empty
 	    });
 	  };
 
-	  var milliseconds = millisecond.range;
+	  if (count) {
+	    interval.count = function(start, end) {
+	      t0.setTime(+start), t1.setTime(+end);
+	      floori(t0), floori(t1);
+	      return Math.floor(count(t0, t1));
+	    };
 
-	  var durationSecond = 1e3;
-	  var durationMinute = 6e4;
-	  var durationHour = 36e5;
-	  var durationDay = 864e5;
-	  var durationWeek = 6048e5;
-
-	  var second = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationSecond) * durationSecond);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationSecond);
-	  }, function(start, end) {
-	    return (end - start) / durationSecond;
-	  }, function(date) {
-	    return date.getUTCSeconds();
-	  });
-
-	  var seconds = second.range;
-
-	  var minute = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationMinute) * durationMinute);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getMinutes();
-	  });
-
-	  var minutes = minute.range;
-
-	  var hour = newInterval(function(date) {
-	    var offset = date.getTimezoneOffset() * durationMinute % durationHour;
-	    if (offset < 0) offset += durationHour;
-	    date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getHours();
-	  });
-
-	  var hours = hour.range;
-
-	  var day = newInterval(function(date) {
-	    date.setHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setDate(date.getDate() + step);
-	  }, function(start, end) {
-	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
-	  }, function(date) {
-	    return date.getDate() - 1;
-	  });
-
-	  var days = day.range;
-
-	  function weekday(i) {
-	    return newInterval(function(date) {
-	      date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setDate(date.getDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
-	    });
+	    interval.every = function(step) {
+	      step = Math.floor(step);
+	      return !isFinite(step) || !(step > 0) ? null
+	          : !(step > 1) ? interval
+	          : interval.filter(field
+	              ? function(d) { return field(d) % step === 0; }
+	              : function(d) { return interval.count(0, d) % step === 0; });
+	    };
 	  }
 
-	  var sunday = weekday(0);
-	  var monday = weekday(1);
-	  var tuesday = weekday(2);
-	  var wednesday = weekday(3);
-	  var thursday = weekday(4);
-	  var friday = weekday(5);
-	  var saturday = weekday(6);
+	  return interval;
+	}
 
-	  var sundays = sunday.range;
-	  var mondays = monday.range;
-	  var tuesdays = tuesday.range;
-	  var wednesdays = wednesday.range;
-	  var thursdays = thursday.range;
-	  var fridays = friday.range;
-	  var saturdays = saturday.range;
+	var millisecond = newInterval(function() {
+	  // noop
+	}, function(date, step) {
+	  date.setTime(+date + step);
+	}, function(start, end) {
+	  return end - start;
+	});
 
-	  var month = newInterval(function(date) {
-	    date.setDate(1);
+	// An optimized implementation for this simple case.
+	millisecond.every = function(k) {
+	  k = Math.floor(k);
+	  if (!isFinite(k) || !(k > 0)) return null;
+	  if (!(k > 1)) return millisecond;
+	  return newInterval(function(date) {
+	    date.setTime(Math.floor(date / k) * k);
+	  }, function(date, step) {
+	    date.setTime(+date + step * k);
+	  }, function(start, end) {
+	    return (end - start) / k;
+	  });
+	};
+
+	var milliseconds = millisecond.range;
+
+	var durationSecond = 1e3;
+	var durationMinute = 6e4;
+	var durationHour = 36e5;
+	var durationDay = 864e5;
+	var durationWeek = 6048e5;
+
+	var second = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationSecond) * durationSecond);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationSecond);
+	}, function(start, end) {
+	  return (end - start) / durationSecond;
+	}, function(date) {
+	  return date.getUTCSeconds();
+	});
+
+	var seconds = second.range;
+
+	var minute = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationMinute) * durationMinute);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getMinutes();
+	});
+
+	var minutes = minute.range;
+
+	var hour = newInterval(function(date) {
+	  var offset = date.getTimezoneOffset() * durationMinute % durationHour;
+	  if (offset < 0) offset += durationHour;
+	  date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getHours();
+	});
+
+	var hours = hour.range;
+
+	var day = newInterval(function(date) {
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setDate(date.getDate() + step);
+	}, function(start, end) {
+	  return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
+	}, function(date) {
+	  return date.getDate() - 1;
+	});
+
+	var days = day.range;
+
+	function weekday(i) {
+	  return newInterval(function(date) {
+	    date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setMonth(date.getMonth() + step);
+	    date.setDate(date.getDate() + step * 7);
 	  }, function(start, end) {
-	    return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
-	  }, function(date) {
-	    return date.getMonth();
+	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
 	  });
+	}
 
-	  var months = month.range;
+	var sunday = weekday(0);
+	var monday = weekday(1);
+	var tuesday = weekday(2);
+	var wednesday = weekday(3);
+	var thursday = weekday(4);
+	var friday = weekday(5);
+	var saturday = weekday(6);
 
-	  var year = newInterval(function(date) {
+	var sundays = sunday.range;
+	var mondays = monday.range;
+	var tuesdays = tuesday.range;
+	var wednesdays = wednesday.range;
+	var thursdays = thursday.range;
+	var fridays = friday.range;
+	var saturdays = saturday.range;
+
+	var month = newInterval(function(date) {
+	  date.setDate(1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setMonth(date.getMonth() + step);
+	}, function(start, end) {
+	  return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
+	}, function(date) {
+	  return date.getMonth();
+	});
+
+	var months = month.range;
+
+	var year = newInterval(function(date) {
+	  date.setMonth(0, 1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setFullYear(date.getFullYear() + step);
+	}, function(start, end) {
+	  return end.getFullYear() - start.getFullYear();
+	}, function(date) {
+	  return date.getFullYear();
+	});
+
+	// An optimized implementation for this simple case.
+	year.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setFullYear(Math.floor(date.getFullYear() / k) * k);
 	    date.setMonth(0, 1);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setFullYear(date.getFullYear() + step);
-	  }, function(start, end) {
-	    return end.getFullYear() - start.getFullYear();
-	  }, function(date) {
-	    return date.getFullYear();
+	    date.setFullYear(date.getFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  year.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setFullYear(Math.floor(date.getFullYear() / k) * k);
-	      date.setMonth(0, 1);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setFullYear(date.getFullYear() + step * k);
-	    });
-	  };
+	var years = year.range;
 
-	  var years = year.range;
+	var utcMinute = newInterval(function(date) {
+	  date.setUTCSeconds(0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getUTCMinutes();
+	});
 
-	  var utcMinute = newInterval(function(date) {
-	    date.setUTCSeconds(0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getUTCMinutes();
-	  });
+	var utcMinutes = utcMinute.range;
 
-	  var utcMinutes = utcMinute.range;
+	var utcHour = newInterval(function(date) {
+	  date.setUTCMinutes(0, 0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getUTCHours();
+	});
 
-	  var utcHour = newInterval(function(date) {
-	    date.setUTCMinutes(0, 0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getUTCHours();
-	  });
+	var utcHours = utcHour.range;
 
-	  var utcHours = utcHour.range;
+	var utcDay = newInterval(function(date) {
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCDate(date.getUTCDate() + step);
+	}, function(start, end) {
+	  return (end - start) / durationDay;
+	}, function(date) {
+	  return date.getUTCDate() - 1;
+	});
 
-	  var utcDay = newInterval(function(date) {
+	var utcDays = utcDay.range;
+
+	function utcWeekday(i) {
+	  return newInterval(function(date) {
+	    date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCDate(date.getUTCDate() + step);
+	    date.setUTCDate(date.getUTCDate() + step * 7);
 	  }, function(start, end) {
-	    return (end - start) / durationDay;
-	  }, function(date) {
-	    return date.getUTCDate() - 1;
+	    return (end - start) / durationWeek;
 	  });
+	}
 
-	  var utcDays = utcDay.range;
+	var utcSunday = utcWeekday(0);
+	var utcMonday = utcWeekday(1);
+	var utcTuesday = utcWeekday(2);
+	var utcWednesday = utcWeekday(3);
+	var utcThursday = utcWeekday(4);
+	var utcFriday = utcWeekday(5);
+	var utcSaturday = utcWeekday(6);
 
-	  function utcWeekday(i) {
-	    return newInterval(function(date) {
-	      date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCDate(date.getUTCDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start) / durationWeek;
-	    });
-	  }
+	var utcSundays = utcSunday.range;
+	var utcMondays = utcMonday.range;
+	var utcTuesdays = utcTuesday.range;
+	var utcWednesdays = utcWednesday.range;
+	var utcThursdays = utcThursday.range;
+	var utcFridays = utcFriday.range;
+	var utcSaturdays = utcSaturday.range;
 
-	  var utcSunday = utcWeekday(0);
-	  var utcMonday = utcWeekday(1);
-	  var utcTuesday = utcWeekday(2);
-	  var utcWednesday = utcWeekday(3);
-	  var utcThursday = utcWeekday(4);
-	  var utcFriday = utcWeekday(5);
-	  var utcSaturday = utcWeekday(6);
+	var utcMonth = newInterval(function(date) {
+	  date.setUTCDate(1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCMonth(date.getUTCMonth() + step);
+	}, function(start, end) {
+	  return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
+	}, function(date) {
+	  return date.getUTCMonth();
+	});
 
-	  var utcSundays = utcSunday.range;
-	  var utcMondays = utcMonday.range;
-	  var utcTuesdays = utcTuesday.range;
-	  var utcWednesdays = utcWednesday.range;
-	  var utcThursdays = utcThursday.range;
-	  var utcFridays = utcFriday.range;
-	  var utcSaturdays = utcSaturday.range;
+	var utcMonths = utcMonth.range;
 
-	  var utcMonth = newInterval(function(date) {
-	    date.setUTCDate(1);
-	    date.setUTCHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setUTCMonth(date.getUTCMonth() + step);
-	  }, function(start, end) {
-	    return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
-	  }, function(date) {
-	    return date.getUTCMonth();
-	  });
+	var utcYear = newInterval(function(date) {
+	  date.setUTCMonth(0, 1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCFullYear(date.getUTCFullYear() + step);
+	}, function(start, end) {
+	  return end.getUTCFullYear() - start.getUTCFullYear();
+	}, function(date) {
+	  return date.getUTCFullYear();
+	});
 
-	  var utcMonths = utcMonth.range;
-
-	  var utcYear = newInterval(function(date) {
+	// An optimized implementation for this simple case.
+	utcYear.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
 	    date.setUTCMonth(0, 1);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCFullYear(date.getUTCFullYear() + step);
-	  }, function(start, end) {
-	    return end.getUTCFullYear() - start.getUTCFullYear();
-	  }, function(date) {
-	    return date.getUTCFullYear();
+	    date.setUTCFullYear(date.getUTCFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  utcYear.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
-	      date.setUTCMonth(0, 1);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCFullYear(date.getUTCFullYear() + step * k);
-	    });
-	  };
+	var utcYears = utcYear.range;
 
-	  var utcYears = utcYear.range;
+	exports.timeInterval = newInterval;
+	exports.timeMillisecond = millisecond;
+	exports.timeMilliseconds = milliseconds;
+	exports.utcMillisecond = millisecond;
+	exports.utcMilliseconds = milliseconds;
+	exports.timeSecond = second;
+	exports.timeSeconds = seconds;
+	exports.utcSecond = second;
+	exports.utcSeconds = seconds;
+	exports.timeMinute = minute;
+	exports.timeMinutes = minutes;
+	exports.timeHour = hour;
+	exports.timeHours = hours;
+	exports.timeDay = day;
+	exports.timeDays = days;
+	exports.timeWeek = sunday;
+	exports.timeWeeks = sundays;
+	exports.timeSunday = sunday;
+	exports.timeSundays = sundays;
+	exports.timeMonday = monday;
+	exports.timeMondays = mondays;
+	exports.timeTuesday = tuesday;
+	exports.timeTuesdays = tuesdays;
+	exports.timeWednesday = wednesday;
+	exports.timeWednesdays = wednesdays;
+	exports.timeThursday = thursday;
+	exports.timeThursdays = thursdays;
+	exports.timeFriday = friday;
+	exports.timeFridays = fridays;
+	exports.timeSaturday = saturday;
+	exports.timeSaturdays = saturdays;
+	exports.timeMonth = month;
+	exports.timeMonths = months;
+	exports.timeYear = year;
+	exports.timeYears = years;
+	exports.utcMinute = utcMinute;
+	exports.utcMinutes = utcMinutes;
+	exports.utcHour = utcHour;
+	exports.utcHours = utcHours;
+	exports.utcDay = utcDay;
+	exports.utcDays = utcDays;
+	exports.utcWeek = utcSunday;
+	exports.utcWeeks = utcSundays;
+	exports.utcSunday = utcSunday;
+	exports.utcSundays = utcSundays;
+	exports.utcMonday = utcMonday;
+	exports.utcMondays = utcMondays;
+	exports.utcTuesday = utcTuesday;
+	exports.utcTuesdays = utcTuesdays;
+	exports.utcWednesday = utcWednesday;
+	exports.utcWednesdays = utcWednesdays;
+	exports.utcThursday = utcThursday;
+	exports.utcThursdays = utcThursdays;
+	exports.utcFriday = utcFriday;
+	exports.utcFridays = utcFridays;
+	exports.utcSaturday = utcSaturday;
+	exports.utcSaturdays = utcSaturdays;
+	exports.utcMonth = utcMonth;
+	exports.utcMonths = utcMonths;
+	exports.utcYear = utcYear;
+	exports.utcYears = utcYears;
 
-	  exports.timeInterval = newInterval;
-	  exports.timeMillisecond = millisecond;
-	  exports.timeMilliseconds = milliseconds;
-	  exports.utcMillisecond = millisecond;
-	  exports.utcMilliseconds = milliseconds;
-	  exports.timeSecond = second;
-	  exports.timeSeconds = seconds;
-	  exports.utcSecond = second;
-	  exports.utcSeconds = seconds;
-	  exports.timeMinute = minute;
-	  exports.timeMinutes = minutes;
-	  exports.timeHour = hour;
-	  exports.timeHours = hours;
-	  exports.timeDay = day;
-	  exports.timeDays = days;
-	  exports.timeWeek = sunday;
-	  exports.timeWeeks = sundays;
-	  exports.timeSunday = sunday;
-	  exports.timeSundays = sundays;
-	  exports.timeMonday = monday;
-	  exports.timeMondays = mondays;
-	  exports.timeTuesday = tuesday;
-	  exports.timeTuesdays = tuesdays;
-	  exports.timeWednesday = wednesday;
-	  exports.timeWednesdays = wednesdays;
-	  exports.timeThursday = thursday;
-	  exports.timeThursdays = thursdays;
-	  exports.timeFriday = friday;
-	  exports.timeFridays = fridays;
-	  exports.timeSaturday = saturday;
-	  exports.timeSaturdays = saturdays;
-	  exports.timeMonth = month;
-	  exports.timeMonths = months;
-	  exports.timeYear = year;
-	  exports.timeYears = years;
-	  exports.utcMinute = utcMinute;
-	  exports.utcMinutes = utcMinutes;
-	  exports.utcHour = utcHour;
-	  exports.utcHours = utcHours;
-	  exports.utcDay = utcDay;
-	  exports.utcDays = utcDays;
-	  exports.utcWeek = utcSunday;
-	  exports.utcWeeks = utcSundays;
-	  exports.utcSunday = utcSunday;
-	  exports.utcSundays = utcSundays;
-	  exports.utcMonday = utcMonday;
-	  exports.utcMondays = utcMondays;
-	  exports.utcTuesday = utcTuesday;
-	  exports.utcTuesdays = utcTuesdays;
-	  exports.utcWednesday = utcWednesday;
-	  exports.utcWednesdays = utcWednesdays;
-	  exports.utcThursday = utcThursday;
-	  exports.utcThursdays = utcThursdays;
-	  exports.utcFriday = utcFriday;
-	  exports.utcFridays = utcFridays;
-	  exports.utcSaturday = utcSaturday;
-	  exports.utcSaturdays = utcSaturdays;
-	  exports.utcMonth = utcMonth;
-	  exports.utcMonths = utcMonths;
-	  exports.utcYear = utcYear;
-	  exports.utcYears = utcYears;
+	Object.defineProperty(exports, '__esModule', { value: true });
 
-	  Object.defineProperty(exports, '__esModule', { value: true });
+	})));
 
-	}));
 
 /***/ },
-/* 227 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org/d3-time-format/ Version 2.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(226)) :
+	   true ? factory(exports, __webpack_require__(225)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-time'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Time) { 'use strict';
@@ -45917,7 +45425,7 @@
 	}));
 
 /***/ },
-/* 228 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45932,7 +45440,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commaNumber = __webpack_require__(229);
+	var _commaNumber = __webpack_require__(228);
 
 	var _commaNumber2 = _interopRequireDefault(_commaNumber);
 
@@ -46097,7 +45605,7 @@
 	            _react2.default.createElement(
 	              'a',
 	              { onClick: this._resetUpload },
-	              '✕'
+	              '\u2715'
 	            )
 	          ),
 	          resolution
@@ -46128,7 +45636,7 @@
 	};
 
 /***/ },
-/* 229 */
+/* 228 */
 /***/ function(module, exports) {
 
 	/**
@@ -46179,7 +45687,7 @@
 
 
 /***/ },
-/* 230 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46395,7 +45903,7 @@
 	};
 
 /***/ },
-/* 231 */
+/* 230 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46428,7 +45936,7 @@
 	};
 
 /***/ },
-/* 232 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46495,13 +46003,13 @@
 	};
 
 /***/ },
-/* 233 */
+/* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "0bbd7bcde71e350f93f6e44fa2635a8c.png";
 
 /***/ },
-/* 234 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46738,7 +46246,7 @@
 	exports.default = new Importer();
 
 /***/ },
-/* 235 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46749,17 +46257,17 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _d3Dsv = __webpack_require__(236);
+	var _d3Dsv = __webpack_require__(235);
 
-	var _populationByState = __webpack_require__(237);
+	var _populationByState = __webpack_require__(236);
 
 	var _populationByState2 = _interopRequireDefault(_populationByState);
 
-	var _electoralCollegeVotesByState = __webpack_require__(238);
+	var _electoralCollegeVotesByState = __webpack_require__(237);
 
 	var _electoralCollegeVotesByState2 = _interopRequireDefault(_electoralCollegeVotesByState);
 
-	var _gdpByState = __webpack_require__(239);
+	var _gdpByState = __webpack_require__(238);
 
 	var _gdpByState2 = _interopRequireDefault(_gdpByState);
 
@@ -46822,10 +46330,10 @@
 	exports.default = new DatasetResource();
 
 /***/ },
-/* 236 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-dsv/ Version 1.0.2. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-dsv/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -46996,25 +46504,25 @@
 	})));
 
 /***/ },
-/* 237 */
+/* 236 */
 /***/ function(module, exports) {
 
 	module.exports = "01,4858979\r02,738432\r04,6828065\r05,2978204\r06,39144818\r08,5456574\r09,3590886\r10,945934\r11,672228\r12,20271272\r13,10214860\r15,1431603\r16,1654930\r17,12859995\r18,6619680\r19,3123899\r20,2911641\r21,4425092\r22,4670724\r23,1329328\r24,6006401\r25,6794422\r26,9922576\r27,5489594\r28,2992333\r29,6083672\r30,1032949\r31,1896190\r32,2890845\r33,1330608\r34,8958013\r35,2085109\r36,19795791\r37,10042802\r38,756927\r39,11613423\r40,3911338\r41,4028977\r42,12802503\r44,1056298\r45,4896146\r46,858469\r47,6600299\r48,27469114\r49,2995919\r50,626042\r51,8382993\r53,7170351\r54,1844128\r55,5771337\r56,586107"
 
 /***/ },
-/* 238 */
+/* 237 */
 /***/ function(module, exports) {
 
 	module.exports = "01,9\r02,3\r04,11\r05,6\r06,55\r08,9\r09,7\r10,3\r11,3\r12,29\r13,16\r15,4\r16,4\r17,20\r18,11\r19,6\r20,6\r21,8\r22,8\r23,4\r24,10\r25,11\r26,16\r27,10\r28,6\r29,10\r30,3\r31,5\r32,6\r33,4\r34,14\r35,5\r36,29\r37,15\r38,3\r39,18\r40,7\r41,7\r42,20\r44,4\r45,9\r46,3\r47,11\r48,38\r49,6\r50,3\r51,13\r53,12\r54,5\r55,10\r56,3\r"
 
 /***/ },
-/* 239 */
+/* 238 */
 /***/ function(module, exports) {
 
 	module.exports = "01,204235\r02,52804\r04,290578\r05,123207\r06,2458535\r08,314878\r09,258532\r10,68071\r11,122510\r12,882798\r13,495727\r15,79745\r16,65242\r17,775007\r18,336411\r19,174103\r20,147765\r21,194643\r22,243317\r23,56600\r24,363845\r25,476743\r26,466536\r27,333267\r28,107100\r29,293378\r30,45933\r31,113998\r32,141282\r33,72573\r34,568155\r35,92231\r36,1441003\r37,499449\r38,54830\r39,608109\r40,180425\r41,215331\r42,689173\r44,57049\r45,198714\r46,46674\r47,314191\r48,1586468\r49,147108\r50,30401\r51,479809\r53,443665\r54,73741\r55,305795\r56,38624"
 
 /***/ },
-/* 240 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47025,15 +46533,15 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _pitchUsPopulation500k = __webpack_require__(241);
+	var _pitchUsPopulation500k = __webpack_require__(240);
 
 	var _pitchUsPopulation500k2 = _interopRequireDefault(_pitchUsPopulation500k);
 
-	var _nprOneToOne = __webpack_require__(242);
+	var _nprOneToOne = __webpack_require__(241);
 
 	var _nprOneToOne2 = _interopRequireDefault(_nprOneToOne);
 
-	var _fivethirtyeightElectoralCollegeTilegram = __webpack_require__(243);
+	var _fivethirtyeightElectoralCollegeTilegram = __webpack_require__(242);
 
 	var _fivethirtyeightElectoralCollegeTilegram2 = _interopRequireDefault(_fivethirtyeightElectoralCollegeTilegram);
 
@@ -47077,7 +46585,7 @@
 	exports.default = new TilegramResource();
 
 /***/ },
-/* 241 */
+/* 240 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -74188,7 +73696,7 @@
 	};
 
 /***/ },
-/* 242 */
+/* 241 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -76351,7 +75859,7 @@
 	};
 
 /***/ },
-/* 243 */
+/* 242 */
 /***/ function(module, exports) {
 
 	module.exports = {
@@ -98968,16 +98476,16 @@
 	};
 
 /***/ },
-/* 244 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(245);
+	var content = __webpack_require__(244);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(247)(content, {});
+	var update = __webpack_require__(246)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -98994,10 +98502,10 @@
 	}
 
 /***/ },
-/* 245 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(246)();
+	exports = module.exports = __webpack_require__(245)();
 	// imports
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700);", ""]);
 
@@ -99008,7 +98516,7 @@
 
 
 /***/ },
-/* 246 */
+/* 245 */
 /***/ function(module, exports) {
 
 	/*
@@ -99064,7 +98572,7 @@
 
 
 /***/ },
-/* 247 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -99316,16 +98824,16 @@
 
 
 /***/ },
-/* 248 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(249);
+	var content = __webpack_require__(248);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(247)(content, {});
+	var update = __webpack_require__(246)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -99342,18 +98850,24 @@
 	}
 
 /***/ },
-/* 249 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(246)();
+	exports = module.exports = __webpack_require__(245)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "@charset \"UTF-8\";\n/*!\n *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome\n *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)\n */\n/* FONT PATH\n * -------------------------- */\n@font-face {\n  font-family: 'FontAwesome';\n  src: url(" + __webpack_require__(250) + ");\n  src: url(" + __webpack_require__(251) + "?#iefix&v=4.6.3) format(\"embedded-opentype\"), url(" + __webpack_require__(252) + ") format(\"woff2\"), url(" + __webpack_require__(253) + ") format(\"woff\"), url(" + __webpack_require__(254) + ") format(\"truetype\"), url(" + __webpack_require__(255) + "#fontawesomeregular) format(\"svg\");\n  font-weight: normal;\n  font-style: normal; }\n\n.fa {\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale; }\n\n/* makes the font 33% larger relative to the icon container */\n.fa-lg {\n  font-size: 1.33333em;\n  line-height: 0.75em;\n  vertical-align: -15%; }\n\n.fa-2x {\n  font-size: 2em; }\n\n.fa-3x {\n  font-size: 3em; }\n\n.fa-4x {\n  font-size: 4em; }\n\n.fa-5x {\n  font-size: 5em; }\n\n.fa-fw {\n  width: 1.28571em;\n  text-align: center; }\n\n.fa-ul {\n  padding-left: 0;\n  margin-left: 2.14286em;\n  list-style-type: none; }\n  .fa-ul > li {\n    position: relative; }\n\n.fa-li {\n  position: absolute;\n  left: -2.14286em;\n  width: 2.14286em;\n  top: 0.14286em;\n  text-align: center; }\n  .fa-li.fa-lg {\n    left: -1.85714em; }\n\n.fa-border {\n  padding: .2em .25em .15em;\n  border: solid 0.08em #eee;\n  border-radius: .1em; }\n\n.fa-pull-left {\n  float: left; }\n\n.fa-pull-right {\n  float: right; }\n\n.fa.fa-pull-left {\n  margin-right: .3em; }\n\n.fa.fa-pull-right {\n  margin-left: .3em; }\n\n/* Deprecated as of 4.4.0 */\n.pull-right {\n  float: right; }\n\n.pull-left {\n  float: left; }\n\n.fa.pull-left {\n  margin-right: .3em; }\n\n.fa.pull-right {\n  margin-left: .3em; }\n\n.fa-spin {\n  -webkit-animation: fa-spin 2s infinite linear;\n  animation: fa-spin 2s infinite linear; }\n\n.fa-pulse {\n  -webkit-animation: fa-spin 1s infinite steps(8);\n  animation: fa-spin 1s infinite steps(8); }\n\n@-webkit-keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n@keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n.fa-rotate-90 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";\n  -webkit-transform: rotate(90deg);\n  -ms-transform: rotate(90deg);\n  transform: rotate(90deg); }\n\n.fa-rotate-180 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";\n  -webkit-transform: rotate(180deg);\n  -ms-transform: rotate(180deg);\n  transform: rotate(180deg); }\n\n.fa-rotate-270 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";\n  -webkit-transform: rotate(270deg);\n  -ms-transform: rotate(270deg);\n  transform: rotate(270deg); }\n\n.fa-flip-horizontal {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";\n  -webkit-transform: scale(-1, 1);\n  -ms-transform: scale(-1, 1);\n  transform: scale(-1, 1); }\n\n.fa-flip-vertical {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";\n  -webkit-transform: scale(1, -1);\n  -ms-transform: scale(1, -1);\n  transform: scale(1, -1); }\n\n:root .fa-rotate-90,\n:root .fa-rotate-180,\n:root .fa-rotate-270,\n:root .fa-flip-horizontal,\n:root .fa-flip-vertical {\n  filter: none; }\n\n.fa-stack {\n  position: relative;\n  display: inline-block;\n  width: 2em;\n  height: 2em;\n  line-height: 2em;\n  vertical-align: middle; }\n\n.fa-stack-1x, .fa-stack-2x {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  text-align: center; }\n\n.fa-stack-1x {\n  line-height: inherit; }\n\n.fa-stack-2x {\n  font-size: 2em; }\n\n.fa-inverse {\n  color: #fff; }\n\n/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen\n   readers do not read off random characters that represent icons */\n.fa-glass:before {\n  content: \"\\F000\"; }\n\n.fa-music:before {\n  content: \"\\F001\"; }\n\n.fa-search:before {\n  content: \"\\F002\"; }\n\n.fa-envelope-o:before {\n  content: \"\\F003\"; }\n\n.fa-heart:before {\n  content: \"\\F004\"; }\n\n.fa-star:before {\n  content: \"\\F005\"; }\n\n.fa-star-o:before {\n  content: \"\\F006\"; }\n\n.fa-user:before {\n  content: \"\\F007\"; }\n\n.fa-film:before {\n  content: \"\\F008\"; }\n\n.fa-th-large:before {\n  content: \"\\F009\"; }\n\n.fa-th:before {\n  content: \"\\F00A\"; }\n\n.fa-th-list:before {\n  content: \"\\F00B\"; }\n\n.fa-check:before {\n  content: \"\\F00C\"; }\n\n.fa-remove:before,\n.fa-close:before,\n.fa-times:before {\n  content: \"\\F00D\"; }\n\n.fa-search-plus:before {\n  content: \"\\F00E\"; }\n\n.fa-search-minus:before {\n  content: \"\\F010\"; }\n\n.fa-power-off:before {\n  content: \"\\F011\"; }\n\n.fa-signal:before {\n  content: \"\\F012\"; }\n\n.fa-gear:before,\n.fa-cog:before {\n  content: \"\\F013\"; }\n\n.fa-trash-o:before {\n  content: \"\\F014\"; }\n\n.fa-home:before {\n  content: \"\\F015\"; }\n\n.fa-file-o:before {\n  content: \"\\F016\"; }\n\n.fa-clock-o:before {\n  content: \"\\F017\"; }\n\n.fa-road:before {\n  content: \"\\F018\"; }\n\n.fa-download:before {\n  content: \"\\F019\"; }\n\n.fa-arrow-circle-o-down:before {\n  content: \"\\F01A\"; }\n\n.fa-arrow-circle-o-up:before {\n  content: \"\\F01B\"; }\n\n.fa-inbox:before {\n  content: \"\\F01C\"; }\n\n.fa-play-circle-o:before {\n  content: \"\\F01D\"; }\n\n.fa-rotate-right:before,\n.fa-repeat:before {\n  content: \"\\F01E\"; }\n\n.fa-refresh:before {\n  content: \"\\F021\"; }\n\n.fa-list-alt:before {\n  content: \"\\F022\"; }\n\n.fa-lock:before {\n  content: \"\\F023\"; }\n\n.fa-flag:before {\n  content: \"\\F024\"; }\n\n.fa-headphones:before {\n  content: \"\\F025\"; }\n\n.fa-volume-off:before {\n  content: \"\\F026\"; }\n\n.fa-volume-down:before {\n  content: \"\\F027\"; }\n\n.fa-volume-up:before {\n  content: \"\\F028\"; }\n\n.fa-qrcode:before {\n  content: \"\\F029\"; }\n\n.fa-barcode:before {\n  content: \"\\F02A\"; }\n\n.fa-tag:before {\n  content: \"\\F02B\"; }\n\n.fa-tags:before {\n  content: \"\\F02C\"; }\n\n.fa-book:before {\n  content: \"\\F02D\"; }\n\n.fa-bookmark:before {\n  content: \"\\F02E\"; }\n\n.fa-print:before {\n  content: \"\\F02F\"; }\n\n.fa-camera:before {\n  content: \"\\F030\"; }\n\n.fa-font:before {\n  content: \"\\F031\"; }\n\n.fa-bold:before {\n  content: \"\\F032\"; }\n\n.fa-italic:before {\n  content: \"\\F033\"; }\n\n.fa-text-height:before {\n  content: \"\\F034\"; }\n\n.fa-text-width:before {\n  content: \"\\F035\"; }\n\n.fa-align-left:before {\n  content: \"\\F036\"; }\n\n.fa-align-center:before {\n  content: \"\\F037\"; }\n\n.fa-align-right:before {\n  content: \"\\F038\"; }\n\n.fa-align-justify:before {\n  content: \"\\F039\"; }\n\n.fa-list:before {\n  content: \"\\F03A\"; }\n\n.fa-dedent:before,\n.fa-outdent:before {\n  content: \"\\F03B\"; }\n\n.fa-indent:before {\n  content: \"\\F03C\"; }\n\n.fa-video-camera:before {\n  content: \"\\F03D\"; }\n\n.fa-photo:before,\n.fa-image:before,\n.fa-picture-o:before {\n  content: \"\\F03E\"; }\n\n.fa-pencil:before {\n  content: \"\\F040\"; }\n\n.fa-map-marker:before {\n  content: \"\\F041\"; }\n\n.fa-adjust:before {\n  content: \"\\F042\"; }\n\n.fa-tint:before {\n  content: \"\\F043\"; }\n\n.fa-edit:before,\n.fa-pencil-square-o:before {\n  content: \"\\F044\"; }\n\n.fa-share-square-o:before {\n  content: \"\\F045\"; }\n\n.fa-check-square-o:before {\n  content: \"\\F046\"; }\n\n.fa-arrows:before {\n  content: \"\\F047\"; }\n\n.fa-step-backward:before {\n  content: \"\\F048\"; }\n\n.fa-fast-backward:before {\n  content: \"\\F049\"; }\n\n.fa-backward:before {\n  content: \"\\F04A\"; }\n\n.fa-play:before {\n  content: \"\\F04B\"; }\n\n.fa-pause:before {\n  content: \"\\F04C\"; }\n\n.fa-stop:before {\n  content: \"\\F04D\"; }\n\n.fa-forward:before {\n  content: \"\\F04E\"; }\n\n.fa-fast-forward:before {\n  content: \"\\F050\"; }\n\n.fa-step-forward:before {\n  content: \"\\F051\"; }\n\n.fa-eject:before {\n  content: \"\\F052\"; }\n\n.fa-chevron-left:before {\n  content: \"\\F053\"; }\n\n.fa-chevron-right:before {\n  content: \"\\F054\"; }\n\n.fa-plus-circle:before {\n  content: \"\\F055\"; }\n\n.fa-minus-circle:before {\n  content: \"\\F056\"; }\n\n.fa-times-circle:before {\n  content: \"\\F057\"; }\n\n.fa-check-circle:before {\n  content: \"\\F058\"; }\n\n.fa-question-circle:before {\n  content: \"\\F059\"; }\n\n.fa-info-circle:before {\n  content: \"\\F05A\"; }\n\n.fa-crosshairs:before {\n  content: \"\\F05B\"; }\n\n.fa-times-circle-o:before {\n  content: \"\\F05C\"; }\n\n.fa-check-circle-o:before {\n  content: \"\\F05D\"; }\n\n.fa-ban:before {\n  content: \"\\F05E\"; }\n\n.fa-arrow-left:before {\n  content: \"\\F060\"; }\n\n.fa-arrow-right:before {\n  content: \"\\F061\"; }\n\n.fa-arrow-up:before {\n  content: \"\\F062\"; }\n\n.fa-arrow-down:before {\n  content: \"\\F063\"; }\n\n.fa-mail-forward:before,\n.fa-share:before {\n  content: \"\\F064\"; }\n\n.fa-expand:before {\n  content: \"\\F065\"; }\n\n.fa-compress:before {\n  content: \"\\F066\"; }\n\n.fa-plus:before {\n  content: \"\\F067\"; }\n\n.fa-minus:before {\n  content: \"\\F068\"; }\n\n.fa-asterisk:before {\n  content: \"\\F069\"; }\n\n.fa-exclamation-circle:before {\n  content: \"\\F06A\"; }\n\n.fa-gift:before {\n  content: \"\\F06B\"; }\n\n.fa-leaf:before {\n  content: \"\\F06C\"; }\n\n.fa-fire:before {\n  content: \"\\F06D\"; }\n\n.fa-eye:before {\n  content: \"\\F06E\"; }\n\n.fa-eye-slash:before {\n  content: \"\\F070\"; }\n\n.fa-warning:before,\n.fa-exclamation-triangle:before {\n  content: \"\\F071\"; }\n\n.fa-plane:before {\n  content: \"\\F072\"; }\n\n.fa-calendar:before {\n  content: \"\\F073\"; }\n\n.fa-random:before {\n  content: \"\\F074\"; }\n\n.fa-comment:before {\n  content: \"\\F075\"; }\n\n.fa-magnet:before {\n  content: \"\\F076\"; }\n\n.fa-chevron-up:before {\n  content: \"\\F077\"; }\n\n.fa-chevron-down:before {\n  content: \"\\F078\"; }\n\n.fa-retweet:before {\n  content: \"\\F079\"; }\n\n.fa-shopping-cart:before {\n  content: \"\\F07A\"; }\n\n.fa-folder:before {\n  content: \"\\F07B\"; }\n\n.fa-folder-open:before {\n  content: \"\\F07C\"; }\n\n.fa-arrows-v:before {\n  content: \"\\F07D\"; }\n\n.fa-arrows-h:before {\n  content: \"\\F07E\"; }\n\n.fa-bar-chart-o:before,\n.fa-bar-chart:before {\n  content: \"\\F080\"; }\n\n.fa-twitter-square:before {\n  content: \"\\F081\"; }\n\n.fa-facebook-square:before {\n  content: \"\\F082\"; }\n\n.fa-camera-retro:before {\n  content: \"\\F083\"; }\n\n.fa-key:before {\n  content: \"\\F084\"; }\n\n.fa-gears:before,\n.fa-cogs:before {\n  content: \"\\F085\"; }\n\n.fa-comments:before {\n  content: \"\\F086\"; }\n\n.fa-thumbs-o-up:before {\n  content: \"\\F087\"; }\n\n.fa-thumbs-o-down:before {\n  content: \"\\F088\"; }\n\n.fa-star-half:before {\n  content: \"\\F089\"; }\n\n.fa-heart-o:before {\n  content: \"\\F08A\"; }\n\n.fa-sign-out:before {\n  content: \"\\F08B\"; }\n\n.fa-linkedin-square:before {\n  content: \"\\F08C\"; }\n\n.fa-thumb-tack:before {\n  content: \"\\F08D\"; }\n\n.fa-external-link:before {\n  content: \"\\F08E\"; }\n\n.fa-sign-in:before {\n  content: \"\\F090\"; }\n\n.fa-trophy:before {\n  content: \"\\F091\"; }\n\n.fa-github-square:before {\n  content: \"\\F092\"; }\n\n.fa-upload:before {\n  content: \"\\F093\"; }\n\n.fa-lemon-o:before {\n  content: \"\\F094\"; }\n\n.fa-phone:before {\n  content: \"\\F095\"; }\n\n.fa-square-o:before {\n  content: \"\\F096\"; }\n\n.fa-bookmark-o:before {\n  content: \"\\F097\"; }\n\n.fa-phone-square:before {\n  content: \"\\F098\"; }\n\n.fa-twitter:before {\n  content: \"\\F099\"; }\n\n.fa-facebook-f:before,\n.fa-facebook:before {\n  content: \"\\F09A\"; }\n\n.fa-github:before {\n  content: \"\\F09B\"; }\n\n.fa-unlock:before {\n  content: \"\\F09C\"; }\n\n.fa-credit-card:before {\n  content: \"\\F09D\"; }\n\n.fa-feed:before,\n.fa-rss:before {\n  content: \"\\F09E\"; }\n\n.fa-hdd-o:before {\n  content: \"\\F0A0\"; }\n\n.fa-bullhorn:before {\n  content: \"\\F0A1\"; }\n\n.fa-bell:before {\n  content: \"\\F0F3\"; }\n\n.fa-certificate:before {\n  content: \"\\F0A3\"; }\n\n.fa-hand-o-right:before {\n  content: \"\\F0A4\"; }\n\n.fa-hand-o-left:before {\n  content: \"\\F0A5\"; }\n\n.fa-hand-o-up:before {\n  content: \"\\F0A6\"; }\n\n.fa-hand-o-down:before {\n  content: \"\\F0A7\"; }\n\n.fa-arrow-circle-left:before {\n  content: \"\\F0A8\"; }\n\n.fa-arrow-circle-right:before {\n  content: \"\\F0A9\"; }\n\n.fa-arrow-circle-up:before {\n  content: \"\\F0AA\"; }\n\n.fa-arrow-circle-down:before {\n  content: \"\\F0AB\"; }\n\n.fa-globe:before {\n  content: \"\\F0AC\"; }\n\n.fa-wrench:before {\n  content: \"\\F0AD\"; }\n\n.fa-tasks:before {\n  content: \"\\F0AE\"; }\n\n.fa-filter:before {\n  content: \"\\F0B0\"; }\n\n.fa-briefcase:before {\n  content: \"\\F0B1\"; }\n\n.fa-arrows-alt:before {\n  content: \"\\F0B2\"; }\n\n.fa-group:before,\n.fa-users:before {\n  content: \"\\F0C0\"; }\n\n.fa-chain:before,\n.fa-link:before {\n  content: \"\\F0C1\"; }\n\n.fa-cloud:before {\n  content: \"\\F0C2\"; }\n\n.fa-flask:before {\n  content: \"\\F0C3\"; }\n\n.fa-cut:before,\n.fa-scissors:before {\n  content: \"\\F0C4\"; }\n\n.fa-copy:before,\n.fa-files-o:before {\n  content: \"\\F0C5\"; }\n\n.fa-paperclip:before {\n  content: \"\\F0C6\"; }\n\n.fa-save:before,\n.fa-floppy-o:before {\n  content: \"\\F0C7\"; }\n\n.fa-square:before {\n  content: \"\\F0C8\"; }\n\n.fa-navicon:before,\n.fa-reorder:before,\n.fa-bars:before {\n  content: \"\\F0C9\"; }\n\n.fa-list-ul:before {\n  content: \"\\F0CA\"; }\n\n.fa-list-ol:before {\n  content: \"\\F0CB\"; }\n\n.fa-strikethrough:before {\n  content: \"\\F0CC\"; }\n\n.fa-underline:before {\n  content: \"\\F0CD\"; }\n\n.fa-table:before {\n  content: \"\\F0CE\"; }\n\n.fa-magic:before {\n  content: \"\\F0D0\"; }\n\n.fa-truck:before {\n  content: \"\\F0D1\"; }\n\n.fa-pinterest:before {\n  content: \"\\F0D2\"; }\n\n.fa-pinterest-square:before {\n  content: \"\\F0D3\"; }\n\n.fa-google-plus-square:before {\n  content: \"\\F0D4\"; }\n\n.fa-google-plus:before {\n  content: \"\\F0D5\"; }\n\n.fa-money:before {\n  content: \"\\F0D6\"; }\n\n.fa-caret-down:before {\n  content: \"\\F0D7\"; }\n\n.fa-caret-up:before {\n  content: \"\\F0D8\"; }\n\n.fa-caret-left:before {\n  content: \"\\F0D9\"; }\n\n.fa-caret-right:before {\n  content: \"\\F0DA\"; }\n\n.fa-columns:before {\n  content: \"\\F0DB\"; }\n\n.fa-unsorted:before,\n.fa-sort:before {\n  content: \"\\F0DC\"; }\n\n.fa-sort-down:before,\n.fa-sort-desc:before {\n  content: \"\\F0DD\"; }\n\n.fa-sort-up:before,\n.fa-sort-asc:before {\n  content: \"\\F0DE\"; }\n\n.fa-envelope:before {\n  content: \"\\F0E0\"; }\n\n.fa-linkedin:before {\n  content: \"\\F0E1\"; }\n\n.fa-rotate-left:before,\n.fa-undo:before {\n  content: \"\\F0E2\"; }\n\n.fa-legal:before,\n.fa-gavel:before {\n  content: \"\\F0E3\"; }\n\n.fa-dashboard:before,\n.fa-tachometer:before {\n  content: \"\\F0E4\"; }\n\n.fa-comment-o:before {\n  content: \"\\F0E5\"; }\n\n.fa-comments-o:before {\n  content: \"\\F0E6\"; }\n\n.fa-flash:before,\n.fa-bolt:before {\n  content: \"\\F0E7\"; }\n\n.fa-sitemap:before {\n  content: \"\\F0E8\"; }\n\n.fa-umbrella:before {\n  content: \"\\F0E9\"; }\n\n.fa-paste:before,\n.fa-clipboard:before {\n  content: \"\\F0EA\"; }\n\n.fa-lightbulb-o:before {\n  content: \"\\F0EB\"; }\n\n.fa-exchange:before {\n  content: \"\\F0EC\"; }\n\n.fa-cloud-download:before {\n  content: \"\\F0ED\"; }\n\n.fa-cloud-upload:before {\n  content: \"\\F0EE\"; }\n\n.fa-user-md:before {\n  content: \"\\F0F0\"; }\n\n.fa-stethoscope:before {\n  content: \"\\F0F1\"; }\n\n.fa-suitcase:before {\n  content: \"\\F0F2\"; }\n\n.fa-bell-o:before {\n  content: \"\\F0A2\"; }\n\n.fa-coffee:before {\n  content: \"\\F0F4\"; }\n\n.fa-cutlery:before {\n  content: \"\\F0F5\"; }\n\n.fa-file-text-o:before {\n  content: \"\\F0F6\"; }\n\n.fa-building-o:before {\n  content: \"\\F0F7\"; }\n\n.fa-hospital-o:before {\n  content: \"\\F0F8\"; }\n\n.fa-ambulance:before {\n  content: \"\\F0F9\"; }\n\n.fa-medkit:before {\n  content: \"\\F0FA\"; }\n\n.fa-fighter-jet:before {\n  content: \"\\F0FB\"; }\n\n.fa-beer:before {\n  content: \"\\F0FC\"; }\n\n.fa-h-square:before {\n  content: \"\\F0FD\"; }\n\n.fa-plus-square:before {\n  content: \"\\F0FE\"; }\n\n.fa-angle-double-left:before {\n  content: \"\\F100\"; }\n\n.fa-angle-double-right:before {\n  content: \"\\F101\"; }\n\n.fa-angle-double-up:before {\n  content: \"\\F102\"; }\n\n.fa-angle-double-down:before {\n  content: \"\\F103\"; }\n\n.fa-angle-left:before {\n  content: \"\\F104\"; }\n\n.fa-angle-right:before {\n  content: \"\\F105\"; }\n\n.fa-angle-up:before {\n  content: \"\\F106\"; }\n\n.fa-angle-down:before {\n  content: \"\\F107\"; }\n\n.fa-desktop:before {\n  content: \"\\F108\"; }\n\n.fa-laptop:before {\n  content: \"\\F109\"; }\n\n.fa-tablet:before {\n  content: \"\\F10A\"; }\n\n.fa-mobile-phone:before,\n.fa-mobile:before {\n  content: \"\\F10B\"; }\n\n.fa-circle-o:before {\n  content: \"\\F10C\"; }\n\n.fa-quote-left:before {\n  content: \"\\F10D\"; }\n\n.fa-quote-right:before {\n  content: \"\\F10E\"; }\n\n.fa-spinner:before {\n  content: \"\\F110\"; }\n\n.fa-circle:before {\n  content: \"\\F111\"; }\n\n.fa-mail-reply:before,\n.fa-reply:before {\n  content: \"\\F112\"; }\n\n.fa-github-alt:before {\n  content: \"\\F113\"; }\n\n.fa-folder-o:before {\n  content: \"\\F114\"; }\n\n.fa-folder-open-o:before {\n  content: \"\\F115\"; }\n\n.fa-smile-o:before {\n  content: \"\\F118\"; }\n\n.fa-frown-o:before {\n  content: \"\\F119\"; }\n\n.fa-meh-o:before {\n  content: \"\\F11A\"; }\n\n.fa-gamepad:before {\n  content: \"\\F11B\"; }\n\n.fa-keyboard-o:before {\n  content: \"\\F11C\"; }\n\n.fa-flag-o:before {\n  content: \"\\F11D\"; }\n\n.fa-flag-checkered:before {\n  content: \"\\F11E\"; }\n\n.fa-terminal:before {\n  content: \"\\F120\"; }\n\n.fa-code:before {\n  content: \"\\F121\"; }\n\n.fa-mail-reply-all:before,\n.fa-reply-all:before {\n  content: \"\\F122\"; }\n\n.fa-star-half-empty:before,\n.fa-star-half-full:before,\n.fa-star-half-o:before {\n  content: \"\\F123\"; }\n\n.fa-location-arrow:before {\n  content: \"\\F124\"; }\n\n.fa-crop:before {\n  content: \"\\F125\"; }\n\n.fa-code-fork:before {\n  content: \"\\F126\"; }\n\n.fa-unlink:before,\n.fa-chain-broken:before {\n  content: \"\\F127\"; }\n\n.fa-question:before {\n  content: \"\\F128\"; }\n\n.fa-info:before {\n  content: \"\\F129\"; }\n\n.fa-exclamation:before {\n  content: \"\\F12A\"; }\n\n.fa-superscript:before {\n  content: \"\\F12B\"; }\n\n.fa-subscript:before {\n  content: \"\\F12C\"; }\n\n.fa-eraser:before {\n  content: \"\\F12D\"; }\n\n.fa-puzzle-piece:before {\n  content: \"\\F12E\"; }\n\n.fa-microphone:before {\n  content: \"\\F130\"; }\n\n.fa-microphone-slash:before {\n  content: \"\\F131\"; }\n\n.fa-shield:before {\n  content: \"\\F132\"; }\n\n.fa-calendar-o:before {\n  content: \"\\F133\"; }\n\n.fa-fire-extinguisher:before {\n  content: \"\\F134\"; }\n\n.fa-rocket:before {\n  content: \"\\F135\"; }\n\n.fa-maxcdn:before {\n  content: \"\\F136\"; }\n\n.fa-chevron-circle-left:before {\n  content: \"\\F137\"; }\n\n.fa-chevron-circle-right:before {\n  content: \"\\F138\"; }\n\n.fa-chevron-circle-up:before {\n  content: \"\\F139\"; }\n\n.fa-chevron-circle-down:before {\n  content: \"\\F13A\"; }\n\n.fa-html5:before {\n  content: \"\\F13B\"; }\n\n.fa-css3:before {\n  content: \"\\F13C\"; }\n\n.fa-anchor:before {\n  content: \"\\F13D\"; }\n\n.fa-unlock-alt:before {\n  content: \"\\F13E\"; }\n\n.fa-bullseye:before {\n  content: \"\\F140\"; }\n\n.fa-ellipsis-h:before {\n  content: \"\\F141\"; }\n\n.fa-ellipsis-v:before {\n  content: \"\\F142\"; }\n\n.fa-rss-square:before {\n  content: \"\\F143\"; }\n\n.fa-play-circle:before {\n  content: \"\\F144\"; }\n\n.fa-ticket:before {\n  content: \"\\F145\"; }\n\n.fa-minus-square:before {\n  content: \"\\F146\"; }\n\n.fa-minus-square-o:before {\n  content: \"\\F147\"; }\n\n.fa-level-up:before {\n  content: \"\\F148\"; }\n\n.fa-level-down:before {\n  content: \"\\F149\"; }\n\n.fa-check-square:before {\n  content: \"\\F14A\"; }\n\n.fa-pencil-square:before {\n  content: \"\\F14B\"; }\n\n.fa-external-link-square:before {\n  content: \"\\F14C\"; }\n\n.fa-share-square:before {\n  content: \"\\F14D\"; }\n\n.fa-compass:before {\n  content: \"\\F14E\"; }\n\n.fa-toggle-down:before,\n.fa-caret-square-o-down:before {\n  content: \"\\F150\"; }\n\n.fa-toggle-up:before,\n.fa-caret-square-o-up:before {\n  content: \"\\F151\"; }\n\n.fa-toggle-right:before,\n.fa-caret-square-o-right:before {\n  content: \"\\F152\"; }\n\n.fa-euro:before,\n.fa-eur:before {\n  content: \"\\F153\"; }\n\n.fa-gbp:before {\n  content: \"\\F154\"; }\n\n.fa-dollar:before,\n.fa-usd:before {\n  content: \"\\F155\"; }\n\n.fa-rupee:before,\n.fa-inr:before {\n  content: \"\\F156\"; }\n\n.fa-cny:before,\n.fa-rmb:before,\n.fa-yen:before,\n.fa-jpy:before {\n  content: \"\\F157\"; }\n\n.fa-ruble:before,\n.fa-rouble:before,\n.fa-rub:before {\n  content: \"\\F158\"; }\n\n.fa-won:before,\n.fa-krw:before {\n  content: \"\\F159\"; }\n\n.fa-bitcoin:before,\n.fa-btc:before {\n  content: \"\\F15A\"; }\n\n.fa-file:before {\n  content: \"\\F15B\"; }\n\n.fa-file-text:before {\n  content: \"\\F15C\"; }\n\n.fa-sort-alpha-asc:before {\n  content: \"\\F15D\"; }\n\n.fa-sort-alpha-desc:before {\n  content: \"\\F15E\"; }\n\n.fa-sort-amount-asc:before {\n  content: \"\\F160\"; }\n\n.fa-sort-amount-desc:before {\n  content: \"\\F161\"; }\n\n.fa-sort-numeric-asc:before {\n  content: \"\\F162\"; }\n\n.fa-sort-numeric-desc:before {\n  content: \"\\F163\"; }\n\n.fa-thumbs-up:before {\n  content: \"\\F164\"; }\n\n.fa-thumbs-down:before {\n  content: \"\\F165\"; }\n\n.fa-youtube-square:before {\n  content: \"\\F166\"; }\n\n.fa-youtube:before {\n  content: \"\\F167\"; }\n\n.fa-xing:before {\n  content: \"\\F168\"; }\n\n.fa-xing-square:before {\n  content: \"\\F169\"; }\n\n.fa-youtube-play:before {\n  content: \"\\F16A\"; }\n\n.fa-dropbox:before {\n  content: \"\\F16B\"; }\n\n.fa-stack-overflow:before {\n  content: \"\\F16C\"; }\n\n.fa-instagram:before {\n  content: \"\\F16D\"; }\n\n.fa-flickr:before {\n  content: \"\\F16E\"; }\n\n.fa-adn:before {\n  content: \"\\F170\"; }\n\n.fa-bitbucket:before {\n  content: \"\\F171\"; }\n\n.fa-bitbucket-square:before {\n  content: \"\\F172\"; }\n\n.fa-tumblr:before {\n  content: \"\\F173\"; }\n\n.fa-tumblr-square:before {\n  content: \"\\F174\"; }\n\n.fa-long-arrow-down:before {\n  content: \"\\F175\"; }\n\n.fa-long-arrow-up:before {\n  content: \"\\F176\"; }\n\n.fa-long-arrow-left:before {\n  content: \"\\F177\"; }\n\n.fa-long-arrow-right:before {\n  content: \"\\F178\"; }\n\n.fa-apple:before {\n  content: \"\\F179\"; }\n\n.fa-windows:before {\n  content: \"\\F17A\"; }\n\n.fa-android:before {\n  content: \"\\F17B\"; }\n\n.fa-linux:before {\n  content: \"\\F17C\"; }\n\n.fa-dribbble:before {\n  content: \"\\F17D\"; }\n\n.fa-skype:before {\n  content: \"\\F17E\"; }\n\n.fa-foursquare:before {\n  content: \"\\F180\"; }\n\n.fa-trello:before {\n  content: \"\\F181\"; }\n\n.fa-female:before {\n  content: \"\\F182\"; }\n\n.fa-male:before {\n  content: \"\\F183\"; }\n\n.fa-gittip:before,\n.fa-gratipay:before {\n  content: \"\\F184\"; }\n\n.fa-sun-o:before {\n  content: \"\\F185\"; }\n\n.fa-moon-o:before {\n  content: \"\\F186\"; }\n\n.fa-archive:before {\n  content: \"\\F187\"; }\n\n.fa-bug:before {\n  content: \"\\F188\"; }\n\n.fa-vk:before {\n  content: \"\\F189\"; }\n\n.fa-weibo:before {\n  content: \"\\F18A\"; }\n\n.fa-renren:before {\n  content: \"\\F18B\"; }\n\n.fa-pagelines:before {\n  content: \"\\F18C\"; }\n\n.fa-stack-exchange:before {\n  content: \"\\F18D\"; }\n\n.fa-arrow-circle-o-right:before {\n  content: \"\\F18E\"; }\n\n.fa-arrow-circle-o-left:before {\n  content: \"\\F190\"; }\n\n.fa-toggle-left:before,\n.fa-caret-square-o-left:before {\n  content: \"\\F191\"; }\n\n.fa-dot-circle-o:before {\n  content: \"\\F192\"; }\n\n.fa-wheelchair:before {\n  content: \"\\F193\"; }\n\n.fa-vimeo-square:before {\n  content: \"\\F194\"; }\n\n.fa-turkish-lira:before,\n.fa-try:before {\n  content: \"\\F195\"; }\n\n.fa-plus-square-o:before {\n  content: \"\\F196\"; }\n\n.fa-space-shuttle:before {\n  content: \"\\F197\"; }\n\n.fa-slack:before {\n  content: \"\\F198\"; }\n\n.fa-envelope-square:before {\n  content: \"\\F199\"; }\n\n.fa-wordpress:before {\n  content: \"\\F19A\"; }\n\n.fa-openid:before {\n  content: \"\\F19B\"; }\n\n.fa-institution:before,\n.fa-bank:before,\n.fa-university:before {\n  content: \"\\F19C\"; }\n\n.fa-mortar-board:before,\n.fa-graduation-cap:before {\n  content: \"\\F19D\"; }\n\n.fa-yahoo:before {\n  content: \"\\F19E\"; }\n\n.fa-google:before {\n  content: \"\\F1A0\"; }\n\n.fa-reddit:before {\n  content: \"\\F1A1\"; }\n\n.fa-reddit-square:before {\n  content: \"\\F1A2\"; }\n\n.fa-stumbleupon-circle:before {\n  content: \"\\F1A3\"; }\n\n.fa-stumbleupon:before {\n  content: \"\\F1A4\"; }\n\n.fa-delicious:before {\n  content: \"\\F1A5\"; }\n\n.fa-digg:before {\n  content: \"\\F1A6\"; }\n\n.fa-pied-piper-pp:before {\n  content: \"\\F1A7\"; }\n\n.fa-pied-piper-alt:before {\n  content: \"\\F1A8\"; }\n\n.fa-drupal:before {\n  content: \"\\F1A9\"; }\n\n.fa-joomla:before {\n  content: \"\\F1AA\"; }\n\n.fa-language:before {\n  content: \"\\F1AB\"; }\n\n.fa-fax:before {\n  content: \"\\F1AC\"; }\n\n.fa-building:before {\n  content: \"\\F1AD\"; }\n\n.fa-child:before {\n  content: \"\\F1AE\"; }\n\n.fa-paw:before {\n  content: \"\\F1B0\"; }\n\n.fa-spoon:before {\n  content: \"\\F1B1\"; }\n\n.fa-cube:before {\n  content: \"\\F1B2\"; }\n\n.fa-cubes:before {\n  content: \"\\F1B3\"; }\n\n.fa-behance:before {\n  content: \"\\F1B4\"; }\n\n.fa-behance-square:before {\n  content: \"\\F1B5\"; }\n\n.fa-steam:before {\n  content: \"\\F1B6\"; }\n\n.fa-steam-square:before {\n  content: \"\\F1B7\"; }\n\n.fa-recycle:before {\n  content: \"\\F1B8\"; }\n\n.fa-automobile:before,\n.fa-car:before {\n  content: \"\\F1B9\"; }\n\n.fa-cab:before,\n.fa-taxi:before {\n  content: \"\\F1BA\"; }\n\n.fa-tree:before {\n  content: \"\\F1BB\"; }\n\n.fa-spotify:before {\n  content: \"\\F1BC\"; }\n\n.fa-deviantart:before {\n  content: \"\\F1BD\"; }\n\n.fa-soundcloud:before {\n  content: \"\\F1BE\"; }\n\n.fa-database:before {\n  content: \"\\F1C0\"; }\n\n.fa-file-pdf-o:before {\n  content: \"\\F1C1\"; }\n\n.fa-file-word-o:before {\n  content: \"\\F1C2\"; }\n\n.fa-file-excel-o:before {\n  content: \"\\F1C3\"; }\n\n.fa-file-powerpoint-o:before {\n  content: \"\\F1C4\"; }\n\n.fa-file-photo-o:before,\n.fa-file-picture-o:before,\n.fa-file-image-o:before {\n  content: \"\\F1C5\"; }\n\n.fa-file-zip-o:before,\n.fa-file-archive-o:before {\n  content: \"\\F1C6\"; }\n\n.fa-file-sound-o:before,\n.fa-file-audio-o:before {\n  content: \"\\F1C7\"; }\n\n.fa-file-movie-o:before,\n.fa-file-video-o:before {\n  content: \"\\F1C8\"; }\n\n.fa-file-code-o:before {\n  content: \"\\F1C9\"; }\n\n.fa-vine:before {\n  content: \"\\F1CA\"; }\n\n.fa-codepen:before {\n  content: \"\\F1CB\"; }\n\n.fa-jsfiddle:before {\n  content: \"\\F1CC\"; }\n\n.fa-life-bouy:before,\n.fa-life-buoy:before,\n.fa-life-saver:before,\n.fa-support:before,\n.fa-life-ring:before {\n  content: \"\\F1CD\"; }\n\n.fa-circle-o-notch:before {\n  content: \"\\F1CE\"; }\n\n.fa-ra:before,\n.fa-resistance:before,\n.fa-rebel:before {\n  content: \"\\F1D0\"; }\n\n.fa-ge:before,\n.fa-empire:before {\n  content: \"\\F1D1\"; }\n\n.fa-git-square:before {\n  content: \"\\F1D2\"; }\n\n.fa-git:before {\n  content: \"\\F1D3\"; }\n\n.fa-y-combinator-square:before,\n.fa-yc-square:before,\n.fa-hacker-news:before {\n  content: \"\\F1D4\"; }\n\n.fa-tencent-weibo:before {\n  content: \"\\F1D5\"; }\n\n.fa-qq:before {\n  content: \"\\F1D6\"; }\n\n.fa-wechat:before,\n.fa-weixin:before {\n  content: \"\\F1D7\"; }\n\n.fa-send:before,\n.fa-paper-plane:before {\n  content: \"\\F1D8\"; }\n\n.fa-send-o:before,\n.fa-paper-plane-o:before {\n  content: \"\\F1D9\"; }\n\n.fa-history:before {\n  content: \"\\F1DA\"; }\n\n.fa-circle-thin:before {\n  content: \"\\F1DB\"; }\n\n.fa-header:before {\n  content: \"\\F1DC\"; }\n\n.fa-paragraph:before {\n  content: \"\\F1DD\"; }\n\n.fa-sliders:before {\n  content: \"\\F1DE\"; }\n\n.fa-share-alt:before {\n  content: \"\\F1E0\"; }\n\n.fa-share-alt-square:before {\n  content: \"\\F1E1\"; }\n\n.fa-bomb:before {\n  content: \"\\F1E2\"; }\n\n.fa-soccer-ball-o:before,\n.fa-futbol-o:before {\n  content: \"\\F1E3\"; }\n\n.fa-tty:before {\n  content: \"\\F1E4\"; }\n\n.fa-binoculars:before {\n  content: \"\\F1E5\"; }\n\n.fa-plug:before {\n  content: \"\\F1E6\"; }\n\n.fa-slideshare:before {\n  content: \"\\F1E7\"; }\n\n.fa-twitch:before {\n  content: \"\\F1E8\"; }\n\n.fa-yelp:before {\n  content: \"\\F1E9\"; }\n\n.fa-newspaper-o:before {\n  content: \"\\F1EA\"; }\n\n.fa-wifi:before {\n  content: \"\\F1EB\"; }\n\n.fa-calculator:before {\n  content: \"\\F1EC\"; }\n\n.fa-paypal:before {\n  content: \"\\F1ED\"; }\n\n.fa-google-wallet:before {\n  content: \"\\F1EE\"; }\n\n.fa-cc-visa:before {\n  content: \"\\F1F0\"; }\n\n.fa-cc-mastercard:before {\n  content: \"\\F1F1\"; }\n\n.fa-cc-discover:before {\n  content: \"\\F1F2\"; }\n\n.fa-cc-amex:before {\n  content: \"\\F1F3\"; }\n\n.fa-cc-paypal:before {\n  content: \"\\F1F4\"; }\n\n.fa-cc-stripe:before {\n  content: \"\\F1F5\"; }\n\n.fa-bell-slash:before {\n  content: \"\\F1F6\"; }\n\n.fa-bell-slash-o:before {\n  content: \"\\F1F7\"; }\n\n.fa-trash:before {\n  content: \"\\F1F8\"; }\n\n.fa-copyright:before {\n  content: \"\\F1F9\"; }\n\n.fa-at:before {\n  content: \"\\F1FA\"; }\n\n.fa-eyedropper:before {\n  content: \"\\F1FB\"; }\n\n.fa-paint-brush:before {\n  content: \"\\F1FC\"; }\n\n.fa-birthday-cake:before {\n  content: \"\\F1FD\"; }\n\n.fa-area-chart:before {\n  content: \"\\F1FE\"; }\n\n.fa-pie-chart:before {\n  content: \"\\F200\"; }\n\n.fa-line-chart:before {\n  content: \"\\F201\"; }\n\n.fa-lastfm:before {\n  content: \"\\F202\"; }\n\n.fa-lastfm-square:before {\n  content: \"\\F203\"; }\n\n.fa-toggle-off:before {\n  content: \"\\F204\"; }\n\n.fa-toggle-on:before {\n  content: \"\\F205\"; }\n\n.fa-bicycle:before {\n  content: \"\\F206\"; }\n\n.fa-bus:before {\n  content: \"\\F207\"; }\n\n.fa-ioxhost:before {\n  content: \"\\F208\"; }\n\n.fa-angellist:before {\n  content: \"\\F209\"; }\n\n.fa-cc:before {\n  content: \"\\F20A\"; }\n\n.fa-shekel:before,\n.fa-sheqel:before,\n.fa-ils:before {\n  content: \"\\F20B\"; }\n\n.fa-meanpath:before {\n  content: \"\\F20C\"; }\n\n.fa-buysellads:before {\n  content: \"\\F20D\"; }\n\n.fa-connectdevelop:before {\n  content: \"\\F20E\"; }\n\n.fa-dashcube:before {\n  content: \"\\F210\"; }\n\n.fa-forumbee:before {\n  content: \"\\F211\"; }\n\n.fa-leanpub:before {\n  content: \"\\F212\"; }\n\n.fa-sellsy:before {\n  content: \"\\F213\"; }\n\n.fa-shirtsinbulk:before {\n  content: \"\\F214\"; }\n\n.fa-simplybuilt:before {\n  content: \"\\F215\"; }\n\n.fa-skyatlas:before {\n  content: \"\\F216\"; }\n\n.fa-cart-plus:before {\n  content: \"\\F217\"; }\n\n.fa-cart-arrow-down:before {\n  content: \"\\F218\"; }\n\n.fa-diamond:before {\n  content: \"\\F219\"; }\n\n.fa-ship:before {\n  content: \"\\F21A\"; }\n\n.fa-user-secret:before {\n  content: \"\\F21B\"; }\n\n.fa-motorcycle:before {\n  content: \"\\F21C\"; }\n\n.fa-street-view:before {\n  content: \"\\F21D\"; }\n\n.fa-heartbeat:before {\n  content: \"\\F21E\"; }\n\n.fa-venus:before {\n  content: \"\\F221\"; }\n\n.fa-mars:before {\n  content: \"\\F222\"; }\n\n.fa-mercury:before {\n  content: \"\\F223\"; }\n\n.fa-intersex:before,\n.fa-transgender:before {\n  content: \"\\F224\"; }\n\n.fa-transgender-alt:before {\n  content: \"\\F225\"; }\n\n.fa-venus-double:before {\n  content: \"\\F226\"; }\n\n.fa-mars-double:before {\n  content: \"\\F227\"; }\n\n.fa-venus-mars:before {\n  content: \"\\F228\"; }\n\n.fa-mars-stroke:before {\n  content: \"\\F229\"; }\n\n.fa-mars-stroke-v:before {\n  content: \"\\F22A\"; }\n\n.fa-mars-stroke-h:before {\n  content: \"\\F22B\"; }\n\n.fa-neuter:before {\n  content: \"\\F22C\"; }\n\n.fa-genderless:before {\n  content: \"\\F22D\"; }\n\n.fa-facebook-official:before {\n  content: \"\\F230\"; }\n\n.fa-pinterest-p:before {\n  content: \"\\F231\"; }\n\n.fa-whatsapp:before {\n  content: \"\\F232\"; }\n\n.fa-server:before {\n  content: \"\\F233\"; }\n\n.fa-user-plus:before {\n  content: \"\\F234\"; }\n\n.fa-user-times:before {\n  content: \"\\F235\"; }\n\n.fa-hotel:before,\n.fa-bed:before {\n  content: \"\\F236\"; }\n\n.fa-viacoin:before {\n  content: \"\\F237\"; }\n\n.fa-train:before {\n  content: \"\\F238\"; }\n\n.fa-subway:before {\n  content: \"\\F239\"; }\n\n.fa-medium:before {\n  content: \"\\F23A\"; }\n\n.fa-yc:before,\n.fa-y-combinator:before {\n  content: \"\\F23B\"; }\n\n.fa-optin-monster:before {\n  content: \"\\F23C\"; }\n\n.fa-opencart:before {\n  content: \"\\F23D\"; }\n\n.fa-expeditedssl:before {\n  content: \"\\F23E\"; }\n\n.fa-battery-4:before,\n.fa-battery-full:before {\n  content: \"\\F240\"; }\n\n.fa-battery-3:before,\n.fa-battery-three-quarters:before {\n  content: \"\\F241\"; }\n\n.fa-battery-2:before,\n.fa-battery-half:before {\n  content: \"\\F242\"; }\n\n.fa-battery-1:before,\n.fa-battery-quarter:before {\n  content: \"\\F243\"; }\n\n.fa-battery-0:before,\n.fa-battery-empty:before {\n  content: \"\\F244\"; }\n\n.fa-mouse-pointer:before {\n  content: \"\\F245\"; }\n\n.fa-i-cursor:before {\n  content: \"\\F246\"; }\n\n.fa-object-group:before {\n  content: \"\\F247\"; }\n\n.fa-object-ungroup:before {\n  content: \"\\F248\"; }\n\n.fa-sticky-note:before {\n  content: \"\\F249\"; }\n\n.fa-sticky-note-o:before {\n  content: \"\\F24A\"; }\n\n.fa-cc-jcb:before {\n  content: \"\\F24B\"; }\n\n.fa-cc-diners-club:before {\n  content: \"\\F24C\"; }\n\n.fa-clone:before {\n  content: \"\\F24D\"; }\n\n.fa-balance-scale:before {\n  content: \"\\F24E\"; }\n\n.fa-hourglass-o:before {\n  content: \"\\F250\"; }\n\n.fa-hourglass-1:before,\n.fa-hourglass-start:before {\n  content: \"\\F251\"; }\n\n.fa-hourglass-2:before,\n.fa-hourglass-half:before {\n  content: \"\\F252\"; }\n\n.fa-hourglass-3:before,\n.fa-hourglass-end:before {\n  content: \"\\F253\"; }\n\n.fa-hourglass:before {\n  content: \"\\F254\"; }\n\n.fa-hand-grab-o:before,\n.fa-hand-rock-o:before {\n  content: \"\\F255\"; }\n\n.fa-hand-stop-o:before,\n.fa-hand-paper-o:before {\n  content: \"\\F256\"; }\n\n.fa-hand-scissors-o:before {\n  content: \"\\F257\"; }\n\n.fa-hand-lizard-o:before {\n  content: \"\\F258\"; }\n\n.fa-hand-spock-o:before {\n  content: \"\\F259\"; }\n\n.fa-hand-pointer-o:before {\n  content: \"\\F25A\"; }\n\n.fa-hand-peace-o:before {\n  content: \"\\F25B\"; }\n\n.fa-trademark:before {\n  content: \"\\F25C\"; }\n\n.fa-registered:before {\n  content: \"\\F25D\"; }\n\n.fa-creative-commons:before {\n  content: \"\\F25E\"; }\n\n.fa-gg:before {\n  content: \"\\F260\"; }\n\n.fa-gg-circle:before {\n  content: \"\\F261\"; }\n\n.fa-tripadvisor:before {\n  content: \"\\F262\"; }\n\n.fa-odnoklassniki:before {\n  content: \"\\F263\"; }\n\n.fa-odnoklassniki-square:before {\n  content: \"\\F264\"; }\n\n.fa-get-pocket:before {\n  content: \"\\F265\"; }\n\n.fa-wikipedia-w:before {\n  content: \"\\F266\"; }\n\n.fa-safari:before {\n  content: \"\\F267\"; }\n\n.fa-chrome:before {\n  content: \"\\F268\"; }\n\n.fa-firefox:before {\n  content: \"\\F269\"; }\n\n.fa-opera:before {\n  content: \"\\F26A\"; }\n\n.fa-internet-explorer:before {\n  content: \"\\F26B\"; }\n\n.fa-tv:before,\n.fa-television:before {\n  content: \"\\F26C\"; }\n\n.fa-contao:before {\n  content: \"\\F26D\"; }\n\n.fa-500px:before {\n  content: \"\\F26E\"; }\n\n.fa-amazon:before {\n  content: \"\\F270\"; }\n\n.fa-calendar-plus-o:before {\n  content: \"\\F271\"; }\n\n.fa-calendar-minus-o:before {\n  content: \"\\F272\"; }\n\n.fa-calendar-times-o:before {\n  content: \"\\F273\"; }\n\n.fa-calendar-check-o:before {\n  content: \"\\F274\"; }\n\n.fa-industry:before {\n  content: \"\\F275\"; }\n\n.fa-map-pin:before {\n  content: \"\\F276\"; }\n\n.fa-map-signs:before {\n  content: \"\\F277\"; }\n\n.fa-map-o:before {\n  content: \"\\F278\"; }\n\n.fa-map:before {\n  content: \"\\F279\"; }\n\n.fa-commenting:before {\n  content: \"\\F27A\"; }\n\n.fa-commenting-o:before {\n  content: \"\\F27B\"; }\n\n.fa-houzz:before {\n  content: \"\\F27C\"; }\n\n.fa-vimeo:before {\n  content: \"\\F27D\"; }\n\n.fa-black-tie:before {\n  content: \"\\F27E\"; }\n\n.fa-fonticons:before {\n  content: \"\\F280\"; }\n\n.fa-reddit-alien:before {\n  content: \"\\F281\"; }\n\n.fa-edge:before {\n  content: \"\\F282\"; }\n\n.fa-credit-card-alt:before {\n  content: \"\\F283\"; }\n\n.fa-codiepie:before {\n  content: \"\\F284\"; }\n\n.fa-modx:before {\n  content: \"\\F285\"; }\n\n.fa-fort-awesome:before {\n  content: \"\\F286\"; }\n\n.fa-usb:before {\n  content: \"\\F287\"; }\n\n.fa-product-hunt:before {\n  content: \"\\F288\"; }\n\n.fa-mixcloud:before {\n  content: \"\\F289\"; }\n\n.fa-scribd:before {\n  content: \"\\F28A\"; }\n\n.fa-pause-circle:before {\n  content: \"\\F28B\"; }\n\n.fa-pause-circle-o:before {\n  content: \"\\F28C\"; }\n\n.fa-stop-circle:before {\n  content: \"\\F28D\"; }\n\n.fa-stop-circle-o:before {\n  content: \"\\F28E\"; }\n\n.fa-shopping-bag:before {\n  content: \"\\F290\"; }\n\n.fa-shopping-basket:before {\n  content: \"\\F291\"; }\n\n.fa-hashtag:before {\n  content: \"\\F292\"; }\n\n.fa-bluetooth:before {\n  content: \"\\F293\"; }\n\n.fa-bluetooth-b:before {\n  content: \"\\F294\"; }\n\n.fa-percent:before {\n  content: \"\\F295\"; }\n\n.fa-gitlab:before {\n  content: \"\\F296\"; }\n\n.fa-wpbeginner:before {\n  content: \"\\F297\"; }\n\n.fa-wpforms:before {\n  content: \"\\F298\"; }\n\n.fa-envira:before {\n  content: \"\\F299\"; }\n\n.fa-universal-access:before {\n  content: \"\\F29A\"; }\n\n.fa-wheelchair-alt:before {\n  content: \"\\F29B\"; }\n\n.fa-question-circle-o:before {\n  content: \"\\F29C\"; }\n\n.fa-blind:before {\n  content: \"\\F29D\"; }\n\n.fa-audio-description:before {\n  content: \"\\F29E\"; }\n\n.fa-volume-control-phone:before {\n  content: \"\\F2A0\"; }\n\n.fa-braille:before {\n  content: \"\\F2A1\"; }\n\n.fa-assistive-listening-systems:before {\n  content: \"\\F2A2\"; }\n\n.fa-asl-interpreting:before,\n.fa-american-sign-language-interpreting:before {\n  content: \"\\F2A3\"; }\n\n.fa-deafness:before,\n.fa-hard-of-hearing:before,\n.fa-deaf:before {\n  content: \"\\F2A4\"; }\n\n.fa-glide:before {\n  content: \"\\F2A5\"; }\n\n.fa-glide-g:before {\n  content: \"\\F2A6\"; }\n\n.fa-signing:before,\n.fa-sign-language:before {\n  content: \"\\F2A7\"; }\n\n.fa-low-vision:before {\n  content: \"\\F2A8\"; }\n\n.fa-viadeo:before {\n  content: \"\\F2A9\"; }\n\n.fa-viadeo-square:before {\n  content: \"\\F2AA\"; }\n\n.fa-snapchat:before {\n  content: \"\\F2AB\"; }\n\n.fa-snapchat-ghost:before {\n  content: \"\\F2AC\"; }\n\n.fa-snapchat-square:before {\n  content: \"\\F2AD\"; }\n\n.fa-pied-piper:before {\n  content: \"\\F2AE\"; }\n\n.fa-first-order:before {\n  content: \"\\F2B0\"; }\n\n.fa-yoast:before {\n  content: \"\\F2B1\"; }\n\n.fa-themeisle:before {\n  content: \"\\F2B2\"; }\n\n.fa-google-plus-circle:before,\n.fa-google-plus-official:before {\n  content: \"\\F2B3\"; }\n\n.fa-fa:before,\n.fa-font-awesome:before {\n  content: \"\\F2B4\"; }\n\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0; }\n\n.sr-only-focusable:active, .sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto; }\n", ""]);
+	exports.push([module.id, "@charset \"UTF-8\";\n/*!\n *  Font Awesome 4.6.3 by @davegandy - http://fontawesome.io - @fontawesome\n *  License - http://fontawesome.io/license (Font: SIL OFL 1.1, CSS: MIT License)\n */\n/* FONT PATH\n * -------------------------- */\n@font-face {\n  font-family: 'FontAwesome';\n  src: url(" + __webpack_require__(249) + ");\n  src: url(" + __webpack_require__(250) + "?#iefix&v=4.6.3) format(\"embedded-opentype\"), url(" + __webpack_require__(251) + ") format(\"woff2\"), url(" + __webpack_require__(252) + ") format(\"woff\"), url(" + __webpack_require__(253) + ") format(\"truetype\"), url(" + __webpack_require__(254) + "#fontawesomeregular) format(\"svg\");\n  font-weight: normal;\n  font-style: normal; }\n\n.fa {\n  display: inline-block;\n  font: normal normal normal 14px/1 FontAwesome;\n  font-size: inherit;\n  text-rendering: auto;\n  -webkit-font-smoothing: antialiased;\n  -moz-osx-font-smoothing: grayscale; }\n\n/* makes the font 33% larger relative to the icon container */\n.fa-lg {\n  font-size: 1.33333em;\n  line-height: 0.75em;\n  vertical-align: -15%; }\n\n.fa-2x {\n  font-size: 2em; }\n\n.fa-3x {\n  font-size: 3em; }\n\n.fa-4x {\n  font-size: 4em; }\n\n.fa-5x {\n  font-size: 5em; }\n\n.fa-fw {\n  width: 1.28571em;\n  text-align: center; }\n\n.fa-ul {\n  padding-left: 0;\n  margin-left: 2.14286em;\n  list-style-type: none; }\n  .fa-ul > li {\n    position: relative; }\n\n.fa-li {\n  position: absolute;\n  left: -2.14286em;\n  width: 2.14286em;\n  top: 0.14286em;\n  text-align: center; }\n  .fa-li.fa-lg {\n    left: -1.85714em; }\n\n.fa-border {\n  padding: .2em .25em .15em;\n  border: solid 0.08em #eee;\n  border-radius: .1em; }\n\n.fa-pull-left {\n  float: left; }\n\n.fa-pull-right {\n  float: right; }\n\n.fa.fa-pull-left {\n  margin-right: .3em; }\n\n.fa.fa-pull-right {\n  margin-left: .3em; }\n\n/* Deprecated as of 4.4.0 */\n.pull-right {\n  float: right; }\n\n.pull-left {\n  float: left; }\n\n.fa.pull-left {\n  margin-right: .3em; }\n\n.fa.pull-right {\n  margin-left: .3em; }\n\n.fa-spin {\n  -webkit-animation: fa-spin 2s infinite linear;\n  animation: fa-spin 2s infinite linear; }\n\n.fa-pulse {\n  -webkit-animation: fa-spin 1s infinite steps(8);\n  animation: fa-spin 1s infinite steps(8); }\n\n@-webkit-keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n@keyframes fa-spin {\n  0% {\n    -webkit-transform: rotate(0deg);\n    transform: rotate(0deg); }\n  100% {\n    -webkit-transform: rotate(359deg);\n    transform: rotate(359deg); } }\n\n.fa-rotate-90 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=1)\";\n  -webkit-transform: rotate(90deg);\n  -ms-transform: rotate(90deg);\n  transform: rotate(90deg); }\n\n.fa-rotate-180 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2)\";\n  -webkit-transform: rotate(180deg);\n  -ms-transform: rotate(180deg);\n  transform: rotate(180deg); }\n\n.fa-rotate-270 {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=3)\";\n  -webkit-transform: rotate(270deg);\n  -ms-transform: rotate(270deg);\n  transform: rotate(270deg); }\n\n.fa-flip-horizontal {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=0, mirror=1)\";\n  -webkit-transform: scale(-1, 1);\n  -ms-transform: scale(-1, 1);\n  transform: scale(-1, 1); }\n\n.fa-flip-vertical {\n  -ms-filter: \"progid:DXImageTransform.Microsoft.BasicImage(rotation=2, mirror=1)\";\n  -webkit-transform: scale(1, -1);\n  -ms-transform: scale(1, -1);\n  transform: scale(1, -1); }\n\n:root .fa-rotate-90,\n:root .fa-rotate-180,\n:root .fa-rotate-270,\n:root .fa-flip-horizontal,\n:root .fa-flip-vertical {\n  filter: none; }\n\n.fa-stack {\n  position: relative;\n  display: inline-block;\n  width: 2em;\n  height: 2em;\n  line-height: 2em;\n  vertical-align: middle; }\n\n.fa-stack-1x, .fa-stack-2x {\n  position: absolute;\n  left: 0;\n  width: 100%;\n  text-align: center; }\n\n.fa-stack-1x {\n  line-height: inherit; }\n\n.fa-stack-2x {\n  font-size: 2em; }\n\n.fa-inverse {\n  color: #fff; }\n\n/* Font Awesome uses the Unicode Private Use Area (PUA) to ensure screen\n   readers do not read off random characters that represent icons */\n.fa-glass:before {\n  content: \"\\F000\"; }\n\n.fa-music:before {\n  content: \"\\F001\"; }\n\n.fa-search:before {\n  content: \"\\F002\"; }\n\n.fa-envelope-o:before {\n  content: \"\\F003\"; }\n\n.fa-heart:before {\n  content: \"\\F004\"; }\n\n.fa-star:before {\n  content: \"\\F005\"; }\n\n.fa-star-o:before {\n  content: \"\\F006\"; }\n\n.fa-user:before {\n  content: \"\\F007\"; }\n\n.fa-film:before {\n  content: \"\\F008\"; }\n\n.fa-th-large:before {\n  content: \"\\F009\"; }\n\n.fa-th:before {\n  content: \"\\F00A\"; }\n\n.fa-th-list:before {\n  content: \"\\F00B\"; }\n\n.fa-check:before {\n  content: \"\\F00C\"; }\n\n.fa-remove:before,\n.fa-close:before,\n.fa-times:before {\n  content: \"\\F00D\"; }\n\n.fa-search-plus:before {\n  content: \"\\F00E\"; }\n\n.fa-search-minus:before {\n  content: \"\\F010\"; }\n\n.fa-power-off:before {\n  content: \"\\F011\"; }\n\n.fa-signal:before {\n  content: \"\\F012\"; }\n\n.fa-gear:before,\n.fa-cog:before {\n  content: \"\\F013\"; }\n\n.fa-trash-o:before {\n  content: \"\\F014\"; }\n\n.fa-home:before {\n  content: \"\\F015\"; }\n\n.fa-file-o:before {\n  content: \"\\F016\"; }\n\n.fa-clock-o:before {\n  content: \"\\F017\"; }\n\n.fa-road:before {\n  content: \"\\F018\"; }\n\n.fa-download:before {\n  content: \"\\F019\"; }\n\n.fa-arrow-circle-o-down:before {\n  content: \"\\F01A\"; }\n\n.fa-arrow-circle-o-up:before {\n  content: \"\\F01B\"; }\n\n.fa-inbox:before {\n  content: \"\\F01C\"; }\n\n.fa-play-circle-o:before {\n  content: \"\\F01D\"; }\n\n.fa-rotate-right:before,\n.fa-repeat:before {\n  content: \"\\F01E\"; }\n\n.fa-refresh:before {\n  content: \"\\F021\"; }\n\n.fa-list-alt:before {\n  content: \"\\F022\"; }\n\n.fa-lock:before {\n  content: \"\\F023\"; }\n\n.fa-flag:before {\n  content: \"\\F024\"; }\n\n.fa-headphones:before {\n  content: \"\\F025\"; }\n\n.fa-volume-off:before {\n  content: \"\\F026\"; }\n\n.fa-volume-down:before {\n  content: \"\\F027\"; }\n\n.fa-volume-up:before {\n  content: \"\\F028\"; }\n\n.fa-qrcode:before {\n  content: \"\\F029\"; }\n\n.fa-barcode:before {\n  content: \"\\F02A\"; }\n\n.fa-tag:before {\n  content: \"\\F02B\"; }\n\n.fa-tags:before {\n  content: \"\\F02C\"; }\n\n.fa-book:before {\n  content: \"\\F02D\"; }\n\n.fa-bookmark:before {\n  content: \"\\F02E\"; }\n\n.fa-print:before {\n  content: \"\\F02F\"; }\n\n.fa-camera:before {\n  content: \"\\F030\"; }\n\n.fa-font:before {\n  content: \"\\F031\"; }\n\n.fa-bold:before {\n  content: \"\\F032\"; }\n\n.fa-italic:before {\n  content: \"\\F033\"; }\n\n.fa-text-height:before {\n  content: \"\\F034\"; }\n\n.fa-text-width:before {\n  content: \"\\F035\"; }\n\n.fa-align-left:before {\n  content: \"\\F036\"; }\n\n.fa-align-center:before {\n  content: \"\\F037\"; }\n\n.fa-align-right:before {\n  content: \"\\F038\"; }\n\n.fa-align-justify:before {\n  content: \"\\F039\"; }\n\n.fa-list:before {\n  content: \"\\F03A\"; }\n\n.fa-dedent:before,\n.fa-outdent:before {\n  content: \"\\F03B\"; }\n\n.fa-indent:before {\n  content: \"\\F03C\"; }\n\n.fa-video-camera:before {\n  content: \"\\F03D\"; }\n\n.fa-photo:before,\n.fa-image:before,\n.fa-picture-o:before {\n  content: \"\\F03E\"; }\n\n.fa-pencil:before {\n  content: \"\\F040\"; }\n\n.fa-map-marker:before {\n  content: \"\\F041\"; }\n\n.fa-adjust:before {\n  content: \"\\F042\"; }\n\n.fa-tint:before {\n  content: \"\\F043\"; }\n\n.fa-edit:before,\n.fa-pencil-square-o:before {\n  content: \"\\F044\"; }\n\n.fa-share-square-o:before {\n  content: \"\\F045\"; }\n\n.fa-check-square-o:before {\n  content: \"\\F046\"; }\n\n.fa-arrows:before {\n  content: \"\\F047\"; }\n\n.fa-step-backward:before {\n  content: \"\\F048\"; }\n\n.fa-fast-backward:before {\n  content: \"\\F049\"; }\n\n.fa-backward:before {\n  content: \"\\F04A\"; }\n\n.fa-play:before {\n  content: \"\\F04B\"; }\n\n.fa-pause:before {\n  content: \"\\F04C\"; }\n\n.fa-stop:before {\n  content: \"\\F04D\"; }\n\n.fa-forward:before {\n  content: \"\\F04E\"; }\n\n.fa-fast-forward:before {\n  content: \"\\F050\"; }\n\n.fa-step-forward:before {\n  content: \"\\F051\"; }\n\n.fa-eject:before {\n  content: \"\\F052\"; }\n\n.fa-chevron-left:before {\n  content: \"\\F053\"; }\n\n.fa-chevron-right:before {\n  content: \"\\F054\"; }\n\n.fa-plus-circle:before {\n  content: \"\\F055\"; }\n\n.fa-minus-circle:before {\n  content: \"\\F056\"; }\n\n.fa-times-circle:before {\n  content: \"\\F057\"; }\n\n.fa-check-circle:before {\n  content: \"\\F058\"; }\n\n.fa-question-circle:before {\n  content: \"\\F059\"; }\n\n.fa-info-circle:before {\n  content: \"\\F05A\"; }\n\n.fa-crosshairs:before {\n  content: \"\\F05B\"; }\n\n.fa-times-circle-o:before {\n  content: \"\\F05C\"; }\n\n.fa-check-circle-o:before {\n  content: \"\\F05D\"; }\n\n.fa-ban:before {\n  content: \"\\F05E\"; }\n\n.fa-arrow-left:before {\n  content: \"\\F060\"; }\n\n.fa-arrow-right:before {\n  content: \"\\F061\"; }\n\n.fa-arrow-up:before {\n  content: \"\\F062\"; }\n\n.fa-arrow-down:before {\n  content: \"\\F063\"; }\n\n.fa-mail-forward:before,\n.fa-share:before {\n  content: \"\\F064\"; }\n\n.fa-expand:before {\n  content: \"\\F065\"; }\n\n.fa-compress:before {\n  content: \"\\F066\"; }\n\n.fa-plus:before {\n  content: \"\\F067\"; }\n\n.fa-minus:before {\n  content: \"\\F068\"; }\n\n.fa-asterisk:before {\n  content: \"\\F069\"; }\n\n.fa-exclamation-circle:before {\n  content: \"\\F06A\"; }\n\n.fa-gift:before {\n  content: \"\\F06B\"; }\n\n.fa-leaf:before {\n  content: \"\\F06C\"; }\n\n.fa-fire:before {\n  content: \"\\F06D\"; }\n\n.fa-eye:before {\n  content: \"\\F06E\"; }\n\n.fa-eye-slash:before {\n  content: \"\\F070\"; }\n\n.fa-warning:before,\n.fa-exclamation-triangle:before {\n  content: \"\\F071\"; }\n\n.fa-plane:before {\n  content: \"\\F072\"; }\n\n.fa-calendar:before {\n  content: \"\\F073\"; }\n\n.fa-random:before {\n  content: \"\\F074\"; }\n\n.fa-comment:before {\n  content: \"\\F075\"; }\n\n.fa-magnet:before {\n  content: \"\\F076\"; }\n\n.fa-chevron-up:before {\n  content: \"\\F077\"; }\n\n.fa-chevron-down:before {\n  content: \"\\F078\"; }\n\n.fa-retweet:before {\n  content: \"\\F079\"; }\n\n.fa-shopping-cart:before {\n  content: \"\\F07A\"; }\n\n.fa-folder:before {\n  content: \"\\F07B\"; }\n\n.fa-folder-open:before {\n  content: \"\\F07C\"; }\n\n.fa-arrows-v:before {\n  content: \"\\F07D\"; }\n\n.fa-arrows-h:before {\n  content: \"\\F07E\"; }\n\n.fa-bar-chart-o:before,\n.fa-bar-chart:before {\n  content: \"\\F080\"; }\n\n.fa-twitter-square:before {\n  content: \"\\F081\"; }\n\n.fa-facebook-square:before {\n  content: \"\\F082\"; }\n\n.fa-camera-retro:before {\n  content: \"\\F083\"; }\n\n.fa-key:before {\n  content: \"\\F084\"; }\n\n.fa-gears:before,\n.fa-cogs:before {\n  content: \"\\F085\"; }\n\n.fa-comments:before {\n  content: \"\\F086\"; }\n\n.fa-thumbs-o-up:before {\n  content: \"\\F087\"; }\n\n.fa-thumbs-o-down:before {\n  content: \"\\F088\"; }\n\n.fa-star-half:before {\n  content: \"\\F089\"; }\n\n.fa-heart-o:before {\n  content: \"\\F08A\"; }\n\n.fa-sign-out:before {\n  content: \"\\F08B\"; }\n\n.fa-linkedin-square:before {\n  content: \"\\F08C\"; }\n\n.fa-thumb-tack:before {\n  content: \"\\F08D\"; }\n\n.fa-external-link:before {\n  content: \"\\F08E\"; }\n\n.fa-sign-in:before {\n  content: \"\\F090\"; }\n\n.fa-trophy:before {\n  content: \"\\F091\"; }\n\n.fa-github-square:before {\n  content: \"\\F092\"; }\n\n.fa-upload:before {\n  content: \"\\F093\"; }\n\n.fa-lemon-o:before {\n  content: \"\\F094\"; }\n\n.fa-phone:before {\n  content: \"\\F095\"; }\n\n.fa-square-o:before {\n  content: \"\\F096\"; }\n\n.fa-bookmark-o:before {\n  content: \"\\F097\"; }\n\n.fa-phone-square:before {\n  content: \"\\F098\"; }\n\n.fa-twitter:before {\n  content: \"\\F099\"; }\n\n.fa-facebook-f:before,\n.fa-facebook:before {\n  content: \"\\F09A\"; }\n\n.fa-github:before {\n  content: \"\\F09B\"; }\n\n.fa-unlock:before {\n  content: \"\\F09C\"; }\n\n.fa-credit-card:before {\n  content: \"\\F09D\"; }\n\n.fa-feed:before,\n.fa-rss:before {\n  content: \"\\F09E\"; }\n\n.fa-hdd-o:before {\n  content: \"\\F0A0\"; }\n\n.fa-bullhorn:before {\n  content: \"\\F0A1\"; }\n\n.fa-bell:before {\n  content: \"\\F0F3\"; }\n\n.fa-certificate:before {\n  content: \"\\F0A3\"; }\n\n.fa-hand-o-right:before {\n  content: \"\\F0A4\"; }\n\n.fa-hand-o-left:before {\n  content: \"\\F0A5\"; }\n\n.fa-hand-o-up:before {\n  content: \"\\F0A6\"; }\n\n.fa-hand-o-down:before {\n  content: \"\\F0A7\"; }\n\n.fa-arrow-circle-left:before {\n  content: \"\\F0A8\"; }\n\n.fa-arrow-circle-right:before {\n  content: \"\\F0A9\"; }\n\n.fa-arrow-circle-up:before {\n  content: \"\\F0AA\"; }\n\n.fa-arrow-circle-down:before {\n  content: \"\\F0AB\"; }\n\n.fa-globe:before {\n  content: \"\\F0AC\"; }\n\n.fa-wrench:before {\n  content: \"\\F0AD\"; }\n\n.fa-tasks:before {\n  content: \"\\F0AE\"; }\n\n.fa-filter:before {\n  content: \"\\F0B0\"; }\n\n.fa-briefcase:before {\n  content: \"\\F0B1\"; }\n\n.fa-arrows-alt:before {\n  content: \"\\F0B2\"; }\n\n.fa-group:before,\n.fa-users:before {\n  content: \"\\F0C0\"; }\n\n.fa-chain:before,\n.fa-link:before {\n  content: \"\\F0C1\"; }\n\n.fa-cloud:before {\n  content: \"\\F0C2\"; }\n\n.fa-flask:before {\n  content: \"\\F0C3\"; }\n\n.fa-cut:before,\n.fa-scissors:before {\n  content: \"\\F0C4\"; }\n\n.fa-copy:before,\n.fa-files-o:before {\n  content: \"\\F0C5\"; }\n\n.fa-paperclip:before {\n  content: \"\\F0C6\"; }\n\n.fa-save:before,\n.fa-floppy-o:before {\n  content: \"\\F0C7\"; }\n\n.fa-square:before {\n  content: \"\\F0C8\"; }\n\n.fa-navicon:before,\n.fa-reorder:before,\n.fa-bars:before {\n  content: \"\\F0C9\"; }\n\n.fa-list-ul:before {\n  content: \"\\F0CA\"; }\n\n.fa-list-ol:before {\n  content: \"\\F0CB\"; }\n\n.fa-strikethrough:before {\n  content: \"\\F0CC\"; }\n\n.fa-underline:before {\n  content: \"\\F0CD\"; }\n\n.fa-table:before {\n  content: \"\\F0CE\"; }\n\n.fa-magic:before {\n  content: \"\\F0D0\"; }\n\n.fa-truck:before {\n  content: \"\\F0D1\"; }\n\n.fa-pinterest:before {\n  content: \"\\F0D2\"; }\n\n.fa-pinterest-square:before {\n  content: \"\\F0D3\"; }\n\n.fa-google-plus-square:before {\n  content: \"\\F0D4\"; }\n\n.fa-google-plus:before {\n  content: \"\\F0D5\"; }\n\n.fa-money:before {\n  content: \"\\F0D6\"; }\n\n.fa-caret-down:before {\n  content: \"\\F0D7\"; }\n\n.fa-caret-up:before {\n  content: \"\\F0D8\"; }\n\n.fa-caret-left:before {\n  content: \"\\F0D9\"; }\n\n.fa-caret-right:before {\n  content: \"\\F0DA\"; }\n\n.fa-columns:before {\n  content: \"\\F0DB\"; }\n\n.fa-unsorted:before,\n.fa-sort:before {\n  content: \"\\F0DC\"; }\n\n.fa-sort-down:before,\n.fa-sort-desc:before {\n  content: \"\\F0DD\"; }\n\n.fa-sort-up:before,\n.fa-sort-asc:before {\n  content: \"\\F0DE\"; }\n\n.fa-envelope:before {\n  content: \"\\F0E0\"; }\n\n.fa-linkedin:before {\n  content: \"\\F0E1\"; }\n\n.fa-rotate-left:before,\n.fa-undo:before {\n  content: \"\\F0E2\"; }\n\n.fa-legal:before,\n.fa-gavel:before {\n  content: \"\\F0E3\"; }\n\n.fa-dashboard:before,\n.fa-tachometer:before {\n  content: \"\\F0E4\"; }\n\n.fa-comment-o:before {\n  content: \"\\F0E5\"; }\n\n.fa-comments-o:before {\n  content: \"\\F0E6\"; }\n\n.fa-flash:before,\n.fa-bolt:before {\n  content: \"\\F0E7\"; }\n\n.fa-sitemap:before {\n  content: \"\\F0E8\"; }\n\n.fa-umbrella:before {\n  content: \"\\F0E9\"; }\n\n.fa-paste:before,\n.fa-clipboard:before {\n  content: \"\\F0EA\"; }\n\n.fa-lightbulb-o:before {\n  content: \"\\F0EB\"; }\n\n.fa-exchange:before {\n  content: \"\\F0EC\"; }\n\n.fa-cloud-download:before {\n  content: \"\\F0ED\"; }\n\n.fa-cloud-upload:before {\n  content: \"\\F0EE\"; }\n\n.fa-user-md:before {\n  content: \"\\F0F0\"; }\n\n.fa-stethoscope:before {\n  content: \"\\F0F1\"; }\n\n.fa-suitcase:before {\n  content: \"\\F0F2\"; }\n\n.fa-bell-o:before {\n  content: \"\\F0A2\"; }\n\n.fa-coffee:before {\n  content: \"\\F0F4\"; }\n\n.fa-cutlery:before {\n  content: \"\\F0F5\"; }\n\n.fa-file-text-o:before {\n  content: \"\\F0F6\"; }\n\n.fa-building-o:before {\n  content: \"\\F0F7\"; }\n\n.fa-hospital-o:before {\n  content: \"\\F0F8\"; }\n\n.fa-ambulance:before {\n  content: \"\\F0F9\"; }\n\n.fa-medkit:before {\n  content: \"\\F0FA\"; }\n\n.fa-fighter-jet:before {\n  content: \"\\F0FB\"; }\n\n.fa-beer:before {\n  content: \"\\F0FC\"; }\n\n.fa-h-square:before {\n  content: \"\\F0FD\"; }\n\n.fa-plus-square:before {\n  content: \"\\F0FE\"; }\n\n.fa-angle-double-left:before {\n  content: \"\\F100\"; }\n\n.fa-angle-double-right:before {\n  content: \"\\F101\"; }\n\n.fa-angle-double-up:before {\n  content: \"\\F102\"; }\n\n.fa-angle-double-down:before {\n  content: \"\\F103\"; }\n\n.fa-angle-left:before {\n  content: \"\\F104\"; }\n\n.fa-angle-right:before {\n  content: \"\\F105\"; }\n\n.fa-angle-up:before {\n  content: \"\\F106\"; }\n\n.fa-angle-down:before {\n  content: \"\\F107\"; }\n\n.fa-desktop:before {\n  content: \"\\F108\"; }\n\n.fa-laptop:before {\n  content: \"\\F109\"; }\n\n.fa-tablet:before {\n  content: \"\\F10A\"; }\n\n.fa-mobile-phone:before,\n.fa-mobile:before {\n  content: \"\\F10B\"; }\n\n.fa-circle-o:before {\n  content: \"\\F10C\"; }\n\n.fa-quote-left:before {\n  content: \"\\F10D\"; }\n\n.fa-quote-right:before {\n  content: \"\\F10E\"; }\n\n.fa-spinner:before {\n  content: \"\\F110\"; }\n\n.fa-circle:before {\n  content: \"\\F111\"; }\n\n.fa-mail-reply:before,\n.fa-reply:before {\n  content: \"\\F112\"; }\n\n.fa-github-alt:before {\n  content: \"\\F113\"; }\n\n.fa-folder-o:before {\n  content: \"\\F114\"; }\n\n.fa-folder-open-o:before {\n  content: \"\\F115\"; }\n\n.fa-smile-o:before {\n  content: \"\\F118\"; }\n\n.fa-frown-o:before {\n  content: \"\\F119\"; }\n\n.fa-meh-o:before {\n  content: \"\\F11A\"; }\n\n.fa-gamepad:before {\n  content: \"\\F11B\"; }\n\n.fa-keyboard-o:before {\n  content: \"\\F11C\"; }\n\n.fa-flag-o:before {\n  content: \"\\F11D\"; }\n\n.fa-flag-checkered:before {\n  content: \"\\F11E\"; }\n\n.fa-terminal:before {\n  content: \"\\F120\"; }\n\n.fa-code:before {\n  content: \"\\F121\"; }\n\n.fa-mail-reply-all:before,\n.fa-reply-all:before {\n  content: \"\\F122\"; }\n\n.fa-star-half-empty:before,\n.fa-star-half-full:before,\n.fa-star-half-o:before {\n  content: \"\\F123\"; }\n\n.fa-location-arrow:before {\n  content: \"\\F124\"; }\n\n.fa-crop:before {\n  content: \"\\F125\"; }\n\n.fa-code-fork:before {\n  content: \"\\F126\"; }\n\n.fa-unlink:before,\n.fa-chain-broken:before {\n  content: \"\\F127\"; }\n\n.fa-question:before {\n  content: \"\\F128\"; }\n\n.fa-info:before {\n  content: \"\\F129\"; }\n\n.fa-exclamation:before {\n  content: \"\\F12A\"; }\n\n.fa-superscript:before {\n  content: \"\\F12B\"; }\n\n.fa-subscript:before {\n  content: \"\\F12C\"; }\n\n.fa-eraser:before {\n  content: \"\\F12D\"; }\n\n.fa-puzzle-piece:before {\n  content: \"\\F12E\"; }\n\n.fa-microphone:before {\n  content: \"\\F130\"; }\n\n.fa-microphone-slash:before {\n  content: \"\\F131\"; }\n\n.fa-shield:before {\n  content: \"\\F132\"; }\n\n.fa-calendar-o:before {\n  content: \"\\F133\"; }\n\n.fa-fire-extinguisher:before {\n  content: \"\\F134\"; }\n\n.fa-rocket:before {\n  content: \"\\F135\"; }\n\n.fa-maxcdn:before {\n  content: \"\\F136\"; }\n\n.fa-chevron-circle-left:before {\n  content: \"\\F137\"; }\n\n.fa-chevron-circle-right:before {\n  content: \"\\F138\"; }\n\n.fa-chevron-circle-up:before {\n  content: \"\\F139\"; }\n\n.fa-chevron-circle-down:before {\n  content: \"\\F13A\"; }\n\n.fa-html5:before {\n  content: \"\\F13B\"; }\n\n.fa-css3:before {\n  content: \"\\F13C\"; }\n\n.fa-anchor:before {\n  content: \"\\F13D\"; }\n\n.fa-unlock-alt:before {\n  content: \"\\F13E\"; }\n\n.fa-bullseye:before {\n  content: \"\\F140\"; }\n\n.fa-ellipsis-h:before {\n  content: \"\\F141\"; }\n\n.fa-ellipsis-v:before {\n  content: \"\\F142\"; }\n\n.fa-rss-square:before {\n  content: \"\\F143\"; }\n\n.fa-play-circle:before {\n  content: \"\\F144\"; }\n\n.fa-ticket:before {\n  content: \"\\F145\"; }\n\n.fa-minus-square:before {\n  content: \"\\F146\"; }\n\n.fa-minus-square-o:before {\n  content: \"\\F147\"; }\n\n.fa-level-up:before {\n  content: \"\\F148\"; }\n\n.fa-level-down:before {\n  content: \"\\F149\"; }\n\n.fa-check-square:before {\n  content: \"\\F14A\"; }\n\n.fa-pencil-square:before {\n  content: \"\\F14B\"; }\n\n.fa-external-link-square:before {\n  content: \"\\F14C\"; }\n\n.fa-share-square:before {\n  content: \"\\F14D\"; }\n\n.fa-compass:before {\n  content: \"\\F14E\"; }\n\n.fa-toggle-down:before,\n.fa-caret-square-o-down:before {\n  content: \"\\F150\"; }\n\n.fa-toggle-up:before,\n.fa-caret-square-o-up:before {\n  content: \"\\F151\"; }\n\n.fa-toggle-right:before,\n.fa-caret-square-o-right:before {\n  content: \"\\F152\"; }\n\n.fa-euro:before,\n.fa-eur:before {\n  content: \"\\F153\"; }\n\n.fa-gbp:before {\n  content: \"\\F154\"; }\n\n.fa-dollar:before,\n.fa-usd:before {\n  content: \"\\F155\"; }\n\n.fa-rupee:before,\n.fa-inr:before {\n  content: \"\\F156\"; }\n\n.fa-cny:before,\n.fa-rmb:before,\n.fa-yen:before,\n.fa-jpy:before {\n  content: \"\\F157\"; }\n\n.fa-ruble:before,\n.fa-rouble:before,\n.fa-rub:before {\n  content: \"\\F158\"; }\n\n.fa-won:before,\n.fa-krw:before {\n  content: \"\\F159\"; }\n\n.fa-bitcoin:before,\n.fa-btc:before {\n  content: \"\\F15A\"; }\n\n.fa-file:before {\n  content: \"\\F15B\"; }\n\n.fa-file-text:before {\n  content: \"\\F15C\"; }\n\n.fa-sort-alpha-asc:before {\n  content: \"\\F15D\"; }\n\n.fa-sort-alpha-desc:before {\n  content: \"\\F15E\"; }\n\n.fa-sort-amount-asc:before {\n  content: \"\\F160\"; }\n\n.fa-sort-amount-desc:before {\n  content: \"\\F161\"; }\n\n.fa-sort-numeric-asc:before {\n  content: \"\\F162\"; }\n\n.fa-sort-numeric-desc:before {\n  content: \"\\F163\"; }\n\n.fa-thumbs-up:before {\n  content: \"\\F164\"; }\n\n.fa-thumbs-down:before {\n  content: \"\\F165\"; }\n\n.fa-youtube-square:before {\n  content: \"\\F166\"; }\n\n.fa-youtube:before {\n  content: \"\\F167\"; }\n\n.fa-xing:before {\n  content: \"\\F168\"; }\n\n.fa-xing-square:before {\n  content: \"\\F169\"; }\n\n.fa-youtube-play:before {\n  content: \"\\F16A\"; }\n\n.fa-dropbox:before {\n  content: \"\\F16B\"; }\n\n.fa-stack-overflow:before {\n  content: \"\\F16C\"; }\n\n.fa-instagram:before {\n  content: \"\\F16D\"; }\n\n.fa-flickr:before {\n  content: \"\\F16E\"; }\n\n.fa-adn:before {\n  content: \"\\F170\"; }\n\n.fa-bitbucket:before {\n  content: \"\\F171\"; }\n\n.fa-bitbucket-square:before {\n  content: \"\\F172\"; }\n\n.fa-tumblr:before {\n  content: \"\\F173\"; }\n\n.fa-tumblr-square:before {\n  content: \"\\F174\"; }\n\n.fa-long-arrow-down:before {\n  content: \"\\F175\"; }\n\n.fa-long-arrow-up:before {\n  content: \"\\F176\"; }\n\n.fa-long-arrow-left:before {\n  content: \"\\F177\"; }\n\n.fa-long-arrow-right:before {\n  content: \"\\F178\"; }\n\n.fa-apple:before {\n  content: \"\\F179\"; }\n\n.fa-windows:before {\n  content: \"\\F17A\"; }\n\n.fa-android:before {\n  content: \"\\F17B\"; }\n\n.fa-linux:before {\n  content: \"\\F17C\"; }\n\n.fa-dribbble:before {\n  content: \"\\F17D\"; }\n\n.fa-skype:before {\n  content: \"\\F17E\"; }\n\n.fa-foursquare:before {\n  content: \"\\F180\"; }\n\n.fa-trello:before {\n  content: \"\\F181\"; }\n\n.fa-female:before {\n  content: \"\\F182\"; }\n\n.fa-male:before {\n  content: \"\\F183\"; }\n\n.fa-gittip:before,\n.fa-gratipay:before {\n  content: \"\\F184\"; }\n\n.fa-sun-o:before {\n  content: \"\\F185\"; }\n\n.fa-moon-o:before {\n  content: \"\\F186\"; }\n\n.fa-archive:before {\n  content: \"\\F187\"; }\n\n.fa-bug:before {\n  content: \"\\F188\"; }\n\n.fa-vk:before {\n  content: \"\\F189\"; }\n\n.fa-weibo:before {\n  content: \"\\F18A\"; }\n\n.fa-renren:before {\n  content: \"\\F18B\"; }\n\n.fa-pagelines:before {\n  content: \"\\F18C\"; }\n\n.fa-stack-exchange:before {\n  content: \"\\F18D\"; }\n\n.fa-arrow-circle-o-right:before {\n  content: \"\\F18E\"; }\n\n.fa-arrow-circle-o-left:before {\n  content: \"\\F190\"; }\n\n.fa-toggle-left:before,\n.fa-caret-square-o-left:before {\n  content: \"\\F191\"; }\n\n.fa-dot-circle-o:before {\n  content: \"\\F192\"; }\n\n.fa-wheelchair:before {\n  content: \"\\F193\"; }\n\n.fa-vimeo-square:before {\n  content: \"\\F194\"; }\n\n.fa-turkish-lira:before,\n.fa-try:before {\n  content: \"\\F195\"; }\n\n.fa-plus-square-o:before {\n  content: \"\\F196\"; }\n\n.fa-space-shuttle:before {\n  content: \"\\F197\"; }\n\n.fa-slack:before {\n  content: \"\\F198\"; }\n\n.fa-envelope-square:before {\n  content: \"\\F199\"; }\n\n.fa-wordpress:before {\n  content: \"\\F19A\"; }\n\n.fa-openid:before {\n  content: \"\\F19B\"; }\n\n.fa-institution:before,\n.fa-bank:before,\n.fa-university:before {\n  content: \"\\F19C\"; }\n\n.fa-mortar-board:before,\n.fa-graduation-cap:before {\n  content: \"\\F19D\"; }\n\n.fa-yahoo:before {\n  content: \"\\F19E\"; }\n\n.fa-google:before {\n  content: \"\\F1A0\"; }\n\n.fa-reddit:before {\n  content: \"\\F1A1\"; }\n\n.fa-reddit-square:before {\n  content: \"\\F1A2\"; }\n\n.fa-stumbleupon-circle:before {\n  content: \"\\F1A3\"; }\n\n.fa-stumbleupon:before {\n  content: \"\\F1A4\"; }\n\n.fa-delicious:before {\n  content: \"\\F1A5\"; }\n\n.fa-digg:before {\n  content: \"\\F1A6\"; }\n\n.fa-pied-piper-pp:before {\n  content: \"\\F1A7\"; }\n\n.fa-pied-piper-alt:before {\n  content: \"\\F1A8\"; }\n\n.fa-drupal:before {\n  content: \"\\F1A9\"; }\n\n.fa-joomla:before {\n  content: \"\\F1AA\"; }\n\n.fa-language:before {\n  content: \"\\F1AB\"; }\n\n.fa-fax:before {\n  content: \"\\F1AC\"; }\n\n.fa-building:before {\n  content: \"\\F1AD\"; }\n\n.fa-child:before {\n  content: \"\\F1AE\"; }\n\n.fa-paw:before {\n  content: \"\\F1B0\"; }\n\n.fa-spoon:before {\n  content: \"\\F1B1\"; }\n\n.fa-cube:before {\n  content: \"\\F1B2\"; }\n\n.fa-cubes:before {\n  content: \"\\F1B3\"; }\n\n.fa-behance:before {\n  content: \"\\F1B4\"; }\n\n.fa-behance-square:before {\n  content: \"\\F1B5\"; }\n\n.fa-steam:before {\n  content: \"\\F1B6\"; }\n\n.fa-steam-square:before {\n  content: \"\\F1B7\"; }\n\n.fa-recycle:before {\n  content: \"\\F1B8\"; }\n\n.fa-automobile:before,\n.fa-car:before {\n  content: \"\\F1B9\"; }\n\n.fa-cab:before,\n.fa-taxi:before {\n  content: \"\\F1BA\"; }\n\n.fa-tree:before {\n  content: \"\\F1BB\"; }\n\n.fa-spotify:before {\n  content: \"\\F1BC\"; }\n\n.fa-deviantart:before {\n  content: \"\\F1BD\"; }\n\n.fa-soundcloud:before {\n  content: \"\\F1BE\"; }\n\n.fa-database:before {\n  content: \"\\F1C0\"; }\n\n.fa-file-pdf-o:before {\n  content: \"\\F1C1\"; }\n\n.fa-file-word-o:before {\n  content: \"\\F1C2\"; }\n\n.fa-file-excel-o:before {\n  content: \"\\F1C3\"; }\n\n.fa-file-powerpoint-o:before {\n  content: \"\\F1C4\"; }\n\n.fa-file-photo-o:before,\n.fa-file-picture-o:before,\n.fa-file-image-o:before {\n  content: \"\\F1C5\"; }\n\n.fa-file-zip-o:before,\n.fa-file-archive-o:before {\n  content: \"\\F1C6\"; }\n\n.fa-file-sound-o:before,\n.fa-file-audio-o:before {\n  content: \"\\F1C7\"; }\n\n.fa-file-movie-o:before,\n.fa-file-video-o:before {\n  content: \"\\F1C8\"; }\n\n.fa-file-code-o:before {\n  content: \"\\F1C9\"; }\n\n.fa-vine:before {\n  content: \"\\F1CA\"; }\n\n.fa-codepen:before {\n  content: \"\\F1CB\"; }\n\n.fa-jsfiddle:before {\n  content: \"\\F1CC\"; }\n\n.fa-life-bouy:before,\n.fa-life-buoy:before,\n.fa-life-saver:before,\n.fa-support:before,\n.fa-life-ring:before {\n  content: \"\\F1CD\"; }\n\n.fa-circle-o-notch:before {\n  content: \"\\F1CE\"; }\n\n.fa-ra:before,\n.fa-resistance:before,\n.fa-rebel:before {\n  content: \"\\F1D0\"; }\n\n.fa-ge:before,\n.fa-empire:before {\n  content: \"\\F1D1\"; }\n\n.fa-git-square:before {\n  content: \"\\F1D2\"; }\n\n.fa-git:before {\n  content: \"\\F1D3\"; }\n\n.fa-y-combinator-square:before,\n.fa-yc-square:before,\n.fa-hacker-news:before {\n  content: \"\\F1D4\"; }\n\n.fa-tencent-weibo:before {\n  content: \"\\F1D5\"; }\n\n.fa-qq:before {\n  content: \"\\F1D6\"; }\n\n.fa-wechat:before,\n.fa-weixin:before {\n  content: \"\\F1D7\"; }\n\n.fa-send:before,\n.fa-paper-plane:before {\n  content: \"\\F1D8\"; }\n\n.fa-send-o:before,\n.fa-paper-plane-o:before {\n  content: \"\\F1D9\"; }\n\n.fa-history:before {\n  content: \"\\F1DA\"; }\n\n.fa-circle-thin:before {\n  content: \"\\F1DB\"; }\n\n.fa-header:before {\n  content: \"\\F1DC\"; }\n\n.fa-paragraph:before {\n  content: \"\\F1DD\"; }\n\n.fa-sliders:before {\n  content: \"\\F1DE\"; }\n\n.fa-share-alt:before {\n  content: \"\\F1E0\"; }\n\n.fa-share-alt-square:before {\n  content: \"\\F1E1\"; }\n\n.fa-bomb:before {\n  content: \"\\F1E2\"; }\n\n.fa-soccer-ball-o:before,\n.fa-futbol-o:before {\n  content: \"\\F1E3\"; }\n\n.fa-tty:before {\n  content: \"\\F1E4\"; }\n\n.fa-binoculars:before {\n  content: \"\\F1E5\"; }\n\n.fa-plug:before {\n  content: \"\\F1E6\"; }\n\n.fa-slideshare:before {\n  content: \"\\F1E7\"; }\n\n.fa-twitch:before {\n  content: \"\\F1E8\"; }\n\n.fa-yelp:before {\n  content: \"\\F1E9\"; }\n\n.fa-newspaper-o:before {\n  content: \"\\F1EA\"; }\n\n.fa-wifi:before {\n  content: \"\\F1EB\"; }\n\n.fa-calculator:before {\n  content: \"\\F1EC\"; }\n\n.fa-paypal:before {\n  content: \"\\F1ED\"; }\n\n.fa-google-wallet:before {\n  content: \"\\F1EE\"; }\n\n.fa-cc-visa:before {\n  content: \"\\F1F0\"; }\n\n.fa-cc-mastercard:before {\n  content: \"\\F1F1\"; }\n\n.fa-cc-discover:before {\n  content: \"\\F1F2\"; }\n\n.fa-cc-amex:before {\n  content: \"\\F1F3\"; }\n\n.fa-cc-paypal:before {\n  content: \"\\F1F4\"; }\n\n.fa-cc-stripe:before {\n  content: \"\\F1F5\"; }\n\n.fa-bell-slash:before {\n  content: \"\\F1F6\"; }\n\n.fa-bell-slash-o:before {\n  content: \"\\F1F7\"; }\n\n.fa-trash:before {\n  content: \"\\F1F8\"; }\n\n.fa-copyright:before {\n  content: \"\\F1F9\"; }\n\n.fa-at:before {\n  content: \"\\F1FA\"; }\n\n.fa-eyedropper:before {\n  content: \"\\F1FB\"; }\n\n.fa-paint-brush:before {\n  content: \"\\F1FC\"; }\n\n.fa-birthday-cake:before {\n  content: \"\\F1FD\"; }\n\n.fa-area-chart:before {\n  content: \"\\F1FE\"; }\n\n.fa-pie-chart:before {\n  content: \"\\F200\"; }\n\n.fa-line-chart:before {\n  content: \"\\F201\"; }\n\n.fa-lastfm:before {\n  content: \"\\F202\"; }\n\n.fa-lastfm-square:before {\n  content: \"\\F203\"; }\n\n.fa-toggle-off:before {\n  content: \"\\F204\"; }\n\n.fa-toggle-on:before {\n  content: \"\\F205\"; }\n\n.fa-bicycle:before {\n  content: \"\\F206\"; }\n\n.fa-bus:before {\n  content: \"\\F207\"; }\n\n.fa-ioxhost:before {\n  content: \"\\F208\"; }\n\n.fa-angellist:before {\n  content: \"\\F209\"; }\n\n.fa-cc:before {\n  content: \"\\F20A\"; }\n\n.fa-shekel:before,\n.fa-sheqel:before,\n.fa-ils:before {\n  content: \"\\F20B\"; }\n\n.fa-meanpath:before {\n  content: \"\\F20C\"; }\n\n.fa-buysellads:before {\n  content: \"\\F20D\"; }\n\n.fa-connectdevelop:before {\n  content: \"\\F20E\"; }\n\n.fa-dashcube:before {\n  content: \"\\F210\"; }\n\n.fa-forumbee:before {\n  content: \"\\F211\"; }\n\n.fa-leanpub:before {\n  content: \"\\F212\"; }\n\n.fa-sellsy:before {\n  content: \"\\F213\"; }\n\n.fa-shirtsinbulk:before {\n  content: \"\\F214\"; }\n\n.fa-simplybuilt:before {\n  content: \"\\F215\"; }\n\n.fa-skyatlas:before {\n  content: \"\\F216\"; }\n\n.fa-cart-plus:before {\n  content: \"\\F217\"; }\n\n.fa-cart-arrow-down:before {\n  content: \"\\F218\"; }\n\n.fa-diamond:before {\n  content: \"\\F219\"; }\n\n.fa-ship:before {\n  content: \"\\F21A\"; }\n\n.fa-user-secret:before {\n  content: \"\\F21B\"; }\n\n.fa-motorcycle:before {\n  content: \"\\F21C\"; }\n\n.fa-street-view:before {\n  content: \"\\F21D\"; }\n\n.fa-heartbeat:before {\n  content: \"\\F21E\"; }\n\n.fa-venus:before {\n  content: \"\\F221\"; }\n\n.fa-mars:before {\n  content: \"\\F222\"; }\n\n.fa-mercury:before {\n  content: \"\\F223\"; }\n\n.fa-intersex:before,\n.fa-transgender:before {\n  content: \"\\F224\"; }\n\n.fa-transgender-alt:before {\n  content: \"\\F225\"; }\n\n.fa-venus-double:before {\n  content: \"\\F226\"; }\n\n.fa-mars-double:before {\n  content: \"\\F227\"; }\n\n.fa-venus-mars:before {\n  content: \"\\F228\"; }\n\n.fa-mars-stroke:before {\n  content: \"\\F229\"; }\n\n.fa-mars-stroke-v:before {\n  content: \"\\F22A\"; }\n\n.fa-mars-stroke-h:before {\n  content: \"\\F22B\"; }\n\n.fa-neuter:before {\n  content: \"\\F22C\"; }\n\n.fa-genderless:before {\n  content: \"\\F22D\"; }\n\n.fa-facebook-official:before {\n  content: \"\\F230\"; }\n\n.fa-pinterest-p:before {\n  content: \"\\F231\"; }\n\n.fa-whatsapp:before {\n  content: \"\\F232\"; }\n\n.fa-server:before {\n  content: \"\\F233\"; }\n\n.fa-user-plus:before {\n  content: \"\\F234\"; }\n\n.fa-user-times:before {\n  content: \"\\F235\"; }\n\n.fa-hotel:before,\n.fa-bed:before {\n  content: \"\\F236\"; }\n\n.fa-viacoin:before {\n  content: \"\\F237\"; }\n\n.fa-train:before {\n  content: \"\\F238\"; }\n\n.fa-subway:before {\n  content: \"\\F239\"; }\n\n.fa-medium:before {\n  content: \"\\F23A\"; }\n\n.fa-yc:before,\n.fa-y-combinator:before {\n  content: \"\\F23B\"; }\n\n.fa-optin-monster:before {\n  content: \"\\F23C\"; }\n\n.fa-opencart:before {\n  content: \"\\F23D\"; }\n\n.fa-expeditedssl:before {\n  content: \"\\F23E\"; }\n\n.fa-battery-4:before,\n.fa-battery-full:before {\n  content: \"\\F240\"; }\n\n.fa-battery-3:before,\n.fa-battery-three-quarters:before {\n  content: \"\\F241\"; }\n\n.fa-battery-2:before,\n.fa-battery-half:before {\n  content: \"\\F242\"; }\n\n.fa-battery-1:before,\n.fa-battery-quarter:before {\n  content: \"\\F243\"; }\n\n.fa-battery-0:before,\n.fa-battery-empty:before {\n  content: \"\\F244\"; }\n\n.fa-mouse-pointer:before {\n  content: \"\\F245\"; }\n\n.fa-i-cursor:before {\n  content: \"\\F246\"; }\n\n.fa-object-group:before {\n  content: \"\\F247\"; }\n\n.fa-object-ungroup:before {\n  content: \"\\F248\"; }\n\n.fa-sticky-note:before {\n  content: \"\\F249\"; }\n\n.fa-sticky-note-o:before {\n  content: \"\\F24A\"; }\n\n.fa-cc-jcb:before {\n  content: \"\\F24B\"; }\n\n.fa-cc-diners-club:before {\n  content: \"\\F24C\"; }\n\n.fa-clone:before {\n  content: \"\\F24D\"; }\n\n.fa-balance-scale:before {\n  content: \"\\F24E\"; }\n\n.fa-hourglass-o:before {\n  content: \"\\F250\"; }\n\n.fa-hourglass-1:before,\n.fa-hourglass-start:before {\n  content: \"\\F251\"; }\n\n.fa-hourglass-2:before,\n.fa-hourglass-half:before {\n  content: \"\\F252\"; }\n\n.fa-hourglass-3:before,\n.fa-hourglass-end:before {\n  content: \"\\F253\"; }\n\n.fa-hourglass:before {\n  content: \"\\F254\"; }\n\n.fa-hand-grab-o:before,\n.fa-hand-rock-o:before {\n  content: \"\\F255\"; }\n\n.fa-hand-stop-o:before,\n.fa-hand-paper-o:before {\n  content: \"\\F256\"; }\n\n.fa-hand-scissors-o:before {\n  content: \"\\F257\"; }\n\n.fa-hand-lizard-o:before {\n  content: \"\\F258\"; }\n\n.fa-hand-spock-o:before {\n  content: \"\\F259\"; }\n\n.fa-hand-pointer-o:before {\n  content: \"\\F25A\"; }\n\n.fa-hand-peace-o:before {\n  content: \"\\F25B\"; }\n\n.fa-trademark:before {\n  content: \"\\F25C\"; }\n\n.fa-registered:before {\n  content: \"\\F25D\"; }\n\n.fa-creative-commons:before {\n  content: \"\\F25E\"; }\n\n.fa-gg:before {\n  content: \"\\F260\"; }\n\n.fa-gg-circle:before {\n  content: \"\\F261\"; }\n\n.fa-tripadvisor:before {\n  content: \"\\F262\"; }\n\n.fa-odnoklassniki:before {\n  content: \"\\F263\"; }\n\n.fa-odnoklassniki-square:before {\n  content: \"\\F264\"; }\n\n.fa-get-pocket:before {\n  content: \"\\F265\"; }\n\n.fa-wikipedia-w:before {\n  content: \"\\F266\"; }\n\n.fa-safari:before {\n  content: \"\\F267\"; }\n\n.fa-chrome:before {\n  content: \"\\F268\"; }\n\n.fa-firefox:before {\n  content: \"\\F269\"; }\n\n.fa-opera:before {\n  content: \"\\F26A\"; }\n\n.fa-internet-explorer:before {\n  content: \"\\F26B\"; }\n\n.fa-tv:before,\n.fa-television:before {\n  content: \"\\F26C\"; }\n\n.fa-contao:before {\n  content: \"\\F26D\"; }\n\n.fa-500px:before {\n  content: \"\\F26E\"; }\n\n.fa-amazon:before {\n  content: \"\\F270\"; }\n\n.fa-calendar-plus-o:before {\n  content: \"\\F271\"; }\n\n.fa-calendar-minus-o:before {\n  content: \"\\F272\"; }\n\n.fa-calendar-times-o:before {\n  content: \"\\F273\"; }\n\n.fa-calendar-check-o:before {\n  content: \"\\F274\"; }\n\n.fa-industry:before {\n  content: \"\\F275\"; }\n\n.fa-map-pin:before {\n  content: \"\\F276\"; }\n\n.fa-map-signs:before {\n  content: \"\\F277\"; }\n\n.fa-map-o:before {\n  content: \"\\F278\"; }\n\n.fa-map:before {\n  content: \"\\F279\"; }\n\n.fa-commenting:before {\n  content: \"\\F27A\"; }\n\n.fa-commenting-o:before {\n  content: \"\\F27B\"; }\n\n.fa-houzz:before {\n  content: \"\\F27C\"; }\n\n.fa-vimeo:before {\n  content: \"\\F27D\"; }\n\n.fa-black-tie:before {\n  content: \"\\F27E\"; }\n\n.fa-fonticons:before {\n  content: \"\\F280\"; }\n\n.fa-reddit-alien:before {\n  content: \"\\F281\"; }\n\n.fa-edge:before {\n  content: \"\\F282\"; }\n\n.fa-credit-card-alt:before {\n  content: \"\\F283\"; }\n\n.fa-codiepie:before {\n  content: \"\\F284\"; }\n\n.fa-modx:before {\n  content: \"\\F285\"; }\n\n.fa-fort-awesome:before {\n  content: \"\\F286\"; }\n\n.fa-usb:before {\n  content: \"\\F287\"; }\n\n.fa-product-hunt:before {\n  content: \"\\F288\"; }\n\n.fa-mixcloud:before {\n  content: \"\\F289\"; }\n\n.fa-scribd:before {\n  content: \"\\F28A\"; }\n\n.fa-pause-circle:before {\n  content: \"\\F28B\"; }\n\n.fa-pause-circle-o:before {\n  content: \"\\F28C\"; }\n\n.fa-stop-circle:before {\n  content: \"\\F28D\"; }\n\n.fa-stop-circle-o:before {\n  content: \"\\F28E\"; }\n\n.fa-shopping-bag:before {\n  content: \"\\F290\"; }\n\n.fa-shopping-basket:before {\n  content: \"\\F291\"; }\n\n.fa-hashtag:before {\n  content: \"\\F292\"; }\n\n.fa-bluetooth:before {\n  content: \"\\F293\"; }\n\n.fa-bluetooth-b:before {\n  content: \"\\F294\"; }\n\n.fa-percent:before {\n  content: \"\\F295\"; }\n\n.fa-gitlab:before {\n  content: \"\\F296\"; }\n\n.fa-wpbeginner:before {\n  content: \"\\F297\"; }\n\n.fa-wpforms:before {\n  content: \"\\F298\"; }\n\n.fa-envira:before {\n  content: \"\\F299\"; }\n\n.fa-universal-access:before {\n  content: \"\\F29A\"; }\n\n.fa-wheelchair-alt:before {\n  content: \"\\F29B\"; }\n\n.fa-question-circle-o:before {\n  content: \"\\F29C\"; }\n\n.fa-blind:before {\n  content: \"\\F29D\"; }\n\n.fa-audio-description:before {\n  content: \"\\F29E\"; }\n\n.fa-volume-control-phone:before {\n  content: \"\\F2A0\"; }\n\n.fa-braille:before {\n  content: \"\\F2A1\"; }\n\n.fa-assistive-listening-systems:before {\n  content: \"\\F2A2\"; }\n\n.fa-asl-interpreting:before,\n.fa-american-sign-language-interpreting:before {\n  content: \"\\F2A3\"; }\n\n.fa-deafness:before,\n.fa-hard-of-hearing:before,\n.fa-deaf:before {\n  content: \"\\F2A4\"; }\n\n.fa-glide:before {\n  content: \"\\F2A5\"; }\n\n.fa-glide-g:before {\n  content: \"\\F2A6\"; }\n\n.fa-signing:before,\n.fa-sign-language:before {\n  content: \"\\F2A7\"; }\n\n.fa-low-vision:before {\n  content: \"\\F2A8\"; }\n\n.fa-viadeo:before {\n  content: \"\\F2A9\"; }\n\n.fa-viadeo-square:before {\n  content: \"\\F2AA\"; }\n\n.fa-snapchat:before {\n  content: \"\\F2AB\"; }\n\n.fa-snapchat-ghost:before {\n  content: \"\\F2AC\"; }\n\n.fa-snapchat-square:before {\n  content: \"\\F2AD\"; }\n\n.fa-pied-piper:before {\n  content: \"\\F2AE\"; }\n\n.fa-first-order:before {\n  content: \"\\F2B0\"; }\n\n.fa-yoast:before {\n  content: \"\\F2B1\"; }\n\n.fa-themeisle:before {\n  content: \"\\F2B2\"; }\n\n.fa-google-plus-circle:before,\n.fa-google-plus-official:before {\n  content: \"\\F2B3\"; }\n\n.fa-fa:before,\n.fa-font-awesome:before {\n  content: \"\\F2B4\"; }\n\n.sr-only {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  padding: 0;\n  margin: -1px;\n  overflow: hidden;\n  clip: rect(0, 0, 0, 0);\n  border: 0; }\n\n.sr-only-focusable:active, .sr-only-focusable:focus {\n  position: static;\n  width: auto;\n  height: auto;\n  margin: 0;\n  overflow: visible;\n  clip: auto; }\n", ""]);
 
 	// exports
 
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__.p + "25a32416abee198dd821b0b17a198a8f.eot";
 
 /***/ },
 /* 250 */
@@ -99365,28 +98879,22 @@
 /* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "25a32416abee198dd821b0b17a198a8f.eot";
+	module.exports = __webpack_require__.p + "e6cf7c6ec7c2d6f670ae9d762604cb0b.woff2";
 
 /***/ },
 /* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "e6cf7c6ec7c2d6f670ae9d762604cb0b.woff2";
+	module.exports = __webpack_require__.p + "c8ddf1e5e5bf3682bc7bebf30f394148.woff";
 
 /***/ },
 /* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__.p + "c8ddf1e5e5bf3682bc7bebf30f394148.woff";
-
-/***/ },
-/* 254 */
-/***/ function(module, exports, __webpack_require__) {
-
 	module.exports = __webpack_require__.p + "1dc35d25e61d819a9c357074014867ab.ttf";
 
 /***/ },
-/* 255 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "d7c639084f684d66a1bc66855d193ed8.svg";
