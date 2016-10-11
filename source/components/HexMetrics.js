@@ -41,7 +41,7 @@ export default class HexMetrics extends React.Component {
     let shouldWarn = false
     const stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
       const metric = inputHash[d.key]
-      const stat = {key: d.key, nHex: d.value}
+      const stat = {key: d.key, nHex: d.value, disable: !metric}
       if (metric) {
         const idealNHex = Math.round(metric / selectedRatio)
         if (idealNHex === 0) {
@@ -102,11 +102,13 @@ export default class HexMetrics extends React.Component {
       const warn = (count.idealNHex === 0 && count.nHex === 0) ?
         <i className='fa fa-exclamation-triangle' /> :
         null
+      let className = count.deviation === 0 ? 'fade' : ''
+      if (count.disable) { className += ' disabled' }
       return (
         <tr
           key={count.key}
           id={count.key}
-          className={count.deviation === 0 ? 'fade' : null}
+          className={className}
           onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
           onMouseOut={this.props.onMetricMouseOut}
         >
@@ -115,9 +117,9 @@ export default class HexMetrics extends React.Component {
           <td>{adjustString}</td>
           <td
             style={{cursor: 'pointer'}}
-            onMouseDown={this._mouseDown}
+            onMouseDown={count.disable ? () => {} : this._mouseDown}
           >
-            {this._drawHexagon(count.key)}
+            {count.disable ? 'No Data' : this._drawHexagon(count.key)}
           </td>
         </tr>
       )
