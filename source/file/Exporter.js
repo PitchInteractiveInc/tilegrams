@@ -8,7 +8,7 @@ import {color} from 'd3-color'
 import {nest} from 'd3-collection'
 import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
-import {fipsColor} from '../utils'
+import {fipsColor, fipsToPostal} from '../utils'
 
 export const OBJECT_ID = 'tiles'
 
@@ -35,11 +35,12 @@ class Exporter {
         type: 'Polygon',
         id: tile.id,
         arcs: [[tileIndex]],
+        properties: {
+          state: fipsToPostal(tile.id),
+        },
       }
       if (tile.tilegramValue) {
-        geometry.properties = {
-          tilegramValue: tile.tilegramValue,
-        }
+        geometry.properties.tilegramValue = tile.tilegramValue
       }
       geometries.push(geometry)
       // if maxTileY is even, then subtract position from maxTile
@@ -84,7 +85,7 @@ class Exporter {
     groupedTiles.forEach((group) => {
       // convert from hsl to hex string for illustrator
       const groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-      groupEl.setAttribute('id', group.key)
+      groupEl.setAttribute('id', fipsToPostal(group.key))
       const colorString = color(fipsColor(group.key)).toString()
       group.values.forEach((tile) => {
         const center = gridGeometry.tileCenterPoint({
