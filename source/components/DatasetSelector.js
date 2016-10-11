@@ -61,8 +61,8 @@ export default class DatasetSelector extends React.Component {
     return (
       <div className='csv-input'>
         <div className='instruction'>
-        {`Paste custom CSV below. Csv should be formatted with no
-        headers and state id (fips) as the first column. Ex:`}
+          {`Paste custom CSV below. Csv should be formatted with no
+          headers and state id (fips) as the first column. Ex:`}
           <div className='code'>
           01,4858979
             <br />
