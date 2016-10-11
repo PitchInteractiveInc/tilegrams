@@ -1,5 +1,7 @@
 import {csvParseRows} from 'd3-dsv'
 
+import mapResource from './MapResource'
+
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
@@ -24,7 +26,26 @@ class DatasetResource {
   }
 
   parseCsv(csv) {
-    return csvParseRows(csv, d => [d[0], +d[1]])
+    const features = mapResource.getUniqueFeatureIds()
+    const missingIds = []
+    const parsed = csvParseRows(csv, d => [d[0], +d[1]]).filter(row => {
+      const hasId = features.indexOf(row[0]) > -1
+      if (!hasId) {
+        missingIds.push(row[0])
+      }
+      return hasId
+    })
+    if (missingIds.length) {
+      this._warnMissing(missingIds)
+    }
+    return parsed
+  }
+
+  _warnMissing(missingIds) {
+    const idString = missingIds.join(',')
+    let alertString = `There is no associated map data associated with id(s): ${idString}.`
+    alertString += ' This data has been pruned.'
+    alert(alertString)
   }
 
   getLabels() {
