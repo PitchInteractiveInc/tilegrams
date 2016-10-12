@@ -27,23 +27,34 @@ class DatasetResource {
 
   parseCsv(csv) {
     const features = mapResource.getUniqueFeatureIds()
-    const missingIds = []
+    const badMapIds = []
+    const badValueIds = []
     const parsed = csvParseRows(csv, d => [d[0], +d[1]]).filter(row => {
       const hasId = features.indexOf(row[0]) > -1
       if (!hasId) {
-        missingIds.push(row[0])
+        badMapIds.push(row[0])
       }
-      return hasId
+      if (row[1] <= 0 || isNaN(+row[1])) {
+        badValueIds.push(row[0])
+      }
+      return hasId && row[1] > 0
     })
-    if (missingIds.length) {
-      this._warnMissing(missingIds)
+    if (badMapIds.length || badValueIds.length) {
+      this._warnDataErrors(badMapIds, badValueIds)
     }
     return parsed
   }
 
-  _warnMissing(missingIds) {
-    const idString = missingIds.join(',')
-    let alertString = `There is no associated map data associated with id(s): ${idString}.`
+  _warnDataErrors(badMapIds, badValueIds) {
+    const mapIdString = badMapIds.join(', ')
+    const valueIdString = badValueIds.join(', ')
+    let alertString = ''
+    if (mapIdString) {
+      alertString += `There is no associated map data associated with id(s): ${mapIdString}.`
+    }
+    if (valueIdString) {
+      alertString += ` Ids ${valueIdString} have zero or negative value.`
+    }
     alertString += ' This data has been pruned.'
     alert(alertString)
   }
