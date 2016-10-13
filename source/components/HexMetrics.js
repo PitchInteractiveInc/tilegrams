@@ -102,8 +102,10 @@ export default class HexMetrics extends React.Component {
       const warn = (count.idealNHex === 0 && count.nHex === 0) ?
         <i className='fa fa-exclamation-triangle' /> :
         null
+
       let className = count.deviation === 0 ? 'fade' : ''
       if (count.disable) { className += ' disabled' }
+
       return (
         <tr
           key={count.key}

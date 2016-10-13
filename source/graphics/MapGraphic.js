@@ -34,6 +34,21 @@ export default class MapGraphic extends Graphic {
 
     // compute initial cartogram
     this.updatePreProjection()
+
+    // generate basemap for topogram
+    const baseMap = this._getbaseMapTopoJson(properties)
+    this._stateFeatures = topogram(
+      baseMap.topo,
+      baseMap.geometries
+    )
+    this._precomputeBounds()
+  }
+
+  /**
+   * Returns either the original map topojson and geometries or
+   * a filtered version of the map if the data properties don't match the map.
+   */
+  _getbaseMapTopoJson(properties) {
     const baseMapTopoJson = mapResource.getTopoJson()
     let filteredTopoJson = null
     let filteredGeometries = null
@@ -48,11 +63,10 @@ export default class MapGraphic extends Graphic {
       filteredTopoJson.objects.states.geometries = filteredGeometries
     }
 
-    this._stateFeatures = topogram(
-      filteredTopoJson || baseMapTopoJson,
-      filteredGeometries || mapResource.getGeometries()
-    )
-    this._precomputeBounds()
+    return {
+      topo: filteredTopoJson || baseMapTopoJson,
+      geometries: filteredGeometries || mapResource.getGeometries(),
+    }
   }
 
   /**

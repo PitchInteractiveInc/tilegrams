@@ -34,7 +34,7 @@ class DatasetResource {
       if (!hasId) {
         badMapIds.push(row[0])
       }
-      if (row[1] <= 0 || isNaN(+row[1])) {
+      if (row[1] <= 0 || isNaN(row[1])) {
         badValueIds.push(row[0])
       }
       return hasId && row[1] > 0
@@ -56,6 +56,7 @@ class DatasetResource {
       alertString += ` Ids ${valueIdString} have zero or negative value.`
     }
     alertString += ' This data has been pruned.'
+    // eslint-disable-next-line no-alert
     alert(alertString)
   }
 
