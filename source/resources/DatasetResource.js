@@ -29,7 +29,7 @@ class DatasetResource {
     const features = mapResource.getUniqueFeatureIds()
     const badMapIds = []
     const badValueIds = []
-    const parsed = csvParseRows(csv, d => [d[0], +d[1]]).filter(row => {
+    const parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])]).filter(row => {
       const hasId = features.indexOf(row[0]) > -1
       if (!hasId) {
         badMapIds.push(row[0])
