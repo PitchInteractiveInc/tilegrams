@@ -230,7 +230,7 @@ class Ui {
                 href='https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md'
                 target='_blank'
                 rel='noopener noreferrer'
-              > manual</a>
+              > manual</a>.
             </p>
             <hr />
             {generateOption}

@@ -27,6 +27,20 @@ a {
   color: $gray;
 }
 
+select {
+  width: 100%;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
+  background-size: 11px 7px;
+  border: none;
+  &:focus {
+    outline: none;
+  }
+}
+
 .code {
   font-family: "Lucida Console", Monaco, monospace;
   background-color: rgba(255,255,255,0.1);
@@ -279,7 +293,7 @@ fieldset {
     margin-bottom: 6px;
   }
   select {
-    font-size: 125%;
+    font-size: 110%;
   }
   a.export {
     display: block;

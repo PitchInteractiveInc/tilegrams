@@ -63,7 +63,7 @@ export default class TileGenerationUiControls extends React.Component {
             onChange={this._changeOption}
           />
           <label htmlFor='load-tilegram' className='radio-label'>
-            Load existing
+            Load existing map
           </label>
           <div className={this.state.selectedOption !== 'import' ? 'collapsed' : ''} >
             <ImportControls
