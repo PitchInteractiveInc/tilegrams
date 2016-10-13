@@ -1,22 +1,30 @@
-@import url('https://fonts.googleapis.com/css?family=Fira+Sans:300,400,700');
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
 @import 'reset';
 
-$font-stack: 'Fira Sans', sans-serif;
+$font-stack: 'Roboto', sans-serif;
 $sidebar-width: 320px;
-$blue: #5656f7;
-$ui-background-color: #1a1a1a;
+$blue: #3939a5;
+$gray: #4d4d4d;
+$light-gray: #d0d2d3;
+$ui-background-color: #fdfdfd;
 $ui-margin: 25px;
 
 body {
   margin: 0;
   font-family: $font-stack;
   font-weight: 400;
+  font-size: 16px;
+  color: #1a1a1a;
 }
 
 a {
   color: $blue;
   margin: 0 5px;
   cursor: pointer;
+}
+
+.gray {
+  color: $gray;
 }
 
 .code {
@@ -40,31 +48,20 @@ a {
 .step {
   position: relative;
   cursor: pointer;
-  margin-bottom: 10px;
-  p {
-    padding: 15px $ui-margin;
-    line-height: 1.25em;
-    span {
-      margin-right: 0.5em;
-      font-weight: 700;
-    }
-  }
-  .highlight-bar {
-    position: absolute;
-    bottom: 0px;
-    width: 0px;
-    height: 100%;
-    background-color: $blue;
-    transition: width 0.22s ease-in-out;
-  }
-  &:hover {
-    .highlight-bar {
-      width: 3px;
-    }
+  font-size: 1.15em;
+  padding: 15px $ui-margin;
+  line-height: 1.25em;
+  .arrow {
+    width: 1.25em;
+    height: 1.25em;
+    background: url(../images/caret-up.svg) no-repeat;
+    background-size: 1.25em 1.25em;
+    float: right;
+    transition: transform 500ms ease-in-out;
   }
   &.active {
-    .highlight-bar {
-      width: 6px;
+    .arrow {
+      transform: rotateX(180deg);
     }
   }
 }
@@ -76,6 +73,7 @@ a {
   bottom: 0;
   left: $sidebar-width;
   overflow: hidden;
+  z-index: -1;
   canvas {
     cursor: pointer;
     background-color: #f0f0f0;
@@ -86,10 +84,9 @@ a {
   position: fixed;
   bottom: 5px;
   left: $sidebar-width;
-  right: 0;
+  right: 5px;
   font-size: 9pt;
-  text-align: center;
-
+  text-align: right;
   .gnl-logo {
     display: inline-block;
     height: 1.2em;
@@ -97,35 +94,49 @@ a {
   }
 }
 
+.header {
+  width: 100%;
+  background: #1a1a1a;
+}
+h1 {
+  font-size: 120%;
+  line-height: 1.2em;
+  padding: $ui-margin / 2 $ui-margin;
+  color: $ui-background-color;
+  letter-spacing: .15em;
+}
+.tilegrams-logo {
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 0.4em 0 0.2em;
+  transform: translateY(20%);
+}
+.by-pitch {
+  font-size: 60%;
+  letter-spacing: .08em;
+  font-weight: 300;
+}
+
 #ui .column {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: calc(100% - #{$sidebar-width});
+  width: $sidebar-width;
   background-color: $ui-background-color;
-  color: #fff;
+  border-right: 2px solid $light-gray;
   overflow-x: hidden;
   overflow-y: auto;
+  font-size: 0.85em;
+  font-weight: 400;
   hr {
     border: none;
     height: 1px;
     margin: 20px 0 0;
-    background-color: #444;
-  }
-  h1 {
-    font-size: 200%;
-    line-height: 1.2em;
-    padding: $ui-margin;
+    background-color: $light-gray;
   }
   p.intro {
-    margin: 0 $ui-margin;
-    font-weight: 300;
-    line-height: 1.5em;
+    margin: $ui-margin;
     opacity: 0.8;
+    line-height: 1.2em;
     a {
       text-decoration: none;
-      font-weight: 400;
       margin: 0;
     }
   }
@@ -146,6 +157,8 @@ a {
   .import-metric {
     font-size: 85%;
     opacity: 0.6;
+    color: $blue;
+    font-weight: 500;
   }
   .csv-input {
     margin-top: 15px;
@@ -173,9 +186,7 @@ a {
     input {
       border: none;
       font-size: 1.1em;
-      border-bottom: 1px solid #fff;
-      background-color: #1a1a1a;
-      color: #fff;
+      border-bottom: 1px solid $gray;
       padding: 0px 0 3px 0;
       width: 100%;
       text-align: right;
@@ -228,7 +239,7 @@ a {
 }
 
 fieldset {
-  padding: 10px 15px 10px 25px;
+  padding: 10px 15px 0px 25px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
