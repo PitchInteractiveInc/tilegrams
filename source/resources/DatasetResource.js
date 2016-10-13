@@ -1,5 +1,7 @@
 import {csvParseRows} from 'd3-dsv'
 
+import mapResource from './MapResource'
+
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
@@ -24,7 +26,38 @@ class DatasetResource {
   }
 
   parseCsv(csv) {
-    return csvParseRows(csv, d => [d[0], +d[1]])
+    const features = mapResource.getUniqueFeatureIds()
+    const badMapIds = []
+    const badValueIds = []
+    const parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])]).filter(row => {
+      const hasId = features.indexOf(row[0]) > -1
+      if (!hasId) {
+        badMapIds.push(row[0])
+      }
+      if (row[1] <= 0 || isNaN(row[1])) {
+        badValueIds.push(row[0])
+      }
+      return hasId && row[1] > 0
+    })
+    if (badMapIds.length || badValueIds.length) {
+      this._warnDataErrors(badMapIds, badValueIds)
+    }
+    return parsed
+  }
+
+  _warnDataErrors(badMapIds, badValueIds) {
+    const mapIdString = badMapIds.join(', ')
+    const valueIdString = badValueIds.join(', ')
+    let alertString = ''
+    if (mapIdString) {
+      alertString += `There is no associated map data associated with id(s): ${mapIdString}.`
+    }
+    if (valueIdString) {
+      alertString += ` Ids ${valueIdString} have zero or negative value.`
+    }
+    alertString += ' This data has been pruned.'
+    // eslint-disable-next-line no-alert
+    alert(alertString)
   }
 
   getLabels() {
