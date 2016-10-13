@@ -1,6 +1,10 @@
 import React from 'react'
 import {scaleLog} from 'd3-scale'
 
+import smallHex from '../images/small-hex.svg'
+import bigHex from '../images/big-hex.svg'
+
+
 export default class ResolutionSlider extends React.Component {
   constructor(props) {
     super(props)
@@ -74,6 +78,8 @@ export default class ResolutionSlider extends React.Component {
       <div>
         <fieldset className='resolution-slider'>
           <label htmlFor='resolutionSlider'>Resolution</label>
+          <img src={smallHex} className='small-hex hex-img' alt='smaller hexagons' />
+          <img src={bigHex} className='big-hex hex-img' alt='bigger hexagons' />
           <input
             type='range'
             min={1}

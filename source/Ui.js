@@ -16,27 +16,11 @@ class Ui {
     this._init()
     this._tiles = null
     this._editing = false
+    this._generateOpen = true
+    this._editOpen = true
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
-    this._resizeAfterPaint = this._resizeAfterPaint.bind(this)
-    window.addEventListener('resize', this._resize)
-  }
-
-  _resize() {
-    const heightAvailable = Array.prototype.slice.call(
-      document.querySelectorAll('.no-scroll-ui')
-    ).reduce(
-      (remainingHeight, node) => {
-        const dimensions = node.getBoundingClientRect()
-        return remainingHeight - dimensions.height
-      },
-      window.innerHeight - 15
-    )
-    const ele = document.querySelector('.metrics')
-    if (ele) {
-      ele.style.height = `${heightAvailable}px`
-    }
   }
 
   setGeos(geos) {
@@ -63,7 +47,6 @@ class Ui {
     this._selectedDataset = dataset
     this._selectedDatasetSum = this.getDatasetSum(dataset)
     this._metricDomain = this._calculateIdealDomain()
-    this._resize()
   }
 
   /** calculate the slider's domain from the dataset */
@@ -88,21 +71,18 @@ class Ui {
   setDatasetSelectedCallback(callback) {
     this._datasetSelectedCallback = (index) => {
       callback(index)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
   setTilegramSelectedCallback(callback) {
     this._tilegramSelectedCallback = (index) => {
       callback(index)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
   setCustomDatasetCallback(callback) {
     this._customDatasetCallback = (csv) => {
       callback(csv)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
@@ -173,8 +153,15 @@ class Ui {
     this.render()
   }
 
-  _resizeAfterPaint() {
-    window.requestAnimationFrame(this._resize.bind(this))
+  _toggle(toggleOpt) {
+    return () => {
+      if (toggleOpt === 'generate') {
+        this._generateOpen = !this._generateOpen
+      } else if (toggleOpt === 'edit') {
+        this._editOpen = !this._editOpen
+      }
+      this.render()
+    }
   }
 
   render() {
@@ -190,14 +177,13 @@ class Ui {
         metricPerTile={metrics.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
-        onResizeNeeded={this._resizeAfterPaint}
         editing={this._editing}
       />
     )
     const generateOption = (
       <div
-        className={this._editing ? 'step' : 'active step'}
-        onClick={this._setEditing(false)}
+        className={this._generateOpen ? 'step' : 'active step'}
+        onClick={this._toggle('generate')}
       >
         <span>Generate</span>
         <span className='arrow' />
@@ -205,8 +191,8 @@ class Ui {
     )
     const editOption = (
       <div
-        className={this._editing ? 'active step' : 'step'}
-        onClick={this._setEditing(true)}
+        className={this._editOpen ? 'step' : 'active step'}
+        onClick={this._toggle('edit')}
       >
         <span>Refine</span>
         <span className='arrow' />
@@ -221,6 +207,8 @@ class Ui {
         />
       )
     }
+    const uiControlsHeight = this._generateOpen ? 'auto' : '0px'
+    const metricsHeight = this._editOpen ? 'auto' : '0px'
     ReactDOM.render(
       <div>
         {modal}
@@ -232,7 +220,7 @@ class Ui {
           </h1>
         </div>
         <div className='column'>
-          <div className='no-scroll-ui'>
+          <div>
             <p className='intro'>
               Create tiled maps where regions are sized proportionally to a dataset.
               <br />
@@ -246,13 +234,19 @@ class Ui {
             </p>
             <hr />
             {generateOption}
-            <div className={this._editing ? 'deselected' : null} >
+            <div
+              className={this._editing ? 'deselected' : ''}
+              style={{height: uiControlsHeight, overflow:'hidden'}}
+            >
               {tileGenerationControls}
             </div>
             <hr />
             {editOption}
           </div>
-          <div className={this._editing ? null : 'deselected'}>
+          <div
+            className={this._editing ? '' : 'deselected'}
+            style={{height: metricsHeight, overflow:'hidden'}}
+          >
             <HexMetrics
               metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
@@ -263,14 +257,22 @@ class Ui {
               onMetricMouseOut={this._unhighlightCallback}
             />
           </div>
-          <div className='no-scroll-ui'>
+          <hr />
+          <div className='download'>
+            <div className='step'>
+              <span>Download</span>
+            </div>
+            <div className='instruction'>
+              {`To embed your tilegram or manipulate it further,
+                export it in one of these standard formats.`}
+            </div>
             <fieldset>
               <ExportButton
-                text='Export TopoJSON'
+                text='TopoJSON'
                 onClick={() => this._exportCallback()}
               />
               <ExportButton
-                text='Export SVG'
+                text='SVG'
                 onClick={() => this._exportSvgCallback()}
               />
             </fieldset>
@@ -307,7 +309,6 @@ class Ui {
       </div>,
       this._container
     )
-    this._resize()
   }
 }
 

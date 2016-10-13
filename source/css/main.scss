@@ -13,7 +13,7 @@ body {
   margin: 0;
   font-family: $font-stack;
   font-weight: 400;
-  font-size: 16px;
+  font-size: 15px;
   color: #1a1a1a;
 }
 
@@ -52,10 +52,10 @@ a {
   padding: 15px $ui-margin;
   line-height: 1.25em;
   .arrow {
-    width: 1.25em;
-    height: 1.25em;
-    background: url(../images/caret-up.svg) no-repeat;
-    background-size: 1.25em 1.25em;
+    width: 1em;
+    height: 1em;
+    background: url(../images/caret.svg) no-repeat center center;
+    background-size: 1em 1em;
     float: right;
     transition: transform 500ms ease-in-out;
   }
@@ -95,8 +95,10 @@ a {
 }
 
 .header {
+  position: fixed;
   width: 100%;
   background: #1a1a1a;
+  z-index: 1;
 }
 h1 {
   font-size: 120%;
@@ -117,18 +119,22 @@ h1 {
   font-weight: 300;
 }
 
+#ui {
+  position: absolute;
+  min-height: 100%;
+  border-right: 2px solid $light-gray;
+}
 #ui .column {
   width: $sidebar-width;
   background-color: $ui-background-color;
-  border-right: 2px solid $light-gray;
   overflow-x: hidden;
   overflow-y: auto;
   font-size: 0.85em;
   font-weight: 400;
+  padding-top: 4em;
   hr {
     border: none;
     height: 1px;
-    margin: 20px 0 0;
     background-color: $light-gray;
   }
   p.intro {
@@ -149,7 +155,8 @@ h1 {
     overflow: scroll;
   }
   .ui-controls {
-    padding: 0 $ui-margin;
+    overflow: hidden;
+    margin: 0 $ui-margin;
     .ui-control-type {
       padding-bottom: 20px;
     }
@@ -175,6 +182,22 @@ h1 {
   }
   .instruction {
     margin-top: 10px;
+  }
+  .resolution-slider {
+    label {
+      display: block;
+    }
+    .hex-img {
+      width: 1.5em;
+      height: 1.5em;
+      display: inline-block;
+    }
+    .small-hex {
+      float: left;
+    }
+    .big-hex {
+      float: right;
+    }
   }
   .resolution-slider input {
     width: 100%;
@@ -212,6 +235,16 @@ h1 {
       padding-right: 0.5em;
     }
   }
+  .download {
+    .instruction {
+      margin: 0 $ui-margin;
+      line-height: 1.2em;
+    }
+    fieldset {
+      display: block;
+      margin-bottom: $ui-margin / 2;
+    }
+  }
 }
 
 .modal-edit-warning {
@@ -239,7 +272,7 @@ h1 {
 }
 
 fieldset {
-  padding: 10px 15px 0px 25px;
+  padding: 10px 15px 0px 15px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
@@ -249,12 +282,13 @@ fieldset {
     font-size: 125%;
   }
   a.export {
-    display: inline-block;
-    background-color: $blue;
-    border-radius: 5px;
+    display: block;
+    background-color: #1a1a1a;
+    border-radius: 2px;
     padding: 0.5em 0.75em;
-    margin: 0 0.25em;
+    margin: 0.5em 0;
     color: white;
+    text-align: center;
   }
   a.import {
     margin: 0;
@@ -296,6 +330,5 @@ table {
 
 // dat.gui
 .dg.ac {
-  z-index: 1;
   pointer-events: none;
 }
