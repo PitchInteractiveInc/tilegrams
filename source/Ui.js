@@ -9,6 +9,7 @@ import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
 import EditWarningModal from './components/EditWarningModal'
 import googleNewsLabLogo from './images/gnl-logo.png'
+import tilegramsLogo from './images/tilegrams-logo.svg'
 
 class Ui {
   constructor() {
@@ -198,8 +199,8 @@ class Ui {
         className={this._editing ? 'step' : 'active step'}
         onClick={this._setEditing(false)}
       >
-        <div className='highlight-bar' />
-        <p><span>1</span> Begin with a tilegram</p>
+        <span>Generate</span>
+        <span className='arrow' />
       </div>
     )
     const editOption = (
@@ -207,8 +208,8 @@ class Ui {
         className={this._editing ? 'active step' : 'step'}
         onClick={this._setEditing(true)}
       >
-        <div className='highlight-bar' />
-        <p><span>2</span> Refine your tilegram</p>
+        <span>Refine</span>
+        <span className='arrow' />
       </div>
     )
     let modal = null
@@ -223,22 +224,25 @@ class Ui {
     ReactDOM.render(
       <div>
         {modal}
+        <div className='header'>
+          <h1 className='title'>
+            TILEGRAMS
+            <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
+            <span className='by-pitch'>by Pitch Interactive</span>
+          </h1>
+        </div>
         <div className='column'>
           <div className='no-scroll-ui'>
-            <h1 className='title'>
-              Make a Tilegram
-            </h1>
             <p className='intro'>
-              A “tilegram” is a map made of tiles
-              where regions are sized proportionally to a dataset.
+              Create tiled maps where regions are sized proportionally to a dataset.
               <br />
+              <br />
+              For detailed information and instructions, check out the
               <a
                 href='https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md'
                 target='_blank'
                 rel='noopener noreferrer'
-              >
-                Read the manual
-              </a>
+              > manual</a>
             </p>
             <hr />
             {generateOption}

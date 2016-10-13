@@ -82,7 +82,8 @@ export default class ImportControls extends React.Component {
     const resolution = (
       <fieldset>
         <span className='import-metric'>
-          Resolution: {commaNumber(this.props.metricPerTile)} per tile
+          <span className='gray'>* </span>
+          {commaNumber(this.props.metricPerTile)} per tile
         </span>
       </fieldset>
     )
