@@ -4,7 +4,6 @@ import {scaleLog} from 'd3-scale'
 import smallHex from '../images/small-hex.svg'
 import bigHex from '../images/big-hex.svg'
 
-
 export default class ResolutionSlider extends React.Component {
   constructor(props) {
     super(props)
