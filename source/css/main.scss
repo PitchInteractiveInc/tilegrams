@@ -266,7 +266,6 @@ h1 {
     overflow: scroll;
   }
   #metrics-header {
-    margin-left: 0.5em;
     padding-bottom: 0.5em;
   }
   #warning {
@@ -335,27 +334,35 @@ fieldset {
   }
 }
 
-table {
+.metrics-wrapper {
   width: 100%;
-  table-layout: fixed;
-  text-align: center;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  tr.fade {
-    td:not(:first-child) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .metrics-box {
+    text-align: center;
+    flex-basis: 18%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    font-size: 90%;
+    border: 1px solid $very-light-gray;
+    padding: 3px 0;
+    margin: 3px auto;
+    box-shadow: 1px 1px 2px $very-light-gray;
+    div {
+      padding: 2px 0;
+    }
+  }
+  .metrics-box.fade {
+    box-shadow: none;
+    div:not(:first-child) {
       opacity: 0.3;
     }
   }
-  tr.disabled {
+  .metrics-box.disabled {
     pointer-events: none;
     opacity: 0.3;
-  }
-  td {
-    padding: 0.3em;
-  }
-  td:first-child {
-    width: 0%;
   }
 }
 
