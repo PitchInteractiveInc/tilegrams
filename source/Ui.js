@@ -215,6 +215,14 @@ class Ui {
     ReactDOM.render(
       <div>
         {modal}
+        <div className='mobile-redirect'>
+          <div className='main'>
+            <h1>TILEGRAMS</h1>
+            <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
+            <h2>Create tiled maps where regions are sized proportionally to a dataset.</h2>
+            <h3>For optimal experience visit us on a laptop or desktop computer.</h3>
+          </div>
+        </div>
         <div className='header'>
           <h1 className='title'>
             TILEGRAMS
@@ -299,16 +307,17 @@ class Ui {
           >
             <img src={googleNewsLabLogo} className='gnl-logo' alt='Google News Lab' />
           </a>
-          |
-          View
-          <a
-            href='https://github.com/PitchInteractiveInc/tilegrams'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            source
-          </a>
-          on GitHub
+          <span className='source'>|
+            View
+            <a
+              href='https://github.com/PitchInteractiveInc/tilegrams'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              source
+            </a>
+            on GitHub
+          </span>
         </h2>
       </div>,
       this._container
