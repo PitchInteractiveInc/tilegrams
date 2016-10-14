@@ -149,12 +149,14 @@ export default class HexMetrics extends React.Component {
     return (
       <div className={hexClass}>
         <div id='metrics-header'>
+          <input
+            type='checkbox'
+            id='toggleNull'
+            checked={this.state.hideNullStats}
+            onClick={this._toggleHide}
+          />
           <label htmlFor='toggleNull'>
-            <input
-              type='checkbox'
-              onClick={this._toggleHide}
-            />
-              Only show states with surplus/deficit.
+            Only show states with surplus/deficit.
           </label>
           {this._renderWarning(metrics.shouldWarn)}
         </div>

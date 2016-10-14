@@ -76,6 +76,7 @@ function init() {
     canvas.updateTilesFromMetrics()
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
+  ui.setResetUnsavedChangesCallback(() => canvas.getGrid().resetEdits())
   ui.setExportCallback(() => {
     const json = exporter.toTopoJson(
       canvas.getGrid().getTiles(),

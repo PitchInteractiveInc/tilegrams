@@ -21,6 +21,7 @@ class Ui {
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
+    this._checkForEdits = this._checkForEdits.bind(this)
   }
 
   setGeos(geos) {
@@ -112,25 +113,26 @@ class Ui {
     }
   }
 
-  _setEditing(isEditing) {
-    return () => {
-      if (!isEditing) {
-        if (this._checkForUnsavedChanges()) {
-          this._showModal = true
-          this.render()
-          return
-        }
-      }
-      this._editing = isEditing
+  _checkForEdits(event) {
+    if (this._checkForUnsavedChanges()) {
+      event.preventDefault()
+      event.stopPropagation()
+      this._showModal = true
       this.render()
-
-      // to allow CSS to paint
-      window.requestAnimationFrame(this.render.bind(this))
+      return
     }
+    this._editing = false
+    this.render()
+    // to allow CSS to paint
+    window.requestAnimationFrame(this.render.bind(this))
   }
 
   setUnsavedChangesCallback(callback) {
     this._checkForUnsavedChanges = callback
+  }
+
+  setResetUnsavedChangesCallback(callback) {
+    this._resetUnsavedChanges = callback
   }
 
   _init() {
@@ -140,6 +142,7 @@ class Ui {
   _startOver() {
     this._editing = false
     this._showModal = false
+    this._resetUnsavedChanges()
     this.render()
   }
 
@@ -237,6 +240,7 @@ class Ui {
             <div
               className={this._editing ? 'deselected' : ''}
               style={{height: uiControlsHeight, overflow: 'hidden'}}
+              onMouseDown={this._checkForEdits}
             >
               {tileGenerationControls}
             </div>

@@ -1,7 +1,8 @@
 import React from 'react'
 
 const warningText = `You have made changes to your map.
- Editing the resolution or reimporting will overwrite those changes.`
+ Generating a new Tilegram or changing the resolution
+  of an existing Tilegram will overwrite those changes.`
 
 export default function EditWarningModal(props) {
   return (
@@ -14,6 +15,7 @@ export default function EditWarningModal(props) {
         <br />
         <br />
         Do you wish to continue?
+        <br />
         <br />
         <a
           style={{float: 'left'}}
