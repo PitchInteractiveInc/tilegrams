@@ -97,41 +97,39 @@ export default class HexMetrics extends React.Component {
 
   _renderHexCount(metrics) {
     if (!metrics.length) return null
-    const rows = metrics.map((count) => {
+    const boxes = metrics.map((count) => {
       const adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
       const warn = (count.idealNHex === 0 && count.nHex === 0) ?
         <i className='fa fa-exclamation-triangle' /> :
         null
 
-      let className = count.deviation === 0 ? 'fade' : ''
+      let className = count.deviation === 0 ? 'metrics-box fade' : 'metrics-box'
       if (count.disable) { className += ' disabled' }
 
       return (
-        <tr
+        <div
           key={count.key}
           id={count.key}
           className={className}
           onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
           onMouseOut={this.props.onMetricMouseOut}
         >
-          <td>{warn}</td>
-          <td>{fipsToPostal(count.key)}</td>
-          <td>{adjustString}</td>
-          <td
+          <div>{warn}</div>
+          <div
             style={{cursor: 'pointer'}}
             onMouseDown={count.disable ? () => {} : this._mouseDown}
           >
             {count.disable ? 'No Data' : this._drawHexagon(count.key)}
-          </td>
-        </tr>
+          </div>
+          <div>{fipsToPostal(count.key)}</div>
+          <div>{adjustString}</div>
+        </div>
       )
     })
     return (
-      <table>
-        <tbody>
-          {rows}
-        </tbody>
-      </table>
+      <div className='metrics-wrapper'>
+        {boxes}
+      </div>
     )
   }
 
