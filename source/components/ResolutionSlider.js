@@ -89,15 +89,16 @@ export default class ResolutionSlider extends React.Component {
           />
         </fieldset>
         <fieldset className='resolution-input'>
-          <label htmlFor='resolutionInput'>Per tile</label>
           <input
             ref={(ref) => { this.typedInput = ref }}
             type='text'
+            size='10'
             value={this.state.typedValue}
             onChange={(event) => this._setStateFromText(event.target.value)}
             onBlur={this._triggerChangeFromText}
             onKeyUp={(event) => this._checkForEnter(event)}
           />
+          per tile
         </fieldset>
       </div>
     )

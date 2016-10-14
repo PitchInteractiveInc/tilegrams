@@ -87,7 +87,6 @@ export default class DatasetSelector extends React.Component {
     }
     return (
       <fieldset>
-        <label htmlFor='dataset-selector'>Dataset</label>
         {this._renderMenu()}
         {csvInput}
       </fieldset>

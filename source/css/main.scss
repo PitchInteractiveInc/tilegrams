@@ -34,7 +34,7 @@ select {
   -moz-appearance: none;
   appearance: none;
   background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
-  background-size: 11px 7px;
+  background-size: 1em 0.5em;
   border: none;
   &:focus {
     outline: none;
@@ -43,7 +43,7 @@ select {
 
 .code {
   font-family: "Lucida Console", Monaco, monospace;
-  background-color: rgba(255,255,255,0.1);
+  background-color: $light-gray;
   padding: 10px;
   margin: 10px;
   font-size: 80%;
@@ -217,19 +217,16 @@ h1 {
     width: 100%;
   }
   .resolution-input {
-    label {
-      margin-bottom: 0;
-    }
     input {
+      min-width: 50%;
       border: none;
       font-size: 1.1em;
-      border-bottom: 1px solid $gray;
-      padding: 0px 0 3px 0;
-      width: 100%;
-      text-align: right;
+      border-bottom: 1px solid $light-gray;
+      margin: 0 5px 0 0;
+      color: $blue;
       &:focus {
         outline: none;
-        border-bottom: 1px solid $blue;
+        border-bottom: 1px solid $gray;
       }
     }
   }
