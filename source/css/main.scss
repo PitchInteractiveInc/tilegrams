@@ -38,6 +38,9 @@ select {
   background-size: 1em 0.5em;
   border: none;
   background-color: $very-light-gray;
+  color: #1a1a1a;
+  font-size: 100%;
+  font-weight: 300;
   cursor: pointer;
   &:focus {
     outline: none;
@@ -156,6 +159,7 @@ h1 {
     border: none;
     height: 1px;
     background-color: $light-gray;
+    margin: 0;
   }
   p.intro {
     margin: $ui-margin;
@@ -167,9 +171,10 @@ h1 {
     }
   }
   label.radio-label {
-    position: relative;
-    bottom: -0.1em;
     cursor: pointer;
+    padding-top: 12px;
+    display: block;
+    width: 100%;
     &:hover {
       opacity: 0.6;
     }
@@ -183,7 +188,7 @@ h1 {
       padding-bottom: 20px;
     }
     .import {
-      padding: 8px $ui-margin;
+      padding: 0 $ui-margin 12px $ui-margin;
       &.active {
         background-color: $very-light-gray;
         border-left: 3px solid $gray;
@@ -279,6 +284,7 @@ h1 {
     }
     fieldset {
       display: block;
+      margin-left: 15px;
       margin-bottom: $ui-margin / 2;
     }
   }
@@ -309,14 +315,11 @@ h1 {
 }
 
 fieldset {
-  padding: 10px 15px 0px 15px;
+  padding: 10px 15px 0px 0px;
   label {
     display: inline-block;
     width: $sidebar-width * 0.3;
     margin-bottom: 6px;
-  }
-  select {
-    font-size: 110%;
   }
   a.export {
     display: block;
@@ -329,12 +332,6 @@ fieldset {
   }
   a.import {
     margin: 0;
-  }
-}
-
-.no-scroll-ui {
-  fieldset {
-    display: inline-block;
   }
 }
 
