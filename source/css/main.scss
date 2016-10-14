@@ -18,6 +18,22 @@ body {
   color: #1a1a1a;
 }
 
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+}
+
+.code, input, textarea{
+  -webkit-touch-callout:default;
+  -webkit-user-select:text;
+  -moz-user-select:text;
+  -ms-user-select:text;
+  user-select:text;
+}
+
 a {
   color: $blue;
   margin: 0 5px;
@@ -264,6 +280,9 @@ h1 {
   .metrics {
     padding: 0 $ui-margin;
     overflow: scroll;
+    label {
+      padding-left: 5px;
+    }
   }
   #metrics-header {
     padding-bottom: 0.5em;
@@ -298,18 +317,26 @@ h1 {
   height: 100%;
   z-index: 99999;
   background-color: rgba(0,0,0,0.3);
+  border: 1px solid $gray;
   .warning-text {
     position: relative;
     max-width: 400px;
     left: 50%;
     top: 50%;
-    color: white;
-    padding: 50px;
-    font-size: 1.2em;
+    color: #1a1a1a;
+    padding: $ui-margin $ui-margin $ui-margin / 2 $ui-margin;
+    font-size: 1em;
     transform: translateX(-50%) translateY(-50%);
-    background-color: #1a1a1a;
+    background-color: $ui-background-color;
+    line-height: 1.2em;
     a {
-      padding: 2em 0.5em 0;
+      padding: 0.3em;
+      margin-top: 0.6em;
+      background-color: black;
+      color: white;
+      border-radius: 2px;
+      min-width: 40%;
+      text-align: center;
     }
   }
 }

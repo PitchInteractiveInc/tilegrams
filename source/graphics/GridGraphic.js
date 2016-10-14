@@ -356,6 +356,10 @@ export default class GridGraphic extends Graphic {
     return this._hasBeenEdited
   }
 
+  resetEdits() {
+    this._hasBeenEdited = false
+  }
+
   renderBackgroundImage() {
     this._backgroundCanvas = document.createElement('canvas')
     this._backgroundCanvas.width = canvasDimensions.width
