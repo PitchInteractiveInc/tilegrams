@@ -7,7 +7,11 @@ export default class HexMetrics extends React.Component {
   constructor(props) {
     super(props)
 
+    this.state = {
+      hideNullStats: false,
+    }
     this._mouseDown = this._mouseDown.bind(this)
+    this._toggleHide = this._toggleHide.bind(this)
   }
 
   _getCountsByGeo(tiles, geos) {
@@ -22,6 +26,12 @@ export default class HexMetrics extends React.Component {
         value: countHash[geo] || 0,
       }
     }).sort((a, b) => a.key - b.key)
+  }
+
+  _toggleHide() {
+    this.setState({
+      hideNullStats: !this.state.hideNullStats,
+    })
   }
 
   _getMetrics() {
@@ -135,10 +145,17 @@ export default class HexMetrics extends React.Component {
 
   render() {
     const metrics = this._getMetrics()
+    const hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics'
     return (
-      <div className='metrics'>
+      <div className={hexClass}>
         <div id='metrics-header'>
-          State Tiles
+          <label htmlFor='toggleNull'>
+            <input
+              type='checkbox'
+              onClick={this._toggleHide}
+            />
+              Only show states with surplus/deficit.
+          </label>
           {this._renderWarning(metrics.shouldWarn)}
         </div>
         {this._renderHexCount(metrics.stats)}

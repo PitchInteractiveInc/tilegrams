@@ -267,6 +267,7 @@ h1 {
   }
   #metrics-header {
     padding-bottom: 0.5em;
+    cursor: pointer;
   }
   #warning {
     font-size: 0.8em;
@@ -363,6 +364,11 @@ fieldset {
   .metrics-box.disabled {
     pointer-events: none;
     opacity: 0.3;
+  }
+}
+.metrics.hide-null {
+  .metrics-box.fade {
+    display: none;
   }
 }
 
