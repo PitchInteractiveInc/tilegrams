@@ -53,7 +53,11 @@ export default class TileGenerationUiControls extends React.Component {
     this.resetMetricDomain = false
     return (
       <div className='ui-controls'>
-        <div className='padding-bottom'>
+        <div
+          className={this.state.selectedOption === 'import'
+            ? 'import active padding-bottom'
+            : 'import padding-bottom'}
+        >
           <input
             id='load-tilegram'
             type='radio'
@@ -74,7 +78,11 @@ export default class TileGenerationUiControls extends React.Component {
             />
           </div>
         </div>
-        <div className='padding-bottom'>
+        <div
+          className={this.state.selectedOption === 'generate'
+            ? 'import active padding-bottom'
+            : 'import padding-bottom'}
+        >
           <input
             id='generate-tilegram'
             type='radio'

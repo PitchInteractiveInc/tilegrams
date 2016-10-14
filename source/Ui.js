@@ -236,7 +236,7 @@ class Ui {
             {generateOption}
             <div
               className={this._editing ? 'deselected' : ''}
-              style={{height: uiControlsHeight, overflow:'hidden'}}
+              style={{height: uiControlsHeight, overflow: 'hidden'}}
             >
               {tileGenerationControls}
             </div>
@@ -245,7 +245,7 @@ class Ui {
           </div>
           <div
             className={this._editing ? '' : 'deselected'}
-            style={{height: metricsHeight, overflow:'hidden'}}
+            style={{height: metricsHeight, overflow: 'hidden'}}
           >
             <HexMetrics
               metricPerTile={metrics.metricPerTile}

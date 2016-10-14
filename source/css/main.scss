@@ -6,6 +6,7 @@ $sidebar-width: 320px;
 $blue: #3939a5;
 $gray: #4d4d4d;
 $light-gray: #d0d2d3;
+$very-light-gray: #f1f1f2;
 $ui-background-color: #fdfdfd;
 $ui-margin: 25px;
 
@@ -36,9 +37,15 @@ select {
   background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
   background-size: 1em 0.5em;
   border: none;
+  background-color: $very-light-gray;
+  cursor: pointer;
   &:focus {
     outline: none;
   }
+}
+
+input[type="radio"]{
+  display: none;
 }
 
 .code {
@@ -51,8 +58,7 @@ select {
 }
 
 .padding-bottom {
-  padding-bottom: 20px;
-  box-sizing: border-box;
+  padding-bottom: 10px;
 }
 
 .collapsed {
@@ -163,16 +169,34 @@ h1 {
   label.radio-label {
     position: relative;
     bottom: -0.1em;
-    left: 0.5em;
+    cursor: pointer;
+    &:hover {
+      opacity: 0.6;
+    }
   }
   .scroll-ui {
     overflow: scroll;
   }
   .ui-controls {
     overflow: hidden;
-    margin: 0 $ui-margin;
     .ui-control-type {
       padding-bottom: 20px;
+    }
+    .import {
+      padding: 8px $ui-margin;
+      &.active {
+        background-color: $very-light-gray;
+        border-left: 3px solid $gray;
+        padding-left: $ui-margin - 3px;
+        label.radio-label {
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+    input.import {
+      padding: 0;
     }
   }
   .import-metric {
@@ -215,6 +239,7 @@ h1 {
   }
   .resolution-slider input {
     width: 100%;
+    cursor: pointer;
   }
   .resolution-input {
     input {
@@ -224,6 +249,7 @@ h1 {
       border-bottom: 1px solid $light-gray;
       margin: 0 5px 0 0;
       color: $blue;
+      background-color: $very-light-gray;
       &:focus {
         outline: none;
         border-bottom: 1px solid $gray;
@@ -303,9 +329,6 @@ fieldset {
   }
   a.import {
     margin: 0;
-  }
-  input.import {
-    margin-top: 10px;
   }
 }
 
