@@ -143,6 +143,7 @@ input[type="radio"]{
   width: 100%;
   background: #1a1a1a;
   z-index: 1;
+  display: table;
 }
 h1 {
   font-size: 120%;
@@ -150,6 +151,8 @@ h1 {
   padding: $ui-margin / 2 $ui-margin;
   color: $ui-background-color;
   letter-spacing: .15em;
+  display: inline-block;
+  display: table-cell;
 }
 .tilegrams-logo {
   width: 1.2em;
@@ -161,6 +164,16 @@ h1 {
   font-size: 60%;
   letter-spacing: .08em;
   font-weight: 300;
+}
+.share {
+  display: table-cell;
+  img {
+    width: 1.2em;
+    height: 1.2em;
+    float: right;
+    padding-right: 20px;
+  }
+  clear: both;
 }
 
 #ui {
@@ -275,7 +288,6 @@ h1 {
       border-bottom: 1px solid $light-gray;
       margin: 0 5px 0 0;
       color: $blue;
-      background-color: $very-light-gray;
       &:focus {
         outline: none;
         border-bottom: 1px solid $gray;
@@ -361,6 +373,11 @@ fieldset {
     margin: 0.5em 0;
     color: white;
     text-align: center;
+    img {
+      width: 1em;
+      height: 1em;
+      margin-left: 15px;
+    }
   }
   a.import {
     margin: 0;
@@ -472,7 +489,9 @@ screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-dev
   }
 }
 
-
+#stats {
+  z-index: 2;
+}
 // dat.gui
 .dg.ac {
   pointer-events: none;
