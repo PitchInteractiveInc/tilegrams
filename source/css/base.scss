@@ -55,7 +55,7 @@ input[type="radio"]{
   z-index: -1;
   canvas {
     cursor: pointer;
-    background-color: #f0f0f0;
+    background-color: $canvas-background-color;
   }
 }
 

@@ -10,6 +10,7 @@ import {
   devicePixelRatio,
   selectedTileBorderColor,
   hoveredTileBorderColor,
+  movingTileOriginalPositionColor,
 } from '../constants'
 
 export default class GridGraphic extends Graphic {
@@ -386,7 +387,7 @@ export default class GridGraphic extends Graphic {
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
       if (!this._disableSelectionHighlight() && this._selectedTiles.includes(tile)) {
-        color = '#cccccc'
+        color = movingTileOriginalPositionColor
       }
       this._drawTile(tile.position, color, {})
       this._drawInlandBoundaries(tile)
