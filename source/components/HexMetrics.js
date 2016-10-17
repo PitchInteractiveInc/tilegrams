@@ -84,15 +84,15 @@ export default class HexMetrics extends React.Component {
   }
 
   _drawHexagon(id, dragging) {
-    const width = dragging ? 20 : 15
-    const height = (Math.sqrt(3) / 2) * width
+    const height = dragging ? 20 : 18
+    const width = (Math.sqrt(3) / 2) * height
     const vertices = [
-      [width * 0.25, 0],
-      [width * 0.75, 0],
-      [width, height * 0.5],
-      [width * 0.75, height],
-      [width * 0.25, height],
-      [0, height / 2],
+      [width * 0.5, 0],
+      [width, height * 0.25],
+      [width, height * 0.75],
+      [width * 0.5, height],
+      [0, height * 0.75],
+      [0, height * 0.25],
     ]
     return (
       <svg width={width + 2} height={height + 2}>
@@ -115,7 +115,7 @@ export default class HexMetrics extends React.Component {
   _updateMousePosition(event) {
     this.setState({
       mouseX: event.clientX,
-      mouseY: event.clientY,
+      mouseY: window.scrollY + event.clientY,
     })
   }
 
@@ -179,7 +179,9 @@ export default class HexMetrics extends React.Component {
   render() {
     const metrics = this._getMetrics()
     const hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics'
-    const draggingHex = this.state.draggingHex ? this._drawHexagon(this.state.draggingHex, true) : null
+    const draggingHex = this.state.draggingHex
+      ? this._drawHexagon(this.state.draggingHex, true)
+      : null
     return (
       <div className={hexClass}>
         <div
