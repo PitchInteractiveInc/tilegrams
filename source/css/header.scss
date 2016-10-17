@@ -1,0 +1,37 @@
+.header {
+  position: fixed;
+  width: 100%;
+  background: #1a1a1a;
+  z-index: 1;
+  display: table;
+}
+h1 {
+  font-size: 120%;
+  line-height: 1.2em;
+  padding: $ui-margin / 2 $ui-margin;
+  color: $ui-background-color;
+  letter-spacing: .15em;
+  display: inline-block;
+  display: table-cell;
+}
+.tilegrams-logo {
+  width: 1.2em;
+  height: 1.2em;
+  margin: 0 0.4em 0 0.2em;
+  transform: translateY(20%);
+}
+.by-pitch {
+  font-size: 60%;
+  letter-spacing: .08em;
+  font-weight: 300;
+}
+.share {
+  display: table-cell;
+  img {
+    width: 1.2em;
+    height: 1.2em;
+    float: right;
+    padding-right: 20px;
+  }
+  clear: both;
+}

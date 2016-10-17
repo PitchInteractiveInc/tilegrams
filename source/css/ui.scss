@@ -1,0 +1,258 @@
+select {
+  width: 100%;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0px;
+  -moz-appearance: none;
+  appearance: none;
+  background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
+  background-size: 1em 0.5em;
+  border: none;
+  background-color: $very-light-gray;
+  color: #1a1a1a;
+  font-size: 100%;
+  font-weight: 300;
+  cursor: pointer;
+  &:focus {
+    outline: none;
+  }
+}
+
+fieldset {
+  padding: 10px 15px 0px 0px;
+  label {
+    display: inline-block;
+    width: $sidebar-width * 0.3;
+    margin-bottom: 6px;
+  }
+}
+
+.code {
+  font-family: "Lucida Console", Monaco, monospace;
+  background-color: $light-gray;
+  padding: 10px;
+  margin: 10px;
+  font-size: 80%;
+  line-height: 110%;
+}
+
+.step {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.15em;
+  padding: 15px $ui-margin;
+  line-height: 1.25em;
+  .arrow {
+    width: 1em;
+    height: 1em;
+    background: url(../images/caret.svg) no-repeat center center;
+    background-size: 1em 1em;
+    float: right;
+    transition: transform 500ms ease-in-out;
+  }
+  &.active {
+    .arrow {
+      transform: rotateX(180deg);
+    }
+  }
+}
+
+#ui {
+  position: absolute;
+  min-height: 100%;
+  border-right: 2px solid $light-gray;
+}
+#ui .column {
+  width: $sidebar-width;
+  background-color: $ui-background-color;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-size: 0.85em;
+  font-weight: 400;
+  padding-top: 4em;
+  hr {
+    border: none;
+    height: 1px;
+    background-color: $light-gray;
+    margin: 0;
+  }
+  p.intro {
+    margin: $ui-margin;
+    opacity: 0.8;
+    line-height: 1.2em;
+    a {
+      text-decoration: none;
+      margin: 0;
+    }
+  }
+  label.radio-label {
+    cursor: pointer;
+    padding-top: 12px;
+    display: block;
+    width: 100%;
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+  .scroll-ui {
+    overflow: scroll;
+  }
+  .ui-controls {
+    overflow: hidden;
+    .ui-control-type {
+      padding-bottom: 20px;
+    }
+    .import {
+      padding: 0 $ui-margin 12px $ui-margin;
+      &.active {
+        background-color: $very-light-gray;
+        border-left: 3px solid $gray;
+        padding-left: $ui-margin - 3px;
+        label.radio-label {
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+    }
+    input.import {
+      padding: 0;
+    }
+  }
+  .import-metric {
+    font-size: 85%;
+    opacity: 0.6;
+    color: $blue;
+    font-weight: 500;
+  }
+  .csv-input {
+    margin-top: 15px;
+    textarea {
+      width: 100%;
+      margin-top: 10px;
+      &:focus {
+        outline: none;
+      }
+    }
+  }
+  .dataset-select {
+    width: 100%;
+  }
+  .instruction {
+    margin-top: 10px;
+  }
+  .resolution-slider {
+    label {
+      display: block;
+    }
+    .hex-img {
+      width: 1.5em;
+      height: 1.5em;
+      display: inline-block;
+    }
+    .small-hex {
+      float: left;
+    }
+    .big-hex {
+      float: right;
+    }
+  }
+  .resolution-slider input {
+    width: 100%;
+    cursor: pointer;
+  }
+  .resolution-input {
+    input {
+      min-width: 50%;
+      border: none;
+      font-size: 1.1em;
+      border-bottom: 1px solid $light-gray;
+      margin: 0 5px 0 0;
+      color: $blue;
+      &:focus {
+        outline: none;
+        border-bottom: 1px solid $gray;
+      }
+    }
+  }
+  .metrics {
+    padding: 0 $ui-margin;
+    overflow: scroll;
+    label {
+      padding-left: 5px;
+    }
+  }
+  #metrics-header {
+    padding-bottom: 0.5em;
+    cursor: pointer;
+  }
+  #warning {
+    font-size: 0.8em;
+    padding-top: 10px;
+    line-height: 1.2em;
+    i {
+      padding-right: 0.5em;
+    }
+  }
+  .download {
+    .instruction {
+      margin: 0 $ui-margin;
+      line-height: 1.2em;
+    }
+    fieldset {
+      display: block;
+      margin-left: 15px;
+      margin-bottom: $ui-margin / 2;
+    }
+    a.export {
+      display: block;
+      background-color: #1a1a1a;
+      border-radius: 2px;
+      padding: 0.5em 0.75em;
+      margin: 0.5em 10px;
+      color: white;
+      text-align: center;
+      img {
+        width: 1.2em;
+        height: 1.2em;
+        margin-left: 15px;
+      }
+    }
+  }
+}
+
+.metrics-wrapper {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .metrics-box {
+    text-align: center;
+    flex-basis: 18%;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    font-size: 90%;
+    border: 1px solid $very-light-gray;
+    padding: 3px 0;
+    margin: 3px auto;
+    box-shadow: 1px 1px 2px $very-light-gray;
+    div {
+      padding: 2px 0;
+    }
+  }
+  .metrics-box.fade {
+    box-shadow: none;
+    div:not(:first-child) {
+      opacity: 0.3;
+    }
+  }
+  .metrics-box.disabled {
+    pointer-events: none;
+    opacity: 0.3;
+  }
+}
+.metrics.hide-null {
+  .metrics-box.fade {
+    display: none;
+  }
+}
