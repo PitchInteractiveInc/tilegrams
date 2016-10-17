@@ -44,6 +44,7 @@ module.exports = {
     min: 10,
     max: 40,
   },
-  selectedTileBorderColor: '#333333',
-  hoveredTileBorderColor: '#333333',
+  selectedTileBorderColor: '#737373',
+  hoveredTileBorderColor: '#737373',
+  movingTileOriginalPositionColor: '#d0d2d3',
 }
