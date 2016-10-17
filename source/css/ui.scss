@@ -56,6 +56,15 @@ fieldset {
   }
 }
 
+.dragging-hex {
+  position: absolute;
+  transform: translateX(-50%) translateY(-50%);
+  svg polygon {
+    stroke: #000;
+    stroke-width: 1px;
+  }
+}
+
 #ui {
   position: absolute;
   min-height: 100%;
