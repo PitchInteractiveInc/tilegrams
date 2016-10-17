@@ -287,6 +287,7 @@ export default class GridGraphic extends Graphic {
       x: this._mouseAt.x,
       y: this._mouseAt.y,
     }
+    this._mouseAt = {x: -1, y: -1}
     this._selectedTiles.length = 0
     this._selectedTiles.push(this._newTile)
   }
@@ -349,7 +350,10 @@ export default class GridGraphic extends Graphic {
   }
 
   _disableSelectionHighlight() {
-    return this._highlightId !== null && this._highlightFromOutsideGrid
+    return this._highlightId !== null
+      && this._highlightFromOutsideGrid
+      && !this._newTile
+      && !this._draggingMultiSelect
   }
 
   checkForEdits() {

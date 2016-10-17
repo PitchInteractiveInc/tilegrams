@@ -9,9 +9,26 @@ export default class HexMetrics extends React.Component {
 
     this.state = {
       hideNullStats: false,
+      draggingHex: null,
+      mouseX: 0,
+      mouseY: 0,
     }
     this._mouseDown = this._mouseDown.bind(this)
     this._toggleHide = this._toggleHide.bind(this)
+    this._updateMousePosition = this._updateMousePosition.bind(this)
+    this._cancelDragging = this._cancelDragging.bind(this)
+  }
+
+  componentDidMount() {
+    document.body.addEventListener('mousemove', this._updateMousePosition)
+    document.body.addEventListener('mouseup', this._cancelDragging)
+    document.getElementById('ui').addEventListener('mouseleave', this._cancelDragging)
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('mousemove', this._updateMousePosition)
+    document.body.removeEventListener('mouseup', this._cancelDragging)
+    document.getElementById('ui').removeEventListener('mouseleave', this._cancelDragging)
   }
 
   _getCountsByGeo(tiles, geos) {
@@ -66,8 +83,8 @@ export default class HexMetrics extends React.Component {
     return {stats, shouldWarn}
   }
 
-  _drawHexagon(id) {
-    const width = 15
+  _drawHexagon(id, dragging) {
+    const width = dragging ? 20 : 15
     const height = (Math.sqrt(3) / 2) * width
     const vertices = [
       [width * 0.25, 0],
@@ -78,8 +95,9 @@ export default class HexMetrics extends React.Component {
       [0, height / 2],
     ]
     return (
-      <svg width={width} height={height}>
+      <svg width={width + 2} height={height + 2}>
         <polygon
+          transform={'translate(1,1)'}
           fill={fipsColor(id)}
           points={vertices.map((pt) => pt.join(',')).join(' ')}
         />
@@ -89,7 +107,22 @@ export default class HexMetrics extends React.Component {
 
   _mouseDown(event) {
     event.preventDefault()
-    this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
+    const id = event.currentTarget.parentElement.id
+    this.props.onAddTileMouseDown(id)
+    this.setState({draggingHex: id})
+  }
+
+  _updateMousePosition(event) {
+    this.setState({
+      mouseX: event.clientX,
+      mouseY: event.clientY,
+    })
+  }
+
+  _cancelDragging() {
+    this.setState({
+      draggingHex: null,
+    })
   }
 
   _renderWarning(shouldWarn) {
@@ -146,8 +179,15 @@ export default class HexMetrics extends React.Component {
   render() {
     const metrics = this._getMetrics()
     const hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics'
+    const draggingHex = this.state.draggingHex ? this._drawHexagon(this.state.draggingHex, true) : null
     return (
       <div className={hexClass}>
+        <div
+          className='dragging-hex'
+          style={{top: this.state.mouseY, left: this.state.mouseX}}
+        >
+          {draggingHex}
+        </div>
         <div id='metrics-header'>
           <input
             type='checkbox'
