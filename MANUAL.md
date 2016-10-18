@@ -114,6 +114,12 @@ tilegrams.
 
 You can export either SVG or TopoJSON for use in [D3](https://d3js.org/).
 
+The following examples use D3 v4 and were tested against this hosted version:
+
+```html
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.7/d3.min.js"></script>
+```
+
 #### Rendering tilegram SVG in D3
 
 The simplest D3 integration may just be to write the SVG to the DOM and then
@@ -124,20 +130,19 @@ var WIDTH = 800
 
 d3.text('tiles.svg', (e, data) => {
   var div = d3.select(document.body).append('div').html(data)
+
   var svg = div.select('svg')
   var groups = svg.selectAll('g')
 
-  // Scale to desired size
   var importedWidth = parseInt(svg.attr('width'))
   var importedHeight = parseInt(svg.attr('height'))
   var scale = WIDTH / importedWidth
-  svg.attr({
-    width: importedWidth * scale,
-    height: importedHeight * scale,
-  })
+
+  svg
+    .attr('width', importedWidth * scale)
+    .attr('height', importedHeight * scale)
   groups.attr('transform', 'scale(' + scale + ')')
 
-  // Apply handler
   groups.on('click', (e) => {
     console.log('Clicked', d3.event.target.parentNode.id)
   })
@@ -155,7 +160,13 @@ because the exported tilegram coordinates assume that the origin (`0, 0`) is in
 the lower-left corner, whereas projection-less rendering will assume that it's
 in the upper-left.) Note the `transform` below.
 
-Sample code:
+First, be sure to import `topojson` as well:
+
+```html
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
+```
+
+Then:
 
 ```javascript
 var WIDTH = 1400
@@ -165,16 +176,16 @@ var svg = d3.select('body').append('svg')
     .attr('width', WIDTH)
     .attr('height', HEIGHT)
 
-d3.json('tiles.topo.json', function showData(error, tilegram) {
-  var tiles = topojson.feature(tilegram, tilegram.objects.tiles)
+d3.json('tiles.topo.json', function showData(error, de) {
+  var tiles = topojson.feature(de, de.objects.tiles)
 
-  var transform = d3.geo.transform({
+  var transform = d3.geoTransform({
     point: function(x, y) {
       this.stream.point(x, -y)
     }
   })
 
-  var path = d3.geo.path().projection(transform)
+  var path = d3.geoPath().projection(transform)
 
   var g = svg.append('g')
     .attr('transform', 'translate(0,' + HEIGHT + ')')
