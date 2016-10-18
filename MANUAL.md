@@ -117,7 +117,7 @@ You can export either SVG or TopoJSON for use in [D3](https://d3js.org/).
 The following examples use D3 v4 and were tested against this hosted version:
 
 ```html
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.7/d3.min.js"></script>
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 ```
 
 #### Rendering tilegram SVG in D3
@@ -163,7 +163,7 @@ in the upper-left.) Note the `transform` below.
 First, be sure to import `topojson` as well:
 
 ```html
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.20/topojson.min.js"></script>
+<script type="text/javascript" src="http://d3js.org/topojson.v1.min.js"></script>
 ```
 
 Then:
