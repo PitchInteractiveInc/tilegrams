@@ -238,11 +238,13 @@ class Ui {
           <ReactMarkdown source={manual} />
         </div>
         <div className='mobile-redirect'>
-          <div className='main'>
-            <h1>TILEGRAMS</h1>
-            <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
-            <h2>Create tiled maps where regions are sized proportionally to a dataset.</h2>
-            <h3>For optimal experience visit us on a laptop or desktop computer.</h3>
+          <div className='background'>
+            <div className='main'>
+              <h1>TILEGRAMS</h1>
+              <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
+              <h2>Create tiled maps where regions are sized proportionally to a dataset.</h2>
+              <h3>For optimal experience visit us on a laptop or desktop computer.</h3>
+            </div>
           </div>
         </div>
         <div className='header'>
