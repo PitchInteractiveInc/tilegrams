@@ -1,0 +1,48 @@
+.manual {
+  position: fixed;
+  top: $header-height;
+  left: $sidebar-width;
+  max-width: 450px;
+  padding: $ui-margin $ui-margin $ui-margin * 2 $ui-margin;
+  overflow-y: scroll;
+  height: calc(100% - 130px);
+  background-color: $ui-background-color;
+  font-size: 0.8em;
+  margin-left: 2px;
+  line-height: 1.2em;
+  border-right: 1px solid $light-gray;
+  &.hidden {
+    display: none;
+  }
+  .manual-close {
+    position: absolute;
+    top: 30px;
+    right: 25px;
+    font-size: 1.7em;
+    cursor: pointer;
+  }
+  h1 {
+    font-size: 1.7em;
+    color: #1a1a1a;
+    padding: 0;
+    letter-spacing: normal;
+    border-bottom: 1px solid $light-gray;
+    min-width: 100%;
+    margin-bottom: 1em;
+    padding-bottom: 10px;
+  }
+  h2 {
+    font-size: 1.4em;
+    padding: 0.6em 0;
+  }
+  h3 {
+    font-size: 1.2em;
+    padding: 0.5em 0;
+  }
+  p {
+    padding-bottom: 1em;
+  }
+  a {
+    margin: 0;
+  }
+}

@@ -1,5 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import ReactMarkdown from 'react-markdown'
+
+import manual from 'raw!../MANUAL.md'
 
 import metrics from './Metrics'
 import {createElement} from './utils'
@@ -20,10 +23,12 @@ class Ui {
     this._editing = false
     this._generateOpen = true
     this._editOpen = true
+    this._manualOpen = false
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
     this._checkForEdits = this._checkForEdits.bind(this)
+    this._toggleManual = this._toggleManual.bind(this)
   }
 
   setGeos(geos) {
@@ -169,6 +174,11 @@ class Ui {
     }
   }
 
+  _toggleManual() {
+    this._manualOpen = !this._manualOpen
+    this.render()
+  }
+
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
@@ -214,9 +224,19 @@ class Ui {
     }
     const uiControlsHeight = this._generateOpen ? 'auto' : '0px'
     const metricsHeight = this._editOpen ? 'auto' : '0px'
+    const manualClass = this._manualOpen ? 'manual' : 'manual hidden'
     ReactDOM.render(
       <div>
         {modal}
+        <div className={manualClass}>
+          <div
+            className='manual-close'
+            onClick={this._toggleManual}
+          >
+            &#10005;
+          </div>
+          <ReactMarkdown source={manual} />
+        </div>
         <div className='mobile-redirect'>
           <div className='main'>
             <h1>TILEGRAMS</h1>
@@ -248,7 +268,7 @@ class Ui {
               <br />
               For detailed information and instructions, check out the
               <a
-                href='https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md'
+                onClick={this._toggleManual}
                 target='_blank'
                 rel='noopener noreferrer'
               > manual</a>.
