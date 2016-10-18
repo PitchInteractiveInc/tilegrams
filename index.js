@@ -118,4 +118,11 @@ function resize() {
 window.onresize = resize
 resize()
 
+// Ignore ctrl-Z altogether
+document.addEventListener('keydown', event => {
+  if (e.metaKey && e.key === 'z') {
+    e.preventDefault()
+  }
+})
+
 init()
