@@ -120,12 +120,26 @@ The simplest D3 integration may just be to write the SVG to the DOM and then
 add handlers for interactivity:
 
 ```javascript
+var WIDTH = 800
+
 d3.text('tiles.svg', (e, data) => {
   var div = d3.select(document.body).append('div').html(data)
   var svg = div.select('svg')
   var groups = svg.selectAll('g')
+
+  // Scale to desired size
+  var importedWidth = parseInt(svg.attr('width'))
+  var importedHeight = parseInt(svg.attr('height'))
+  var scale = WIDTH / importedWidth
+  svg.attr({
+    width: importedWidth * scale,
+    height: importedHeight * scale,
+  })
+  groups.attr('transform', 'scale(' + scale + ')')
+
+  // Apply handler
   groups.on('click', (e) => {
-    console.log(d3.event.target.parentNode.id)
+    console.log('Clicked', d3.event.target.parentNode.id)
   })
 })
 ```
@@ -144,12 +158,12 @@ in the upper-left.) Note the `transform` below.
 Sample code:
 
 ```javascript
-var width = 1400
-var height = 1000
+var WIDTH = 1400
+var HEIGHT = 1000
 
 var svg = d3.select('body').append('svg')
-    .attr('width', width)
-    .attr('height', height)
+    .attr('width', WIDTH)
+    .attr('height', HEIGHT)
 
 d3.json('tiles.topo.json', function showData(error, tilegram) {
   var tiles = topojson.feature(tilegram, tilegram.objects.tiles)
@@ -163,7 +177,7 @@ d3.json('tiles.topo.json', function showData(error, tilegram) {
   var path = d3.geo.path().projection(transform)
 
   var g = svg.append('g')
-    .attr('transform', 'translate(0,' + height + ')')
+    .attr('transform', 'translate(0,' + HEIGHT + ')')
 
   g.selectAll('.tiles')
     .data(tiles.features)
