@@ -265,7 +265,7 @@ fieldset {
   }
 }
 .metrics.hide-null {
-  .metrics-box.fade {
+  .metrics-box.fade, .metrics-box.disabled {
     display: none;
   }
 }
