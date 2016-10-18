@@ -108,6 +108,70 @@ that the _deltas_ under **State Tiles** update dynamically. Please remember
 to take note of them and ensure that they all read `0` to make responsible
 tilegrams.
 
+## Using exported tilegrams
+
+### In D3
+
+You can export either SVG or TopoJSON for use in [D3](https://d3js.org/).
+
+#### Rendering tilegram SVG in D3
+
+The simplest D3 integration may just be to write the SVG to the DOM and then
+add handlers for interactivity:
+
+```javascript
+d3.text('tiles.svg', (e, data) => {
+  var div = d3.select(document.body).append('div').html(data)
+  var svg = div.select('svg')
+  var groups = svg.selectAll('g')
+  groups.on('click', (e) => {
+    console.log(d3.event.target.parentNode.id)
+  })
+})
+```
+
+#### Rendering tilegram TopoJSON in D3
+
+When displaying tilegrams TopoJSON in D3, it's important not to use a geographic
+projection, as the TopoJSON coordinates do not refer to latitude/longitude,
+but to unitless Euclidean space.
+
+It is currently also necessary to flip the map vertically. (This is
+because the exported tilegram coordinates assume that the origin (`0, 0`) is in
+the lower-left corner, whereas projection-less rendering will assume that it's
+in the upper-left.) Note the `transform` below.
+
+Sample code:
+
+```javascript
+var width = 1400
+var height = 1000
+
+var svg = d3.select('body').append('svg')
+    .attr('width', width)
+    .attr('height', height)
+
+d3.json('tiles.topo.json', function showData(error, de) {
+  var tiles = topojson.feature(de, de.objects.tiles)
+
+  var transform = d3.geo.transform({
+    point: function(x, y) {
+      this.stream.point(x, -y)
+    }
+  })
+
+  var path = d3.geo.path().projection(transform)
+
+  var g = svg.append('g')
+    .attr('transform', 'translate(0,' + height + ')')
+
+  g.selectAll('.tiles')
+    .data(tiles.features)
+    .enter().append('path')
+    .attr('d', path)
+  })
+```
+
 ## Sharing tilegrams
 
 If you use, enjoy, or can't stand this tool, we'd love to hear from you at
