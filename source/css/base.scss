@@ -48,7 +48,7 @@ input[type="radio"]{
 #canvas {
   position: fixed;
   right: 0;
-  top: 0;
+  top: $header-height;
   bottom: 0;
   left: $sidebar-width;
   overflow: hidden;
