@@ -16,6 +16,10 @@ only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-w
 (min-device-width: 800px) and (max-device-width: 1280px), //galaxy tablets
 screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) //nexus tablets
 {
+  body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
   .credits {
     z-index: 100;
     padding: 15px;
@@ -37,7 +41,16 @@ screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-dev
     width: 100%;
     height: 100%;
     z-index: 99;
-    background-color: rgba(0,0,0,0.85);
+    background: url('../images/mobile-background.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    .background {
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
     .tilegrams-logo {
       width: 2em;
       height: 2em;
