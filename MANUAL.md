@@ -151,8 +151,8 @@ var svg = d3.select('body').append('svg')
     .attr('width', width)
     .attr('height', height)
 
-d3.json('tiles.topo.json', function showData(error, de) {
-  var tiles = topojson.feature(de, de.objects.tiles)
+d3.json('tiles.topo.json', function showData(error, tilegram) {
+  var tiles = topojson.feature(tilegram, tilegram.objects.tiles)
 
   var transform = d3.geo.transform({
     point: function(x, y) {
@@ -169,7 +169,7 @@ d3.json('tiles.topo.json', function showData(error, de) {
     .data(tiles.features)
     .enter().append('path')
     .attr('d', path)
-  })
+})
 ```
 
 ## Sharing tilegrams
