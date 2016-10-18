@@ -130,19 +130,19 @@ var WIDTH = 800
 
 d3.text('tiles.svg', (e, data) => {
   var div = d3.select(document.body).append('div').html(data)
-
   var svg = div.select('svg')
   var groups = svg.selectAll('g')
 
+  // Scale SVG
   var importedWidth = parseInt(svg.attr('width'))
   var importedHeight = parseInt(svg.attr('height'))
   var scale = WIDTH / importedWidth
-
   svg
     .attr('width', importedWidth * scale)
     .attr('height', importedHeight * scale)
   groups.attr('transform', 'scale(' + scale + ')')
 
+  // Apply handlers
   groups.on('click', (e) => {
     console.log('Clicked', d3.event.target.parentNode.id)
   })
@@ -153,7 +153,7 @@ d3.text('tiles.svg', (e, data) => {
 
 When displaying tilegrams TopoJSON in D3, it's important not to use a geographic
 projection, as the TopoJSON coordinates do not refer to latitude/longitude,
-but to unitless Euclidean space.
+but to dimensionless Euclidean space.
 
 It is currently also necessary to flip the map vertically. (This is
 because the exported tilegram coordinates assume that the origin (`0, 0`) is in
