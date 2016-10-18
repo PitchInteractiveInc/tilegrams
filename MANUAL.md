@@ -1,4 +1,4 @@
-# Making a tilegram
+# Making a Tilegram
 
 A “tilegram” is a map made of tiles
 where regions are sized proportionally to a dataset.
