@@ -27,6 +27,7 @@ export default class GridGraphic extends Graphic {
   }
 
   onMouseDown(event) {
+    document.activeElement.blur()
     event.preventDefault()
     const position = gridGeometry.getPositionFromScreen(event.offsetX, event.offsetY)
     const tile = this._findTile(position)
