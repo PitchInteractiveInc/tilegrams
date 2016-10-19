@@ -30,6 +30,7 @@ class Exporter {
 
     const features = tiles.map(tile => {
       const feature = {
+        type: "Feature",
         id: tile.id,
         properties: {
           state: fipsToPostal(tile.id),
@@ -47,7 +48,7 @@ class Exporter {
         y: (maxTileY - tile.position.y) - (maxTileY % 2),
       })
       const hexagonPoints = gridGeometry.getPointsAround(center, true)
-      hexagonPoints.push(hexagonPoints[0]) // close the loop
+      hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
       feature.geometry = {
         type: 'Polygon',
         coordinates: [hexagonPoints],
@@ -64,7 +65,9 @@ class Exporter {
     }
 
     // Convert verbose GeoJSON to compressed TopoJSON format
-    const topoJson = topology(geoJsonObjects)
+    const topoJson = topology(geoJsonObjects, {
+      'property-transform': feature => feature.properties
+    })
 
     topoJson.properties = {
       tilegramMetricPerTile: metricPerTile,
