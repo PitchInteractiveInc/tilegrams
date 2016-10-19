@@ -29,17 +29,6 @@ class Exporter {
     })
 
     const features = tiles.map(tile => {
-      const feature = {
-        type: 'Feature',
-        id: tile.id,
-        properties: {
-          state: fipsToPostal(tile.id),
-        },
-      }
-      if (tile.tilegramValue) {
-        feature.properties.tilegramValue = tile.tilegramValue
-      }
-
       // Feature Geometry
       // if maxTileY is even, then subtract position from maxTile
       // if maxTileY is odd, then subtract one to maintain correct staggering
@@ -49,11 +38,21 @@ class Exporter {
       })
       const hexagonPoints = gridGeometry.getPointsAround(center, true)
       hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
-      feature.geometry = {
-        type: 'Polygon',
-        coordinates: [hexagonPoints],
-      }
 
+      const feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [hexagonPoints],
+        },
+        id: tile.id,
+        properties: {
+          state: fipsToPostal(tile.id),
+        },
+      }
+      if (tile.tilegramValue) {
+        feature.properties.tilegramValue = tile.tilegramValue
+      }
       return feature
     })
     const geoJsonObjects = {
