@@ -6,6 +6,7 @@
  */
 import {color} from 'd3-color'
 import {nest} from 'd3-collection'
+import {topology} from 'topojson/server.js'
 import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor, fipsToPostal} from '../utils'
@@ -15,9 +16,6 @@ export const OBJECT_ID = 'tiles'
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
   toTopoJson(tiles, metricPerTile) {
-    const geometries = []
-    const arcs = []
-
     const maxTileY = tiles.reduce(
       (max, tile) => Math.max(max, tile.position.y),
       -Infinity
@@ -30,19 +28,18 @@ class Exporter {
       )
     })
 
-    tiles.forEach((tile, tileIndex) => {
-      const geometry = {
-        type: 'Polygon',
+    const features = tiles.map(tile => {
+      const feature = {
         id: tile.id,
-        arcs: [[tileIndex]],
         properties: {
           state: fipsToPostal(tile.id),
         },
       }
       if (tile.tilegramValue) {
-        geometry.properties.tilegramValue = tile.tilegramValue
+        feature.properties.tilegramValue = tile.tilegramValue
       }
-      geometries.push(geometry)
+
+      // Feature geometry
       // if maxTileY is even, then subtract position from maxTile
       // if maxTileY is odd, then subtract one to maintain correct staggering
       const center = gridGeometry.tileCenterPoint({
@@ -51,23 +48,30 @@ class Exporter {
       })
       const hexagonPoints = gridGeometry.getPointsAround(center, true)
       hexagonPoints.push(hexagonPoints[0]) // close the loop
-      arcs.push(hexagonPoints)
+      feature.geometry = {
+        type: 'Polygon',
+        coordinates: [hexagonPoints],
+      }
+
+      return feature
     })
 
-    return {
-      type: 'Topology',
-      properties: {
-        tilegramMetricPerTile: metricPerTile,
-        tilegramVersion: version,
+    const geoJsonObjects = {
+      [OBJECT_ID]: {
+        type: 'FeatureCollection',
+        features,
       },
-      objects: {
-        [OBJECT_ID]: {
-          type: 'GeometryCollection',
-          geometries,
-        },
-      },
-      arcs,
     }
+
+    // Convert verbose GeoJSON to compressed TopoJSON format
+    const topoJson = topology(geoJsonObjects)
+
+    topoJson.properties = {
+      tilegramMetricPerTile: metricPerTile,
+      tilegramVersion: version,
+    }
+
+    return topoJson
   }
 
   toSvg(tiles) {
