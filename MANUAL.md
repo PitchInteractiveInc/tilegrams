@@ -224,7 +224,7 @@ g.selectAll('path.border')
   .enter().append('path')
   .attr('d', path)
   .attr('class', 'border')
-  .attr('fill', 'transparent')
+  .attr('fill', 'none')
   .attr('stroke', 'black')
   .attr('stroke-width', 4)
 ```
