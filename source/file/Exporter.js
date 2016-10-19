@@ -28,33 +28,47 @@ class Exporter {
       )
     })
 
-    const features = tiles.map(tile => {
+    // Aggregate tiles by state
+    const tilesByState = {}
+    tiles.forEach(tile => {
+      if (!tilesByState[tile.id]) {
+        tilesByState[tile.id] = []
+      }
+      tilesByState[tile.id].push(tile)
+    })
+
+    const features = Object.keys(tilesByState).map(stateId => {
+      const stateTiles = tilesByState[stateId]
+
       // Feature Geometry
-      // if maxTileY is even, then subtract position from maxTile
-      // if maxTileY is odd, then subtract one to maintain correct staggering
-      const center = gridGeometry.tileCenterPoint({
-        x: tile.position.x,
-        y: (maxTileY - tile.position.y) - (maxTileY % 2),
+      const tilesCoordinates = stateTiles.map(tile => {
+        // if maxTileY is odd, then subtract one to maintain correct staggering
+        const center = gridGeometry.tileCenterPoint({
+          x: tile.position.x,
+          y: (maxTileY - tile.position.y) - (maxTileY % 2),
+        })
+        const hexagonPoints = gridGeometry.getPointsAround(center, true)
+        hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
+        return hexagonPoints
       })
-      const hexagonPoints = gridGeometry.getPointsAround(center, true)
-      hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
 
       const feature = {
         type: 'Feature',
         geometry: {
-          type: 'Polygon',
-          coordinates: [hexagonPoints],
+          type: 'MultiPolygon',
+          coordinates: [tilesCoordinates],
         },
-        id: tile.id,
+        id: stateId,
         properties: {
-          state: fipsToPostal(tile.id),
+          state: fipsToPostal(stateId),
         },
       }
-      if (tile.tilegramValue) {
-        feature.properties.tilegramValue = tile.tilegramValue
+      if (stateTiles[0].tilegramValue) {
+        feature.properties.tilegramValue = stateTiles[0].tilegramValue
       }
       return feature
     })
+
     const geoJsonObjects = {
       [OBJECT_ID]: {
         type: 'FeatureCollection',

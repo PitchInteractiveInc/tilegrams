@@ -17,13 +17,16 @@ class Importer {
   /** Convert tilegram TopoJSON to grid coordinates */
   fromTopoJson(topoJson) {
     const geometries = topoJson.objects[OBJECT_ID].geometries
-    const tilePoints = geometries.map(geometry => {
-      const path = this._getAbsolutePath(geometry, topoJson.arcs)
-      return {
-        id: geometry.id,
-        point: this._hexagonCenterPoint(path),
-        tilegramValue: geometry.properties.tilegramValue,
-      }
+    const tilePoints = []
+    geometries.forEach(geometry => {
+      const paths = this._getAbsolutePaths(geometry, topoJson.arcs)
+      paths.forEach(path => {
+        tilePoints.push({
+          id: geometry.id,
+          point: this._hexagonCenterPoint(path),
+          tilegramValue: geometry.properties.tilegramValue,
+        })
+      })
     })
     const tiles = this._getTilePositions(tilePoints)
     return {
@@ -32,55 +35,57 @@ class Importer {
     }
   }
 
-  /** Determine path absolute points, given TopoJSON delta-encoded arcs */
-  _getAbsolutePath(geometry, allArcs) {
+  /** Determine paths' absolute points, given TopoJSON delta-encoded arcs */
+  _getAbsolutePaths(geometry, allArcs) {
     // for each arc
-    return geometry.arcs[0].reduce(
-      (geometryPoints, arcIndex) => {
-        const reverse = arcIndex < 0
-        const normalArcIndex = !reverse ?
+    return geometry.arcs.map(arc => {
+      return arc.reduce(
+        (geometryPoints, arcIndex) => {
+          const reverse = arcIndex < 0
+          const normalArcIndex = !reverse ?
           arcIndex :
           -arcIndex - 1
-        const deltaEncodedPoints = allArcs[normalArcIndex].slice()
-        const arcPoints = []
+          const deltaEncodedPoints = allArcs[normalArcIndex].slice()
+          const arcPoints = []
 
-        // for each delta-encoded point in arc
-        deltaEncodedPoints.forEach(delta => {
-          if (arcPoints.length > 0) {
-            // apply delta to last absolute value, then add it
-            const lastPoint = arcPoints[arcPoints.length - 1]
-            const newPoint = [
-              lastPoint[0] + delta[0],
-              lastPoint[1] + delta[1],
-            ]
-            arcPoints.push(newPoint)
-          } else {
-            // first point of delta-encoded arc is absolute, so add it
-            arcPoints.push(delta)
+          // for each delta-encoded point in arc
+          deltaEncodedPoints.forEach(delta => {
+            if (arcPoints.length > 0) {
+              // apply delta to last absolute value, then add it
+              const lastPoint = arcPoints[arcPoints.length - 1]
+              const newPoint = [
+                lastPoint[0] + delta[0],
+                lastPoint[1] + delta[1],
+              ]
+              arcPoints.push(newPoint)
+            } else {
+              // first point of delta-encoded arc is absolute, so add it
+              arcPoints.push(delta)
+            }
+          })
+
+          // reverse arc if specified in index
+          if (reverse) {
+            arcPoints.reverse()
           }
-        })
 
-        // reverse arc if specified in index
-        if (reverse) {
-          arcPoints.reverse()
-        }
-
-        // drop first point of arc if it's the same as last point of last arc
-        if (geometryPoints.length > 0) {
-          const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
-          const firstArcPoint = arcPoints[0]
-          if (
-            firstArcPoint[0] === lastGeometryPoint[0] &&
-            firstArcPoint[1] === lastGeometryPoint[1]
-          ) {
-            arcPoints.shift()
+          // drop first point of arc if it's the same as last point of last arc
+          if (geometryPoints.length > 0) {
+            const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
+            const firstArcPoint = arcPoints[0]
+            if (
+              firstArcPoint[0] === lastGeometryPoint[0] &&
+              firstArcPoint[1] === lastGeometryPoint[1]
+            ) {
+              arcPoints.shift()
+            }
           }
-        }
 
-        return geometryPoints.concat(arcPoints)
-      },
-      []
-    )
+          return geometryPoints.concat(arcPoints)
+        },
+        []
+      )
+    })
   }
 
   /** translate X/Y coordinates into hexagon coordinates */
