@@ -221,7 +221,7 @@ var stateBorders = stateCodes.map(function(code) {
 // Draw path
 g.selectAll('path.border')
   .data(stateBorders)
-  .enter().append("path")
+  .enter().append('path')
   .attr('d', path)
   .attr('class', 'border')
   .attr('fill', 'transparent')
