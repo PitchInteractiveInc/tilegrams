@@ -222,11 +222,11 @@ var stateBorders = stateCodes.map(function(code) {
 g.selectAll('path.border')
   .data(stateBorders)
   .enter().append("path")
-  .attr("d", path)
-  .attr("class", "border")
-  .attr("fill", "transparent")
-  .attr("stroke", "black")
-  .attr("stroke-width", 4)
+  .attr('d', path)
+  .attr('class', 'border')
+  .attr('fill', 'transparent')
+  .attr('stroke', 'black')
+  .attr('stroke-width', 4)
 ```
 
 ## Sharing tilegrams
