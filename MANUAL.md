@@ -197,6 +197,38 @@ d3.json('tiles.topo.json', function showData(error, tilegram) {
 })
 ```
 
+To draw a border around each state:
+
+```javascript
+// Build list of state codes
+var stateCodes = []
+tilegram.objects.tiles.geometries.forEach(function(geometry) {
+  if (stateCodes.indexOf(geometry.properties.state) === -1) {
+    stateCodes.push(geometry.properties.state)
+  }
+})
+
+// Build merged geometry for each state
+var stateBorders = stateCodes.map(function(code) {
+  return topojson.merge(
+    tilegram,
+    tilegram.objects.tiles.geometries.filter(function(geometry) {
+      return geometry.properties.state === code
+    })
+  )
+})
+
+// Draw path
+g.selectAll('path.border')
+  .data(stateBorders)
+  .enter().append("path")
+  .attr("d", path)
+  .attr("class", "border")
+  .attr("fill", "transparent")
+  .attr("stroke", "black")
+  .attr("stroke-width", 4)
+```
+
 ## Sharing tilegrams
 
 If you use, enjoy, or can't stand this tool, we'd love to hear from you at
