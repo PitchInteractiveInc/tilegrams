@@ -30,7 +30,7 @@ class Exporter {
 
     const features = tiles.map(tile => {
       const feature = {
-        type: "Feature",
+        type: 'Feature',
         id: tile.id,
         properties: {
           state: fipsToPostal(tile.id),
@@ -40,7 +40,7 @@ class Exporter {
         feature.properties.tilegramValue = tile.tilegramValue
       }
 
-      // Feature geometry
+      // Feature Geometry
       // if maxTileY is even, then subtract position from maxTile
       // if maxTileY is odd, then subtract one to maintain correct staggering
       const center = gridGeometry.tileCenterPoint({
@@ -56,7 +56,6 @@ class Exporter {
 
       return feature
     })
-
     const geoJsonObjects = {
       [OBJECT_ID]: {
         type: 'FeatureCollection',
@@ -66,14 +65,12 @@ class Exporter {
 
     // Convert verbose GeoJSON to compressed TopoJSON format
     const topoJson = topology(geoJsonObjects, {
-      'property-transform': feature => feature.properties
+      'property-transform': feature => feature.properties,
     })
-
     topoJson.properties = {
       tilegramMetricPerTile: metricPerTile,
       tilegramVersion: version,
     }
-
     return topoJson
   }
 
