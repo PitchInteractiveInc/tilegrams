@@ -104,10 +104,11 @@ class Importer {
     let xDelta
     let yDelta
     if (tileSize) {
-      xDelta = tileSize.width * 0.5
+      xDelta = tileSize.width
       yDelta = tileSize.height * 0.75
     } else {
       [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
+      xDelta *= 2.0
     }
 
     let origin
@@ -116,7 +117,7 @@ class Importer {
       [position, origin] = this._getTilePosition(
         tilePoint.point,
         origin,
-        xDelta * 2.0,
+        xDelta,
         yDelta
       )
       return {
