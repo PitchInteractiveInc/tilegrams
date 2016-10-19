@@ -19,7 +19,11 @@ class Importer {
     const geometries = topoJson.objects[OBJECT_ID].geometries
     const tilePoints = []
     geometries.forEach(geometry => {
-      const paths = this._getAbsolutePaths(geometry, topoJson.arcs)
+      const paths = this._getAbsolutePaths(
+        geometry,
+        topoJson.arcs,
+        topoJson.transform
+      )
       paths.forEach(path => {
         tilePoints.push({
           id: geometry.id,
@@ -28,7 +32,10 @@ class Importer {
         })
       })
     })
-    const tiles = this._getTilePositions(tilePoints)
+    const tiles = this._getTilePositions(
+      tilePoints,
+      topoJson.properties.tilegramTileSize
+    )
     return {
       tiles: this._normalizeTilePosition(tiles),
       metricPerTile: topoJson.properties.tilegramMetricPerTile,
@@ -36,7 +43,7 @@ class Importer {
   }
 
   /** Determine paths' absolute points, given TopoJSON delta-encoded arcs */
-  _getAbsolutePaths(geometry, allArcs) {
+  _getAbsolutePaths(geometry, allArcs, transform) {
     // for each arc
     return geometry.arcs.map(arc => {
       return arc.reduce(
@@ -50,17 +57,21 @@ class Importer {
 
           // for each delta-encoded point in arc
           deltaEncodedPoints.forEach(delta => {
+            const transformedDelta = [
+              delta[0] * transform.scale[0],
+              delta[1] * transform.scale[1],
+            ]
             if (arcPoints.length > 0) {
               // apply delta to last absolute value, then add it
               const lastPoint = arcPoints[arcPoints.length - 1]
               const newPoint = [
-                lastPoint[0] + delta[0],
-                lastPoint[1] + delta[1],
+                lastPoint[0] + transformedDelta[0],
+                lastPoint[1] + transformedDelta[1],
               ]
               arcPoints.push(newPoint)
             } else {
               // first point of delta-encoded arc is absolute, so add it
-              arcPoints.push(delta)
+              arcPoints.push(transformedDelta)
             }
           })
 
@@ -89,8 +100,16 @@ class Importer {
   }
 
   /** translate X/Y coordinates into hexagon coordinates */
-  _getTilePositions(tilePoints) {
-    const [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
+  _getTilePositions(tilePoints, tileSize) {
+    let xDelta
+    let yDelta
+    if (tileSize) {
+      xDelta = tileSize.width * 0.5
+      yDelta = tileSize.height * 0.75
+    } else {
+      [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
+    }
+
     let origin
     let position
     return tilePoints.map(tilePoint => {
@@ -143,7 +162,10 @@ class Importer {
     return [position, origin]
   }
 
-  /** Determine probable X and Y deltas from tile points by tallying */
+  /**
+   * DEPRECATED: for pre-v1.0.3 only
+   * Determine probable X and Y deltas from tile points by tallying
+   */
   _getProbableDeltas(tilePoints) {
     const SAMPLE_COUNT = 100
     const DIMENSIONS = ['x', 'y']

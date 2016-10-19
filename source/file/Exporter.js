@@ -83,6 +83,7 @@ class Exporter {
     topoJson.properties = {
       tilegramMetricPerTile: metricPerTile,
       tilegramVersion: version,
+      tilegramTileSize: gridGeometry.getTileDimensions(),
     }
     return topoJson
   }
