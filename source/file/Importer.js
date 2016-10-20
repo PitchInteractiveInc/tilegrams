@@ -12,6 +12,8 @@ import {
 import {OBJECT_ID} from './Exporter'
 
 const LEFT_BIAS = 2
+// epsilon for measuring equality of transformed coords
+const ERROR_MARGIN = 1e-12
 
 class Importer {
   /** Convert tilegram TopoJSON to grid coordinates */
@@ -85,8 +87,8 @@ class Importer {
             const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
             const firstArcPoint = arcPoints[0]
             if (
-              firstArcPoint[0] === lastGeometryPoint[0] &&
-              firstArcPoint[1] === lastGeometryPoint[1]
+              Math.abs(firstArcPoint[0] - lastGeometryPoint[0]) < ERROR_MARGIN &&
+              Math.abs(firstArcPoint[1] - lastGeometryPoint[1]) < ERROR_MARGIN
             ) {
               arcPoints.shift()
             }
