@@ -60,8 +60,8 @@ class Importer {
           // for each delta-encoded point in arc
           deltaEncodedPoints.forEach(delta => {
             const transformedDelta = [
-              delta[0] * transform.scale[0],
-              delta[1] * transform.scale[1],
+              delta[0] * (transform ? transform.scale[0] : 1.0),
+              delta[1] * (transform ? transform.scale[1] : 1.0),
             ]
             if (arcPoints.length > 0) {
               // apply delta to last absolute value, then add it
