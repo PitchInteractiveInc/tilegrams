@@ -10,6 +10,7 @@ import {
   devicePixelRatio,
   selectedTileBorderColor,
   hoveredTileBorderColor,
+  movingTileOriginalPositionColor,
 } from '../constants'
 
 export default class GridGraphic extends Graphic {
@@ -287,6 +288,7 @@ export default class GridGraphic extends Graphic {
       x: this._mouseAt.x,
       y: this._mouseAt.y,
     }
+    this._mouseAt = {x: -1, y: -1}
     this._selectedTiles.length = 0
     this._selectedTiles.push(this._newTile)
   }
@@ -349,11 +351,18 @@ export default class GridGraphic extends Graphic {
   }
 
   _disableSelectionHighlight() {
-    return this._highlightId !== null && this._highlightFromOutsideGrid
+    return this._highlightId !== null
+      && this._highlightFromOutsideGrid
+      && !this._newTile
+      && !this._draggingMultiSelect
   }
 
   checkForEdits() {
     return this._hasBeenEdited
+  }
+
+  resetEdits() {
+    this._hasBeenEdited = false
   }
 
   renderBackgroundImage() {
@@ -378,7 +387,7 @@ export default class GridGraphic extends Graphic {
     this._tiles.forEach(tile => {
       let color = fipsColor(tile.id)
       if (!this._disableSelectionHighlight() && this._selectedTiles.includes(tile)) {
-        color = '#cccccc'
+        color = movingTileOriginalPositionColor
       }
       this._drawTile(tile.position, color, {})
       this._drawInlandBoundaries(tile)

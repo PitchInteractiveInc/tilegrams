@@ -1,5 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
+import ReactMarkdown from 'react-markdown'
+
+import manual from 'raw!../MANUAL.md'
 
 import metrics from './Metrics'
 import {createElement} from './utils'
@@ -9,33 +12,23 @@ import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
 import EditWarningModal from './components/EditWarningModal'
 import googleNewsLabLogo from './images/gnl-logo.png'
+import tilegramsLogo from './images/tilegrams-logo.svg'
+import twitterLogo from './images/social-twitter.svg'
+import facebookLogo from './images/social-facebook.svg'
 
 class Ui {
   constructor() {
     this._init()
     this._tiles = null
     this._editing = false
+    this._generateOpen = true
+    this._editOpen = true
+    this._manualOpen = false
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
-    this._resizeAfterPaint = this._resizeAfterPaint.bind(this)
-    window.addEventListener('resize', this._resize)
-  }
-
-  _resize() {
-    const heightAvailable = Array.prototype.slice.call(
-      document.querySelectorAll('.no-scroll-ui')
-    ).reduce(
-      (remainingHeight, node) => {
-        const dimensions = node.getBoundingClientRect()
-        return remainingHeight - dimensions.height
-      },
-      window.innerHeight - 15
-    )
-    const ele = document.querySelector('.metrics')
-    if (ele) {
-      ele.style.height = `${heightAvailable}px`
-    }
+    this._checkForEdits = this._checkForEdits.bind(this)
+    this._toggleManual = this._toggleManual.bind(this)
   }
 
   setGeos(geos) {
@@ -62,7 +55,6 @@ class Ui {
     this._selectedDataset = dataset
     this._selectedDatasetSum = this.getDatasetSum(dataset)
     this._metricDomain = this._calculateIdealDomain()
-    this._resize()
   }
 
   /** calculate the slider's domain from the dataset */
@@ -87,21 +79,18 @@ class Ui {
   setDatasetSelectedCallback(callback) {
     this._datasetSelectedCallback = (index) => {
       callback(index)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
   setTilegramSelectedCallback(callback) {
     this._tilegramSelectedCallback = (index) => {
       callback(index)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
   setCustomDatasetCallback(callback) {
     this._customDatasetCallback = (csv) => {
       callback(csv)
-      window.requestAnimationFrame(this._resize)
     }
   }
 
@@ -131,25 +120,26 @@ class Ui {
     }
   }
 
-  _setEditing(isEditing) {
-    return () => {
-      if (!isEditing) {
-        if (this._checkForUnsavedChanges()) {
-          this._showModal = true
-          this.render()
-          return
-        }
-      }
-      this._editing = isEditing
+  _checkForEdits(event) {
+    if (this._checkForUnsavedChanges()) {
+      event.preventDefault()
+      event.stopPropagation()
+      this._showModal = true
       this.render()
-
-      // to allow CSS to paint
-      window.requestAnimationFrame(this.render.bind(this))
+      return
     }
+    this._editing = false
+    this.render()
+    // to allow CSS to paint
+    window.requestAnimationFrame(this.render.bind(this))
   }
 
   setUnsavedChangesCallback(callback) {
     this._checkForUnsavedChanges = callback
+  }
+
+  setResetUnsavedChangesCallback(callback) {
+    this._resetUnsavedChanges = callback
   }
 
   _init() {
@@ -159,6 +149,7 @@ class Ui {
   _startOver() {
     this._editing = false
     this._showModal = false
+    this._resetUnsavedChanges()
     this.render()
   }
 
@@ -172,8 +163,20 @@ class Ui {
     this.render()
   }
 
-  _resizeAfterPaint() {
-    window.requestAnimationFrame(this._resize.bind(this))
+  _toggle(toggleOpt) {
+    return () => {
+      if (toggleOpt === 'generate') {
+        this._generateOpen = !this._generateOpen
+      } else if (toggleOpt === 'edit') {
+        this._editOpen = !this._editOpen
+      }
+      this.render()
+    }
+  }
+
+  _toggleManual() {
+    this._manualOpen = !this._manualOpen
+    this.render()
   }
 
   render() {
@@ -189,26 +192,25 @@ class Ui {
         metricPerTile={metrics.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
-        onResizeNeeded={this._resizeAfterPaint}
         editing={this._editing}
       />
     )
     const generateOption = (
       <div
-        className={this._editing ? 'step' : 'active step'}
-        onClick={this._setEditing(false)}
+        className={this._generateOpen ? 'step' : 'active step'}
+        onClick={this._toggle('generate')}
       >
-        <div className='highlight-bar' />
-        <p><span>1</span> Begin with a tilegram</p>
+        <span>Generate</span>
+        <span className='arrow' />
       </div>
     )
     const editOption = (
       <div
-        className={this._editing ? 'active step' : 'step'}
-        onClick={this._setEditing(true)}
+        className={this._editOpen ? 'step' : 'active step'}
+        onClick={this._toggle('edit')}
       >
-        <div className='highlight-bar' />
-        <p><span>2</span> Refine your tilegram</p>
+        <span>Refine</span>
+        <span className='arrow' />
       </div>
     )
     let modal = null
@@ -220,35 +222,75 @@ class Ui {
         />
       )
     }
+    const uiControlsHeight = this._generateOpen ? 'auto' : '0px'
+    const metricsHeight = this._editOpen ? 'auto' : '0px'
+    const manualClass = this._manualOpen ? 'manual' : 'manual hidden'
     ReactDOM.render(
       <div>
         {modal}
+        <div className={manualClass}>
+          <div
+            className='manual-close'
+            onClick={this._toggleManual}
+          >
+            &#10005;
+          </div>
+          <ReactMarkdown source={manual} />
+        </div>
+        <div className='mobile-redirect'>
+          <div className='background'>
+            <div className='main'>
+              <h1>TILEGRAMS</h1>
+              <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
+              <h2>Create tiled maps where regions are sized proportionally to a dataset.</h2>
+              <h3>For optimal experience visit us on a laptop or desktop computer.</h3>
+            </div>
+          </div>
+        </div>
+        <div className='header'>
+          <h1 className='title'>
+            TILEGRAMS
+            <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
+            <span className='by-pitch'>by Pitch Interactive</span>
+          </h1>
+          <div className='share'>
+            <a href='https://twitter.com/intent/tweet?text=Tilegrams+from+Pitch+Interactive+https%3A%2F%2Fpitchinteractiveinc.github.io%2Ftilegrams%2F'>
+              <img src={twitterLogo} alt='Twitter' />
+            </a>
+            <a href='https://www.facebook.com/sharer.php?u=https%3A%2F%2Fpitchinteractiveinc.github.io%2Ftilegrams%2F'>
+              <img src={facebookLogo} alt='Facebook' />
+            </a>
+          </div>
+        </div>
         <div className='column'>
-          <div className='no-scroll-ui'>
-            <h1 className='title'>
-              Make a Tilegram
-            </h1>
+          <div>
             <p className='intro'>
-              A “tilegram” is a map made of tiles
-              where regions are sized proportionally to a dataset.
+              Create tiled maps where regions are sized proportionally to a dataset.
               <br />
+              <br />
+              For detailed information and instructions, check out the
               <a
-                href='https://github.com/PitchInteractiveInc/tilegrams/blob/master/MANUAL.md'
+                onClick={this._toggleManual}
                 target='_blank'
                 rel='noopener noreferrer'
-              >
-                Read the manual
-              </a>
+              > manual</a>.
             </p>
             <hr />
             {generateOption}
-            <div className={this._editing ? 'deselected' : null} >
+            <div
+              className={this._editing ? 'deselected' : ''}
+              style={{height: uiControlsHeight, overflow: 'hidden'}}
+              onMouseDown={this._checkForEdits}
+            >
               {tileGenerationControls}
             </div>
             <hr />
             {editOption}
           </div>
-          <div className={this._editing ? null : 'deselected'}>
+          <div
+            className={this._editing ? '' : 'deselected'}
+            style={{height: metricsHeight, overflow: 'hidden'}}
+          >
             <HexMetrics
               metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
@@ -259,14 +301,22 @@ class Ui {
               onMetricMouseOut={this._unhighlightCallback}
             />
           </div>
-          <div className='no-scroll-ui'>
+          <hr />
+          <div className='download'>
+            <div className='step'>
+              <span>Download</span>
+            </div>
+            <div className='instruction'>
+              {`To embed your tilegram or manipulate it further,
+                export it in one of these standard formats.`}
+            </div>
             <fieldset>
               <ExportButton
-                text='Export TopoJSON'
+                text='TopoJSON'
                 onClick={() => this._exportCallback()}
               />
               <ExportButton
-                text='Export SVG'
+                text='SVG'
                 onClick={() => this._exportSvgCallback()}
               />
             </fieldset>
@@ -289,21 +339,21 @@ class Ui {
           >
             <img src={googleNewsLabLogo} className='gnl-logo' alt='Google News Lab' />
           </a>
-          |
-          View
-          <a
-            href='https://github.com/PitchInteractiveInc/tilegrams'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            source
-          </a>
-          on GitHub
+          <span className='source'>|
+            View
+            <a
+              href='https://github.com/PitchInteractiveInc/tilegrams'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              source
+            </a>
+            on GitHub
+          </span>
         </h2>
       </div>,
       this._container
     )
-    this._resize()
   }
 }
 

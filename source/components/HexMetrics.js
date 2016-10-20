@@ -7,7 +7,28 @@ export default class HexMetrics extends React.Component {
   constructor(props) {
     super(props)
 
+    this.state = {
+      hideNullStats: false,
+      draggingHex: null,
+      mouseX: 0,
+      mouseY: 0,
+    }
     this._mouseDown = this._mouseDown.bind(this)
+    this._toggleHide = this._toggleHide.bind(this)
+    this._updateMousePosition = this._updateMousePosition.bind(this)
+    this._cancelDragging = this._cancelDragging.bind(this)
+  }
+
+  componentDidMount() {
+    document.body.addEventListener('mousemove', this._updateMousePosition)
+    document.body.addEventListener('mouseup', this._cancelDragging)
+    document.getElementById('ui').addEventListener('mouseleave', this._cancelDragging)
+  }
+
+  componentWillUnmount() {
+    document.body.removeEventListener('mousemove', this._updateMousePosition)
+    document.body.removeEventListener('mouseup', this._cancelDragging)
+    document.getElementById('ui').removeEventListener('mouseleave', this._cancelDragging)
   }
 
   _getCountsByGeo(tiles, geos) {
@@ -22,6 +43,12 @@ export default class HexMetrics extends React.Component {
         value: countHash[geo] || 0,
       }
     }).sort((a, b) => a.key - b.key)
+  }
+
+  _toggleHide() {
+    this.setState({
+      hideNullStats: !this.state.hideNullStats,
+    })
   }
 
   _getMetrics() {
@@ -56,20 +83,21 @@ export default class HexMetrics extends React.Component {
     return {stats, shouldWarn}
   }
 
-  _drawHexagon(id) {
-    const width = 15
-    const height = (Math.sqrt(3) / 2) * width
+  _drawHexagon(id, dragging) {
+    const height = dragging ? 20 : 18
+    const width = (Math.sqrt(3) / 2) * height
     const vertices = [
-      [width * 0.25, 0],
-      [width * 0.75, 0],
-      [width, height * 0.5],
-      [width * 0.75, height],
-      [width * 0.25, height],
-      [0, height / 2],
+      [width * 0.5, 0],
+      [width, height * 0.25],
+      [width, height * 0.75],
+      [width * 0.5, height],
+      [0, height * 0.75],
+      [0, height * 0.25],
     ]
     return (
-      <svg width={width} height={height}>
+      <svg width={width + 2} height={height + 2}>
         <polygon
+          transform={'translate(1,1)'}
           fill={fipsColor(id)}
           points={vertices.map((pt) => pt.join(',')).join(' ')}
         />
@@ -79,7 +107,22 @@ export default class HexMetrics extends React.Component {
 
   _mouseDown(event) {
     event.preventDefault()
-    this.props.onAddTileMouseDown(event.currentTarget.parentElement.id)
+    const id = event.currentTarget.parentElement.id
+    this.props.onAddTileMouseDown(id)
+    this.setState({draggingHex: id})
+  }
+
+  _updateMousePosition(event) {
+    this.setState({
+      mouseX: event.clientX,
+      mouseY: window.scrollY + event.clientY,
+    })
+  }
+
+  _cancelDragging() {
+    this.setState({
+      draggingHex: null,
+    })
   }
 
   _renderWarning(shouldWarn) {
@@ -97,50 +140,66 @@ export default class HexMetrics extends React.Component {
 
   _renderHexCount(metrics) {
     if (!metrics.length) return null
-    const rows = metrics.map((count) => {
+    const boxes = metrics.map((count) => {
       const adjustString = count.deviation > 0 ? `+${count.deviation}` : count.deviation
       const warn = (count.idealNHex === 0 && count.nHex === 0) ?
         <i className='fa fa-exclamation-triangle' /> :
         null
 
-      let className = count.deviation === 0 ? 'fade' : ''
+      let className = count.deviation === 0 ? 'metrics-box fade' : 'metrics-box'
       if (count.disable) { className += ' disabled' }
 
       return (
-        <tr
+        <div
           key={count.key}
           id={count.key}
           className={className}
           onMouseOver={event => this.props.onMetricMouseOver(event.currentTarget.id)}
           onMouseOut={this.props.onMetricMouseOut}
         >
-          <td>{warn}</td>
-          <td>{fipsToPostal(count.key)}</td>
-          <td>{adjustString}</td>
-          <td
+          <div>{warn}</div>
+          <div
             style={{cursor: 'pointer'}}
             onMouseDown={count.disable ? () => {} : this._mouseDown}
           >
             {count.disable ? 'No Data' : this._drawHexagon(count.key)}
-          </td>
-        </tr>
+          </div>
+          <div>{fipsToPostal(count.key)}</div>
+          <div>{adjustString}</div>
+        </div>
       )
     })
     return (
-      <table>
-        <tbody>
-          {rows}
-        </tbody>
-      </table>
+      <div className='metrics-wrapper'>
+        {boxes}
+      </div>
     )
   }
 
   render() {
     const metrics = this._getMetrics()
+    const hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics'
+    const draggingHex = this.state.draggingHex
+      ? this._drawHexagon(this.state.draggingHex, true)
+      : null
     return (
-      <div className='metrics'>
+      <div className={hexClass}>
+        <div
+          className='dragging-hex'
+          style={{top: this.state.mouseY, left: this.state.mouseX}}
+        >
+          {draggingHex}
+        </div>
         <div id='metrics-header'>
-          State Tiles
+          <input
+            type='checkbox'
+            id='toggleNull'
+            checked={this.state.hideNullStats}
+            onClick={this._toggleHide}
+          />
+          <label htmlFor='toggleNull'>
+            Only show states with surplus/deficit.
+          </label>
           {this._renderWarning(metrics.shouldWarn)}
         </div>
         {this._renderHexCount(metrics.stats)}

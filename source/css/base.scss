@@ -1,0 +1,82 @@
+body {
+  margin: 0;
+  font-family: $font-stack;
+  font-weight: 400;
+  font-size: 15px;
+  color: #1a1a1a;
+  background-color: $ui-background-color;
+}
+
+* {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+  user-select:none;
+}
+
+.code, input, textarea{
+  -webkit-touch-callout:default;
+  -webkit-user-select:text;
+  -moz-user-select:text;
+  -ms-user-select:text;
+  user-select:text;
+}
+
+a {
+  color: $blue;
+  margin: 0 5px;
+  cursor: pointer;
+}
+
+.gray {
+  color: $gray;
+}
+
+input[type="radio"]{
+  display: none;
+}
+
+.padding-bottom {
+  padding-bottom: 10px;
+}
+
+.collapsed {
+  display: none;
+}
+
+#canvas {
+  position: fixed;
+  right: 0;
+  top: $header-height;
+  bottom: 0;
+  left: $sidebar-width;
+  overflow: hidden;
+  z-index: -1;
+  canvas {
+    cursor: pointer;
+    background-color: $canvas-background-color;
+  }
+}
+
+.credits {
+  position: fixed;
+  bottom: 5px;
+  left: $sidebar-width;
+  right: 5px;
+  font-size: 9pt;
+  text-align: right;
+  .gnl-logo {
+    display: inline-block;
+    height: 1.2em;
+    margin-bottom: -4px;
+  }
+}
+
+#stats {
+  z-index: 2;
+}
+// dat.gui
+.dg.ac {
+  pointer-events: none;
+}

@@ -53,7 +53,11 @@ export default class TileGenerationUiControls extends React.Component {
     this.resetMetricDomain = false
     return (
       <div className='ui-controls'>
-        <div className='padding-bottom'>
+        <div
+          className={this.state.selectedOption === 'import'
+            ? 'import active padding-bottom'
+            : 'import padding-bottom'}
+        >
           <input
             id='load-tilegram'
             type='radio'
@@ -63,19 +67,22 @@ export default class TileGenerationUiControls extends React.Component {
             onChange={this._changeOption}
           />
           <label htmlFor='load-tilegram' className='radio-label'>
-            Load existing
+            Load existing map
           </label>
-          <div className={this.state.selectedOption !== 'import' ? 'collapsed' : null} >
+          <div className={this.state.selectedOption !== 'import' ? 'collapsed' : ''} >
             <ImportControls
               labels={this.props.tilegramLabels}
               onCustomImport={this._onCustomImport}
               onTilegramSelected={this._onTilegramSelected}
-              onResizeNeeded={this.props.onResizeNeeded}
               metricPerTile={this.props.metricPerTile}
             />
           </div>
         </div>
-        <div>
+        <div
+          className={this.state.selectedOption === 'generate'
+            ? 'import active padding-bottom'
+            : 'import padding-bottom'}
+        >
           <input
             id='generate-tilegram'
             type='radio'
@@ -92,7 +99,6 @@ export default class TileGenerationUiControls extends React.Component {
               labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}
               onCustomDataset={csv => this.props.selectCustomDataset(csv)}
-              onResizeNeeded={this.props.onResizeNeeded}
             />
             <ResolutionSlider
               resetMetricDomain={resetMetricDomain}
@@ -118,7 +124,8 @@ TileGenerationUiControls.propTypes = {
   metricDomain: React.PropTypes.array,
   metricPerTile: React.PropTypes.number,
   editing: React.PropTypes.bool,
-  onResizeNeeded: React.PropTypes.func,
+  generateOpen: React.PropTypes.bool,
+  editOpen: React.PropTypes.bool,
 }
 
 TileGenerationUiControls.defaultProps = {
@@ -131,5 +138,4 @@ TileGenerationUiControls.defaultProps = {
   changeResolution: () => {},
   metricPerTile: 1,
   editing: false,
-  onResizeNeeded: () => {},
 }
