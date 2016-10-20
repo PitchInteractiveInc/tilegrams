@@ -22,7 +22,7 @@ class Ui {
     this._tiles = null
     this._editing = false
     this._generateOpen = true
-    this._editOpen = true
+    this._editOpen = false
     this._manualOpen = false
 
     this._startOver = this._startOver.bind(this)
