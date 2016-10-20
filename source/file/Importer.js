@@ -166,7 +166,7 @@ class Importer {
   }
 
   /**
-   * DEPRECATED: for pre-v1.0.3 only
+   * DEPRECATED: for pre-v1.1.0 only
    * Determine probable X and Y deltas from tile points by tallying
    */
   _getProbableDeltas(tilePoints) {
