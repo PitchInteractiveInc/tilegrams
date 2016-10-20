@@ -26,6 +26,20 @@ fieldset {
   }
 }
 
+code {
+  font-weight: 500;
+}
+.language-javascript, .language-html {
+  display: block;
+  font-family: "Lucida Console", Monaco, monospace;
+  background-color: $very-light-gray;
+  padding: 5px;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+
+
 .code {
   font-family: "Lucida Console", Monaco, monospace;
   background-color: $light-gray;
@@ -33,6 +47,7 @@ fieldset {
   margin: 10px;
   font-size: 80%;
   line-height: 110%;
+  display: block;
 }
 
 .step {

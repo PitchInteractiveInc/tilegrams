@@ -11,6 +11,7 @@
   margin-left: 2px;
   line-height: 1.2em;
   border-right: 1px solid $light-gray;
+  z-index: 1;
   &.hidden {
     display: none;
   }
@@ -37,6 +38,10 @@
   }
   h3 {
     font-size: 1.2em;
+    padding: 0.5em 0;
+  }
+  h4 {
+    font-size: 1.1em;
     padding: 0.5em 0;
   }
   p {
