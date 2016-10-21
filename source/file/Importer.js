@@ -12,87 +12,116 @@ import {
 import {OBJECT_ID} from './Exporter'
 
 const LEFT_BIAS = 2
+// epsilon for measuring equality of transformed coords
+const ERROR_MARGIN = 1e-12
 
 class Importer {
   /** Convert tilegram TopoJSON to grid coordinates */
   fromTopoJson(topoJson) {
     const geometries = topoJson.objects[OBJECT_ID].geometries
-    const tilePoints = geometries.map(geometry => {
-      const path = this._getAbsolutePath(geometry, topoJson.arcs)
-      return {
-        id: geometry.id,
-        point: this._hexagonCenterPoint(path),
-        tilegramValue: geometry.properties.tilegramValue,
-      }
+    const tilePoints = []
+    geometries.forEach(geometry => {
+      const paths = this._getAbsolutePaths(
+        geometry,
+        topoJson.arcs,
+        topoJson.transform
+      )
+      paths.forEach(path => {
+        tilePoints.push({
+          id: geometry.id,
+          point: this._hexagonCenterPoint(path),
+          tilegramValue: geometry.properties.tilegramValue,
+        })
+      })
     })
-    const tiles = this._getTilePositions(tilePoints)
+    const tiles = this._getTilePositions(
+      tilePoints,
+      topoJson.properties.tilegramTileSize
+    )
     return {
       tiles: this._normalizeTilePosition(tiles),
       metricPerTile: topoJson.properties.tilegramMetricPerTile,
     }
   }
 
-  /** Determine path absolute points, given TopoJSON delta-encoded arcs */
-  _getAbsolutePath(geometry, allArcs) {
+  /** Determine paths' absolute points, given TopoJSON delta-encoded arcs */
+  _getAbsolutePaths(geometry, allArcs, transform) {
     // for each arc
-    return geometry.arcs[0].reduce(
-      (geometryPoints, arcIndex) => {
-        const reverse = arcIndex < 0
-        const normalArcIndex = !reverse ?
+    return geometry.arcs.map(arc => {
+      return arc.reduce(
+        (geometryPoints, arcIndex) => {
+          const reverse = arcIndex < 0
+          const normalArcIndex = !reverse ?
           arcIndex :
           -arcIndex - 1
-        const deltaEncodedPoints = allArcs[normalArcIndex].slice()
-        const arcPoints = []
+          const deltaEncodedPoints = allArcs[normalArcIndex].slice()
+          const arcPoints = []
 
-        // for each delta-encoded point in arc
-        deltaEncodedPoints.forEach(delta => {
-          if (arcPoints.length > 0) {
-            // apply delta to last absolute value, then add it
-            const lastPoint = arcPoints[arcPoints.length - 1]
-            const newPoint = [
-              lastPoint[0] + delta[0],
-              lastPoint[1] + delta[1],
+          // for each delta-encoded point in arc
+          deltaEncodedPoints.forEach(delta => {
+            const transformedDelta = [
+              delta[0] * (transform ? transform.scale[0] : 1.0),
+              delta[1] * (transform ? transform.scale[1] : 1.0),
             ]
-            arcPoints.push(newPoint)
-          } else {
-            // first point of delta-encoded arc is absolute, so add it
-            arcPoints.push(delta)
+            if (arcPoints.length > 0) {
+              // apply delta to last absolute value, then add it
+              const lastPoint = arcPoints[arcPoints.length - 1]
+              const newPoint = [
+                lastPoint[0] + transformedDelta[0],
+                lastPoint[1] + transformedDelta[1],
+              ]
+              arcPoints.push(newPoint)
+            } else {
+              // first point of delta-encoded arc is absolute, so add it
+              arcPoints.push(transformedDelta)
+            }
+          })
+
+          // reverse arc if specified in index
+          if (reverse) {
+            arcPoints.reverse()
           }
-        })
 
-        // reverse arc if specified in index
-        if (reverse) {
-          arcPoints.reverse()
-        }
-
-        // drop first point of arc if it's the same as last point of last arc
-        if (geometryPoints.length > 0) {
-          const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
-          const firstArcPoint = arcPoints[0]
-          if (
-            firstArcPoint[0] === lastGeometryPoint[0] &&
-            firstArcPoint[1] === lastGeometryPoint[1]
-          ) {
-            arcPoints.shift()
+          // drop first point of arc if it's the same as last point of last arc
+          if (geometryPoints.length > 0) {
+            const lastGeometryPoint = geometryPoints[geometryPoints.length - 1]
+            const firstArcPoint = arcPoints[0]
+            if (
+              Math.abs(firstArcPoint[0] - lastGeometryPoint[0]) < ERROR_MARGIN &&
+              Math.abs(firstArcPoint[1] - lastGeometryPoint[1]) < ERROR_MARGIN
+            ) {
+              arcPoints.shift()
+            }
           }
-        }
 
-        return geometryPoints.concat(arcPoints)
-      },
-      []
-    )
+          return geometryPoints.concat(arcPoints)
+        },
+        []
+      )
+    })
   }
 
   /** translate X/Y coordinates into hexagon coordinates */
-  _getTilePositions(tilePoints) {
-    const [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
+  _getTilePositions(tilePoints, tileSize) {
+    let xDelta
+    let yDelta
+    if (tileSize) {
+      // v1.1+ tilegram
+      xDelta = tileSize.width
+      yDelta = tileSize.height * 0.75
+    } else {
+      // pre-v1.1 tilegram
+      [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
+      xDelta *= 2.0
+    }
+
     let origin
     let position
     return tilePoints.map(tilePoint => {
       [position, origin] = this._getTilePosition(
         tilePoint.point,
         origin,
-        xDelta * 2.0,
+        xDelta,
         yDelta
       )
       return {
@@ -138,7 +167,10 @@ class Importer {
     return [position, origin]
   }
 
-  /** Determine probable X and Y deltas from tile points by tallying */
+  /**
+   * DEPRECATED: for pre-v1.1.0 only
+   * Determine probable X and Y deltas from tile points by tallying
+   */
   _getProbableDeltas(tilePoints) {
     const SAMPLE_COUNT = 100
     const DIMENSIONS = ['x', 'y']

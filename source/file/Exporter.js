@@ -6,6 +6,7 @@
  */
 import {color} from 'd3-color'
 import {nest} from 'd3-collection'
+import {topology} from 'topojson/server.js'
 import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
 import {fipsColor, fipsToPostal} from '../utils'
@@ -15,9 +16,6 @@ export const OBJECT_ID = 'tiles'
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
   toTopoJson(tiles, metricPerTile) {
-    const geometries = []
-    const arcs = []
-
     const maxTileY = tiles.reduce(
       (max, tile) => Math.max(max, tile.position.y),
       -Infinity
@@ -30,44 +28,64 @@ class Exporter {
       )
     })
 
-    tiles.forEach((tile, tileIndex) => {
-      const geometry = {
-        type: 'Polygon',
-        id: tile.id,
-        arcs: [[tileIndex]],
-        properties: {
-          state: fipsToPostal(tile.id),
-        },
+    // Aggregate tiles by state
+    const tilesByState = {}
+    tiles.forEach(tile => {
+      if (!tilesByState[tile.id]) {
+        tilesByState[tile.id] = []
       }
-      if (tile.tilegramValue) {
-        geometry.properties.tilegramValue = tile.tilegramValue
-      }
-      geometries.push(geometry)
-      // if maxTileY is even, then subtract position from maxTile
-      // if maxTileY is odd, then subtract one to maintain correct staggering
-      const center = gridGeometry.tileCenterPoint({
-        x: tile.position.x,
-        y: (maxTileY - tile.position.y) - (maxTileY % 2),
-      })
-      const hexagonPoints = gridGeometry.getPointsAround(center, true)
-      hexagonPoints.push(hexagonPoints[0]) // close the loop
-      arcs.push(hexagonPoints)
+      tilesByState[tile.id].push(tile)
     })
 
-    return {
-      type: 'Topology',
-      properties: {
-        tilegramMetricPerTile: metricPerTile,
-        tilegramVersion: version,
-      },
-      objects: {
-        [OBJECT_ID]: {
-          type: 'GeometryCollection',
-          geometries,
+    const features = Object.keys(tilesByState).map(stateId => {
+      const stateTiles = tilesByState[stateId]
+
+      // Feature Geometry
+      const tilesCoordinates = stateTiles.map(tile => {
+        // if maxTileY is odd, then subtract one to maintain correct staggering
+        const center = gridGeometry.tileCenterPoint({
+          x: tile.position.x,
+          y: (maxTileY - tile.position.y) - (maxTileY % 2),
+        })
+        const hexagonPoints = gridGeometry.getPointsAround(center, true)
+        hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
+        return hexagonPoints
+      })
+
+      const feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'MultiPolygon',
+          coordinates: [tilesCoordinates],
         },
+        id: stateId,
+        properties: {
+          state: fipsToPostal(stateId),
+        },
+      }
+      if (stateTiles[0].tilegramValue) {
+        feature.properties.tilegramValue = stateTiles[0].tilegramValue
+      }
+      return feature
+    })
+
+    const geoJsonObjects = {
+      [OBJECT_ID]: {
+        type: 'FeatureCollection',
+        features,
       },
-      arcs,
     }
+
+    // Convert verbose GeoJSON to compressed TopoJSON format
+    const topoJson = topology(geoJsonObjects, {
+      'property-transform': feature => feature.properties,
+    })
+    topoJson.properties = {
+      tilegramMetricPerTile: metricPerTile,
+      tilegramVersion: version,
+      tilegramTileSize: gridGeometry.getTileDimensions(),
+    }
+    return topoJson
   }
 
   toSvg(tiles) {
