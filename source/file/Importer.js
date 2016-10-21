@@ -106,9 +106,11 @@ class Importer {
     let xDelta
     let yDelta
     if (tileSize) {
+      // v1.1+ tilegram
       xDelta = tileSize.width
       yDelta = tileSize.height * 0.75
     } else {
+      // pre-v1.1 tilegram
       [xDelta, yDelta] = this._getProbableDeltas(tilePoints)
       xDelta *= 2.0
     }
