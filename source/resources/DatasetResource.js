@@ -30,11 +30,16 @@ class DatasetResource {
     const badMapIds = []
     const badValueIds = []
     const parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])]).filter(row => {
-      const hasId = features.indexOf(row[0]) > -1
-      if (!hasId) {
-        badMapIds.push(row[0])
+      let hasId = (features.indexOf(row[0]) > -1)
+      if (!hasId && row[0]) {
+        if (features.indexOf(`0${row[0]}` > -1)) {
+          hasId = true
+          row[0] = `0${row[0]}`
+        } else {
+          badMapIds.push(row[0])
+        }
       }
-      if (row[1] <= 0 || isNaN(row[1])) {
+      if ((row[1] <= 0 || isNaN(row[1])) && row[0]) {
         badValueIds.push(row[0])
       }
       return hasId && row[1] > 0
