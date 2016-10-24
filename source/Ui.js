@@ -24,11 +24,13 @@ class Ui {
     this._generateOpen = true
     this._editOpen = false
     this._manualOpen = false
+    this._nErrors = 0
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
     this._checkForEdits = this._checkForEdits.bind(this)
     this._toggleManual = this._toggleManual.bind(this)
+    this._updateNErrors = this._updateNErrors.bind(this)
   }
 
   setGeos(geos) {
@@ -179,6 +181,13 @@ class Ui {
     this.render()
   }
 
+  _updateNErrors(value) {
+    if (this._nErrors !== value) {
+      this._nErrors = value
+      this.render()
+    }
+  }
+
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
@@ -209,7 +218,7 @@ class Ui {
         className={this._editOpen ? 'step' : 'active step'}
         onClick={this._toggle('edit')}
       >
-        <span>Refine</span>
+        <span>Refine </span><span className='n-errors'>({this._nErrors} states w/ errors)</span>
         <span className='arrow' />
       </div>
     )
@@ -299,6 +308,7 @@ class Ui {
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
               onMetricMouseOut={this._unhighlightCallback}
+              updateNErrors={this._updateNErrors}
             />
           </div>
           <hr />

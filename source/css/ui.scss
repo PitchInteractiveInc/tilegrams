@@ -149,6 +149,11 @@ code {
     color: $blue;
     font-weight: 500;
   }
+  .n-errors {
+    font-size: 85%;
+    opacity: 0.6;
+    padding-left: 3px;
+  }
   .csv-input {
     margin-top: 15px;
     textarea {
