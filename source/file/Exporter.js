@@ -21,13 +21,6 @@ class Exporter {
       -Infinity
     )
 
-    tiles.sort((a, b) => {
-      return (
-        (a.position.y + (a.position.x * (maxTileY + 1))) -
-        (b.position.y + (b.position.x * (maxTileY + 1)))
-      )
-    })
-
     // Aggregate tiles by state
     const tilesByState = {}
     tiles.forEach(tile => {
@@ -66,6 +59,7 @@ class Exporter {
       if (stateTiles[0].tilegramValue) {
         feature.properties.tilegramValue = stateTiles[0].tilegramValue
       }
+
       return feature
     })
 
@@ -79,6 +73,7 @@ class Exporter {
     // Convert verbose GeoJSON to compressed TopoJSON format
     const topoJson = topology(geoJsonObjects, {
       'property-transform': feature => feature.properties,
+      quantization: 1e10,
     })
     topoJson.properties = {
       tilegramMetricPerTile: metricPerTile,

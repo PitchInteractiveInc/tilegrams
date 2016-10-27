@@ -1,3 +1,4 @@
+import pitchElectoralCollegeTilegram from '../../tilegrams/pitch-electoral-college.json'
 import pitchPopulationTilegram from '../../tilegrams/pitch-us-population-500k.json'
 import nprOneToOneTilegram from '../../tilegrams/npr-one-to-one.json'
 import fiveThirtyEightElectoralCollegeTilegram from
@@ -7,7 +8,11 @@ class TilegramResource {
   constructor() {
     this._tilegrams = [
       {
-        label: 'Pitch U.S. Population 2016 v1',
+        label: 'Pitch Electoral College',
+        topoJson: pitchElectoralCollegeTilegram,
+      },
+      {
+        label: 'Pitch U.S. Population 2016',
         topoJson: pitchPopulationTilegram,
       },
       {
