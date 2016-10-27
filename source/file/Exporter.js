@@ -73,7 +73,7 @@ class Exporter {
     // Convert verbose GeoJSON to compressed TopoJSON format
     const topoJson = topology(geoJsonObjects, {
       'property-transform': feature => feature.properties,
-      quantization: 1e8,
+      quantization: 1e10,
     })
     topoJson.properties = {
       tilegramMetricPerTile: metricPerTile,
