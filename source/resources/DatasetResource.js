@@ -3,7 +3,9 @@ import {csvParseRows} from 'd3-dsv'
 import mapResource from './MapResource'
 
 import populationCsv from '../../data/population-by-state.csv'
-import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
+import electoralCollege2012Csv from '../../data/electoral-college-votes-by-state-2012.csv'
+import electoralCollege2004Csv from '../../data/electoral-college-votes-by-state-2004.csv'
+import electoralCollege1992Csv from '../../data/electoral-college-votes-by-state-1992.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
 
 class DatasetResource {
@@ -14,8 +16,16 @@ class DatasetResource {
         data: this.parseCsv(populationCsv),
       },
       {
-        label: 'U.S. Electoral College 2016',
-        data: this.parseCsv(electoralCollegeCsv),
+        label: 'U.S. Electoral College 2012-2016',
+        data: this.parseCsv(electoralCollege2012Csv),
+      },
+      {
+        label: 'U.S. Electoral College 2004-2008',
+        data: this.parseCsv(electoralCollege2004Csv),
+      },
+      {
+        label: 'U.S. Electoral College 1992-2000',
+        data: this.parseCsv(electoralCollege1992Csv),
       },
       {
         label: 'U.S. GDP 2015 (Millions)',
