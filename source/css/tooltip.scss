@@ -1,0 +1,32 @@
+.tooltip {
+  background-color: #fff;
+  padding: 5px;
+  border: 1px solid black;
+  font-size: 12px;
+  max-width: 500px;
+  margin-left: 8px;
+  transform: translateY(-50%);
+}
+
+//adds arrow
+.tooltip:after, .tooltip:before {
+	right: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.tooltip:after {
+	border-right-color: black;
+	border-width: 7px;
+	margin-top: -7px;
+}
+.tooltip:before {
+	border-right-color: black;
+	border-width: 8px;
+	margin-top: -8px;
+}
