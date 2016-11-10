@@ -233,7 +233,7 @@ class Ui {
             className='manual-close'
             onClick={this._toggleManual}
           >
-            &#10005;
+            <i className='fa fa-times' />
           </div>
           <ReactMarkdown source={manual} />
         </div>
