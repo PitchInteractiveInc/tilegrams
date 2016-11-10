@@ -39,7 +39,7 @@ class DatasetResource {
         if (!hasId) {
           badMapIds.push(row[0])
         }
-        if ((row[1] <= 0 || isNaN(row[1])) && row[0]) {
+        if (row[1] <= 0 || isNaN(row[1])) {
           badValueIds.push(row[0])
         }
         return hasId && row[1] > 0
