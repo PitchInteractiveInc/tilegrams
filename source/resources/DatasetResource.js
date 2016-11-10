@@ -25,25 +25,25 @@ class DatasetResource {
     this._selectedDatasetIndex = 2
   }
 
+  _validateFips(fips) {
+    return fips && fips.length < 2 ? `0${fips}` : fips
+  }
+
   parseCsv(csv) {
     const features = mapResource.getUniqueFeatureIds()
     const badMapIds = []
     const badValueIds = []
-    const parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])]).filter(row => {
-      let hasId = (features.indexOf(row[0]) > -1)
-      if (!hasId && row[0]) {
-        if (features.indexOf(`0${row[0]}` > -1)) {
-          hasId = true
-          row[0] = `0${row[0]}`
-        } else {
+    const parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
+      .filter(row => {
+        const hasId = (features.indexOf(row[0]) > -1)
+        if (!hasId) {
           badMapIds.push(row[0])
         }
-      }
-      if ((row[1] <= 0 || isNaN(row[1])) && row[0]) {
-        badValueIds.push(row[0])
-      }
-      return hasId && row[1] > 0
-    })
+        if ((row[1] <= 0 || isNaN(row[1])) && row[0]) {
+          badValueIds.push(row[0])
+        }
+        return hasId && row[1] > 0
+      })
     if (badMapIds.length || badValueIds.length) {
       this._warnDataErrors(badMapIds, badValueIds)
     }
@@ -51,8 +51,8 @@ class DatasetResource {
   }
 
   _warnDataErrors(badMapIds, badValueIds) {
-    const mapIdString = badMapIds.join(', ')
-    const valueIdString = badValueIds.join(', ')
+    const mapIdString = badMapIds.map(id => `"${id}"`).join(', ')
+    const valueIdString = badValueIds.map(id => `"${id}"`).join(', ')
     let alertString = ''
     if (mapIdString) {
       alertString += `There is no associated map data associated with id(s): ${mapIdString}.`
