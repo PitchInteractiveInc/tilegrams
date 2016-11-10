@@ -4,7 +4,7 @@ import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import mapResource from '../resources/MapResource'
+import mapResource from '../resources/WorldMapResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -54,13 +54,13 @@ export default class MapGraphic extends Graphic {
     let filteredGeometries = null
 
     // for custom uploads with incomplete data
-    if (properties.length !== baseMapTopoJson.objects.states.geometries.length) {
+    if (properties.length !== baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length) {
       const statesWithData = properties.map(property => property[0])
-      filteredGeometries = baseMapTopoJson.objects.states.geometries
+      filteredGeometries = baseMapTopoJson.objects[mapResource.getObjectId()].geometries
         .filter(geom => statesWithData.indexOf(geom.id) > -1)
       filteredTopoJson = JSON.parse(JSON.stringify(baseMapTopoJson)) // clones the baseMap
       // only pass filtered geometries to topogram generator
-      filteredTopoJson.objects.states.geometries = filteredGeometries
+      filteredTopoJson.objects[mapResource.getObjectId()].geometries = filteredGeometries
     }
 
     return {
