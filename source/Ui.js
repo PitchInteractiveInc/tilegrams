@@ -11,6 +11,7 @@ import TileGenerationUiControls from './components/TileGenerationUiControls'
 import HexMetrics from './components/HexMetrics'
 import ExportButton from './components/ExportButton'
 import EditWarningModal from './components/EditWarningModal'
+import Tooltip from './components/Tooltip'
 import googleNewsLabLogo from './images/gnl-logo.png'
 import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
@@ -24,11 +25,16 @@ class Ui {
     this._generateOpen = true
     this._editOpen = false
     this._manualOpen = false
+    this._nErrors = 0
+    this._hideRefineTooltip = true
+    this._mouseY = 0
 
     this._startOver = this._startOver.bind(this)
     this._resumeEditing = this._resumeEditing.bind(this)
     this._checkForEdits = this._checkForEdits.bind(this)
     this._toggleManual = this._toggleManual.bind(this)
+    this._updateNErrors = this._updateNErrors.bind(this)
+    this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this)
   }
 
   setGeos(geos) {
@@ -179,6 +185,21 @@ class Ui {
     this.render()
   }
 
+  _updateNErrors(value) {
+    if (this._nErrors !== value) {
+      this._nErrors = value
+      this.render()
+    }
+  }
+
+  _toggleRefineTooltip(event) {
+    this._hideRefineTooltip = !this._hideRefineTooltip
+    if (!this._hideRefineTooltip) {
+      this._mouseY = event.clientY
+    }
+    this.render()
+  }
+
   render() {
     const tileGenerationControls = (
       <TileGenerationUiControls
@@ -204,12 +225,26 @@ class Ui {
         <span className='arrow' />
       </div>
     )
+    let errorWarning = null
+    if (this._nErrors > 0) {
+      const statesTxt = this._nErrors === 1 ? 'state' : 'states'
+      errorWarning = (
+        <span
+          className='n-errors'
+          onMouseOver={this._toggleRefineTooltip}
+          onMouseOut={this._toggleRefineTooltip}
+        >
+          <i className='fa fa-exclamation-triangle' /> {this._nErrors} {statesTxt}
+        </span>
+      )
+    }
     const editOption = (
       <div
         className={this._editOpen ? 'step' : 'active step'}
         onClick={this._toggle('edit')}
       >
-        <span>Refine</span>
+        <span>Refine </span>
+          {errorWarning}
         <span className='arrow' />
       </div>
     )
@@ -299,6 +334,7 @@ class Ui {
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
               onMetricMouseOut={this._unhighlightCallback}
+              updateNErrors={this._updateNErrors}
             />
           </div>
           <hr />
@@ -351,6 +387,11 @@ class Ui {
             on GitHub
           </span>
         </h2>
+        <Tooltip
+          hidden={this._hideRefineTooltip}
+          text='Some areas require additional manual adjustment to be statistically accurate.'
+          yPos={this._mouseY}
+        />
       </div>,
       this._container
     )

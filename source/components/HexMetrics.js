@@ -8,6 +8,10 @@ export default class HexMetrics extends React.Component {
     super(props)
 
     this.state = {
+      metrics: {
+        stats: [],
+        shouldWarn: false,
+      },
       hideNullStats: false,
       draggingHex: null,
       mouseX: 0,
@@ -23,6 +27,11 @@ export default class HexMetrics extends React.Component {
     document.body.addEventListener('mousemove', this._updateMousePosition)
     document.body.addEventListener('mouseup', this._cancelDragging)
     document.getElementById('ui').addEventListener('mouseleave', this._cancelDragging)
+    this._updateMetricsFromProps(this.props)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this._updateMetricsFromProps(nextProps)
   }
 
   componentWillUnmount() {
@@ -51,22 +60,13 @@ export default class HexMetrics extends React.Component {
     })
   }
 
-  _getMetrics() {
-    if (!this.props.dataset) {
-      return (
-        this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
-          return {
-            key: d.key,
-            nHex: d.value,
-          }
-        })
-      )
-    }
-    const input = this.props.dataset.map(row => ({key: row[0], value: +row[1]}))
+  _updateMetricsFromProps(props) {
+    const input = props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
-    const selectedRatio = this.props.metricPerTile
+    const selectedRatio = props.metricPerTile
     let shouldWarn = false
-    const stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map((d) => {
+    let nErrors = 0
+    const stats = this._getCountsByGeo(props.tiles, props.geos).map((d) => {
       const metric = inputHash[d.key]
       const stat = {key: d.key, nHex: d.value, disable: !metric}
       if (metric) {
@@ -77,10 +77,18 @@ export default class HexMetrics extends React.Component {
         stat.idealNHex = idealNHex
         stat.metric = metric
         stat.deviation = d.value - idealNHex
+        if (stat.deviation !== 0) {
+          nErrors++
+        }
       }
       return stat
     })
-    return {stats, shouldWarn}
+
+    props.updateNErrors(nErrors)
+
+    this.setState({
+      metrics: {stats, shouldWarn},
+    })
   }
 
   _drawHexagon(id, dragging) {
@@ -177,7 +185,7 @@ export default class HexMetrics extends React.Component {
   }
 
   render() {
-    const metrics = this._getMetrics()
+    const metrics = this.state.metrics
     const hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics'
     const draggingHex = this.state.draggingHex
       ? this._drawHexagon(this.state.draggingHex, true)
@@ -216,4 +224,5 @@ HexMetrics.propTypes = {
   onAddTileMouseDown: PropTypes.func,
   onMetricMouseOut: PropTypes.func,
   onMetricMouseOver: PropTypes.func,
+  updateNErrors: PropTypes.func,
 }
