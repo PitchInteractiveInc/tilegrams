@@ -2,7 +2,7 @@ import usTopoJson from '../../maps/us-110m.topo.json'
 
 const OBJECT_ID = 'states'
 
-class MapResource {
+class USMapResource {
   constructor(topoJson) {
     this._topoJson = topoJson
   }
@@ -24,4 +24,4 @@ class MapResource {
   }
 }
 
-export default new MapResource(usTopoJson)
+export default new USMapResource(usTopoJson)

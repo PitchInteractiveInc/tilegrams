@@ -2,7 +2,7 @@ import worldTopoJson from '../../maps/world.topo.json'
 
 const OBJECT_ID = 'countries'
 
-class MapResource {
+class WorldMapResource {
   constructor(topoJson) {
     this._topoJson = topoJson
   }
@@ -24,4 +24,4 @@ class MapResource {
   }
 }
 
-export default new MapResource(worldTopoJson)
+export default new WorldMapResource(worldTopoJson)

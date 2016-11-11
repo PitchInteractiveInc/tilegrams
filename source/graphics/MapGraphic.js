@@ -4,7 +4,7 @@ import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import mapResource from '../resources/WorldMapResource'
+import mapResource from '../resources/USMapResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -53,8 +53,9 @@ export default class MapGraphic extends Graphic {
     let filteredTopoJson = null
     let filteredGeometries = null
 
+    const baseMapLength = baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length
     // for custom uploads with incomplete data
-    if (properties.length !== baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length) {
+    if (properties.length !== baseMapLength) {
       const statesWithData = properties.map(property => property[0])
       filteredGeometries = baseMapTopoJson.objects[mapResource.getObjectId()].geometries
         .filter(geom => statesWithData.indexOf(geom.id) > -1)

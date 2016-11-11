@@ -10,18 +10,22 @@ class TilegramResource {
       {
         label: 'Pitch Electoral College',
         topoJson: pitchElectoralCollegeTilegram,
+        geography: 'usa',
       },
       {
         label: 'Pitch U.S. Population 2016',
         topoJson: pitchPopulationTilegram,
+        geography: 'usa',
       },
       {
         label: 'FiveThirtyEight Electoral College',
         topoJson: fiveThirtyEightElectoralCollegeTilegram,
+        geography: 'usa',
       },
       {
         label: 'NPR 1-to-1',
         topoJson: nprOneToOneTilegram,
+        geography: 'usa',
       },
     ]
   }

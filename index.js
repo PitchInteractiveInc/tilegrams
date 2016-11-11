@@ -5,7 +5,7 @@ import metrics from './source/Metrics'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import datasetResource from './source/resources/DatasetResource'
-import mapResource from './source/resources/MapResource'
+import mapResource from './source/resources/USMapResource'
 import tilegramResource from './source/resources/TilegramResource'
 import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
@@ -44,6 +44,11 @@ function selectDataset(dataset) {
 function updateUi() {
   ui.setTiles(canvas.getGrid().getTiles())
   ui.render()
+}
+
+function selectGeography(geography) {
+  ui.setGeography(geography)
+  updateUi()
 }
 
 function loadTopoJson(topoJson) {
@@ -106,6 +111,7 @@ function init() {
     })
   })
   ui.setImportCallback(loadTopoJson)
+  ui.setGeographySelectCallback(selectGeography)
 
   // populate
   ui.setGeos(mapResource.getUniqueFeatureIds())

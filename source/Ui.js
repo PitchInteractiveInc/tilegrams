@@ -16,6 +16,7 @@ import googleNewsLabLogo from './images/gnl-logo.png'
 import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
 import facebookLogo from './images/social-facebook.svg'
+import GeographySelector from './components/GeographySelector'
 
 class Ui {
   constructor() {
@@ -66,6 +67,10 @@ class Ui {
     this._selectedDataset = dataset
     this._selectedDatasetSum = this.getDatasetSum(dataset)
     this._metricDomain = this._calculateIdealDomain()
+  }
+
+  setGeography(geography) {
+    this._selectedGeography = geography
   }
 
   /** calculate the slider's domain from the dataset */
@@ -128,6 +133,12 @@ class Ui {
   setImportCallback(callback) {
     this._importCallback = (topoJson) => {
       callback(topoJson)
+    }
+  }
+
+  setGeographySelectCallback(callback) {
+    this._selectGeographyCallback = (geography) => {
+      callback(geography)
     }
   }
 
@@ -326,7 +337,12 @@ class Ui {
               style={{height: uiControlsHeight, overflow: 'hidden'}}
               onMouseDown={this._checkForEdits}
             >
+              <GeographySelector
+                selectedGeography={this._selectedGeography}
+                selectGeography={this._selectGeographyCallback}
+              />
               {tileGenerationControls}
+              }
             </div>
             <hr />
             {editOption}

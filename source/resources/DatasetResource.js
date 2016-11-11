@@ -1,6 +1,6 @@
 import {csvParseRows} from 'd3-dsv'
 
-import mapResource from './MapResource'
+import mapResource from './USMapResource'
 
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
@@ -12,14 +12,17 @@ class DatasetResource {
       {
         label: 'U.S. Population 2016',
         data: this.parseCsv(populationCsv),
+        geography: 'usa',
       },
       {
         label: 'U.S. Electoral College 2016',
         data: this.parseCsv(electoralCollegeCsv),
+        geography: 'usa',
       },
       {
         label: 'U.S. GDP 2015 (Millions)',
         data: this.parseCsv(gdpCsv),
+        geography: 'usa',
       },
     ]
     this._selectedDatasetIndex = 2
