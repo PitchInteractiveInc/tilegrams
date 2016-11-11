@@ -11492,547 +11492,549 @@
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.topojson = global.topojson || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  function noop() {}
+	function noop() {}
 
-	  function transformAbsolute(transform) {
-	    if (!transform) return noop;
-	    var x0,
-	        y0,
-	        kx = transform.scale[0],
-	        ky = transform.scale[1],
-	        dx = transform.translate[0],
-	        dy = transform.translate[1];
-	    return function(point, i) {
-	      if (!i) x0 = y0 = 0;
-	      point[0] = (x0 += point[0]) * kx + dx;
-	      point[1] = (y0 += point[1]) * ky + dy;
-	    };
+	function transformAbsolute(transform) {
+	  if (!transform) return noop;
+	  var x0,
+	      y0,
+	      kx = transform.scale[0],
+	      ky = transform.scale[1],
+	      dx = transform.translate[0],
+	      dy = transform.translate[1];
+	  return function(point, i) {
+	    if (!i) x0 = y0 = 0;
+	    point[0] = (x0 += point[0]) * kx + dx;
+	    point[1] = (y0 += point[1]) * ky + dy;
+	  };
+	}
+
+	function transformRelative(transform) {
+	  if (!transform) return noop;
+	  var x0,
+	      y0,
+	      kx = transform.scale[0],
+	      ky = transform.scale[1],
+	      dx = transform.translate[0],
+	      dy = transform.translate[1];
+	  return function(point, i) {
+	    if (!i) x0 = y0 = 0;
+	    var x1 = Math.round((point[0] - dx) / kx),
+	        y1 = Math.round((point[1] - dy) / ky);
+	    point[0] = x1 - x0;
+	    point[1] = y1 - y0;
+	    x0 = x1;
+	    y0 = y1;
+	  };
+	}
+
+	function reverse(array, n) {
+	  var t, j = array.length, i = j - n;
+	  while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+	}
+
+	function bisect(a, x) {
+	  var lo = 0, hi = a.length;
+	  while (lo < hi) {
+	    var mid = lo + hi >>> 1;
+	    if (a[mid] < x) lo = mid + 1;
+	    else hi = mid;
+	  }
+	  return lo;
+	}
+
+	function feature(topology, o) {
+	  return o.type === "GeometryCollection" ? {
+	    type: "FeatureCollection",
+	    features: o.geometries.map(function(o) { return feature$1(topology, o); })
+	  } : feature$1(topology, o);
+	}
+
+	function feature$1(topology, o) {
+	  var f = {
+	    type: "Feature",
+	    id: o.id,
+	    properties: o.properties || {},
+	    geometry: object(topology, o)
+	  };
+	  if (o.id == null) delete f.id;
+	  return f;
+	}
+
+	function object(topology, o) {
+	  var absolute = transformAbsolute(topology.transform),
+	      arcs = topology.arcs;
+
+	  function arc(i, points) {
+	    if (points.length) points.pop();
+	    for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
+	      points.push(p = a[k].slice());
+	      absolute(p, k);
+	    }
+	    if (i < 0) reverse(points, n);
 	  }
 
-	  function transformRelative(transform) {
-	    if (!transform) return noop;
-	    var x0,
-	        y0,
-	        kx = transform.scale[0],
-	        ky = transform.scale[1],
-	        dx = transform.translate[0],
-	        dy = transform.translate[1];
-	    return function(point, i) {
-	      if (!i) x0 = y0 = 0;
-	      var x1 = Math.round((point[0] - dx) / kx),
-	          y1 = Math.round((point[1] - dy) / ky);
-	      point[0] = x1 - x0;
-	      point[1] = y1 - y0;
-	      x0 = x1;
-	      y0 = y1;
-	    };
+	  function point(p) {
+	    p = p.slice();
+	    absolute(p, 0);
+	    return p;
 	  }
 
-	  function reverse(array, n) {
-	    var t, j = array.length, i = j - n;
-	    while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+	  function line(arcs) {
+	    var points = [];
+	    for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+	    if (points.length < 2) points.push(points[0].slice());
+	    return points;
 	  }
 
-	  function bisect(a, x) {
-	    var lo = 0, hi = a.length;
-	    while (lo < hi) {
-	      var mid = lo + hi >>> 1;
-	      if (a[mid] < x) lo = mid + 1;
-	      else hi = mid;
-	    }
-	    return lo;
+	  function ring(arcs) {
+	    var points = line(arcs);
+	    while (points.length < 4) points.push(points[0].slice());
+	    return points;
 	  }
 
-	  function feature(topology, o) {
-	    return o.type === "GeometryCollection" ? {
-	      type: "FeatureCollection",
-	      features: o.geometries.map(function(o) { return feature$1(topology, o); })
-	    } : feature$1(topology, o);
+	  function polygon(arcs) {
+	    return arcs.map(ring);
 	  }
 
-	  function feature$1(topology, o) {
-	    var f = {
-	      type: "Feature",
-	      id: o.id,
-	      properties: o.properties || {},
-	      geometry: object(topology, o)
-	    };
-	    if (o.id == null) delete f.id;
-	    return f;
+	  function geometry(o) {
+	    var t = o.type;
+	    return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
+	        : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
+	        : null;
 	  }
 
-	  function object(topology, o) {
-	    var absolute = transformAbsolute(topology.transform),
-	        arcs = topology.arcs;
+	  var geometryType = {
+	    Point: function(o) { return point(o.coordinates); },
+	    MultiPoint: function(o) { return o.coordinates.map(point); },
+	    LineString: function(o) { return line(o.arcs); },
+	    MultiLineString: function(o) { return o.arcs.map(line); },
+	    Polygon: function(o) { return polygon(o.arcs); },
+	    MultiPolygon: function(o) { return o.arcs.map(polygon); }
+	  };
 
-	    function arc(i, points) {
-	      if (points.length) points.pop();
-	      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
-	        points.push(p = a[k].slice());
-	        absolute(p, k);
-	      }
-	      if (i < 0) reverse(points, n);
+	  return geometry(o);
+	}
+
+	function stitchArcs(topology, arcs) {
+	  var stitchedArcs = {},
+	      fragmentByStart = {},
+	      fragmentByEnd = {},
+	      fragments = [],
+	      emptyIndex = -1;
+
+	  // Stitch empty arcs first, since they may be subsumed by other arcs.
+	  arcs.forEach(function(i, j) {
+	    var arc = topology.arcs[i < 0 ? ~i : i], t;
+	    if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
+	      t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
 	    }
+	  });
 
-	    function point(p) {
-	      p = p.slice();
-	      absolute(p, 0);
-	      return p;
-	    }
+	  arcs.forEach(function(i) {
+	    var e = ends(i),
+	        start = e[0],
+	        end = e[1],
+	        f, g;
 
-	    function line(arcs) {
-	      var points = [];
-	      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-	      if (points.length < 2) points.push(points[0].slice());
-	      return points;
-	    }
-
-	    function ring(arcs) {
-	      var points = line(arcs);
-	      while (points.length < 4) points.push(points[0].slice());
-	      return points;
-	    }
-
-	    function polygon(arcs) {
-	      return arcs.map(ring);
-	    }
-
-	    function geometry(o) {
-	      var t = o.type;
-	      return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
-	          : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
-	          : null;
-	    }
-
-	    var geometryType = {
-	      Point: function(o) { return point(o.coordinates); },
-	      MultiPoint: function(o) { return o.coordinates.map(point); },
-	      LineString: function(o) { return line(o.arcs); },
-	      MultiLineString: function(o) { return o.arcs.map(line); },
-	      Polygon: function(o) { return polygon(o.arcs); },
-	      MultiPolygon: function(o) { return o.arcs.map(polygon); }
-	    };
-
-	    return geometry(o);
-	  }
-
-	  function stitchArcs(topology, arcs) {
-	    var stitchedArcs = {},
-	        fragmentByStart = {},
-	        fragmentByEnd = {},
-	        fragments = [],
-	        emptyIndex = -1;
-
-	    // Stitch empty arcs first, since they may be subsumed by other arcs.
-	    arcs.forEach(function(i, j) {
-	      var arc = topology.arcs[i < 0 ? ~i : i], t;
-	      if (arc.length < 3 && !arc[1][0] && !arc[1][1]) {
-	        t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
-	      }
-	    });
-
-	    arcs.forEach(function(i) {
-	      var e = ends(i),
-	          start = e[0],
-	          end = e[1],
-	          f, g;
-
-	      if (f = fragmentByEnd[start]) {
-	        delete fragmentByEnd[f.end];
-	        f.push(i);
-	        f.end = end;
-	        if (g = fragmentByStart[end]) {
-	          delete fragmentByStart[g.start];
-	          var fg = g === f ? f : f.concat(g);
-	          fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
-	        } else {
-	          fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
-	        }
-	      } else if (f = fragmentByStart[end]) {
-	        delete fragmentByStart[f.start];
-	        f.unshift(i);
-	        f.start = start;
-	        if (g = fragmentByEnd[start]) {
-	          delete fragmentByEnd[g.end];
-	          var gf = g === f ? f : g.concat(f);
-	          fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
-	        } else {
-	          fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
-	        }
+	    if (f = fragmentByEnd[start]) {
+	      delete fragmentByEnd[f.end];
+	      f.push(i);
+	      f.end = end;
+	      if (g = fragmentByStart[end]) {
+	        delete fragmentByStart[g.start];
+	        var fg = g === f ? f : f.concat(g);
+	        fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
 	      } else {
-	        f = [i];
-	        fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
+	        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
 	      }
-	    });
-
-	    function ends(i) {
-	      var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
-	      if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
-	      else p1 = arc[arc.length - 1];
-	      return i < 0 ? [p1, p0] : [p0, p1];
-	    }
-
-	    function flush(fragmentByEnd, fragmentByStart) {
-	      for (var k in fragmentByEnd) {
-	        var f = fragmentByEnd[k];
-	        delete fragmentByStart[f.start];
-	        delete f.start;
-	        delete f.end;
-	        f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
-	        fragments.push(f);
+	    } else if (f = fragmentByStart[end]) {
+	      delete fragmentByStart[f.start];
+	      f.unshift(i);
+	      f.start = start;
+	      if (g = fragmentByEnd[start]) {
+	        delete fragmentByEnd[g.end];
+	        var gf = g === f ? f : g.concat(f);
+	        fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
+	      } else {
+	        fragmentByStart[f.start] = fragmentByEnd[f.end] = f;
 	      }
-	    }
-
-	    flush(fragmentByEnd, fragmentByStart);
-	    flush(fragmentByStart, fragmentByEnd);
-	    arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
-
-	    return fragments;
-	  }
-
-	  function mesh(topology) {
-	    return object(topology, meshArcs.apply(this, arguments));
-	  }
-
-	  function meshArcs(topology, o, filter) {
-	    var arcs = [];
-
-	    function arc(i) {
-	      var j = i < 0 ? ~i : i;
-	      (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
-	    }
-
-	    function line(arcs) {
-	      arcs.forEach(arc);
-	    }
-
-	    function polygon(arcs) {
-	      arcs.forEach(line);
-	    }
-
-	    function geometry(o) {
-	      if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
-	      else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
-	    }
-
-	    if (arguments.length > 1) {
-	      var geomsByArc = [],
-	          geom;
-
-	      var geometryType = {
-	        LineString: line,
-	        MultiLineString: polygon,
-	        Polygon: polygon,
-	        MultiPolygon: function(arcs) { arcs.forEach(polygon); }
-	      };
-
-	      geometry(o);
-
-	      geomsByArc.forEach(arguments.length < 3
-	          ? function(geoms) { arcs.push(geoms[0].i); }
-	          : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
 	    } else {
-	      for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
+	      f = [i];
+	      fragmentByStart[f.start = start] = fragmentByEnd[f.end = end] = f;
 	    }
+	  });
 
-	    return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
+	  function ends(i) {
+	    var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
+	    if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+	    else p1 = arc[arc.length - 1];
+	    return i < 0 ? [p1, p0] : [p0, p1];
 	  }
 
-	  function cartesianTriangleArea(triangle) {
-	    var a = triangle[0], b = triangle[1], c = triangle[2];
-	    return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
+	  function flush(fragmentByEnd, fragmentByStart) {
+	    for (var k in fragmentByEnd) {
+	      var f = fragmentByEnd[k];
+	      delete fragmentByStart[f.start];
+	      delete f.start;
+	      delete f.end;
+	      f.forEach(function(i) { stitchedArcs[i < 0 ? ~i : i] = 1; });
+	      fragments.push(f);
+	    }
 	  }
 
-	  function ring(ring) {
-	    var i = -1,
-	        n = ring.length,
-	        a,
-	        b = ring[n - 1],
-	        area = 0;
+	  flush(fragmentByEnd, fragmentByStart);
+	  flush(fragmentByStart, fragmentByEnd);
+	  arcs.forEach(function(i) { if (!stitchedArcs[i < 0 ? ~i : i]) fragments.push([i]); });
 
-	    while (++i < n) {
-	      a = b;
-	      b = ring[i];
-	      area += a[0] * b[1] - a[1] * b[0];
-	    }
+	  return fragments;
+	}
 
-	    return area / 2;
+	function mesh(topology) {
+	  return object(topology, meshArcs.apply(this, arguments));
+	}
+
+	function meshArcs(topology, o, filter) {
+	  var arcs = [];
+
+	  function arc(i) {
+	    var j = i < 0 ? ~i : i;
+	    (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
 	  }
 
-	  function merge(topology) {
-	    return object(topology, mergeArcs.apply(this, arguments));
+	  function line(arcs) {
+	    arcs.forEach(arc);
 	  }
 
-	  function mergeArcs(topology, objects) {
-	    var polygonsByArc = {},
-	        polygons = [],
-	        components = [];
-
-	    objects.forEach(function(o) {
-	      if (o.type === "Polygon") register(o.arcs);
-	      else if (o.type === "MultiPolygon") o.arcs.forEach(register);
-	    });
-
-	    function register(polygon) {
-	      polygon.forEach(function(ring$$) {
-	        ring$$.forEach(function(arc) {
-	          (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
-	        });
-	      });
-	      polygons.push(polygon);
-	    }
-
-	    function area(ring$$) {
-	      return Math.abs(ring(object(topology, {type: "Polygon", arcs: [ring$$]}).coordinates[0]));
-	    }
-
-	    polygons.forEach(function(polygon) {
-	      if (!polygon._) {
-	        var component = [],
-	            neighbors = [polygon];
-	        polygon._ = 1;
-	        components.push(component);
-	        while (polygon = neighbors.pop()) {
-	          component.push(polygon);
-	          polygon.forEach(function(ring$$) {
-	            ring$$.forEach(function(arc) {
-	              polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
-	                if (!polygon._) {
-	                  polygon._ = 1;
-	                  neighbors.push(polygon);
-	                }
-	              });
-	            });
-	          });
-	        }
-	      }
-	    });
-
-	    polygons.forEach(function(polygon) {
-	      delete polygon._;
-	    });
-
-	    return {
-	      type: "MultiPolygon",
-	      arcs: components.map(function(polygons) {
-	        var arcs = [], n;
-
-	        // Extract the exterior (unique) arcs.
-	        polygons.forEach(function(polygon) {
-	          polygon.forEach(function(ring$$) {
-	            ring$$.forEach(function(arc) {
-	              if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
-	                arcs.push(arc);
-	              }
-	            });
-	          });
-	        });
-
-	        // Stitch the arcs into one or more rings.
-	        arcs = stitchArcs(topology, arcs);
-
-	        // If more than one ring is returned,
-	        // at most one of these rings can be the exterior;
-	        // choose the one with the greatest absolute area.
-	        if ((n = arcs.length) > 1) {
-	          for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
-	            if ((ki = area(arcs[i])) > k) {
-	              t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
-	            }
-	          }
-	        }
-
-	        return arcs;
-	      })
-	    };
+	  function polygon(arcs) {
+	    arcs.forEach(line);
 	  }
 
-	  function neighbors(objects) {
-	    var indexesByArc = {}, // arc index -> array of object indexes
-	        neighbors = objects.map(function() { return []; });
+	  function geometry(o) {
+	    if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
+	    else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
+	  }
 
-	    function line(arcs, i) {
-	      arcs.forEach(function(a) {
-	        if (a < 0) a = ~a;
-	        var o = indexesByArc[a];
-	        if (o) o.push(i);
-	        else indexesByArc[a] = [i];
-	      });
-	    }
-
-	    function polygon(arcs, i) {
-	      arcs.forEach(function(arc) { line(arc, i); });
-	    }
-
-	    function geometry(o, i) {
-	      if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
-	      else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
-	    }
+	  if (arguments.length > 1) {
+	    var geomsByArc = [],
+	        geom;
 
 	    var geometryType = {
 	      LineString: line,
 	      MultiLineString: polygon,
 	      Polygon: polygon,
-	      MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+	      MultiPolygon: function(arcs) { arcs.forEach(polygon); }
 	    };
 
-	    objects.forEach(geometry);
+	    geometry(o);
 
-	    for (var i in indexesByArc) {
-	      for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
-	        for (var k = j + 1; k < m; ++k) {
-	          var ij = indexes[j], ik = indexes[k], n;
-	          if ((n = neighbors[ij])[i = bisect(n, ik)] !== ik) n.splice(i, 0, ik);
-	          if ((n = neighbors[ik])[i = bisect(n, ij)] !== ij) n.splice(i, 0, ij);
-	        }
-	      }
-	    }
-
-	    return neighbors;
+	    geomsByArc.forEach(arguments.length < 3
+	        ? function(geoms) { arcs.push(geoms[0].i); }
+	        : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
+	  } else {
+	    for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
 	  }
 
-	  function compareArea(a, b) {
-	    return a[1][2] - b[1][2];
+	  return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
+	}
+
+	function cartesianTriangleArea(triangle) {
+	  var a = triangle[0], b = triangle[1], c = triangle[2];
+	  return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
+	}
+
+	function ring(ring) {
+	  var i = -1,
+	      n = ring.length,
+	      a,
+	      b = ring[n - 1],
+	      area = 0;
+
+	  while (++i < n) {
+	    a = b;
+	    b = ring[i];
+	    area += a[0] * b[1] - a[1] * b[0];
 	  }
 
-	  function minAreaHeap() {
-	    var heap = {},
-	        array = [],
-	        size = 0;
+	  return area / 2;
+	}
 
-	    heap.push = function(object) {
-	      up(array[object._ = size] = object, size++);
-	      return size;
-	    };
+	function merge(topology) {
+	  return object(topology, mergeArcs.apply(this, arguments));
+	}
 
-	    heap.pop = function() {
-	      if (size <= 0) return;
-	      var removed = array[0], object;
-	      if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
-	      return removed;
-	    };
+	function mergeArcs(topology, objects) {
+	  var polygonsByArc = {},
+	      polygons = [],
+	      components = [];
 
-	    heap.remove = function(removed) {
-	      var i = removed._, object;
-	      if (array[i] !== removed) return; // invalid request
-	      if (i !== --size) object = array[size], (compareArea(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
-	      return i;
-	    };
+	  objects.forEach(function(o) {
+	    if (o.type === "Polygon") register(o.arcs);
+	    else if (o.type === "MultiPolygon") o.arcs.forEach(register);
+	  });
 
-	    function up(object, i) {
-	      while (i > 0) {
-	        var j = ((i + 1) >> 1) - 1,
-	            parent = array[j];
-	        if (compareArea(object, parent) >= 0) break;
-	        array[parent._ = i] = parent;
-	        array[object._ = i = j] = object;
-	      }
-	    }
-
-	    function down(object, i) {
-	      while (true) {
-	        var r = (i + 1) << 1,
-	            l = r - 1,
-	            j = i,
-	            child = array[j];
-	        if (l < size && compareArea(array[l], child) < 0) child = array[j = l];
-	        if (r < size && compareArea(array[r], child) < 0) child = array[j = r];
-	        if (j === i) break;
-	        array[child._ = i] = child;
-	        array[object._ = i = j] = object;
-	      }
-	    }
-
-	    return heap;
-	  }
-
-	  function presimplify(topology, triangleArea) {
-	    var absolute = transformAbsolute(topology.transform),
-	        relative = transformRelative(topology.transform),
-	        heap = minAreaHeap();
-
-	    if (!triangleArea) triangleArea = cartesianTriangleArea;
-
-	    topology.arcs.forEach(function(arc) {
-	      var triangles = [],
-	          maxArea = 0,
-	          triangle,
-	          i,
-	          n,
-	          p;
-
-	      // To store each point’s effective area, we create a new array rather than
-	      // extending the passed-in point to workaround a Chrome/V8 bug (getting
-	      // stuck in smi mode). For midpoints, the initial effective area of
-	      // Infinity will be computed in the next step.
-	      for (i = 0, n = arc.length; i < n; ++i) {
-	        p = arc[i];
-	        absolute(arc[i] = [p[0], p[1], Infinity], i);
-	      }
-
-	      for (i = 1, n = arc.length - 1; i < n; ++i) {
-	        triangle = arc.slice(i - 1, i + 2);
-	        triangle[1][2] = triangleArea(triangle);
-	        triangles.push(triangle);
-	        heap.push(triangle);
-	      }
-
-	      for (i = 0, n = triangles.length; i < n; ++i) {
-	        triangle = triangles[i];
-	        triangle.previous = triangles[i - 1];
-	        triangle.next = triangles[i + 1];
-	      }
-
-	      while (triangle = heap.pop()) {
-	        var previous = triangle.previous,
-	            next = triangle.next;
-
-	        // If the area of the current point is less than that of the previous point
-	        // to be eliminated, use the latter's area instead. This ensures that the
-	        // current point cannot be eliminated without eliminating previously-
-	        // eliminated points.
-	        if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
-	        else maxArea = triangle[1][2];
-
-	        if (previous) {
-	          previous.next = next;
-	          previous[2] = triangle[2];
-	          update(previous);
-	        }
-
-	        if (next) {
-	          next.previous = previous;
-	          next[0] = triangle[0];
-	          update(next);
-	        }
-	      }
-
-	      arc.forEach(relative);
+	  function register(polygon) {
+	    polygon.forEach(function(ring$$) {
+	      ring$$.forEach(function(arc) {
+	        (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
+	      });
 	    });
+	    polygons.push(polygon);
+	  }
 
-	    function update(triangle) {
-	      heap.remove(triangle);
+	  function area(ring$$) {
+	    return Math.abs(ring(object(topology, {type: "Polygon", arcs: [ring$$]}).coordinates[0]));
+	  }
+
+	  polygons.forEach(function(polygon) {
+	    if (!polygon._) {
+	      var component = [],
+	          neighbors = [polygon];
+	      polygon._ = 1;
+	      components.push(component);
+	      while (polygon = neighbors.pop()) {
+	        component.push(polygon);
+	        polygon.forEach(function(ring$$) {
+	          ring$$.forEach(function(arc) {
+	            polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
+	              if (!polygon._) {
+	                polygon._ = 1;
+	                neighbors.push(polygon);
+	              }
+	            });
+	          });
+	        });
+	      }
+	    }
+	  });
+
+	  polygons.forEach(function(polygon) {
+	    delete polygon._;
+	  });
+
+	  return {
+	    type: "MultiPolygon",
+	    arcs: components.map(function(polygons) {
+	      var arcs = [], n;
+
+	      // Extract the exterior (unique) arcs.
+	      polygons.forEach(function(polygon) {
+	        polygon.forEach(function(ring$$) {
+	          ring$$.forEach(function(arc) {
+	            if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
+	              arcs.push(arc);
+	            }
+	          });
+	        });
+	      });
+
+	      // Stitch the arcs into one or more rings.
+	      arcs = stitchArcs(topology, arcs);
+
+	      // If more than one ring is returned,
+	      // at most one of these rings can be the exterior;
+	      // choose the one with the greatest absolute area.
+	      if ((n = arcs.length) > 1) {
+	        for (var i = 1, k = area(arcs[0]), ki, t; i < n; ++i) {
+	          if ((ki = area(arcs[i])) > k) {
+	            t = arcs[0], arcs[0] = arcs[i], arcs[i] = t, k = ki;
+	          }
+	        }
+	      }
+
+	      return arcs;
+	    })
+	  };
+	}
+
+	function neighbors(objects) {
+	  var indexesByArc = {}, // arc index -> array of object indexes
+	      neighbors = objects.map(function() { return []; });
+
+	  function line(arcs, i) {
+	    arcs.forEach(function(a) {
+	      if (a < 0) a = ~a;
+	      var o = indexesByArc[a];
+	      if (o) o.push(i);
+	      else indexesByArc[a] = [i];
+	    });
+	  }
+
+	  function polygon(arcs, i) {
+	    arcs.forEach(function(arc) { line(arc, i); });
+	  }
+
+	  function geometry(o, i) {
+	    if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
+	    else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
+	  }
+
+	  var geometryType = {
+	    LineString: line,
+	    MultiLineString: polygon,
+	    Polygon: polygon,
+	    MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
+	  };
+
+	  objects.forEach(geometry);
+
+	  for (var i in indexesByArc) {
+	    for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
+	      for (var k = j + 1; k < m; ++k) {
+	        var ij = indexes[j], ik = indexes[k], n;
+	        if ((n = neighbors[ij])[i = bisect(n, ik)] !== ik) n.splice(i, 0, ik);
+	        if ((n = neighbors[ik])[i = bisect(n, ij)] !== ij) n.splice(i, 0, ij);
+	      }
+	    }
+	  }
+
+	  return neighbors;
+	}
+
+	function compareArea(a, b) {
+	  return a[1][2] - b[1][2];
+	}
+
+	function minAreaHeap() {
+	  var heap = {},
+	      array = [],
+	      size = 0;
+
+	  heap.push = function(object) {
+	    up(array[object._ = size] = object, size++);
+	    return size;
+	  };
+
+	  heap.pop = function() {
+	    if (size <= 0) return;
+	    var removed = array[0], object;
+	    if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
+	    return removed;
+	  };
+
+	  heap.remove = function(removed) {
+	    var i = removed._, object;
+	    if (array[i] !== removed) return; // invalid request
+	    if (i !== --size) object = array[size], (compareArea(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
+	    return i;
+	  };
+
+	  function up(object, i) {
+	    while (i > 0) {
+	      var j = ((i + 1) >> 1) - 1,
+	          parent = array[j];
+	      if (compareArea(object, parent) >= 0) break;
+	      array[parent._ = i] = parent;
+	      array[object._ = i = j] = object;
+	    }
+	  }
+
+	  function down(object, i) {
+	    while (true) {
+	      var r = (i + 1) << 1,
+	          l = r - 1,
+	          j = i,
+	          child = array[j];
+	      if (l < size && compareArea(array[l], child) < 0) child = array[j = l];
+	      if (r < size && compareArea(array[r], child) < 0) child = array[j = r];
+	      if (j === i) break;
+	      array[child._ = i] = child;
+	      array[object._ = i = j] = object;
+	    }
+	  }
+
+	  return heap;
+	}
+
+	function presimplify(topology, triangleArea) {
+	  var absolute = transformAbsolute(topology.transform),
+	      relative = transformRelative(topology.transform),
+	      heap = minAreaHeap();
+
+	  if (!triangleArea) triangleArea = cartesianTriangleArea;
+
+	  topology.arcs.forEach(function(arc) {
+	    var triangles = [],
+	        maxArea = 0,
+	        triangle,
+	        i,
+	        n,
+	        p;
+
+	    // To store each point’s effective area, we create a new array rather than
+	    // extending the passed-in point to workaround a Chrome/V8 bug (getting
+	    // stuck in smi mode). For midpoints, the initial effective area of
+	    // Infinity will be computed in the next step.
+	    for (i = 0, n = arc.length; i < n; ++i) {
+	      p = arc[i];
+	      absolute(arc[i] = [p[0], p[1], Infinity], i);
+	    }
+
+	    for (i = 1, n = arc.length - 1; i < n; ++i) {
+	      triangle = arc.slice(i - 1, i + 2);
 	      triangle[1][2] = triangleArea(triangle);
+	      triangles.push(triangle);
 	      heap.push(triangle);
 	    }
 
-	    return topology;
+	    for (i = 0, n = triangles.length; i < n; ++i) {
+	      triangle = triangles[i];
+	      triangle.previous = triangles[i - 1];
+	      triangle.next = triangles[i + 1];
+	    }
+
+	    while (triangle = heap.pop()) {
+	      var previous = triangle.previous,
+	          next = triangle.next;
+
+	      // If the area of the current point is less than that of the previous point
+	      // to be eliminated, use the latter's area instead. This ensures that the
+	      // current point cannot be eliminated without eliminating previously-
+	      // eliminated points.
+	      if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
+	      else maxArea = triangle[1][2];
+
+	      if (previous) {
+	        previous.next = next;
+	        previous[2] = triangle[2];
+	        update(previous);
+	      }
+
+	      if (next) {
+	        next.previous = previous;
+	        next[0] = triangle[0];
+	        update(next);
+	      }
+	    }
+
+	    arc.forEach(relative);
+	  });
+
+	  function update(triangle) {
+	    heap.remove(triangle);
+	    triangle[1][2] = triangleArea(triangle);
+	    heap.push(triangle);
 	  }
 
-	  var version = "1.6.26";
+	  return topology;
+	}
 
-	  exports.version = version;
-	  exports.mesh = mesh;
-	  exports.meshArcs = meshArcs;
-	  exports.merge = merge;
-	  exports.mergeArcs = mergeArcs;
-	  exports.feature = feature;
-	  exports.neighbors = neighbors;
-	  exports.presimplify = presimplify;
+	var version = "1.6.27";
 
-	}));
+	exports.version = version;
+	exports.mesh = mesh;
+	exports.meshArcs = meshArcs;
+	exports.merge = merge;
+	exports.mergeArcs = mergeArcs;
+	exports.feature = feature;
+	exports.neighbors = neighbors;
+	exports.presimplify = presimplify;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+	})));
 
 /***/ },
 /* 33 */
@@ -22745,17 +22747,21 @@
 
 	var _TileGenerationUiControls2 = _interopRequireDefault(_TileGenerationUiControls);
 
-	var _HexMetrics = __webpack_require__(288);
+	var _HexMetrics = __webpack_require__(287);
 
 	var _HexMetrics2 = _interopRequireDefault(_HexMetrics);
 
-	var _ExportButton = __webpack_require__(289);
+	var _ExportButton = __webpack_require__(288);
 
 	var _ExportButton2 = _interopRequireDefault(_ExportButton);
 
-	var _EditWarningModal = __webpack_require__(291);
+	var _EditWarningModal = __webpack_require__(290);
 
 	var _EditWarningModal2 = _interopRequireDefault(_EditWarningModal);
+
+	var _Tooltip = __webpack_require__(291);
+
+	var _Tooltip2 = _interopRequireDefault(_Tooltip);
 
 	var _gnlLogo = __webpack_require__(292);
 
@@ -22787,11 +22793,16 @@
 	    this._generateOpen = true;
 	    this._editOpen = false;
 	    this._manualOpen = false;
+	    this._nErrors = 0;
+	    this._hideRefineTooltip = true;
+	    this._mouseY = 0;
 
 	    this._startOver = this._startOver.bind(this);
 	    this._resumeEditing = this._resumeEditing.bind(this);
 	    this._checkForEdits = this._checkForEdits.bind(this);
 	    this._toggleManual = this._toggleManual.bind(this);
+	    this._updateNErrors = this._updateNErrors.bind(this);
+	    this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this);
 	  }
 
 	  _createClass(Ui, [{
@@ -22978,6 +22989,23 @@
 	      this.render();
 	    }
 	  }, {
+	    key: '_updateNErrors',
+	    value: function _updateNErrors(value) {
+	      if (this._nErrors !== value) {
+	        this._nErrors = value;
+	        this.render();
+	      }
+	    }
+	  }, {
+	    key: '_toggleRefineTooltip',
+	    value: function _toggleRefineTooltip(event) {
+	      this._hideRefineTooltip = !this._hideRefineTooltip;
+	      if (!this._hideRefineTooltip) {
+	        this._mouseY = event.clientY;
+	      }
+	      this.render();
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _this2 = this;
@@ -23008,6 +23036,23 @@
 	        ),
 	        _react2.default.createElement('span', { className: 'arrow' })
 	      );
+	      var errorWarning = null;
+	      if (this._nErrors > 0) {
+	        var statesTxt = this._nErrors === 1 ? 'state' : 'states';
+	        errorWarning = _react2.default.createElement(
+	          'span',
+	          {
+	            className: 'n-errors',
+	            onMouseOver: this._toggleRefineTooltip,
+	            onMouseOut: this._toggleRefineTooltip
+	          },
+	          _react2.default.createElement('i', { className: 'fa fa-exclamation-triangle' }),
+	          ' ',
+	          this._nErrors,
+	          ' ',
+	          statesTxt
+	        );
+	      }
 	      var editOption = _react2.default.createElement(
 	        'div',
 	        {
@@ -23017,8 +23062,9 @@
 	        _react2.default.createElement(
 	          'span',
 	          null,
-	          'Refine'
+	          'Refine '
 	        ),
+	        errorWarning,
 	        _react2.default.createElement('span', { className: 'arrow' })
 	      );
 	      var modal = null;
@@ -23044,7 +23090,7 @@
 	              className: 'manual-close',
 	              onClick: this._toggleManual
 	            },
-	            '✕'
+	            _react2.default.createElement('i', { className: 'fa fa-times' })
 	          ),
 	          _react2.default.createElement(_reactMarkdown2.default, { source: _MANUAL2.default })
 	        ),
@@ -23156,7 +23202,8 @@
 	              tiles: this._tiles,
 	              onAddTileMouseDown: this._addTileCallback,
 	              onMetricMouseOver: this._highlightCallback,
-	              onMetricMouseOut: this._unhighlightCallback
+	              onMetricMouseOut: this._unhighlightCallback,
+	              updateNErrors: this._updateNErrors
 	            })
 	          ),
 	          _react2.default.createElement('hr', null),
@@ -23233,7 +23280,12 @@
 	            ),
 	            'on GitHub'
 	          )
-	        )
+	        ),
+	        _react2.default.createElement(_Tooltip2.default, {
+	          hidden: this._hideRefineTooltip,
+	          text: 'Some areas require additional manual adjustment to be statistically accurate.',
+	          yPos: this._mouseY
+	        })
 	      ), this._container);
 	    }
 	  }]);
@@ -52478,7 +52530,7 @@
 
 	var _ResolutionSlider2 = _interopRequireDefault(_ResolutionSlider);
 
-	var _ImportControls = __webpack_require__(286);
+	var _ImportControls = __webpack_require__(285);
 
 	var _ImportControls2 = _interopRequireDefault(_ImportControls);
 
@@ -52849,11 +52901,11 @@
 
 	var _d3Scale = __webpack_require__(278);
 
-	var _smallHex = __webpack_require__(284);
+	var _smallHex = __webpack_require__(283);
 
 	var _smallHex2 = _interopRequireDefault(_smallHex);
 
-	var _bigHex = __webpack_require__(285);
+	var _bigHex = __webpack_require__(284);
 
 	var _bigHex2 = _interopRequireDefault(_bigHex);
 
@@ -53021,7 +53073,7 @@
 
 	// https://d3js.org/d3-scale/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(279), __webpack_require__(281), __webpack_require__(282), __webpack_require__(283), __webpack_require__(280)) :
+	   true ? factory(exports, __webpack_require__(28), __webpack_require__(44), __webpack_require__(279), __webpack_require__(280), __webpack_require__(281), __webpack_require__(282), __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-array', 'd3-collection', 'd3-interpolate', 'd3-format', 'd3-time', 'd3-time-format', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3,global.d3,global.d3,global.d3,global.d3,global.d3,global.d3));
 	}(this, function (exports,d3Array,d3Collection,d3Interpolate,d3Format,d3Time,d3TimeFormat,d3Color) { 'use strict';
@@ -53928,7 +53980,7 @@
 
 	// https://d3js.org/d3-interpolate/ Version 1.1.1. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(280)) :
+	   true ? factory(exports, __webpack_require__(43)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-color'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Color) { 'use strict';
@@ -54473,528 +54525,6 @@
 /* 280 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-color/ Version 1.0.1. Copyright 2016 Mike Bostock.
-	(function (global, factory) {
-	   true ? factory(exports) :
-	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
-	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
-
-	  function define(constructor, factory, prototype) {
-	    constructor.prototype = factory.prototype = prototype;
-	    prototype.constructor = constructor;
-	  }
-
-	  function extend(parent, definition) {
-	    var prototype = Object.create(parent.prototype);
-	    for (var key in definition) prototype[key] = definition[key];
-	    return prototype;
-	  }
-
-	  function Color() {}
-
-	  var darker = 0.7;
-	  var brighter = 1 / darker;
-
-	  var reHex3 = /^#([0-9a-f]{3})$/;
-	  var reHex6 = /^#([0-9a-f]{6})$/;
-	  var reRgbInteger = /^rgb\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*\)$/;
-	  var reRgbPercent = /^rgb\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reRgbaInteger = /^rgba\(\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+)\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reRgbaPercent = /^rgba\(\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var reHslPercent = /^hsl\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*\)$/;
-	  var reHslaPercent = /^hsla\(\s*([-+]?\d+(?:\.\d+)?)\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)%\s*,\s*([-+]?\d+(?:\.\d+)?)\s*\)$/;
-	  var named = {
-	    aliceblue: 0xf0f8ff,
-	    antiquewhite: 0xfaebd7,
-	    aqua: 0x00ffff,
-	    aquamarine: 0x7fffd4,
-	    azure: 0xf0ffff,
-	    beige: 0xf5f5dc,
-	    bisque: 0xffe4c4,
-	    black: 0x000000,
-	    blanchedalmond: 0xffebcd,
-	    blue: 0x0000ff,
-	    blueviolet: 0x8a2be2,
-	    brown: 0xa52a2a,
-	    burlywood: 0xdeb887,
-	    cadetblue: 0x5f9ea0,
-	    chartreuse: 0x7fff00,
-	    chocolate: 0xd2691e,
-	    coral: 0xff7f50,
-	    cornflowerblue: 0x6495ed,
-	    cornsilk: 0xfff8dc,
-	    crimson: 0xdc143c,
-	    cyan: 0x00ffff,
-	    darkblue: 0x00008b,
-	    darkcyan: 0x008b8b,
-	    darkgoldenrod: 0xb8860b,
-	    darkgray: 0xa9a9a9,
-	    darkgreen: 0x006400,
-	    darkgrey: 0xa9a9a9,
-	    darkkhaki: 0xbdb76b,
-	    darkmagenta: 0x8b008b,
-	    darkolivegreen: 0x556b2f,
-	    darkorange: 0xff8c00,
-	    darkorchid: 0x9932cc,
-	    darkred: 0x8b0000,
-	    darksalmon: 0xe9967a,
-	    darkseagreen: 0x8fbc8f,
-	    darkslateblue: 0x483d8b,
-	    darkslategray: 0x2f4f4f,
-	    darkslategrey: 0x2f4f4f,
-	    darkturquoise: 0x00ced1,
-	    darkviolet: 0x9400d3,
-	    deeppink: 0xff1493,
-	    deepskyblue: 0x00bfff,
-	    dimgray: 0x696969,
-	    dimgrey: 0x696969,
-	    dodgerblue: 0x1e90ff,
-	    firebrick: 0xb22222,
-	    floralwhite: 0xfffaf0,
-	    forestgreen: 0x228b22,
-	    fuchsia: 0xff00ff,
-	    gainsboro: 0xdcdcdc,
-	    ghostwhite: 0xf8f8ff,
-	    gold: 0xffd700,
-	    goldenrod: 0xdaa520,
-	    gray: 0x808080,
-	    green: 0x008000,
-	    greenyellow: 0xadff2f,
-	    grey: 0x808080,
-	    honeydew: 0xf0fff0,
-	    hotpink: 0xff69b4,
-	    indianred: 0xcd5c5c,
-	    indigo: 0x4b0082,
-	    ivory: 0xfffff0,
-	    khaki: 0xf0e68c,
-	    lavender: 0xe6e6fa,
-	    lavenderblush: 0xfff0f5,
-	    lawngreen: 0x7cfc00,
-	    lemonchiffon: 0xfffacd,
-	    lightblue: 0xadd8e6,
-	    lightcoral: 0xf08080,
-	    lightcyan: 0xe0ffff,
-	    lightgoldenrodyellow: 0xfafad2,
-	    lightgray: 0xd3d3d3,
-	    lightgreen: 0x90ee90,
-	    lightgrey: 0xd3d3d3,
-	    lightpink: 0xffb6c1,
-	    lightsalmon: 0xffa07a,
-	    lightseagreen: 0x20b2aa,
-	    lightskyblue: 0x87cefa,
-	    lightslategray: 0x778899,
-	    lightslategrey: 0x778899,
-	    lightsteelblue: 0xb0c4de,
-	    lightyellow: 0xffffe0,
-	    lime: 0x00ff00,
-	    limegreen: 0x32cd32,
-	    linen: 0xfaf0e6,
-	    magenta: 0xff00ff,
-	    maroon: 0x800000,
-	    mediumaquamarine: 0x66cdaa,
-	    mediumblue: 0x0000cd,
-	    mediumorchid: 0xba55d3,
-	    mediumpurple: 0x9370db,
-	    mediumseagreen: 0x3cb371,
-	    mediumslateblue: 0x7b68ee,
-	    mediumspringgreen: 0x00fa9a,
-	    mediumturquoise: 0x48d1cc,
-	    mediumvioletred: 0xc71585,
-	    midnightblue: 0x191970,
-	    mintcream: 0xf5fffa,
-	    mistyrose: 0xffe4e1,
-	    moccasin: 0xffe4b5,
-	    navajowhite: 0xffdead,
-	    navy: 0x000080,
-	    oldlace: 0xfdf5e6,
-	    olive: 0x808000,
-	    olivedrab: 0x6b8e23,
-	    orange: 0xffa500,
-	    orangered: 0xff4500,
-	    orchid: 0xda70d6,
-	    palegoldenrod: 0xeee8aa,
-	    palegreen: 0x98fb98,
-	    paleturquoise: 0xafeeee,
-	    palevioletred: 0xdb7093,
-	    papayawhip: 0xffefd5,
-	    peachpuff: 0xffdab9,
-	    peru: 0xcd853f,
-	    pink: 0xffc0cb,
-	    plum: 0xdda0dd,
-	    powderblue: 0xb0e0e6,
-	    purple: 0x800080,
-	    rebeccapurple: 0x663399,
-	    red: 0xff0000,
-	    rosybrown: 0xbc8f8f,
-	    royalblue: 0x4169e1,
-	    saddlebrown: 0x8b4513,
-	    salmon: 0xfa8072,
-	    sandybrown: 0xf4a460,
-	    seagreen: 0x2e8b57,
-	    seashell: 0xfff5ee,
-	    sienna: 0xa0522d,
-	    silver: 0xc0c0c0,
-	    skyblue: 0x87ceeb,
-	    slateblue: 0x6a5acd,
-	    slategray: 0x708090,
-	    slategrey: 0x708090,
-	    snow: 0xfffafa,
-	    springgreen: 0x00ff7f,
-	    steelblue: 0x4682b4,
-	    tan: 0xd2b48c,
-	    teal: 0x008080,
-	    thistle: 0xd8bfd8,
-	    tomato: 0xff6347,
-	    turquoise: 0x40e0d0,
-	    violet: 0xee82ee,
-	    wheat: 0xf5deb3,
-	    white: 0xffffff,
-	    whitesmoke: 0xf5f5f5,
-	    yellow: 0xffff00,
-	    yellowgreen: 0x9acd32
-	  };
-
-	  define(Color, color, {
-	    displayable: function() {
-	      return this.rgb().displayable();
-	    },
-	    toString: function() {
-	      return this.rgb() + "";
-	    }
-	  });
-
-	  function color(format) {
-	    var m;
-	    format = (format + "").trim().toLowerCase();
-	    return (m = reHex3.exec(format)) ? (m = parseInt(m[1], 16), new Rgb((m >> 8 & 0xf) | (m >> 4 & 0x0f0), (m >> 4 & 0xf) | (m & 0xf0), ((m & 0xf) << 4) | (m & 0xf), 1)) // #f00
-	        : (m = reHex6.exec(format)) ? rgbn(parseInt(m[1], 16)) // #ff0000
-	        : (m = reRgbInteger.exec(format)) ? new Rgb(m[1], m[2], m[3], 1) // rgb(255, 0, 0)
-	        : (m = reRgbPercent.exec(format)) ? new Rgb(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, 1) // rgb(100%, 0%, 0%)
-	        : (m = reRgbaInteger.exec(format)) ? rgba(m[1], m[2], m[3], m[4]) // rgba(255, 0, 0, 1)
-	        : (m = reRgbaPercent.exec(format)) ? rgba(m[1] * 255 / 100, m[2] * 255 / 100, m[3] * 255 / 100, m[4]) // rgb(100%, 0%, 0%, 1)
-	        : (m = reHslPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, 1) // hsl(120, 50%, 50%)
-	        : (m = reHslaPercent.exec(format)) ? hsla(m[1], m[2] / 100, m[3] / 100, m[4]) // hsla(120, 50%, 50%, 1)
-	        : named.hasOwnProperty(format) ? rgbn(named[format])
-	        : format === "transparent" ? new Rgb(NaN, NaN, NaN, 0)
-	        : null;
-	  }
-
-	  function rgbn(n) {
-	    return new Rgb(n >> 16 & 0xff, n >> 8 & 0xff, n & 0xff, 1);
-	  }
-
-	  function rgba(r, g, b, a) {
-	    if (a <= 0) r = g = b = NaN;
-	    return new Rgb(r, g, b, a);
-	  }
-
-	  function rgbConvert(o) {
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Rgb;
-	    o = o.rgb();
-	    return new Rgb(o.r, o.g, o.b, o.opacity);
-	  }
-
-	  function rgb(r, g, b, opacity) {
-	    return arguments.length === 1 ? rgbConvert(r) : new Rgb(r, g, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Rgb(r, g, b, opacity) {
-	    this.r = +r;
-	    this.g = +g;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Rgb, rgb, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Rgb(this.r * k, this.g * k, this.b * k, this.opacity);
-	    },
-	    rgb: function() {
-	      return this;
-	    },
-	    displayable: function() {
-	      return (0 <= this.r && this.r <= 255)
-	          && (0 <= this.g && this.g <= 255)
-	          && (0 <= this.b && this.b <= 255)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    },
-	    toString: function() {
-	      var a = this.opacity; a = isNaN(a) ? 1 : Math.max(0, Math.min(1, a));
-	      return (a === 1 ? "rgb(" : "rgba(")
-	          + Math.max(0, Math.min(255, Math.round(this.r) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.g) || 0)) + ", "
-	          + Math.max(0, Math.min(255, Math.round(this.b) || 0))
-	          + (a === 1 ? ")" : ", " + a + ")");
-	    }
-	  }));
-
-	  function hsla(h, s, l, a) {
-	    if (a <= 0) h = s = l = NaN;
-	    else if (l <= 0 || l >= 1) h = s = NaN;
-	    else if (s <= 0) h = NaN;
-	    return new Hsl(h, s, l, a);
-	  }
-
-	  function hslConvert(o) {
-	    if (o instanceof Hsl) return new Hsl(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Color)) o = color(o);
-	    if (!o) return new Hsl;
-	    if (o instanceof Hsl) return o;
-	    o = o.rgb();
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        min = Math.min(r, g, b),
-	        max = Math.max(r, g, b),
-	        h = NaN,
-	        s = max - min,
-	        l = (max + min) / 2;
-	    if (s) {
-	      if (r === max) h = (g - b) / s + (g < b) * 6;
-	      else if (g === max) h = (b - r) / s + 2;
-	      else h = (r - g) / s + 4;
-	      s /= l < 0.5 ? max + min : 2 - max - min;
-	      h *= 60;
-	    } else {
-	      s = l > 0 && l < 1 ? 0 : h;
-	    }
-	    return new Hsl(h, s, l, o.opacity);
-	  }
-
-	  function hsl(h, s, l, opacity) {
-	    return arguments.length === 1 ? hslConvert(h) : new Hsl(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hsl(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hsl, hsl, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Hsl(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = this.h % 360 + (this.h < 0) * 360,
-	          s = isNaN(h) || isNaN(this.s) ? 0 : this.s,
-	          l = this.l,
-	          m2 = l + (l < 0.5 ? l : 1 - l) * s,
-	          m1 = 2 * l - m2;
-	      return new Rgb(
-	        hsl2rgb(h >= 240 ? h - 240 : h + 120, m1, m2),
-	        hsl2rgb(h, m1, m2),
-	        hsl2rgb(h < 120 ? h + 240 : h - 120, m1, m2),
-	        this.opacity
-	      );
-	    },
-	    displayable: function() {
-	      return (0 <= this.s && this.s <= 1 || isNaN(this.s))
-	          && (0 <= this.l && this.l <= 1)
-	          && (0 <= this.opacity && this.opacity <= 1);
-	    }
-	  }));
-
-	  /* From FvD 13.37, CSS Color Module Level 3 */
-	  function hsl2rgb(h, m1, m2) {
-	    return (h < 60 ? m1 + (m2 - m1) * h / 60
-	        : h < 180 ? m2
-	        : h < 240 ? m1 + (m2 - m1) * (240 - h) / 60
-	        : m1) * 255;
-	  }
-
-	  var deg2rad = Math.PI / 180;
-	  var rad2deg = 180 / Math.PI;
-
-	  var Kn = 18;
-	  var Xn = 0.950470;
-	  var Yn = 1;
-	  var Zn = 1.088830;
-	  var t0 = 4 / 29;
-	  var t1 = 6 / 29;
-	  var t2 = 3 * t1 * t1;
-	  var t3 = t1 * t1 * t1;
-	  function labConvert(o) {
-	    if (o instanceof Lab) return new Lab(o.l, o.a, o.b, o.opacity);
-	    if (o instanceof Hcl) {
-	      var h = o.h * deg2rad;
-	      return new Lab(o.l, Math.cos(h) * o.c, Math.sin(h) * o.c, o.opacity);
-	    }
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var b = rgb2xyz(o.r),
-	        a = rgb2xyz(o.g),
-	        l = rgb2xyz(o.b),
-	        x = xyz2lab((0.4124564 * b + 0.3575761 * a + 0.1804375 * l) / Xn),
-	        y = xyz2lab((0.2126729 * b + 0.7151522 * a + 0.0721750 * l) / Yn),
-	        z = xyz2lab((0.0193339 * b + 0.1191920 * a + 0.9503041 * l) / Zn);
-	    return new Lab(116 * y - 16, 500 * (x - y), 200 * (y - z), o.opacity);
-	  }
-
-	  function lab(l, a, b, opacity) {
-	    return arguments.length === 1 ? labConvert(l) : new Lab(l, a, b, opacity == null ? 1 : opacity);
-	  }
-
-	  function Lab(l, a, b, opacity) {
-	    this.l = +l;
-	    this.a = +a;
-	    this.b = +b;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Lab, lab, extend(Color, {
-	    brighter: function(k) {
-	      return new Lab(this.l + Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Lab(this.l - Kn * (k == null ? 1 : k), this.a, this.b, this.opacity);
-	    },
-	    rgb: function() {
-	      var y = (this.l + 16) / 116,
-	          x = isNaN(this.a) ? y : y + this.a / 500,
-	          z = isNaN(this.b) ? y : y - this.b / 200;
-	      y = Yn * lab2xyz(y);
-	      x = Xn * lab2xyz(x);
-	      z = Zn * lab2xyz(z);
-	      return new Rgb(
-	        xyz2rgb( 3.2404542 * x - 1.5371385 * y - 0.4985314 * z), // D65 -> sRGB
-	        xyz2rgb(-0.9692660 * x + 1.8760108 * y + 0.0415560 * z),
-	        xyz2rgb( 0.0556434 * x - 0.2040259 * y + 1.0572252 * z),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  function xyz2lab(t) {
-	    return t > t3 ? Math.pow(t, 1 / 3) : t / t2 + t0;
-	  }
-
-	  function lab2xyz(t) {
-	    return t > t1 ? t * t * t : t2 * (t - t0);
-	  }
-
-	  function xyz2rgb(x) {
-	    return 255 * (x <= 0.0031308 ? 12.92 * x : 1.055 * Math.pow(x, 1 / 2.4) - 0.055);
-	  }
-
-	  function rgb2xyz(x) {
-	    return (x /= 255) <= 0.04045 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
-	  }
-
-	  function hclConvert(o) {
-	    if (o instanceof Hcl) return new Hcl(o.h, o.c, o.l, o.opacity);
-	    if (!(o instanceof Lab)) o = labConvert(o);
-	    var h = Math.atan2(o.b, o.a) * rad2deg;
-	    return new Hcl(h < 0 ? h + 360 : h, Math.sqrt(o.a * o.a + o.b * o.b), o.l, o.opacity);
-	  }
-
-	  function hcl(h, c, l, opacity) {
-	    return arguments.length === 1 ? hclConvert(h) : new Hcl(h, c, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Hcl(h, c, l, opacity) {
-	    this.h = +h;
-	    this.c = +c;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Hcl, hcl, extend(Color, {
-	    brighter: function(k) {
-	      return new Hcl(this.h, this.c, this.l + Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    darker: function(k) {
-	      return new Hcl(this.h, this.c, this.l - Kn * (k == null ? 1 : k), this.opacity);
-	    },
-	    rgb: function() {
-	      return labConvert(this).rgb();
-	    }
-	  }));
-
-	  var A = -0.14861;
-	  var B = +1.78277;
-	  var C = -0.29227;
-	  var D = -0.90649;
-	  var E = +1.97294;
-	  var ED = E * D;
-	  var EB = E * B;
-	  var BC_DA = B * C - D * A;
-	  function cubehelixConvert(o) {
-	    if (o instanceof Cubehelix) return new Cubehelix(o.h, o.s, o.l, o.opacity);
-	    if (!(o instanceof Rgb)) o = rgbConvert(o);
-	    var r = o.r / 255,
-	        g = o.g / 255,
-	        b = o.b / 255,
-	        l = (BC_DA * b + ED * r - EB * g) / (BC_DA + ED - EB),
-	        bl = b - l,
-	        k = (E * (g - l) - C * bl) / D,
-	        s = Math.sqrt(k * k + bl * bl) / (E * l * (1 - l)), // NaN if l=0 or l=1
-	        h = s ? Math.atan2(k, bl) * rad2deg - 120 : NaN;
-	    return new Cubehelix(h < 0 ? h + 360 : h, s, l, o.opacity);
-	  }
-
-	  function cubehelix(h, s, l, opacity) {
-	    return arguments.length === 1 ? cubehelixConvert(h) : new Cubehelix(h, s, l, opacity == null ? 1 : opacity);
-	  }
-
-	  function Cubehelix(h, s, l, opacity) {
-	    this.h = +h;
-	    this.s = +s;
-	    this.l = +l;
-	    this.opacity = +opacity;
-	  }
-
-	  define(Cubehelix, cubehelix, extend(Color, {
-	    brighter: function(k) {
-	      k = k == null ? brighter : Math.pow(brighter, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    darker: function(k) {
-	      k = k == null ? darker : Math.pow(darker, k);
-	      return new Cubehelix(this.h, this.s, this.l * k, this.opacity);
-	    },
-	    rgb: function() {
-	      var h = isNaN(this.h) ? 0 : (this.h + 120) * deg2rad,
-	          l = +this.l,
-	          a = isNaN(this.s) ? 0 : this.s * l * (1 - l),
-	          cosh = Math.cos(h),
-	          sinh = Math.sin(h);
-	      return new Rgb(
-	        255 * (l + a * (A * cosh + B * sinh)),
-	        255 * (l + a * (C * cosh + D * sinh)),
-	        255 * (l + a * (E * cosh)),
-	        this.opacity
-	      );
-	    }
-	  }));
-
-	  exports.color = color;
-	  exports.rgb = rgb;
-	  exports.hsl = hsl;
-	  exports.lab = lab;
-	  exports.hcl = hcl;
-	  exports.cubehelix = cubehelix;
-
-	  Object.defineProperty(exports, '__esModule', { value: true });
-
-	}));
-
-/***/ },
-/* 281 */
-/***/ function(module, exports, __webpack_require__) {
-
 	// https://d3js.org/d3-format/ Version 1.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
@@ -55326,394 +54856,395 @@
 	}));
 
 /***/ },
-/* 282 */
+/* 281 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-time/ Version 1.0.2. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-time/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  var t0 = new Date;
-	  var t1 = new Date;
-	  function newInterval(floori, offseti, count, field) {
+	var t0 = new Date;
+	var t1 = new Date;
 
-	    function interval(date) {
-	      return floori(date = new Date(+date)), date;
-	    }
+	function newInterval(floori, offseti, count, field) {
 
-	    interval.floor = interval;
-
-	    interval.ceil = function(date) {
-	      return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
-	    };
-
-	    interval.round = function(date) {
-	      var d0 = interval(date),
-	          d1 = interval.ceil(date);
-	      return date - d0 < d1 - date ? d0 : d1;
-	    };
-
-	    interval.offset = function(date, step) {
-	      return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
-	    };
-
-	    interval.range = function(start, stop, step) {
-	      var range = [];
-	      start = interval.ceil(start);
-	      step = step == null ? 1 : Math.floor(step);
-	      if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
-	      do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
-	      return range;
-	    };
-
-	    interval.filter = function(test) {
-	      return newInterval(function(date) {
-	        while (floori(date), !test(date)) date.setTime(date - 1);
-	      }, function(date, step) {
-	        while (--step >= 0) while (offseti(date, 1), !test(date));
-	      });
-	    };
-
-	    if (count) {
-	      interval.count = function(start, end) {
-	        t0.setTime(+start), t1.setTime(+end);
-	        floori(t0), floori(t1);
-	        return Math.floor(count(t0, t1));
-	      };
-
-	      interval.every = function(step) {
-	        step = Math.floor(step);
-	        return !isFinite(step) || !(step > 0) ? null
-	            : !(step > 1) ? interval
-	            : interval.filter(field
-	                ? function(d) { return field(d) % step === 0; }
-	                : function(d) { return interval.count(0, d) % step === 0; });
-	      };
-	    }
-
-	    return interval;
+	  function interval(date) {
+	    return floori(date = new Date(+date)), date;
 	  }
 
-	  var millisecond = newInterval(function() {
-	    // noop
-	  }, function(date, step) {
-	    date.setTime(+date + step);
-	  }, function(start, end) {
-	    return end - start;
-	  });
+	  interval.floor = interval;
 
-	  // An optimized implementation for this simple case.
-	  millisecond.every = function(k) {
-	    k = Math.floor(k);
-	    if (!isFinite(k) || !(k > 0)) return null;
-	    if (!(k > 1)) return millisecond;
+	  interval.ceil = function(date) {
+	    return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
+	  };
+
+	  interval.round = function(date) {
+	    var d0 = interval(date),
+	        d1 = interval.ceil(date);
+	    return date - d0 < d1 - date ? d0 : d1;
+	  };
+
+	  interval.offset = function(date, step) {
+	    return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
+	  };
+
+	  interval.range = function(start, stop, step) {
+	    var range = [];
+	    start = interval.ceil(start);
+	    step = step == null ? 1 : Math.floor(step);
+	    if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
+	    do range.push(new Date(+start)); while (offseti(start, step), floori(start), start < stop)
+	    return range;
+	  };
+
+	  interval.filter = function(test) {
 	    return newInterval(function(date) {
-	      date.setTime(Math.floor(date / k) * k);
+	      while (floori(date), !test(date)) date.setTime(date - 1);
 	    }, function(date, step) {
-	      date.setTime(+date + step * k);
-	    }, function(start, end) {
-	      return (end - start) / k;
+	      while (--step >= 0) while (offseti(date, 1), !test(date)) {} // eslint-disable-line no-empty
 	    });
 	  };
 
-	  var milliseconds = millisecond.range;
+	  if (count) {
+	    interval.count = function(start, end) {
+	      t0.setTime(+start), t1.setTime(+end);
+	      floori(t0), floori(t1);
+	      return Math.floor(count(t0, t1));
+	    };
 
-	  var durationSecond = 1e3;
-	  var durationMinute = 6e4;
-	  var durationHour = 36e5;
-	  var durationDay = 864e5;
-	  var durationWeek = 6048e5;
-
-	  var second = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationSecond) * durationSecond);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationSecond);
-	  }, function(start, end) {
-	    return (end - start) / durationSecond;
-	  }, function(date) {
-	    return date.getUTCSeconds();
-	  });
-
-	  var seconds = second.range;
-
-	  var minute = newInterval(function(date) {
-	    date.setTime(Math.floor(date / durationMinute) * durationMinute);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getMinutes();
-	  });
-
-	  var minutes = minute.range;
-
-	  var hour = newInterval(function(date) {
-	    var offset = date.getTimezoneOffset() * durationMinute % durationHour;
-	    if (offset < 0) offset += durationHour;
-	    date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getHours();
-	  });
-
-	  var hours = hour.range;
-
-	  var day = newInterval(function(date) {
-	    date.setHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setDate(date.getDate() + step);
-	  }, function(start, end) {
-	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
-	  }, function(date) {
-	    return date.getDate() - 1;
-	  });
-
-	  var days = day.range;
-
-	  function weekday(i) {
-	    return newInterval(function(date) {
-	      date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setDate(date.getDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
-	    });
+	    interval.every = function(step) {
+	      step = Math.floor(step);
+	      return !isFinite(step) || !(step > 0) ? null
+	          : !(step > 1) ? interval
+	          : interval.filter(field
+	              ? function(d) { return field(d) % step === 0; }
+	              : function(d) { return interval.count(0, d) % step === 0; });
+	    };
 	  }
 
-	  var sunday = weekday(0);
-	  var monday = weekday(1);
-	  var tuesday = weekday(2);
-	  var wednesday = weekday(3);
-	  var thursday = weekday(4);
-	  var friday = weekday(5);
-	  var saturday = weekday(6);
+	  return interval;
+	}
 
-	  var sundays = sunday.range;
-	  var mondays = monday.range;
-	  var tuesdays = tuesday.range;
-	  var wednesdays = wednesday.range;
-	  var thursdays = thursday.range;
-	  var fridays = friday.range;
-	  var saturdays = saturday.range;
+	var millisecond = newInterval(function() {
+	  // noop
+	}, function(date, step) {
+	  date.setTime(+date + step);
+	}, function(start, end) {
+	  return end - start;
+	});
 
-	  var month = newInterval(function(date) {
-	    date.setDate(1);
+	// An optimized implementation for this simple case.
+	millisecond.every = function(k) {
+	  k = Math.floor(k);
+	  if (!isFinite(k) || !(k > 0)) return null;
+	  if (!(k > 1)) return millisecond;
+	  return newInterval(function(date) {
+	    date.setTime(Math.floor(date / k) * k);
+	  }, function(date, step) {
+	    date.setTime(+date + step * k);
+	  }, function(start, end) {
+	    return (end - start) / k;
+	  });
+	};
+
+	var milliseconds = millisecond.range;
+
+	var durationSecond = 1e3;
+	var durationMinute = 6e4;
+	var durationHour = 36e5;
+	var durationDay = 864e5;
+	var durationWeek = 6048e5;
+
+	var second = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationSecond) * durationSecond);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationSecond);
+	}, function(start, end) {
+	  return (end - start) / durationSecond;
+	}, function(date) {
+	  return date.getUTCSeconds();
+	});
+
+	var seconds = second.range;
+
+	var minute = newInterval(function(date) {
+	  date.setTime(Math.floor(date / durationMinute) * durationMinute);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getMinutes();
+	});
+
+	var minutes = minute.range;
+
+	var hour = newInterval(function(date) {
+	  var offset = date.getTimezoneOffset() * durationMinute % durationHour;
+	  if (offset < 0) offset += durationHour;
+	  date.setTime(Math.floor((+date - offset) / durationHour) * durationHour + offset);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getHours();
+	});
+
+	var hours = hour.range;
+
+	var day = newInterval(function(date) {
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setDate(date.getDate() + step);
+	}, function(start, end) {
+	  return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
+	}, function(date) {
+	  return date.getDate() - 1;
+	});
+
+	var days = day.range;
+
+	function weekday(i) {
+	  return newInterval(function(date) {
+	    date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setMonth(date.getMonth() + step);
+	    date.setDate(date.getDate() + step * 7);
 	  }, function(start, end) {
-	    return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
-	  }, function(date) {
-	    return date.getMonth();
+	    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
 	  });
+	}
 
-	  var months = month.range;
+	var sunday = weekday(0);
+	var monday = weekday(1);
+	var tuesday = weekday(2);
+	var wednesday = weekday(3);
+	var thursday = weekday(4);
+	var friday = weekday(5);
+	var saturday = weekday(6);
 
-	  var year = newInterval(function(date) {
+	var sundays = sunday.range;
+	var mondays = monday.range;
+	var tuesdays = tuesday.range;
+	var wednesdays = wednesday.range;
+	var thursdays = thursday.range;
+	var fridays = friday.range;
+	var saturdays = saturday.range;
+
+	var month = newInterval(function(date) {
+	  date.setDate(1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setMonth(date.getMonth() + step);
+	}, function(start, end) {
+	  return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
+	}, function(date) {
+	  return date.getMonth();
+	});
+
+	var months = month.range;
+
+	var year = newInterval(function(date) {
+	  date.setMonth(0, 1);
+	  date.setHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setFullYear(date.getFullYear() + step);
+	}, function(start, end) {
+	  return end.getFullYear() - start.getFullYear();
+	}, function(date) {
+	  return date.getFullYear();
+	});
+
+	// An optimized implementation for this simple case.
+	year.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setFullYear(Math.floor(date.getFullYear() / k) * k);
 	    date.setMonth(0, 1);
 	    date.setHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setFullYear(date.getFullYear() + step);
-	  }, function(start, end) {
-	    return end.getFullYear() - start.getFullYear();
-	  }, function(date) {
-	    return date.getFullYear();
+	    date.setFullYear(date.getFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  year.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setFullYear(Math.floor(date.getFullYear() / k) * k);
-	      date.setMonth(0, 1);
-	      date.setHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setFullYear(date.getFullYear() + step * k);
-	    });
-	  };
+	var years = year.range;
 
-	  var years = year.range;
+	var utcMinute = newInterval(function(date) {
+	  date.setUTCSeconds(0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationMinute);
+	}, function(start, end) {
+	  return (end - start) / durationMinute;
+	}, function(date) {
+	  return date.getUTCMinutes();
+	});
 
-	  var utcMinute = newInterval(function(date) {
-	    date.setUTCSeconds(0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationMinute);
-	  }, function(start, end) {
-	    return (end - start) / durationMinute;
-	  }, function(date) {
-	    return date.getUTCMinutes();
-	  });
+	var utcMinutes = utcMinute.range;
 
-	  var utcMinutes = utcMinute.range;
+	var utcHour = newInterval(function(date) {
+	  date.setUTCMinutes(0, 0, 0);
+	}, function(date, step) {
+	  date.setTime(+date + step * durationHour);
+	}, function(start, end) {
+	  return (end - start) / durationHour;
+	}, function(date) {
+	  return date.getUTCHours();
+	});
 
-	  var utcHour = newInterval(function(date) {
-	    date.setUTCMinutes(0, 0, 0);
-	  }, function(date, step) {
-	    date.setTime(+date + step * durationHour);
-	  }, function(start, end) {
-	    return (end - start) / durationHour;
-	  }, function(date) {
-	    return date.getUTCHours();
-	  });
+	var utcHours = utcHour.range;
 
-	  var utcHours = utcHour.range;
+	var utcDay = newInterval(function(date) {
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCDate(date.getUTCDate() + step);
+	}, function(start, end) {
+	  return (end - start) / durationDay;
+	}, function(date) {
+	  return date.getUTCDate() - 1;
+	});
 
-	  var utcDay = newInterval(function(date) {
+	var utcDays = utcDay.range;
+
+	function utcWeekday(i) {
+	  return newInterval(function(date) {
+	    date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCDate(date.getUTCDate() + step);
+	    date.setUTCDate(date.getUTCDate() + step * 7);
 	  }, function(start, end) {
-	    return (end - start) / durationDay;
-	  }, function(date) {
-	    return date.getUTCDate() - 1;
+	    return (end - start) / durationWeek;
 	  });
+	}
 
-	  var utcDays = utcDay.range;
+	var utcSunday = utcWeekday(0);
+	var utcMonday = utcWeekday(1);
+	var utcTuesday = utcWeekday(2);
+	var utcWednesday = utcWeekday(3);
+	var utcThursday = utcWeekday(4);
+	var utcFriday = utcWeekday(5);
+	var utcSaturday = utcWeekday(6);
 
-	  function utcWeekday(i) {
-	    return newInterval(function(date) {
-	      date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCDate(date.getUTCDate() + step * 7);
-	    }, function(start, end) {
-	      return (end - start) / durationWeek;
-	    });
-	  }
+	var utcSundays = utcSunday.range;
+	var utcMondays = utcMonday.range;
+	var utcTuesdays = utcTuesday.range;
+	var utcWednesdays = utcWednesday.range;
+	var utcThursdays = utcThursday.range;
+	var utcFridays = utcFriday.range;
+	var utcSaturdays = utcSaturday.range;
 
-	  var utcSunday = utcWeekday(0);
-	  var utcMonday = utcWeekday(1);
-	  var utcTuesday = utcWeekday(2);
-	  var utcWednesday = utcWeekday(3);
-	  var utcThursday = utcWeekday(4);
-	  var utcFriday = utcWeekday(5);
-	  var utcSaturday = utcWeekday(6);
+	var utcMonth = newInterval(function(date) {
+	  date.setUTCDate(1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCMonth(date.getUTCMonth() + step);
+	}, function(start, end) {
+	  return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
+	}, function(date) {
+	  return date.getUTCMonth();
+	});
 
-	  var utcSundays = utcSunday.range;
-	  var utcMondays = utcMonday.range;
-	  var utcTuesdays = utcTuesday.range;
-	  var utcWednesdays = utcWednesday.range;
-	  var utcThursdays = utcThursday.range;
-	  var utcFridays = utcFriday.range;
-	  var utcSaturdays = utcSaturday.range;
+	var utcMonths = utcMonth.range;
 
-	  var utcMonth = newInterval(function(date) {
-	    date.setUTCDate(1);
-	    date.setUTCHours(0, 0, 0, 0);
-	  }, function(date, step) {
-	    date.setUTCMonth(date.getUTCMonth() + step);
-	  }, function(start, end) {
-	    return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
-	  }, function(date) {
-	    return date.getUTCMonth();
-	  });
+	var utcYear = newInterval(function(date) {
+	  date.setUTCMonth(0, 1);
+	  date.setUTCHours(0, 0, 0, 0);
+	}, function(date, step) {
+	  date.setUTCFullYear(date.getUTCFullYear() + step);
+	}, function(start, end) {
+	  return end.getUTCFullYear() - start.getUTCFullYear();
+	}, function(date) {
+	  return date.getUTCFullYear();
+	});
 
-	  var utcMonths = utcMonth.range;
-
-	  var utcYear = newInterval(function(date) {
+	// An optimized implementation for this simple case.
+	utcYear.every = function(k) {
+	  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+	    date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
 	    date.setUTCMonth(0, 1);
 	    date.setUTCHours(0, 0, 0, 0);
 	  }, function(date, step) {
-	    date.setUTCFullYear(date.getUTCFullYear() + step);
-	  }, function(start, end) {
-	    return end.getUTCFullYear() - start.getUTCFullYear();
-	  }, function(date) {
-	    return date.getUTCFullYear();
+	    date.setUTCFullYear(date.getUTCFullYear() + step * k);
 	  });
+	};
 
-	  // An optimized implementation for this simple case.
-	  utcYear.every = function(k) {
-	    return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-	      date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
-	      date.setUTCMonth(0, 1);
-	      date.setUTCHours(0, 0, 0, 0);
-	    }, function(date, step) {
-	      date.setUTCFullYear(date.getUTCFullYear() + step * k);
-	    });
-	  };
+	var utcYears = utcYear.range;
 
-	  var utcYears = utcYear.range;
+	exports.timeInterval = newInterval;
+	exports.timeMillisecond = millisecond;
+	exports.timeMilliseconds = milliseconds;
+	exports.utcMillisecond = millisecond;
+	exports.utcMilliseconds = milliseconds;
+	exports.timeSecond = second;
+	exports.timeSeconds = seconds;
+	exports.utcSecond = second;
+	exports.utcSeconds = seconds;
+	exports.timeMinute = minute;
+	exports.timeMinutes = minutes;
+	exports.timeHour = hour;
+	exports.timeHours = hours;
+	exports.timeDay = day;
+	exports.timeDays = days;
+	exports.timeWeek = sunday;
+	exports.timeWeeks = sundays;
+	exports.timeSunday = sunday;
+	exports.timeSundays = sundays;
+	exports.timeMonday = monday;
+	exports.timeMondays = mondays;
+	exports.timeTuesday = tuesday;
+	exports.timeTuesdays = tuesdays;
+	exports.timeWednesday = wednesday;
+	exports.timeWednesdays = wednesdays;
+	exports.timeThursday = thursday;
+	exports.timeThursdays = thursdays;
+	exports.timeFriday = friday;
+	exports.timeFridays = fridays;
+	exports.timeSaturday = saturday;
+	exports.timeSaturdays = saturdays;
+	exports.timeMonth = month;
+	exports.timeMonths = months;
+	exports.timeYear = year;
+	exports.timeYears = years;
+	exports.utcMinute = utcMinute;
+	exports.utcMinutes = utcMinutes;
+	exports.utcHour = utcHour;
+	exports.utcHours = utcHours;
+	exports.utcDay = utcDay;
+	exports.utcDays = utcDays;
+	exports.utcWeek = utcSunday;
+	exports.utcWeeks = utcSundays;
+	exports.utcSunday = utcSunday;
+	exports.utcSundays = utcSundays;
+	exports.utcMonday = utcMonday;
+	exports.utcMondays = utcMondays;
+	exports.utcTuesday = utcTuesday;
+	exports.utcTuesdays = utcTuesdays;
+	exports.utcWednesday = utcWednesday;
+	exports.utcWednesdays = utcWednesdays;
+	exports.utcThursday = utcThursday;
+	exports.utcThursdays = utcThursdays;
+	exports.utcFriday = utcFriday;
+	exports.utcFridays = utcFridays;
+	exports.utcSaturday = utcSaturday;
+	exports.utcSaturdays = utcSaturdays;
+	exports.utcMonth = utcMonth;
+	exports.utcMonths = utcMonths;
+	exports.utcYear = utcYear;
+	exports.utcYears = utcYears;
 
-	  exports.timeInterval = newInterval;
-	  exports.timeMillisecond = millisecond;
-	  exports.timeMilliseconds = milliseconds;
-	  exports.utcMillisecond = millisecond;
-	  exports.utcMilliseconds = milliseconds;
-	  exports.timeSecond = second;
-	  exports.timeSeconds = seconds;
-	  exports.utcSecond = second;
-	  exports.utcSeconds = seconds;
-	  exports.timeMinute = minute;
-	  exports.timeMinutes = minutes;
-	  exports.timeHour = hour;
-	  exports.timeHours = hours;
-	  exports.timeDay = day;
-	  exports.timeDays = days;
-	  exports.timeWeek = sunday;
-	  exports.timeWeeks = sundays;
-	  exports.timeSunday = sunday;
-	  exports.timeSundays = sundays;
-	  exports.timeMonday = monday;
-	  exports.timeMondays = mondays;
-	  exports.timeTuesday = tuesday;
-	  exports.timeTuesdays = tuesdays;
-	  exports.timeWednesday = wednesday;
-	  exports.timeWednesdays = wednesdays;
-	  exports.timeThursday = thursday;
-	  exports.timeThursdays = thursdays;
-	  exports.timeFriday = friday;
-	  exports.timeFridays = fridays;
-	  exports.timeSaturday = saturday;
-	  exports.timeSaturdays = saturdays;
-	  exports.timeMonth = month;
-	  exports.timeMonths = months;
-	  exports.timeYear = year;
-	  exports.timeYears = years;
-	  exports.utcMinute = utcMinute;
-	  exports.utcMinutes = utcMinutes;
-	  exports.utcHour = utcHour;
-	  exports.utcHours = utcHours;
-	  exports.utcDay = utcDay;
-	  exports.utcDays = utcDays;
-	  exports.utcWeek = utcSunday;
-	  exports.utcWeeks = utcSundays;
-	  exports.utcSunday = utcSunday;
-	  exports.utcSundays = utcSundays;
-	  exports.utcMonday = utcMonday;
-	  exports.utcMondays = utcMondays;
-	  exports.utcTuesday = utcTuesday;
-	  exports.utcTuesdays = utcTuesdays;
-	  exports.utcWednesday = utcWednesday;
-	  exports.utcWednesdays = utcWednesdays;
-	  exports.utcThursday = utcThursday;
-	  exports.utcThursdays = utcThursdays;
-	  exports.utcFriday = utcFriday;
-	  exports.utcFridays = utcFridays;
-	  exports.utcSaturday = utcSaturday;
-	  exports.utcSaturdays = utcSaturdays;
-	  exports.utcMonth = utcMonth;
-	  exports.utcMonths = utcMonths;
-	  exports.utcYear = utcYear;
-	  exports.utcYears = utcYears;
+	Object.defineProperty(exports, '__esModule', { value: true });
 
-	  Object.defineProperty(exports, '__esModule', { value: true });
-
-	}));
+	})));
 
 /***/ },
-/* 283 */
+/* 282 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://d3js.org/d3-time-format/ Version 2.0.2. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
-	   true ? factory(exports, __webpack_require__(282)) :
+	   true ? factory(exports, __webpack_require__(281)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-time'], factory) :
 	  (factory((global.d3 = global.d3 || {}),global.d3));
 	}(this, function (exports,d3Time) { 'use strict';
@@ -56295,19 +55826,19 @@
 	}));
 
 /***/ },
-/* 284 */
+/* 283 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "301af7c6a7e8814582285ff32545d4f4.svg";
 
 /***/ },
-/* 285 */
+/* 284 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "79489479c1f150382fdd7d5aa40844c5.svg";
 
 /***/ },
-/* 286 */
+/* 285 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56322,7 +55853,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _commaNumber = __webpack_require__(287);
+	var _commaNumber = __webpack_require__(286);
 
 	var _commaNumber2 = _interopRequireDefault(_commaNumber);
 
@@ -56518,7 +56049,7 @@
 	};
 
 /***/ },
-/* 287 */
+/* 286 */
 /***/ function(module, exports) {
 
 	/**
@@ -56569,7 +56100,7 @@
 
 
 /***/ },
-/* 288 */
+/* 287 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56605,6 +56136,10 @@
 	    var _this = _possibleConstructorReturn(this, (HexMetrics.__proto__ || Object.getPrototypeOf(HexMetrics)).call(this, props));
 
 	    _this.state = {
+	      metrics: {
+	        stats: [],
+	        shouldWarn: false
+	      },
 	      hideNullStats: false,
 	      draggingHex: null,
 	      mouseX: 0,
@@ -56623,6 +56158,12 @@
 	      document.body.addEventListener('mousemove', this._updateMousePosition);
 	      document.body.addEventListener('mouseup', this._cancelDragging);
 	      document.getElementById('ui').addEventListener('mouseleave', this._cancelDragging);
+	      this._updateMetricsFromProps(this.props);
+	    }
+	  }, {
+	    key: 'componentWillReceiveProps',
+	    value: function componentWillReceiveProps(nextProps) {
+	      this._updateMetricsFromProps(nextProps);
 	    }
 	  }, {
 	    key: 'componentWillUnmount',
@@ -56657,23 +56198,16 @@
 	      });
 	    }
 	  }, {
-	    key: '_getMetrics',
-	    value: function _getMetrics() {
-	      if (!this.props.dataset) {
-	        return this._getCountsByGeo(this.props.tiles, this.props.geos).map(function (d) {
-	          return {
-	            key: d.key,
-	            nHex: d.value
-	          };
-	        });
-	      }
-	      var input = this.props.dataset.map(function (row) {
+	    key: '_updateMetricsFromProps',
+	    value: function _updateMetricsFromProps(props) {
+	      var input = props.dataset.map(function (row) {
 	        return { key: row[0], value: +row[1] };
 	      });
 	      var inputHash = (0, _utils.hashFromData)(input);
-	      var selectedRatio = this.props.metricPerTile;
+	      var selectedRatio = props.metricPerTile;
 	      var shouldWarn = false;
-	      var stats = this._getCountsByGeo(this.props.tiles, this.props.geos).map(function (d) {
+	      var nErrors = 0;
+	      var stats = this._getCountsByGeo(props.tiles, props.geos).map(function (d) {
 	        var metric = inputHash[d.key];
 	        var stat = { key: d.key, nHex: d.value, disable: !metric };
 	        if (metric) {
@@ -56684,10 +56218,18 @@
 	          stat.idealNHex = idealNHex;
 	          stat.metric = metric;
 	          stat.deviation = d.value - idealNHex;
+	          if (stat.deviation !== 0) {
+	            nErrors++;
+	          }
 	        }
 	        return stat;
 	      });
-	      return { stats: stats, shouldWarn: shouldWarn };
+
+	      props.updateNErrors(nErrors);
+
+	      this.setState({
+	        metrics: { stats: stats, shouldWarn: shouldWarn }
+	      });
 	    }
 	  }, {
 	    key: '_drawHexagon',
@@ -56803,7 +56345,7 @@
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      var metrics = this._getMetrics();
+	      var metrics = this.state.metrics;
 	      var hexClass = this.state.hideNullStats ? 'metrics hide-null' : 'metrics';
 	      var draggingHex = this.state.draggingHex ? this._drawHexagon(this.state.draggingHex, true) : null;
 	      return _react2.default.createElement(
@@ -56851,11 +56393,12 @@
 	  metricPerTile: _react.PropTypes.number,
 	  onAddTileMouseDown: _react.PropTypes.func,
 	  onMetricMouseOut: _react.PropTypes.func,
-	  onMetricMouseOver: _react.PropTypes.func
+	  onMetricMouseOver: _react.PropTypes.func,
+	  updateNErrors: _react.PropTypes.func
 	};
 
 /***/ },
-/* 289 */
+/* 288 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56869,7 +56412,7 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _download = __webpack_require__(290);
+	var _download = __webpack_require__(289);
 
 	var _download2 = _interopRequireDefault(_download);
 
@@ -56893,13 +56436,13 @@
 	};
 
 /***/ },
-/* 290 */
+/* 289 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "2465a5bd138e4657126ba7a424a1e35d.svg";
 
 /***/ },
-/* 291 */
+/* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -56964,6 +56507,55 @@
 	EditWarningModal.defaultProps = {
 	  startOver: function startOver() {},
 	  resumeEditing: function resumeEditing() {}
+	};
+
+/***/ },
+/* 291 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.default = Tooltip;
+
+	var _react = __webpack_require__(78);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var xPosDefault = 320; // should match sidebar-width in css/variables.scss
+
+	function Tooltip(props) {
+	  var display = props.hidden ? 'none' : 'block';
+
+	  return _react2.default.createElement(
+	    'div',
+	    {
+	      className: 'tooltip',
+	      style: {
+	        display: display,
+	        position: 'fixed',
+	        top: props.yPos + 'px',
+	        left: props.xPos + 'px'
+	      }
+	    },
+	    props.text
+	  );
+	}
+	Tooltip.propTypes = {
+	  text: _react2.default.PropTypes.string,
+	  hidden: _react2.default.PropTypes.bool,
+	  xPos: _react2.default.PropTypes.number,
+	  yPos: _react2.default.PropTypes.number
+	};
+	Tooltip.defaultProps = {
+	  text: '',
+	  hidden: true,
+	  xPos: xPosDefault,
+	  yPos: 0
 	};
 
 /***/ },
@@ -57302,13 +56894,20 @@
 	  }
 
 	  _createClass(DatasetResource, [{
+	    key: '_validateFips',
+	    value: function _validateFips(fips) {
+	      return fips && fips.length < 2 ? '0' + fips : fips;
+	    }
+	  }, {
 	    key: 'parseCsv',
 	    value: function parseCsv(csv) {
+	      var _this = this;
+
 	      var features = _MapResource2.default.getUniqueFeatureIds();
 	      var badMapIds = [];
 	      var badValueIds = [];
 	      var parsed = (0, _d3Dsv.csvParseRows)(csv, function (d) {
-	        return [d[0], parseFloat(d[1])];
+	        return [_this._validateFips(d[0]), parseFloat(d[1])];
 	      }).filter(function (row) {
 	        var hasId = features.indexOf(row[0]) > -1;
 	        if (!hasId) {
@@ -57327,8 +56926,12 @@
 	  }, {
 	    key: '_warnDataErrors',
 	    value: function _warnDataErrors(badMapIds, badValueIds) {
-	      var mapIdString = badMapIds.join(', ');
-	      var valueIdString = badValueIds.join(', ');
+	      var mapIdString = badMapIds.map(function (id) {
+	        return '"' + id + '"';
+	      }).join(', ');
+	      var valueIdString = badValueIds.map(function (id) {
+	        return '"' + id + '"';
+	      }).join(', ');
 	      var alertString = '';
 	      if (mapIdString) {
 	        alertString += 'There is no associated map data associated with id(s): ' + mapIdString + '.';
@@ -57374,175 +56977,175 @@
 /* 298 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-dsv/ Version 1.0.1. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-dsv/ Version 1.0.3. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
 	  (factory((global.d3 = global.d3 || {})));
-	}(this, function (exports) { 'use strict';
+	}(this, (function (exports) { 'use strict';
 
-	  function objectConverter(columns) {
-	    return new Function("d", "return {" + columns.map(function(name, i) {
-	      return JSON.stringify(name) + ": d[" + i + "]";
-	    }).join(",") + "}");
-	  }
+	function objectConverter(columns) {
+	  return new Function("d", "return {" + columns.map(function(name, i) {
+	    return JSON.stringify(name) + ": d[" + i + "]";
+	  }).join(",") + "}");
+	}
 
-	  function customConverter(columns, f) {
-	    var object = objectConverter(columns);
-	    return function(row, i) {
-	      return f(object(row), i, columns);
-	    };
-	  }
+	function customConverter(columns, f) {
+	  var object = objectConverter(columns);
+	  return function(row, i) {
+	    return f(object(row), i, columns);
+	  };
+	}
 
-	  // Compute unique columns in order of discovery.
-	  function inferColumns(rows) {
-	    var columnSet = Object.create(null),
-	        columns = [];
+	// Compute unique columns in order of discovery.
+	function inferColumns(rows) {
+	  var columnSet = Object.create(null),
+	      columns = [];
 
-	    rows.forEach(function(row) {
-	      for (var column in row) {
-	        if (!(column in columnSet)) {
-	          columns.push(columnSet[column] = column);
-	        }
+	  rows.forEach(function(row) {
+	    for (var column in row) {
+	      if (!(column in columnSet)) {
+	        columns.push(columnSet[column] = column);
 	      }
+	    }
+	  });
+
+	  return columns;
+	}
+
+	function dsv(delimiter) {
+	  var reFormat = new RegExp("[\"" + delimiter + "\n]"),
+	      delimiterCode = delimiter.charCodeAt(0);
+
+	  function parse(text, f) {
+	    var convert, columns, rows = parseRows(text, function(row, i) {
+	      if (convert) return convert(row, i - 1);
+	      columns = row, convert = f ? customConverter(row, f) : objectConverter(row);
 	    });
-
-	    return columns;
+	    rows.columns = columns;
+	    return rows;
 	  }
 
-	  function dsv(delimiter) {
-	    var reFormat = new RegExp("[\"" + delimiter + "\n]"),
-	        delimiterCode = delimiter.charCodeAt(0);
+	  function parseRows(text, f) {
+	    var EOL = {}, // sentinel value for end-of-line
+	        EOF = {}, // sentinel value for end-of-file
+	        rows = [], // output rows
+	        N = text.length,
+	        I = 0, // current character index
+	        n = 0, // the current line number
+	        t, // the current token
+	        eol; // is the current token followed by EOL?
 
-	    function parse(text, f) {
-	      var convert, columns, rows = parseRows(text, function(row, i) {
-	        if (convert) return convert(row, i - 1);
-	        columns = row, convert = f ? customConverter(row, f) : objectConverter(row);
-	      });
-	      rows.columns = columns;
-	      return rows;
-	    }
+	    function token() {
+	      if (I >= N) return EOF; // special case: end of file
+	      if (eol) return eol = false, EOL; // special case: end of line
 
-	    function parseRows(text, f) {
-	      var EOL = {}, // sentinel value for end-of-line
-	          EOF = {}, // sentinel value for end-of-file
-	          rows = [], // output rows
-	          N = text.length,
-	          I = 0, // current character index
-	          n = 0, // the current line number
-	          t, // the current token
-	          eol; // is the current token followed by EOL?
-
-	      function token() {
-	        if (I >= N) return EOF; // special case: end of file
-	        if (eol) return eol = false, EOL; // special case: end of line
-
-	        // special case: quotes
-	        var j = I, c;
-	        if (text.charCodeAt(j) === 34) {
-	          var i = j;
-	          while (i++ < N) {
-	            if (text.charCodeAt(i) === 34) {
-	              if (text.charCodeAt(i + 1) !== 34) break;
-	              ++i;
-	            }
+	      // special case: quotes
+	      var j = I, c;
+	      if (text.charCodeAt(j) === 34) {
+	        var i = j;
+	        while (i++ < N) {
+	          if (text.charCodeAt(i) === 34) {
+	            if (text.charCodeAt(i + 1) !== 34) break;
+	            ++i;
 	          }
-	          I = i + 2;
-	          c = text.charCodeAt(i + 1);
-	          if (c === 13) {
-	            eol = true;
-	            if (text.charCodeAt(i + 2) === 10) ++I;
-	          } else if (c === 10) {
-	            eol = true;
-	          }
-	          return text.slice(j + 1, i).replace(/""/g, "\"");
 	        }
-
-	        // common case: find next delimiter or newline
-	        while (I < N) {
-	          var k = 1;
-	          c = text.charCodeAt(I++);
-	          if (c === 10) eol = true; // \n
-	          else if (c === 13) { eol = true; if (text.charCodeAt(I) === 10) ++I, ++k; } // \r|\r\n
-	          else if (c !== delimiterCode) continue;
-	          return text.slice(j, I - k);
+	        I = i + 2;
+	        c = text.charCodeAt(i + 1);
+	        if (c === 13) {
+	          eol = true;
+	          if (text.charCodeAt(i + 2) === 10) ++I;
+	        } else if (c === 10) {
+	          eol = true;
 	        }
-
-	        // special case: last token before EOF
-	        return text.slice(j);
+	        return text.slice(j + 1, i).replace(/""/g, "\"");
 	      }
 
-	      while ((t = token()) !== EOF) {
-	        var a = [];
-	        while (t !== EOL && t !== EOF) {
-	          a.push(t);
-	          t = token();
-	        }
-	        if (f && (a = f(a, n++)) == null) continue;
-	        rows.push(a);
+	      // common case: find next delimiter or newline
+	      while (I < N) {
+	        var k = 1;
+	        c = text.charCodeAt(I++);
+	        if (c === 10) eol = true; // \n
+	        else if (c === 13) { eol = true; if (text.charCodeAt(I) === 10) ++I, ++k; } // \r|\r\n
+	        else if (c !== delimiterCode) continue;
+	        return text.slice(j, I - k);
 	      }
 
-	      return rows;
+	      // special case: last token before EOF
+	      return text.slice(j);
 	    }
 
-	    function format(rows, columns) {
-	      if (columns == null) columns = inferColumns(rows);
-	      return [columns.map(formatValue).join(delimiter)].concat(rows.map(function(row) {
-	        return columns.map(function(column) {
-	          return formatValue(row[column]);
-	        }).join(delimiter);
-	      })).join("\n");
+	    while ((t = token()) !== EOF) {
+	      var a = [];
+	      while (t !== EOL && t !== EOF) {
+	        a.push(t);
+	        t = token();
+	      }
+	      if (f && (a = f(a, n++)) == null) continue;
+	      rows.push(a);
 	    }
 
-	    function formatRows(rows) {
-	      return rows.map(formatRow).join("\n");
-	    }
-
-	    function formatRow(row) {
-	      return row.map(formatValue).join(delimiter);
-	    }
-
-	    function formatValue(text) {
-	      return text == null ? ""
-	          : reFormat.test(text += "") ? "\"" + text.replace(/\"/g, "\"\"") + "\""
-	          : text;
-	    }
-
-	    return {
-	      parse: parse,
-	      parseRows: parseRows,
-	      format: format,
-	      formatRows: formatRows
-	    };
+	    return rows;
 	  }
 
-	  var csv = dsv(",");
+	  function format(rows, columns) {
+	    if (columns == null) columns = inferColumns(rows);
+	    return [columns.map(formatValue).join(delimiter)].concat(rows.map(function(row) {
+	      return columns.map(function(column) {
+	        return formatValue(row[column]);
+	      }).join(delimiter);
+	    })).join("\n");
+	  }
 
-	  var csvParse = csv.parse;
-	  var csvParseRows = csv.parseRows;
-	  var csvFormat = csv.format;
-	  var csvFormatRows = csv.formatRows;
+	  function formatRows(rows) {
+	    return rows.map(formatRow).join("\n");
+	  }
 
-	  var tsv = dsv("\t");
+	  function formatRow(row) {
+	    return row.map(formatValue).join(delimiter);
+	  }
 
-	  var tsvParse = tsv.parse;
-	  var tsvParseRows = tsv.parseRows;
-	  var tsvFormat = tsv.format;
-	  var tsvFormatRows = tsv.formatRows;
+	  function formatValue(text) {
+	    return text == null ? ""
+	        : reFormat.test(text += "") ? "\"" + text.replace(/\"/g, "\"\"") + "\""
+	        : text;
+	  }
 
-	  exports.dsvFormat = dsv;
-	  exports.csvParse = csvParse;
-	  exports.csvParseRows = csvParseRows;
-	  exports.csvFormat = csvFormat;
-	  exports.csvFormatRows = csvFormatRows;
-	  exports.tsvParse = tsvParse;
-	  exports.tsvParseRows = tsvParseRows;
-	  exports.tsvFormat = tsvFormat;
-	  exports.tsvFormatRows = tsvFormatRows;
+	  return {
+	    parse: parse,
+	    parseRows: parseRows,
+	    format: format,
+	    formatRows: formatRows
+	  };
+	}
 
-	  Object.defineProperty(exports, '__esModule', { value: true });
+	var csv = dsv(",");
 
-	}));
+	var csvParse = csv.parse;
+	var csvParseRows = csv.parseRows;
+	var csvFormat = csv.format;
+	var csvFormatRows = csv.formatRows;
+
+	var tsv = dsv("\t");
+
+	var tsvParse = tsv.parse;
+	var tsvParseRows = tsv.parseRows;
+	var tsvFormat = tsv.format;
+	var tsvFormatRows = tsv.formatRows;
+
+	exports.dsvFormat = dsv;
+	exports.csvParse = csvParse;
+	exports.csvParseRows = csvParseRows;
+	exports.csvFormat = csvFormat;
+	exports.csvFormatRows = csvFormatRows;
+	exports.tsvParse = tsvParse;
+	exports.tsvParseRows = tsvParseRows;
+	exports.tsvFormat = tsvFormat;
+	exports.tsvFormatRows = tsvFormatRows;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
+
+	})));
 
 /***/ },
 /* 299 */
@@ -128463,7 +128066,7 @@
 	exports.push([module.id, "@import url(https://fonts.googleapis.com/css?family=Roboto:300,400,500,700);", ""]);
 
 	// module
-	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Roboto\", sans-serif;\n  font-weight: 400;\n  font-size: 15px;\n  color: #1a1a1a;\n  background-color: #fdfdfd; }\n\n* {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n\n.code, input, textarea {\n  -webkit-touch-callout: default;\n  -webkit-user-select: text;\n  -moz-user-select: text;\n  -ms-user-select: text;\n  user-select: text; }\n\na {\n  color: #3939a5;\n  margin: 0 5px;\n  cursor: pointer; }\n\n.gray {\n  color: #4d4d4d; }\n\ninput[type=\"radio\"] {\n  display: none; }\n\n.padding-bottom {\n  padding-bottom: 10px; }\n\n.collapsed {\n  display: none; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 55px;\n  bottom: 0;\n  left: 320px;\n  overflow: hidden;\n  z-index: -1; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: #f3f3f3; }\n\n.credits {\n  position: fixed;\n  bottom: 5px;\n  left: 320px;\n  right: 5px;\n  font-size: 9pt;\n  text-align: right; }\n  .credits .gnl-logo {\n    display: inline-block;\n    height: 1.2em;\n    margin-bottom: -4px; }\n\n#stats {\n  z-index: 2; }\n\n.dg.ac {\n  pointer-events: none; }\n\n.manual {\n  position: fixed;\n  top: 55px;\n  left: 320px;\n  max-width: 450px;\n  padding: 25px 25px 50px 25px;\n  overflow-y: scroll;\n  height: calc(100% - 130px);\n  background-color: #fdfdfd;\n  font-size: 0.8em;\n  margin-left: 2px;\n  line-height: 1.2em;\n  border-right: 1px solid #d0d2d3;\n  z-index: 1; }\n  .manual.hidden {\n    display: none; }\n  .manual .manual-close {\n    position: absolute;\n    top: 25px;\n    right: 25px;\n    font-size: 1.7em;\n    cursor: pointer; }\n  .manual h1 {\n    font-size: 1.7em;\n    color: #1a1a1a;\n    padding: 0;\n    letter-spacing: normal;\n    border-bottom: 1px solid #d0d2d3;\n    min-width: 100%;\n    margin-bottom: 1em;\n    padding-bottom: 10px; }\n  .manual h2 {\n    font-size: 1.4em;\n    padding: 0.6em 0; }\n  .manual h3 {\n    font-size: 1.2em;\n    padding: 0.5em 0; }\n  .manual h4 {\n    font-size: 1.1em;\n    padding: 0.5em 0; }\n  .manual p {\n    padding-bottom: 1em; }\n  .manual a {\n    margin: 0; }\n\n.header {\n  position: fixed;\n  width: 100%;\n  background: #1a1a1a;\n  z-index: 1;\n  display: table;\n  height: 55px; }\n  .header h1 {\n    font-size: 120%;\n    line-height: 1.2em;\n    padding: 12.5px 25px;\n    color: #fdfdfd;\n    letter-spacing: .15em;\n    display: inline-block;\n    display: table-cell; }\n  .header .tilegrams-logo {\n    width: 1.2em;\n    height: 1.2em;\n    margin: 0 0.4em 0 0.2em;\n    transform: translateY(20%); }\n  .header .by-pitch {\n    font-size: 60%;\n    letter-spacing: .08em;\n    font-weight: 300; }\n  .header .share {\n    display: table-cell;\n    clear: both; }\n    .header .share img {\n      width: 1.2em;\n      height: 1.2em;\n      float: right;\n      padding-right: 20px; }\n\nselect {\n  width: 100%;\n  -webkit-appearance: none;\n  -webkit-border-radius: 0px;\n  -moz-appearance: none;\n  appearance: none;\n  background: url(" + __webpack_require__(310) + ") no-repeat 97% 50% #ffffff;\n  background-size: 1em 0.5em;\n  border: none;\n  background-color: #f1f1f2;\n  color: #1a1a1a;\n  font-size: 100%;\n  font-weight: 300;\n  cursor: pointer; }\n  select:focus {\n    outline: none; }\n\nfieldset {\n  padding: 10px 15px 0px 0px; }\n  fieldset label {\n    display: inline-block;\n    width: 96px;\n    margin-bottom: 6px; }\n\ncode {\n  font-weight: 500; }\n\n.language-javascript, .language-html {\n  display: block;\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: #f1f1f2;\n  padding: 5px;\n  white-space: pre-wrap;\n  margin-bottom: 10px;\n  font-weight: 400; }\n\n.code {\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: #d0d2d3;\n  padding: 10px;\n  margin: 10px;\n  font-size: 80%;\n  line-height: 110%;\n  display: block; }\n\n.step {\n  position: relative;\n  cursor: pointer;\n  font-size: 1.15em;\n  padding: 15px 25px;\n  line-height: 1.25em; }\n  .step .arrow {\n    width: 1em;\n    height: 1em;\n    background: url(" + __webpack_require__(311) + ") no-repeat center center;\n    background-size: 1em 1em;\n    float: right;\n    transition: transform 500ms ease-in-out; }\n  .step.active .arrow {\n    transform: rotateX(180deg); }\n\n.dragging-hex {\n  position: absolute;\n  transform: translateX(-50%) translateY(-50%); }\n  .dragging-hex svg polygon {\n    stroke: #000;\n    stroke-width: 1px;\n    opacity: 0.4; }\n\n#ui {\n  position: absolute;\n  min-height: 100%;\n  border-right: 2px solid #d0d2d3; }\n\n#ui .column {\n  width: 320px;\n  background-color: #fdfdfd;\n  overflow-x: hidden;\n  overflow-y: auto;\n  font-size: 0.85em;\n  font-weight: 400;\n  padding-top: 55px; }\n  #ui .column hr {\n    border: none;\n    height: 1px;\n    background-color: #d0d2d3;\n    margin: 0; }\n  #ui .column p.intro {\n    margin: 25px;\n    opacity: 0.8;\n    line-height: 1.2em; }\n    #ui .column p.intro a {\n      text-decoration: none;\n      margin: 0; }\n  #ui .column label.radio-label {\n    cursor: pointer;\n    padding-top: 12px;\n    display: block;\n    width: 100%; }\n    #ui .column label.radio-label:hover {\n      opacity: 0.6; }\n  #ui .column .scroll-ui {\n    overflow: scroll; }\n  #ui .column .ui-controls {\n    overflow: hidden; }\n    #ui .column .ui-controls .ui-control-type {\n      padding-bottom: 20px; }\n    #ui .column .ui-controls .import {\n      padding: 0 25px 12px 25px; }\n      #ui .column .ui-controls .import.active {\n        background-color: #f1f1f2;\n        border-left: 3px solid #4d4d4d;\n        padding-left: 22px; }\n        #ui .column .ui-controls .import.active label.radio-label:hover {\n          opacity: 1; }\n    #ui .column .ui-controls input.import {\n      padding: 0; }\n  #ui .column .import-metric {\n    font-size: 85%;\n    opacity: 0.6;\n    color: #3939a5;\n    font-weight: 500; }\n  #ui .column .csv-input {\n    margin-top: 15px; }\n    #ui .column .csv-input textarea {\n      width: 100%;\n      margin-top: 10px; }\n      #ui .column .csv-input textarea:focus {\n        outline: none; }\n  #ui .column .dataset-select {\n    width: 100%; }\n  #ui .column .instruction {\n    margin-top: 10px; }\n  #ui .column .resolution-slider label {\n    display: block; }\n  #ui .column .resolution-slider .hex-img {\n    width: 1.5em;\n    height: 1.5em;\n    display: inline-block; }\n  #ui .column .resolution-slider .small-hex {\n    float: left; }\n  #ui .column .resolution-slider .big-hex {\n    float: right; }\n  #ui .column .resolution-slider input {\n    width: 100%;\n    cursor: pointer; }\n  #ui .column .resolution-input input {\n    min-width: 50%;\n    border: none;\n    font-size: 1.1em;\n    border-bottom: 1px solid #d0d2d3;\n    margin: 0 5px 0 0;\n    color: #3939a5; }\n    #ui .column .resolution-input input:focus {\n      outline: none;\n      border-bottom: 1px solid #4d4d4d; }\n  #ui .column .metrics {\n    padding: 0 25px;\n    overflow: scroll; }\n    #ui .column .metrics label {\n      padding-left: 5px; }\n  #ui .column #metrics-header {\n    padding-bottom: 0.5em;\n    cursor: pointer; }\n  #ui .column #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui .column #warning i {\n      padding-right: 0.5em; }\n  #ui .column .download .instruction {\n    margin: 0 25px;\n    line-height: 1.2em; }\n  #ui .column .download fieldset {\n    display: block;\n    margin-left: 15px;\n    margin-bottom: 12.5px; }\n  #ui .column .download a.export {\n    display: block;\n    background-color: #1a1a1a;\n    border-radius: 2px;\n    padding: 0.5em 0.75em;\n    margin: 0.5em 10px;\n    color: white;\n    text-align: center; }\n    #ui .column .download a.export img {\n      width: 1.2em;\n      height: 1.2em;\n      margin-left: 15px; }\n\n.metrics-wrapper {\n  width: 100%;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between; }\n  .metrics-wrapper .metrics-box {\n    text-align: center;\n    flex-basis: 18%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    font-size: 90%;\n    border: 1px solid #f1f1f2;\n    padding: 3px 0;\n    margin: 3px auto;\n    box-shadow: 1px 1px 2px #f1f1f2; }\n    .metrics-wrapper .metrics-box div {\n      padding: 2px 0; }\n    .metrics-wrapper .metrics-box svg polygon {\n      stroke: #d0d2d3; }\n  .metrics-wrapper .metrics-box.fade {\n    box-shadow: none; }\n    .metrics-wrapper .metrics-box.fade div:not(:first-child) {\n      opacity: 0.3; }\n  .metrics-wrapper .metrics-box.disabled {\n    pointer-events: none;\n    opacity: 0.3; }\n\n.metrics.hide-null .metrics-box.fade, .metrics.hide-null .metrics-box.disabled {\n  display: none; }\n\n.modal-edit-warning {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 99999;\n  background-color: rgba(0, 0, 0, 0.3);\n  border: 1px solid #4d4d4d; }\n  .modal-edit-warning .warning-text {\n    position: relative;\n    max-width: 400px;\n    left: 50%;\n    top: 50%;\n    color: #1a1a1a;\n    padding: 25px 25px 12.5px 25px;\n    font-size: 1em;\n    transform: translateX(-50%) translateY(-50%);\n    background-color: #fdfdfd;\n    line-height: 1.2em; }\n    .modal-edit-warning .warning-text a {\n      padding: 0.3em;\n      margin-top: 0.6em;\n      background-color: black;\n      color: white;\n      border-radius: 2px;\n      min-width: 40%;\n      text-align: center; }\n\n.mobile-redirect {\n  display: none; }\n\n@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3), screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 2), screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1), only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2), (min-device-width: 800px) and (max-device-width: 1280px), screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) {\n  body {\n    overflow-x: hidden;\n    overflow-y: hidden; }\n  .credits {\n    z-index: 100;\n    padding: 15px;\n    background-color: #fdfdfd;\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    text-align: center;\n    font-size: 1.2em;\n    line-height: 1.4em; }\n    .credits .source {\n      display: none; }\n  .mobile-redirect {\n    display: block;\n    position: fixed;\n    width: 100%;\n    height: 100%;\n    z-index: 99;\n    background: url(" + __webpack_require__(312) + ") no-repeat center center fixed;\n    -webkit-background-size: cover;\n    -moz-background-size: cover;\n    -o-background-size: cover;\n    background-size: cover; }\n    .mobile-redirect .background {\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.7); }\n    .mobile-redirect .tilegrams-logo {\n      width: 2em;\n      height: 2em;\n      margin: 0 0.4em 0 0.2em;\n      transform: translateY(20%); }\n    .mobile-redirect .main {\n      position: relative;\n      max-width: 90%;\n      left: 50%;\n      top: 40%;\n      color: #1a1a1a;\n      padding: 25px 25px 12.5px 25px;\n      font-size: 1em;\n      transform: translateX(-50%) translateY(-50%);\n      color: #fdfdfd; }\n      .mobile-redirect .main h1 {\n        font-size: 2em;\n        display: inline-block;\n        padding: 0 0 0.5em 0; }\n      .mobile-redirect .main h2 {\n        font-size: 1.5em;\n        padding: 0 0 0.5em 0; }\n      .mobile-redirect .main h3 {\n        font-size: 1em; } }\n", ""]);
+	exports.push([module.id, "html, body, div, span, applet, object, iframe,\nh1, h2, h3, h4, h5, h6, p, blockquote, pre,\na, abbr, acronym, address, big, cite, code,\ndel, dfn, em, img, ins, kbd, q, s, samp,\nsmall, strike, strong, sub, sup, tt, var,\nb, u, i, center,\ndl, dt, dd, ol, ul, li,\nfieldset, form, label, legend,\ntable, caption, tbody, tfoot, thead, tr, th, td,\narticle, aside, canvas, details, embed,\nfigure, figcaption, footer, header, hgroup,\nmenu, nav, output, ruby, section, summary,\ntime, mark, audio, video {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  font-size: 100%;\n  font: inherit;\n  vertical-align: baseline; }\n\n/* HTML5 display-role reset for older browsers */\narticle, aside, details, figcaption, figure,\nfooter, header, hgroup, menu, nav, section {\n  display: block; }\n\nbody {\n  line-height: 1; }\n\nol, ul {\n  list-style: none; }\n\nblockquote, q {\n  quotes: none; }\n\nblockquote:before, blockquote:after,\nq:before, q:after {\n  content: '';\n  content: none; }\n\ntable {\n  border-collapse: collapse;\n  border-spacing: 0; }\n\nbody {\n  margin: 0;\n  font-family: \"Roboto\", sans-serif;\n  font-weight: 400;\n  font-size: 15px;\n  color: #1a1a1a;\n  background-color: #fdfdfd; }\n\n* {\n  -webkit-touch-callout: none;\n  -webkit-user-select: none;\n  -moz-user-select: none;\n  -ms-user-select: none;\n  user-select: none; }\n\n.code, code, input, textarea {\n  -webkit-touch-callout: default;\n  -webkit-user-select: text;\n  -moz-user-select: text;\n  -ms-user-select: text;\n  user-select: text; }\n\na {\n  color: #3939a5;\n  margin: 0 5px;\n  cursor: pointer; }\n\n.gray {\n  color: #4d4d4d; }\n\ninput[type=\"radio\"] {\n  display: none; }\n\n.padding-bottom {\n  padding-bottom: 10px; }\n\n.collapsed {\n  display: none; }\n\n#canvas {\n  position: fixed;\n  right: 0;\n  top: 55px;\n  bottom: 0;\n  left: 320px;\n  overflow: hidden;\n  z-index: -1; }\n  #canvas canvas {\n    cursor: pointer;\n    background-color: #f3f3f3; }\n\n.credits {\n  position: fixed;\n  bottom: 5px;\n  left: 320px;\n  right: 5px;\n  font-size: 9pt;\n  text-align: right; }\n  .credits .gnl-logo {\n    display: inline-block;\n    height: 1.2em;\n    margin-bottom: -4px; }\n\n#stats {\n  z-index: 2; }\n\n.dg.ac {\n  pointer-events: none; }\n\n.manual {\n  position: fixed;\n  top: 55px;\n  left: 320px;\n  max-width: 450px;\n  padding: 25px 25px 50px 25px;\n  overflow-y: scroll;\n  height: calc(100% - 130px);\n  background-color: #fdfdfd;\n  font-size: 0.8em;\n  margin-left: 2px;\n  line-height: 1.2em;\n  border-right: 1px solid #d0d2d3;\n  z-index: 1; }\n  .manual.hidden {\n    display: none; }\n  .manual .manual-close {\n    position: absolute;\n    top: 25px;\n    right: 25px;\n    font-size: 1.7em;\n    cursor: pointer; }\n  .manual h1 {\n    font-size: 1.7em;\n    color: #1a1a1a;\n    padding: 0;\n    letter-spacing: normal;\n    border-bottom: 1px solid #d0d2d3;\n    min-width: 100%;\n    margin-bottom: 1em;\n    padding-bottom: 10px; }\n  .manual h2 {\n    font-size: 1.4em;\n    padding: 0.6em 0; }\n  .manual h3 {\n    font-size: 1.2em;\n    padding: 0.5em 0; }\n  .manual h4 {\n    font-size: 1.1em;\n    padding: 0.5em 0; }\n  .manual p {\n    padding-bottom: 1em; }\n  .manual a {\n    margin: 0; }\n\n.header {\n  position: fixed;\n  width: 100%;\n  background: #1a1a1a;\n  z-index: 1;\n  display: table;\n  height: 55px; }\n  .header h1 {\n    font-size: 120%;\n    line-height: 1.2em;\n    padding: 12.5px 25px;\n    color: #fdfdfd;\n    letter-spacing: .15em;\n    display: inline-block;\n    display: table-cell; }\n  .header .tilegrams-logo {\n    width: 1.2em;\n    height: 1.2em;\n    margin: 0 0.4em 0 0.2em;\n    transform: translateY(20%); }\n  .header .by-pitch {\n    font-size: 60%;\n    letter-spacing: .08em;\n    font-weight: 300; }\n  .header .share {\n    display: table-cell;\n    clear: both; }\n    .header .share img {\n      width: 1.2em;\n      height: 1.2em;\n      float: right;\n      padding-right: 20px; }\n\nselect {\n  width: 100%;\n  -webkit-appearance: none;\n  -webkit-border-radius: 0px;\n  -moz-appearance: none;\n  appearance: none;\n  background: url(" + __webpack_require__(310) + ") no-repeat 97% 50% #ffffff;\n  background-size: 1em 0.5em;\n  border: none;\n  background-color: #f1f1f2;\n  color: #1a1a1a;\n  font-size: 100%;\n  font-weight: 300;\n  cursor: pointer; }\n  select:focus {\n    outline: none; }\n\nfieldset {\n  padding: 10px 15px 0px 0px; }\n  fieldset label {\n    display: inline-block;\n    width: 96px;\n    margin-bottom: 6px; }\n\ncode {\n  font-weight: 500; }\n\n.language-javascript, .language-html {\n  display: block;\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: #f1f1f2;\n  padding: 5px;\n  white-space: pre-wrap;\n  margin-bottom: 10px;\n  font-weight: 400; }\n\n.code {\n  font-family: \"Lucida Console\", Monaco, monospace;\n  background-color: #d0d2d3;\n  padding: 10px;\n  margin: 10px;\n  font-size: 80%;\n  line-height: 110%;\n  display: block; }\n\n.step {\n  position: relative;\n  cursor: pointer;\n  font-size: 1.15em;\n  padding: 15px 25px;\n  line-height: 1.25em; }\n  .step .arrow {\n    width: 1em;\n    height: 1em;\n    background: url(" + __webpack_require__(311) + ") no-repeat center center;\n    background-size: 1em 1em;\n    float: right;\n    transition: transform 500ms ease-in-out; }\n  .step.active .arrow {\n    transform: rotateX(180deg); }\n\n.dragging-hex {\n  position: absolute;\n  transform: translateX(-50%) translateY(-50%); }\n  .dragging-hex svg polygon {\n    stroke: #000;\n    stroke-width: 1px;\n    opacity: 0.4; }\n\n#ui {\n  position: absolute;\n  min-height: 100%;\n  border-right: 2px solid #d0d2d3; }\n\n#ui .column {\n  width: 320px;\n  background-color: #fdfdfd;\n  overflow-x: hidden;\n  overflow-y: auto;\n  font-size: 0.85em;\n  font-weight: 400;\n  padding-top: 55px; }\n  #ui .column hr {\n    border: none;\n    height: 1px;\n    background-color: #d0d2d3;\n    margin: 0; }\n  #ui .column p.intro {\n    margin: 25px;\n    opacity: 0.8;\n    line-height: 1.2em; }\n    #ui .column p.intro a {\n      text-decoration: none;\n      margin: 0; }\n  #ui .column label.radio-label {\n    cursor: pointer;\n    padding-top: 12px;\n    display: block;\n    width: 100%; }\n    #ui .column label.radio-label:hover {\n      opacity: 0.6; }\n  #ui .column .scroll-ui {\n    overflow: scroll; }\n  #ui .column .ui-controls {\n    overflow: hidden; }\n    #ui .column .ui-controls .ui-control-type {\n      padding-bottom: 20px; }\n    #ui .column .ui-controls .import {\n      padding: 0 25px 12px 25px; }\n      #ui .column .ui-controls .import.active {\n        background-color: #f1f1f2;\n        border-left: 3px solid #4d4d4d;\n        padding-left: 22px; }\n        #ui .column .ui-controls .import.active label.radio-label:hover {\n          opacity: 1; }\n    #ui .column .ui-controls input.import {\n      padding: 0; }\n  #ui .column .import-metric {\n    font-size: 85%;\n    opacity: 0.6;\n    color: #3939a5;\n    font-weight: 500; }\n  #ui .column .n-errors {\n    font-size: 85%;\n    opacity: 0.6;\n    padding-left: 3px; }\n  #ui .column .csv-input {\n    margin-top: 15px; }\n    #ui .column .csv-input textarea {\n      width: 100%;\n      margin-top: 10px; }\n      #ui .column .csv-input textarea:focus {\n        outline: none; }\n  #ui .column .dataset-select {\n    width: 100%; }\n  #ui .column .instruction {\n    margin-top: 10px; }\n  #ui .column .resolution-slider label {\n    display: block; }\n  #ui .column .resolution-slider .hex-img {\n    width: 1.5em;\n    height: 1.5em;\n    display: inline-block; }\n  #ui .column .resolution-slider .small-hex {\n    float: left; }\n  #ui .column .resolution-slider .big-hex {\n    float: right; }\n  #ui .column .resolution-slider input {\n    width: 100%;\n    cursor: pointer; }\n  #ui .column .resolution-input input {\n    min-width: 50%;\n    border: none;\n    font-size: 1.1em;\n    border-bottom: 1px solid #d0d2d3;\n    margin: 0 5px 0 0;\n    color: #3939a5; }\n    #ui .column .resolution-input input:focus {\n      outline: none;\n      border-bottom: 1px solid #4d4d4d; }\n  #ui .column .metrics {\n    padding: 0 25px;\n    overflow: scroll; }\n    #ui .column .metrics label {\n      padding-left: 5px; }\n  #ui .column #metrics-header {\n    padding-bottom: 0.5em;\n    cursor: pointer; }\n  #ui .column #warning {\n    font-size: 0.8em;\n    padding-top: 10px;\n    line-height: 1.2em; }\n    #ui .column #warning i {\n      padding-right: 0.5em; }\n  #ui .column .download .instruction {\n    margin: 0 25px;\n    line-height: 1.2em; }\n  #ui .column .download fieldset {\n    display: block;\n    margin-left: 15px;\n    margin-bottom: 12.5px; }\n  #ui .column .download a.export {\n    display: block;\n    background-color: #1a1a1a;\n    border-radius: 2px;\n    padding: 0.5em 0.75em;\n    margin: 0.5em 10px;\n    color: white;\n    text-align: center; }\n    #ui .column .download a.export img {\n      width: 1.2em;\n      height: 1.2em;\n      margin-left: 15px; }\n\n.metrics-wrapper {\n  width: 100%;\n  display: flex;\n  flex-wrap: wrap;\n  justify-content: space-between; }\n  .metrics-wrapper .metrics-box {\n    text-align: center;\n    flex-basis: 18%;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    font-size: 90%;\n    border: 1px solid #f1f1f2;\n    padding: 3px 0;\n    margin: 3px auto;\n    box-shadow: 1px 1px 2px #f1f1f2; }\n    .metrics-wrapper .metrics-box div {\n      padding: 2px 0; }\n    .metrics-wrapper .metrics-box svg polygon {\n      stroke: #d0d2d3; }\n  .metrics-wrapper .metrics-box.fade {\n    box-shadow: none; }\n    .metrics-wrapper .metrics-box.fade div:not(:first-child) {\n      opacity: 0.3; }\n  .metrics-wrapper .metrics-box.disabled {\n    pointer-events: none;\n    opacity: 0.3; }\n\n.metrics.hide-null .metrics-box.fade, .metrics.hide-null .metrics-box.disabled {\n  display: none; }\n\n.modal-edit-warning {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  z-index: 99999;\n  background-color: rgba(0, 0, 0, 0.3);\n  border: 1px solid #4d4d4d; }\n  .modal-edit-warning .warning-text {\n    position: relative;\n    max-width: 400px;\n    left: 50%;\n    top: 50%;\n    color: #1a1a1a;\n    padding: 25px 25px 12.5px 25px;\n    font-size: 1em;\n    transform: translateX(-50%) translateY(-50%);\n    background-color: #fdfdfd;\n    line-height: 1.2em; }\n    .modal-edit-warning .warning-text a {\n      padding: 0.3em;\n      margin-top: 0.6em;\n      background-color: black;\n      color: white;\n      border-radius: 2px;\n      min-width: 40%;\n      text-align: center; }\n\n.tooltip {\n  background-color: #fff;\n  padding: 5px;\n  border: 1px solid black;\n  font-size: 12px;\n  max-width: 500px;\n  margin-left: 8px;\n  transform: translateY(-50%); }\n\n.tooltip:after, .tooltip:before {\n  right: 100%;\n  top: 50%;\n  border: solid transparent;\n  content: \" \";\n  height: 0;\n  width: 0;\n  position: absolute;\n  pointer-events: none; }\n\n.tooltip:after {\n  border-right-color: black;\n  border-width: 7px;\n  margin-top: -7px; }\n\n.tooltip:before {\n  border-right-color: black;\n  border-width: 8px;\n  margin-top: -8px; }\n\n.mobile-redirect {\n  display: none; }\n\n@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2), only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3), screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 2), screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1), only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2), (min-device-width: 800px) and (max-device-width: 1280px), screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) {\n  body {\n    overflow-x: hidden;\n    overflow-y: hidden; }\n  .credits {\n    z-index: 100;\n    padding: 15px;\n    background-color: #fdfdfd;\n    position: fixed;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    text-align: center;\n    font-size: 1.2em;\n    line-height: 1.4em; }\n    .credits .source {\n      display: none; }\n  .mobile-redirect {\n    display: block;\n    position: fixed;\n    width: 100%;\n    height: 100%;\n    z-index: 99;\n    background: url(" + __webpack_require__(312) + ") no-repeat center center fixed;\n    -webkit-background-size: cover;\n    -moz-background-size: cover;\n    -o-background-size: cover;\n    background-size: cover; }\n    .mobile-redirect .background {\n      width: 100%;\n      height: 100%;\n      background-color: rgba(0, 0, 0, 0.7); }\n    .mobile-redirect .tilegrams-logo {\n      width: 2em;\n      height: 2em;\n      margin: 0 0.4em 0 0.2em;\n      transform: translateY(20%); }\n    .mobile-redirect .main {\n      position: relative;\n      max-width: 90%;\n      left: 50%;\n      top: 40%;\n      color: #1a1a1a;\n      padding: 25px 25px 12.5px 25px;\n      font-size: 1em;\n      transform: translateX(-50%) translateY(-50%);\n      color: #fdfdfd; }\n      .mobile-redirect .main h1 {\n        font-size: 2em;\n        display: inline-block;\n        padding: 0 0 0.5em 0; }\n      .mobile-redirect .main h2 {\n        font-size: 1.5em;\n        padding: 0 0 0.5em 0; }\n      .mobile-redirect .main h3 {\n        font-size: 1em; } }\n", ""]);
 
 	// exports
 
