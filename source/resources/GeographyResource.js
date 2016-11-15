@@ -15,6 +15,10 @@ class GeographyResource {
     ]
   }
 
+  getMapResource(label) {
+    return this._geographies.find(geography => geography.label === label).mapResource
+  }
+
   getGeographies() {
     return this._geographies
   }

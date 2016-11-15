@@ -121,7 +121,8 @@ class Exporter {
   }
 
   /** Format TopoJSON from GeoJSON */
-  fromGeoJSON(geoJSON) {
+  fromGeoJSON(geoJSON, objectId) {
+    objectId = objectId || 'states'
     const arcs = []
     const topoJson = {
       type: 'Topology',
@@ -130,7 +131,7 @@ class Exporter {
         translate: [0.0, 0.0],
       },
       objects: {
-        states: {
+        [objectId]: {
           type: 'GeometryCollection',
           geometries: geoJSON.features.map(feature => {
             const geometryArcIndices = []

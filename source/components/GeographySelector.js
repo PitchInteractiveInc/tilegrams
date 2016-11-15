@@ -10,7 +10,7 @@ export default function GeographySelector(props) {
     return (
       <option
         key={geographyIndex}
-        value={geographyIndex}
+        value={geography.label}
       >
         {geography.label}
       </option>
@@ -25,6 +25,6 @@ export default function GeographySelector(props) {
   )
 }
 GeographySelector.propTypes = {
-  selectedGeography: React.PropTypes.number,
+  selectedGeography: React.PropTypes.string,
   selectGeography: React.PropTypes.func,
 }

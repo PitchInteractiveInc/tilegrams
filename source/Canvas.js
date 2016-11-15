@@ -18,15 +18,17 @@ class Canvas {
     this._cartogramArea = null
   }
 
-  computeCartogram(properties) {
-    this._mapGraphic.computeCartogram(properties)
+  computeCartogram(dataset, geography) {
+    geography = geography || 'United States'
+    this._mapGraphic.computeCartogram(dataset, geography)
     this._setCartogramArea()
-    this.updateTiles(properties)
+    this.updateTiles(dataset)
     this._cartogramReady = true
   }
 
-  iterateCartogram() {
-    const iterated = this._mapGraphic.iterateCartogram()
+  iterateCartogram(geography) {
+    geography = geography || 'United States'
+    const iterated = this._mapGraphic.iterateCartogram(geography)
     if (iterated) {
       this._setCartogramArea()
     }
@@ -47,6 +49,7 @@ class Canvas {
   }
 
   updateTilesFromMetrics() {
+    console.log(this._cartogramArea)
     const idealHexArea =
       (this._cartogramArea * metrics.metricPerTile) / metrics.sumMetrics
     gridGeometry.setTileEdgeFromArea(idealHexArea)

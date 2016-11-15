@@ -1,10 +1,10 @@
-import {geoPath, geoAlbersUsa} from 'd3-geo'
+import {geoPath, geoAlbersUsa, geoMercator} from 'd3-geo'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import mapResource from '../resources/USMapResource'
+import geographyResource from '../resources/geographyResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -26,20 +26,20 @@ export default class MapGraphic extends Graphic {
   }
 
   /** Apply topogram on topoJson using data in properties */
-  computeCartogram(properties) {
+  computeCartogram(dataset, geography) {
     topogram.value(
-      feature => properties.find(property => property[0] === feature.id)[1]
+      feature => dataset.find(data => data[0] === feature.id)[1]
     )
     this._iterationCount = 0
 
-    // compute initial cartogram
-    this.updatePreProjection()
+    // compute initial cartogram from geography
+    this.updatePreProjection(geography)
 
     // generate basemap for topogram
-    const baseMap = this._getbaseMapTopoJson(properties)
+    this._baseMap = this._getbaseMapTopoJson(dataset, geography)
     this._stateFeatures = topogram(
-      baseMap.topo,
-      baseMap.geometries
+      this._baseMap.topo,
+      this._baseMap.geometries
     )
     this._precomputeBounds()
   }
@@ -48,22 +48,22 @@ export default class MapGraphic extends Graphic {
    * Returns either the original map topojson and geometries or
    * a filtered version of the map if the data properties don't match the map.
    */
-  _getbaseMapTopoJson(properties) {
+  _getbaseMapTopoJson(dataset, geography) {
+    geography = geography || 'United States'
+    const mapResource = geographyResource.getMapResource(geography)
     const baseMapTopoJson = mapResource.getTopoJson()
     let filteredTopoJson = null
     let filteredGeometries = null
-
     const baseMapLength = baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length
     // for custom uploads with incomplete data
-    if (properties.length !== baseMapLength) {
-      const statesWithData = properties.map(property => property[0])
+    if (dataset.length !== baseMapLength) {
+      const statesWithData = dataset.map(data => data[0])
       filteredGeometries = baseMapTopoJson.objects[mapResource.getObjectId()].geometries
         .filter(geom => statesWithData.indexOf(geom.id) > -1)
       filteredTopoJson = JSON.parse(JSON.stringify(baseMapTopoJson)) // clones the baseMap
       // only pass filtered geometries to topogram generator
       filteredTopoJson.objects[mapResource.getObjectId()].geometries = filteredGeometries
     }
-
     return {
       topo: filteredTopoJson || baseMapTopoJson,
       geometries: filteredGeometries || mapResource.getGeometries(),
@@ -74,13 +74,15 @@ export default class MapGraphic extends Graphic {
    * Calculate subsequent cartogram iterations.
    * Return true if iteration was performed, false if not.
    */
-  iterateCartogram() {
+  iterateCartogram(geography) {
+    geography = geography || 'United States'
     if (this._iterationCount > MAX_ITERATION_COUNT) {
       return false
     }
+    const mapResource = geographyResource.getMapResource(geography)
     topogram.projection(x => x)
-    const topoJson = exporter.fromGeoJSON(this._stateFeatures)
-    this._stateFeatures = topogram(topoJson, topoJson.objects.states.geometries)
+    const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
+    this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
     this._precomputeBounds()
     this._iterationCount++
     return true
@@ -91,13 +93,24 @@ export default class MapGraphic extends Graphic {
   }
 
   /** Apply projectiong _before_ cartogram computation */
-  updatePreProjection() {
-    const projection = geoAlbersUsa()
-      .scale(canvasDimensions.width)
-      .translate([
-        canvasDimensions.width * 0.5,
-        canvasDimensions.height * 0.5,
-      ])
+  updatePreProjection(geography) {
+    // TODO: Smarter map projection
+    let projection = (d => d)
+    if (geography === 'United States') {
+      projection = geoAlbersUsa()
+        .scale(canvasDimensions.width)
+        .translate([
+          canvasDimensions.width * 0.5,
+          canvasDimensions.height * 0.5,
+        ])
+    } else if (geography === 'World') {
+      projection = geoMercator()
+        .scale(canvasDimensions.width / 8)
+        .translate([
+          canvasDimensions.width * 0.5,
+          canvasDimensions.height * 0.7,
+        ])
+    }
     topogram.projection(projection)
   }
 

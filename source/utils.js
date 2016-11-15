@@ -2,7 +2,10 @@ import fipsHash from '../data/fips-to-state.json'
 
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
-  const number = parseInt(fips, 10)
+  let number = parseInt(fips, 10)
+  if (isNaN(number)) {
+    number = fips.charCodeAt(0) - 97 || 0 // TODO: better conversion of string to color
+  }
   const scalar = number / 56.0
   return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 85%, 70%)`
 }
@@ -58,7 +61,7 @@ function hashFromData(data) {
 }
 
 function fipsToPostal(fips) {
-  return fipsHash[fips].postal
+  return fipsHash[fips] ? fipsHash[fips].postal : fips
 }
 
 function checkDevEnvironment() {
