@@ -17,9 +17,11 @@ function createElement(options) {
 
 function startDownload({filename, content, mimeType}) {
   const link = document.createElement('a')
+  document.body.appendChild(link)
   link.setAttribute('href', `data:${mimeType},${content}`)
   link.setAttribute('download', filename)
   link.click()
+  document.body.removeChild(link)
 }
 
 /** Update memoized bounds if exceeded by bounds */
