@@ -729,6 +729,7 @@
 
 	      var key = event.keyCode || event.charCode;
 	      if (key === 8 || key === 46) {
+	        event.preventDefault();
 	        this._selectedTiles.forEach(function (tile) {
 	          _this4._deleteTile(tile);
 	        });
@@ -2719,9 +2720,11 @@
 	  var mimeType = _ref.mimeType;
 
 	  var link = document.createElement('a');
+	  document.body.appendChild(link);
 	  link.setAttribute('href', 'data:' + mimeType + ',' + content);
 	  link.setAttribute('download', filename);
 	  link.click();
+	  document.body.removeChild(link);
 	}
 
 	/** Update memoized bounds if exceeded by bounds */
