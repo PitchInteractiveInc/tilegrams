@@ -254,6 +254,7 @@ export default class GridGraphic extends Graphic {
   onkeydown(event) {
     const key = event.keyCode || event.charCode
     if (key === 8 || key === 46) {
+      event.preventDefault()
       this._selectedTiles.forEach((tile) => {
         this._deleteTile(tile)
       })
