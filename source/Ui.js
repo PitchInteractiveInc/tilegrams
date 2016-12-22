@@ -35,6 +35,11 @@ class Ui {
     this._toggleManual = this._toggleManual.bind(this)
     this._updateNErrors = this._updateNErrors.bind(this)
     this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this)
+    this._closeMobile = this._closeMobile.bind(this)
+  }
+
+  _closeMobile() {
+    document.body.className = ''
   }
 
   setGeos(geos) {
@@ -275,6 +280,10 @@ class Ui {
         <div className='mobile-redirect'>
           <div className='background'>
             <div className='main'>
+              <div
+                className='close-mobile'
+                onClick={this._closeMobile}
+              >&#215;</div>
               <h1>TILEGRAMS</h1>
               <img src={tilegramsLogo} className='tilegrams-logo' alt='Tilegrams' />
               <h2>Create tiled maps where regions are sized proportionally to a dataset.</h2>
