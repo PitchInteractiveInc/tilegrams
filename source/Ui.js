@@ -249,7 +249,7 @@ class Ui {
         onClick={this._toggle('edit')}
       >
         <span>Refine </span>
-          {errorWarning}
+        {errorWarning}
         <span className='arrow' />
       </div>
     )
