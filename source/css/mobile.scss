@@ -2,24 +2,10 @@
   display: none;
 }
 
-// https://css-tricks.com/snippets/css/media-queries-for-standard-devices/
-@media
-only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2), // iPhone4
-only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2), // iPhone5
-only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2), // iPhone6
-only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3), // iPhone6+
-screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 2), // galaxyS3
-screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), // galaxyS4
-screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3), // galaxyS5 / HTC
-only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1), // iPad mini, 1, 2
-only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2), // iPad 3,4
-(min-device-width: 800px) and (max-device-width: 1280px), //galaxy tablets
-screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) //nexus tablets
-{
-  body {
-    overflow-x: hidden;
-    overflow-y: hidden;
-  }
+//mobile styles
+body.isMobile {
+  overflow-x: hidden;
+  overflow-y: hidden;
   .credits {
     z-index: 100;
     padding: 15px;
@@ -29,7 +15,6 @@ screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-dev
     right: 0;
     bottom: 0;
     text-align: center;
-    font-size: 1.2em;
     line-height: 1.4em;
     .source {
       display: none;
@@ -50,6 +35,12 @@ screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-dev
       width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.7);
+    }
+    .close-mobile {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 30px;
     }
     .tilegrams-logo {
       width: 2em;

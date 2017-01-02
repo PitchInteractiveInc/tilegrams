@@ -1,3 +1,4 @@
+import MobileDetect from 'mobile-detect'
 import canvas from './source/Canvas'
 import ui from './source/Ui'
 import metrics from './source/Metrics'
@@ -18,6 +19,14 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 let cartogramComputeTimer
 
 let importing = false
+
+if (typeof window !== 'undefined') {
+  const mobileDetect = new MobileDetect(window.navigator.userAgent)
+  const isMobile = mobileDetect.mobile()
+  if (isMobile) {
+    document.body.className = 'isMobile'
+  }
+}
 
 function selectDataset(dataset) {
   importing = false

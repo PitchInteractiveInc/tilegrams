@@ -6,10 +6,14 @@ const canvasDimensions = {
   width: 0,
   height: 0,
 }
+/**
+ * update canvasDimensions ensuring that there is always a min w/h
+ * prevent errors on small screens
+ */
 function updateCanvasSize() {
   const canvasContainer = document.getElementById('canvas')
-  canvasDimensions.width = canvasContainer.offsetWidth * devicePixelRatio
-  canvasDimensions.height = canvasContainer.offsetHeight * devicePixelRatio
+  canvasDimensions.width = Math.max(200, canvasContainer.offsetWidth * devicePixelRatio)
+  canvasDimensions.height = Math.max(200, canvasContainer.offsetHeight * devicePixelRatio)
 }
 
 /**
