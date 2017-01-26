@@ -11,7 +11,7 @@ class GeographyResource {
         mapResource: new MapResource(usTopoJson, 'states'),
       },
       {
-        label: 'United Kingdom',
+        label: 'United Kingdom - Constituencies',
         mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
       },
       {

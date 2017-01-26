@@ -25,15 +25,15 @@ export default class MapGraphic extends Graphic {
   }
 
   /** Apply topogram on topoJson using data in properties */
-  computeCartogram(dataset, geography) {
-    topogram.value(feature => dataset.find(data => data[0] === feature.id)[1])
+  computeCartogram(dataset) {
+    topogram.value(feature => dataset.data.find(datum => datum[0] === feature.id)[1])
     this._iterationCount = 0
 
     // compute initial cartogram from geography
-    this.updatePreProjection(geography)
+    this.updatePreProjection(dataset.geography)
 
     // generate basemap for topogram
-    this._baseMap = this._getbaseMapTopoJson(dataset, geography)
+    this._baseMap = this._getbaseMapTopoJson(dataset)
     this._stateFeatures = topogram(
       this._baseMap.topo,
       this._baseMap.geometries
@@ -45,16 +45,15 @@ export default class MapGraphic extends Graphic {
    * Returns either the original map topojson and geometries or
    * a filtered version of the map if the data properties don't match the map.
    */
-  _getbaseMapTopoJson(dataset, geography) {
-    geography = geography || 'United States'
-    const mapResource = geographyResource.getMapResource(geography)
+  _getbaseMapTopoJson(dataset) {
+    const mapResource = geographyResource.getMapResource(dataset.geography)
     const baseMapTopoJson = mapResource.getTopoJson()
     let filteredTopoJson = null
     let filteredGeometries = null
     const baseMapLength = baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length
     // for custom uploads with incomplete data
-    if (dataset.length !== baseMapLength) {
-      const statesWithData = dataset.map(data => data[0])
+    if (dataset.data.length !== baseMapLength) {
+      const statesWithData = dataset.data.map(datum => datum[0])
       filteredGeometries = baseMapTopoJson.objects[mapResource.getObjectId()].geometries
         .filter(geom => statesWithData.indexOf(geom.id) > -1)
       filteredTopoJson = JSON.parse(JSON.stringify(baseMapTopoJson)) // clones the baseMap
@@ -72,7 +71,6 @@ export default class MapGraphic extends Graphic {
    * Return true if iteration was performed, false if not.
    */
   iterateCartogram(geography) {
-    geography = geography || 'United States'
     if (this._iterationCount > MAX_ITERATION_COUNT) {
       return false
     }
@@ -107,10 +105,10 @@ export default class MapGraphic extends Graphic {
           canvasDimensions.width * 0.5,
           canvasDimensions.height * 0.7,
         ])
-    } else if (geography === 'United Kingdom') {
+    } else if (geography === 'United Kingdom - Constituencies') {
       projection = geoMercator()
-        .center([-2, 55.5])
-        .scale(2600)
+        .center([-2, 55.7])
+        .scale(canvasDimensions.height * 2.9)
         .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
     }
     topogram.projection(projection)

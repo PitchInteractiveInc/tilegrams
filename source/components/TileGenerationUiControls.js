@@ -101,6 +101,7 @@ export default class TileGenerationUiControls extends React.Component {
               onCustomDataset={csv => this.props.selectCustomDataset(csv)}
             />
             <ResolutionSlider
+              defaultResolution={this.props.defaultResolution}
               resetMetricDomain={resetMetricDomain}
               metricDomain={this.props.metricDomain}
               onChange={value => this.props.changeResolution(value, this.props.datasetSum)}
@@ -122,6 +123,7 @@ TileGenerationUiControls.propTypes = {
   changeResolution: React.PropTypes.func,
   datasetSum: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
+  defaultResolution: React.PropTypes.number,
   metricPerTile: React.PropTypes.number,
   editing: React.PropTypes.bool,
   generateOpen: React.PropTypes.bool,

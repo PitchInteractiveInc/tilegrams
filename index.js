@@ -29,13 +29,14 @@ if (typeof window !== 'undefined') {
   }
 }
 
-function selectDataset(dataset) {
+function selectDataset(index) {
+  const dataset = datasetResource.getDataset(index)
   importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
-    const iterated = canvas.iterateCartogram()
+    const iterated = canvas.iterateCartogram(dataset.geography)
     if (iterated) {
       canvas.updateTilesFromMetrics()
     }
@@ -50,9 +51,9 @@ function updateUi() {
 function selectGeography(geography) {
   importing = false
   ui.setGeography(geography)
-  const dataset = datasetResource.getDatasetsByGeography(geography)[0].data
+  const dataset = datasetResource.getDatasetsByGeography(geography)[0]
   ui.setSelectedDataset(dataset)
-  canvas.computeCartogram(dataset, geography)
+  canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
     const iterated = canvas.iterateCartogram(geography)
@@ -87,7 +88,7 @@ function init() {
   canvas.getGrid().onChange(() => updateUi())
   canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
-  ui.setDatasetSelectedCallback(index => selectDataset(datasetResource.getDataset(index)))
+  ui.setDatasetSelectedCallback(index => selectDataset(index))
   ui.setTilegramSelectedCallback(index => {
     loadTopoJson(tilegramResource.getTilegram(index))
   })

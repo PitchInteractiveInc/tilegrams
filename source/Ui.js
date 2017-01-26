@@ -64,9 +64,10 @@ class Ui {
   }
 
   setSelectedDataset(dataset) {
-    this._selectedDataset = dataset
-    this._selectedDatasetSum = this.getDatasetSum(dataset)
+    this._selectedDataset = dataset.data
+    this._selectedDatasetSum = this.getDatasetSum(this._selectedDataset)
     this._metricDomain = this._calculateIdealDomain()
+    this._defaultResolution = dataset.defaultResolution
   }
 
   setGeography(geography) {
@@ -226,6 +227,7 @@ class Ui {
         selectCustomDataset={this._customDatasetCallback}
         importCustom={this._importCallback}
         metricDomain={this._metricDomain}
+        defaultResolution={this._defaultResolution}
         metricPerTile={metrics.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}

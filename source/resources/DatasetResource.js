@@ -8,6 +8,11 @@ import ukConstituency from '../../data/uk-constituencies.csv'
 
 class DatasetResource {
   constructor() {
+    /**
+    * Datasets must have an associated geography for the map graphic to successfully compute a
+    * cartogram. Default resolution (optional) is the default tile value when a user selects the
+    * data from the dropdown.
+    */
     this._datasets = [
       {
         label: 'U.S. Population 2016',
@@ -18,6 +23,7 @@ class DatasetResource {
         label: 'U.S. Electoral College 2016',
         data: this.parseCsv(electoralCollegeCsv, 'United States'),
         geography: 'United States',
+        defaultResolution: 1,
       },
       {
         label: 'U.S. GDP 2015 (Millions)',
@@ -26,8 +32,9 @@ class DatasetResource {
       },
       {
         label: 'U.K. Constituency Map',
-        data: this.parseCsv(ukConstituency, 'United Kingdom'),
-        geography: 'United Kingdom',
+        data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
+        geography: 'United Kingdom - Constituencies',
+        defaultResolution: 1,
       },
       {
         label: 'World Population',
@@ -92,11 +99,14 @@ class DatasetResource {
   }
 
   getDataset(index) {
-    return this._datasets[index].data
+    return this._datasets[index]
+  }
+
+  getDatasetGeography(index) {
+    return this._datasets[index].geography
   }
 
   getDatasetsByGeography(geography) {
-    console.log(geography)
     return this._datasets.filter(dataset => dataset.geography === geography)
   }
 
@@ -105,7 +115,7 @@ class DatasetResource {
     tiles.forEach((tile) => {
       datasetMap[tile.id] = [tile.id, tile.tilegramValue]
     })
-    return Object.keys(datasetMap).map((row) => datasetMap[row])
+    return {data: Object.keys(datasetMap).map((row) => datasetMap[row])}
   }
 }
 

@@ -18,9 +18,8 @@ class Canvas {
     this._cartogramArea = null
   }
 
-  computeCartogram(dataset, geography) {
-    geography = geography || 'United States'
-    this._mapGraphic.computeCartogram(dataset, geography)
+  computeCartogram(dataset) {
+    this._mapGraphic.computeCartogram(dataset)
     this._setCartogramArea()
     this.updateTiles(dataset)
     this._cartogramReady = true
