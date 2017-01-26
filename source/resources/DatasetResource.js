@@ -1,34 +1,38 @@
 import {csvParseRows} from 'd3-dsv'
-
-import mapResource from './USMapResource'
-
+import geographyResource from './GeographyResource.js'
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
 import populationWorld from '../../data/world-population.csv'
+import ukConstituency from '../../data/uk-constituencies.csv'
 
 class DatasetResource {
   constructor() {
     this._datasets = [
       {
         label: 'U.S. Population 2016',
-        data: this.parseCsv(populationCsv),
+        data: this.parseCsv(populationCsv, 'United States'),
         geography: 'United States',
       },
       {
         label: 'U.S. Electoral College 2016',
-        data: this.parseCsv(electoralCollegeCsv),
+        data: this.parseCsv(electoralCollegeCsv, 'United States'),
         geography: 'United States',
       },
       {
         label: 'U.S. GDP 2015 (Millions)',
-        data: this.parseCsv(gdpCsv),
+        data: this.parseCsv(gdpCsv, 'United States'),
         geography: 'United States',
       },
       {
+        label: 'U.K. Constituency Map',
+        data: this.parseCsv(ukConstituency, 'United Kingdom'),
+        geography: 'United Kingdom',
+      },
+      {
         label: 'World Population',
-        data: this.parseCsv(populationWorld),
-        geography: 'World'
+        data: this.parseCsv(populationWorld, 'World'),
+        geography: 'World',
       },
     ]
     this._selectedDatasetIndex = 2
@@ -38,11 +42,17 @@ class DatasetResource {
     return fips && fips.length < 2 ? `0${fips}` : fips
   }
 
-  parseCsv(csv, customUpload) {
+  parseCsv(csv, geography, customUpload) {
+    const mapResource = geographyResource.getMapResource(geography)
     const features = mapResource.getUniqueFeatureIds()
     const badMapIds = []
     const badValueIds = []
-    let parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
+    let parsed
+    if (geography === 'United States') {
+      parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
+    } else {
+      parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])])
+    }
     if (customUpload) {
       // extra data validation for custom uploads
       parsed = parsed.filter(row => {
@@ -86,6 +96,7 @@ class DatasetResource {
   }
 
   getDatasetsByGeography(geography) {
+    console.log(geography)
     return this._datasets.filter(dataset => dataset.geography === geography)
   }
 

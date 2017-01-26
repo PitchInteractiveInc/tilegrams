@@ -4,7 +4,7 @@ import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import geographyResource from '../resources/geographyResource'
+import geographyResource from '../resources/GeographyResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -17,7 +17,6 @@ const MAX_ITERATION_COUNT = 15
 export default class MapGraphic extends Graphic {
   constructor() {
     super()
-
     this._stateFeatures = null
     this._iterationCount = 0
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
@@ -27,9 +26,7 @@ export default class MapGraphic extends Graphic {
 
   /** Apply topogram on topoJson using data in properties */
   computeCartogram(dataset, geography) {
-    topogram.value(
-      feature => dataset.find(data => data[0] === feature.id)[1]
-    )
+    topogram.value(feature => dataset.find(data => data[0] === feature.id)[1])
     this._iterationCount = 0
 
     // compute initial cartogram from geography
@@ -92,7 +89,7 @@ export default class MapGraphic extends Graphic {
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
   }
 
-  /** Apply projectiong _before_ cartogram computation */
+  /** Apply projection _before_ cartogram computation */
   updatePreProjection(geography) {
     // TODO: Smarter map projection
     let projection = (d => d)
@@ -110,6 +107,11 @@ export default class MapGraphic extends Graphic {
           canvasDimensions.width * 0.5,
           canvasDimensions.height * 0.7,
         ])
+    } else if (geography === 'United Kingdom') {
+      projection = geoMercator()
+        .center([-2, 55.5])
+        .scale(2600)
+        .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
     }
     topogram.projection(projection)
   }

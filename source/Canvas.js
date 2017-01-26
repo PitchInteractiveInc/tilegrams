@@ -49,7 +49,6 @@ class Canvas {
   }
 
   updateTilesFromMetrics() {
-    console.log(this._cartogramArea)
     const idealHexArea =
       (this._cartogramArea * metrics.metricPerTile) / metrics.sumMetrics
     gridGeometry.setTileEdgeFromArea(idealHexArea)
