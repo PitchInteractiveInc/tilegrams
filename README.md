@@ -49,6 +49,16 @@ The Maker also depends on a pre-release `npm` version of `topogram`
 
 [GDP Data](http://www.bea.gov/itable/)
 
+## Base Map Sources
+US states map:
+[Natural Earth Data](http://www.naturalearthdata.com/downloads/)
+
+UK constituency map:
+[Ordnancesurvey.co.uk](https://www.ordnancesurvey.co.uk/opendatadownload/products.html)
+Contains OS data © Crown copyright and database right (2017)
+[Ordnance Survey of Northern Ireland](http://osni.spatial-ni.opendata.arcgis.com/datasets/563dc2ec3d9943428e3fe68966d40deb_3)
+Contains public sector information licensed under the terms of the Open Government Licence v3.0.
+
 # License
 
 This software is distributed under the [ISC](https://spdx.org/licenses/ISC.html)
