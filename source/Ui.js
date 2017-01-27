@@ -357,7 +357,6 @@ class Ui {
                 selectGeography={this._selectGeographyCallback}
               />
               {tileGenerationControls}
-              }
             </div>
             <hr />
             {editOption}
