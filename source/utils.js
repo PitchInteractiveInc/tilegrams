@@ -1,5 +1,3 @@
-import fipsHash from '../data/fips-to-state.json'
-
 /** Return a pseudo-random color for a given fips code */
 function fipsColor(fips) {
   let number = parseInt(fips, 10)
@@ -60,10 +58,6 @@ function hashFromData(data) {
   return dataHash
 }
 
-function fipsToPostal(fips) {
-  return fipsHash[fips] ? fipsHash[fips].postal : fips
-}
-
 function checkDevEnvironment() {
   const devPort = 8080 // should match whatever port webpack-dev-server is running on
   return parseInt(document.location.port, 10) === devPort
@@ -81,6 +75,5 @@ module.exports = {
   updateBounds,
   checkWithinBounds,
   hashFromData,
-  fipsToPostal,
   isDevEnvironment,
 }

@@ -1,206 +1,206 @@
 {
   "01": {
-    "postal": "AL",
+    "name_short": "AL",
     "name": "ALABAMA"
   },
   "02": {
-    "postal": "AK",
+    "name_short": "AK",
     "name": "ALASKA"
   },
   "04": {
-    "postal": "AZ",
+    "name_short": "AZ",
     "name": "ARIZONA"
   },
   "05": {
-    "postal": "AR",
+    "name_short": "AR",
     "name": "ARKANSAS"
   },
   "06": {
-    "postal": "CA",
+    "name_short": "CA",
     "name": "CALIFORNIA"
   },
   "08": {
-    "postal": "CO",
+    "name_short": "CO",
     "name": "COLORADO"
   },
   "09": {
-    "postal": "CT",
+    "name_short": "CT",
     "name": "CONNECTICUT"
   },
   "10": {
-    "postal": "DE",
+    "name_short": "DE",
     "name": "DELAWARE"
   },
   "11": {
-    "postal": "DC",
+    "name_short": "DC",
     "name": "DISTRICT OF COLUMBIA"
   },
   "12": {
-    "postal": "FL",
+    "name_short": "FL",
     "name": "FLORIDA"
   },
   "13": {
-    "postal": "GA",
+    "name_short": "GA",
     "name": "GEORGIA"
   },
   "15": {
-    "postal": "HI",
+    "name_short": "HI",
     "name": "HAWAII"
   },
   "16": {
-    "postal": "ID",
+    "name_short": "ID",
     "name": "IDAHO"
   },
   "17": {
-    "postal": "IL",
+    "name_short": "IL",
     "name": "ILLINOIS"
   },
   "18": {
-    "postal": "IN",
+    "name_short": "IN",
     "name": "INDIANA"
   },
   "19": {
-    "postal": "IA",
+    "name_short": "IA",
     "name": "IOWA"
   },
   "20": {
-    "postal": "KS",
+    "name_short": "KS",
     "name": "KANSAS"
   },
   "21": {
-    "postal": "KY",
+    "name_short": "KY",
     "name": "KENTUCKY"
   },
   "22": {
-    "postal": "LA",
+    "name_short": "LA",
     "name": "LOUISIANA"
   },
   "23": {
-    "postal": "ME",
+    "name_short": "ME",
     "name": "MAINE"
   },
   "24": {
-    "postal": "MD",
+    "name_short": "MD",
     "name": "MARYLAND"
   },
   "25": {
-    "postal": "MA",
+    "name_short": "MA",
     "name": "MASSACHUSETTS"
   },
   "26": {
-    "postal": "MI",
+    "name_short": "MI",
     "name": "MICHIGAN"
   },
   "27": {
-    "postal": "MN",
+    "name_short": "MN",
     "name": "MINNESOTA"
   },
   "28": {
-    "postal": "MS",
+    "name_short": "MS",
     "name": "MISSISSIPPI"
   },
   "29": {
-    "postal": "MO",
+    "name_short": "MO",
     "name": "MISSOURI"
   },
   "30": {
-    "postal": "MT",
+    "name_short": "MT",
     "name": "MONTANA"
   },
   "31": {
-    "postal": "NE",
+    "name_short": "NE",
     "name": "NEBRASKA"
   },
   "32": {
-    "postal": "NV",
+    "name_short": "NV",
     "name": "NEVADA"
   },
   "33": {
-    "postal": "NH",
+    "name_short": "NH",
     "name": "NEW HAMPSHIRE"
   },
   "34": {
-    "postal": "NJ",
+    "name_short": "NJ",
     "name": "NEW JERSEY"
   },
   "35": {
-    "postal": "NM",
+    "name_short": "NM",
     "name": "NEW MEXICO"
   },
   "36": {
-    "postal": "NY",
+    "name_short": "NY",
     "name": "NEW YORK"
   },
   "37": {
-    "postal": "NC",
+    "name_short": "NC",
     "name": "NORTH CAROLINA"
   },
   "38": {
-    "postal": "ND",
+    "name_short": "ND",
     "name": "NORTH DAKOTA"
   },
   "39": {
-    "postal": "OH",
+    "name_short": "OH",
     "name": "OHIO"
   },
   "40": {
-    "postal": "OK",
+    "name_short": "OK",
     "name": "OKLAHOMA"
   },
   "41": {
-    "postal": "OR",
+    "name_short": "OR",
     "name": "OREGON"
   },
   "42": {
-    "postal": "PA",
+    "name_short": "PA",
     "name": "PENNSYLVANIA"
   },
   "44": {
-    "postal": "RI",
+    "name_short": "RI",
     "name": "RHODE ISLAND"
   },
   "45": {
-    "postal": "SC",
+    "name_short": "SC",
     "name": "SOUTH CAROLINA"
   },
   "46": {
-    "postal": "SD",
+    "name_short": "SD",
     "name": "SOUTH DAKOTA"
   },
   "47": {
-    "postal": "TN",
+    "name_short": "TN",
     "name": "TENNESSEE"
   },
   "48": {
-    "postal": "TX",
+    "name_short": "TX",
     "name": "TEXAS"
   },
   "49": {
-    "postal": "UT",
+    "name_short": "UT",
     "name": "UTAH"
   },
   "50": {
-    "postal": "VT",
+    "name_short": "VT",
     "name": "VERMONT"
   },
   "51": {
-    "postal": "VA",
+    "name_short": "VA",
     "name": "VIRGINIA"
   },
   "53": {
-    "postal": "WA",
+    "name_short": "WA",
     "name": "WASHINGTON"
   },
   "54": {
-    "postal": "WV",
+    "name_short": "WV",
     "name": "WEST VIRGINIA"
   },
   "55": {
-    "postal": "WI",
+    "name_short": "WI",
     "name": "WISCONSIN"
   },
   "56": {
-    "postal": "WY",
+    "name_short": "WY",
     "name": "WYOMING"
   }
 }

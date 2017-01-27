@@ -18,6 +18,10 @@ class Canvas {
     this._cartogramArea = null
   }
 
+  setGeoCodeToName(geoCodeToName) {
+    this._gridGraphic.geoCodeToName = geoCodeToName
+  }
+
   computeCartogram(dataset) {
     this._mapGraphic.computeCartogram(dataset)
     this._setCartogramArea()
@@ -26,7 +30,6 @@ class Canvas {
   }
 
   iterateCartogram(geography) {
-    geography = geography || 'United States'
     const iterated = this._mapGraphic.iterateCartogram(geography)
     if (iterated) {
       this._setCartogramArea()

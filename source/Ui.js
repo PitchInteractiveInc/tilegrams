@@ -75,6 +75,10 @@ class Ui {
     this._selectedGeography = geography
   }
 
+  setGeoCodeToName(geoCodeToName) {
+    this._geoCodeToName = geoCodeToName
+  }
+
   /** calculate the slider's domain from the dataset */
   _calculateIdealDomain() {
     const metricMin = this.roundToPretty(this._selectedDatasetSum / nTileDomain[0])
@@ -359,6 +363,7 @@ class Ui {
               metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
               geos={this._geos}
+              geoCodeToName={this._geoCodeToName}
               tiles={this._tiles}
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}

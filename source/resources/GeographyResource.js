@@ -2,6 +2,8 @@ import worldTopoJson from '../../maps/world.topo.json'
 import usTopoJson from '../../maps/us-110m.topo.json'
 import ukConstituencyTopoJson from '../../maps/uk-constituency.topo.json'
 import MapResource from './MapResource'
+import fipsHash from '../../data/fips-to-state.json'
+import fidHash from '../../data/fid-to-constituency.json'
 
 class GeographyResource {
   constructor() {
@@ -9,14 +11,17 @@ class GeographyResource {
       {
         label: 'United States',
         mapResource: new MapResource(usTopoJson, 'states'),
+        geoCodeToName: fipsHash,
       },
       {
         label: 'United Kingdom - Constituencies',
         mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
+        geoCodeToName: fidHash,
       },
       {
         label: 'World',
         mapResource: new MapResource(worldTopoJson, 'countries'),
+        geoCodeToName: {},
       },
     ]
   }
@@ -27,6 +32,10 @@ class GeographyResource {
 
   getGeographies() {
     return this._geographies
+  }
+
+  getGeoCodeHash(label) {
+    return this._geographies.find(geography => geography.label === label).geoCodeToName
   }
 }
 

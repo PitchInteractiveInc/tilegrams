@@ -31,7 +31,7 @@ class DatasetResource {
         geography: 'United States',
       },
       {
-        label: 'U.K. Constituency 1:1 Map',
+        label: 'U.K. Constituency 1-to-1',
         data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
         geography: 'United Kingdom - Constituencies',
         defaultResolution: 1,

@@ -65,11 +65,15 @@ function selectGeography(geography) {
   * dataset and generates a new tilegram.
   */
   importing = false
-  ui.setGeography(geography)
   const datasets = datasetResource.getDatasetsByGeography(geography)
   const tilegrams = tilegramResource.getTilegramsByGeography(geography)
+  const geoCodeToName = geographyResource.getGeoCodeHash(geography)
+  ui.setGeography(geography)
   ui.setDatasetLabels(datasets.map(dataset => dataset.label))
   ui.setTilegramLabels(tilegrams.map(tilegram => tilegram.label))
+  ui.setGeos(geographyResource.getMapResource(geography).getUniqueFeatureIds())
+  ui.setGeoCodeToName(geoCodeToName)
+  canvas.setGeoCodeToName(geoCodeToName)
   if (tilegrams.length) {
     loadTopoJson(tilegrams[0].topoJson)
   } else {
@@ -140,7 +144,6 @@ function init() {
   ui.setGeographySelectCallback(selectGeography)
 
   // populate
-  ui.setGeos(geographyResource.getMapResource(defaultGeography).getUniqueFeatureIds())
   selectGeography(defaultGeography)
   updateUi()
   if (!isDevEnvironment()) {

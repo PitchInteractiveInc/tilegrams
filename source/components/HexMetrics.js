@@ -1,7 +1,7 @@
 import React, {PropTypes} from 'react'
 import {nest} from 'd3-collection'
 
-import {fipsColor, hashFromData, fipsToPostal} from '../utils'
+import {fipsColor, hashFromData} from '../utils'
 
 export default class HexMetrics extends React.Component {
   constructor(props) {
@@ -156,7 +156,7 @@ export default class HexMetrics extends React.Component {
 
       let className = count.deviation === 0 ? 'metrics-box fade' : 'metrics-box'
       if (count.disable) { className += ' disabled' }
-
+      const keyString = this.props.geoCodeToName[count.key]
       return (
         <div
           key={count.key}
@@ -172,7 +172,7 @@ export default class HexMetrics extends React.Component {
           >
             {count.disable ? 'No Data' : this._drawHexagon(count.key)}
           </div>
-          <div>{fipsToPostal(count.key)}</div>
+          <div>{keyString.name_short || count.key}</div>
           <div>{adjustString}</div>
         </div>
       )
@@ -220,6 +220,7 @@ HexMetrics.propTypes = {
   dataset: PropTypes.array,
   tiles: PropTypes.array,
   geos: PropTypes.array,
+  geoCodeToName: PropTypes.object,
   metricPerTile: PropTypes.number,
   onAddTileMouseDown: PropTypes.func,
   onMetricMouseOut: PropTypes.func,

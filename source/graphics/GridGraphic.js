@@ -3,7 +3,7 @@ import {DBSCAN} from 'density-clustering'
 import polygonOverlap from 'polygon-overlap'
 
 import Graphic from './Graphic'
-import {fipsColor, fipsToPostal} from '../utils'
+import {fipsColor} from '../utils'
 import gridGeometry from '../geometry/GridGeometry'
 import {
   canvasDimensions,
@@ -468,8 +468,9 @@ export default class GridGraphic extends Graphic {
       this._ctx.textBaseline = 'middle'
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Fira Sans`
+      const text = this.geoCodeToName[label.id].name_short || label.id
       this._ctx.fillText(
-        fipsToPostal(label.id),
+        text,
         label.position.x,
         label.position.y
       )
