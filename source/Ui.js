@@ -22,6 +22,7 @@ class Ui {
   constructor() {
     this._init()
     this._tiles = null
+    this._selectedGeography = null
     this._editing = false
     this._generateOpen = true
     this._editOpen = false
@@ -95,13 +96,13 @@ class Ui {
 
   setDatasetSelectedCallback(callback) {
     this._datasetSelectedCallback = (index) => {
-      callback(index)
+      callback(this._selectedGeography, index)
     }
   }
 
   setTilegramSelectedCallback(callback) {
     this._tilegramSelectedCallback = (index) => {
-      callback(index)
+      callback(this._selectedGeography, index)
     }
   }
 
@@ -232,6 +233,7 @@ class Ui {
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
         editing={this._editing}
+        geography={this._geography}
       />
     )
     const generateOption = (

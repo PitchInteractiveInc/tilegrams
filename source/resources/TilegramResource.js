@@ -10,22 +10,22 @@ class TilegramResource {
       {
         label: 'Pitch Electoral College',
         topoJson: pitchElectoralCollegeTilegram,
-        geography: 'usa',
+        geography: 'United States',
       },
       {
         label: 'Pitch U.S. Population 2016',
         topoJson: pitchPopulationTilegram,
-        geography: 'usa',
+        geography: 'United States',
       },
       {
         label: 'FiveThirtyEight Electoral College',
         topoJson: fiveThirtyEightElectoralCollegeTilegram,
-        geography: 'usa',
+        geography: 'United States',
       },
       {
         label: 'NPR 1-to-1',
         topoJson: nprOneToOneTilegram,
-        geography: 'usa',
+        geography: 'United States',
       },
     ]
   }
@@ -34,8 +34,13 @@ class TilegramResource {
     return this._tilegrams.map(tilegram => tilegram.label)
   }
 
-  getTilegram(index) {
-    return this._tilegrams[index].topoJson
+  getTilegram(geography, index) {
+    console.log(geography)
+    return this.getTilegramsByGeography(geography)[index].topoJson
+  }
+
+  getTilegramsByGeography(geography) {
+    return this._tilegrams.filter(tilegram => tilegram.geography === geography)
   }
 }
 

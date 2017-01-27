@@ -31,7 +31,7 @@ class DatasetResource {
         geography: 'United States',
       },
       {
-        label: 'U.K. Constituency Map',
+        label: 'U.K. Constituency 1:1 Map',
         data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
         geography: 'United Kingdom - Constituencies',
         defaultResolution: 1,
@@ -98,8 +98,8 @@ class DatasetResource {
     return this._datasets.map(dataset => dataset.label)
   }
 
-  getDataset(index) {
-    return this._datasets[index]
+  getDataset(geography, index) {
+    return this.getDatasetsByGeography(geography)[index]
   }
 
   getDatasetGeography(index) {

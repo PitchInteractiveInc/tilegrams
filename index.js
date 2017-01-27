@@ -19,7 +19,7 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 let cartogramComputeTimer
 
 let importing = false
-const defaultGeography = geographyResource.getMapResource('United States')
+const defaultGeography = 'United States'
 
 if (typeof window !== 'undefined') {
   const mobileDetect = new MobileDetect(window.navigator.userAgent)
@@ -29,8 +29,8 @@ if (typeof window !== 'undefined') {
   }
 }
 
-function selectDataset(index) {
-  const dataset = datasetResource.getDataset(index)
+function selectDataset(geography, index) {
+  const dataset = datasetResource.getDataset(geography, index)
   importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
@@ -48,23 +48,6 @@ function updateUi() {
   ui.render()
 }
 
-function selectGeography(geography) {
-  importing = false
-  ui.setGeography(geography)
-  const dataset = datasetResource.getDatasetsByGeography(geography)[0]
-  ui.setSelectedDataset(dataset)
-  canvas.computeCartogram(dataset)
-  clearInterval(cartogramComputeTimer)
-  cartogramComputeTimer = setInterval(() => {
-    const iterated = canvas.iterateCartogram(geography)
-    if (iterated) {
-      canvas.updateTilesFromMetrics()
-    }
-  }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
-  // TODO: update ui with worldwide data
-  // updateUi()
-}
-
 function loadTopoJson(topoJson) {
   importing = true
   const {tiles, metricPerTile} = importer.fromTopoJson(topoJson)
@@ -73,6 +56,35 @@ function loadTopoJson(topoJson) {
   ui.setSelectedDataset(dataset)
   metrics.metricPerTile = metricPerTile
   canvas.importTiles(tiles)
+  updateUi()
+}
+
+function selectGeography(geography) {
+  /**
+  * Geography dropdown loads first pre-made tilegram if it exists, else loads first associated
+  * dataset and generates a new tilegram.
+  */
+  importing = false
+  ui.setGeography(geography)
+  const datasets = datasetResource.getDatasetsByGeography(geography)
+  const tilegrams = tilegramResource.getTilegramsByGeography(geography)
+  ui.setDatasetLabels(datasets.map(dataset => dataset.label))
+  ui.setTilegramLabels(tilegrams.map(tilegram => tilegram.label))
+  if (tilegrams.length) {
+    loadTopoJson(tilegrams[0].topoJson)
+  } else {
+    document.getElementById('generate-tilegram').click()
+    const dataset = datasets[0]
+    ui.setSelectedDataset(dataset)
+    canvas.computeCartogram(dataset)
+    clearInterval(cartogramComputeTimer)
+    cartogramComputeTimer = setInterval(() => {
+      const iterated = canvas.iterateCartogram(geography)
+      if (iterated) {
+        canvas.updateTilesFromMetrics()
+      }
+    }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
+  }
   updateUi()
 }
 
@@ -88,9 +100,9 @@ function init() {
   canvas.getGrid().onChange(() => updateUi())
   canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
-  ui.setDatasetSelectedCallback(index => selectDataset(index))
-  ui.setTilegramSelectedCallback(index => {
-    loadTopoJson(tilegramResource.getTilegram(index))
+  ui.setDatasetSelectedCallback((geography, index) => selectDataset(geography, index))
+  ui.setTilegramSelectedCallback((geography, index) => {
+    loadTopoJson(tilegramResource.getTilegram(geography, index))
   })
   ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
@@ -128,10 +140,8 @@ function init() {
   ui.setGeographySelectCallback(selectGeography)
 
   // populate
-  ui.setGeos(defaultGeography.getUniqueFeatureIds())
-  ui.setDatasetLabels(datasetResource.getLabels())
-  ui.setTilegramLabels(tilegramResource.getLabels())
-  loadTopoJson(tilegramResource.getTilegram(0))
+  ui.setGeos(geographyResource.getMapResource(defaultGeography).getUniqueFeatureIds())
+  selectGeography(defaultGeography)
   updateUi()
   if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)

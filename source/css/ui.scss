@@ -7,7 +7,6 @@ select {
   background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
   background-size: 1em 0.5em;
   border: none;
-  background-color: $very-light-gray;
   color: #1a1a1a;
   font-size: 100%;
   font-weight: 300;
@@ -120,6 +119,9 @@ code {
   }
   .scroll-ui {
     overflow: scroll;
+  }
+  .geographySelector {
+    padding: 0 $ui-margin 12px $ui-margin;
   }
   .ui-controls {
     overflow: hidden;
