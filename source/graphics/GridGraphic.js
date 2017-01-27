@@ -468,7 +468,8 @@ export default class GridGraphic extends Graphic {
       this._ctx.textBaseline = 'middle'
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Fira Sans`
-      const text = this.geoCodeToName[label.id].name_short || label.id
+      const geoCode = this.geoCodeToName[label.id]
+      const text = geoCode ? geoCode.name_short || label.id : label.id
       this._ctx.fillText(
         text,
         label.position.x,

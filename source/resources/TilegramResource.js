@@ -35,8 +35,8 @@ class TilegramResource {
   }
 
   getTilegram(geography, index) {
-    console.log(geography)
-    return this.getTilegramsByGeography(geography)[index].topoJson
+    const tilegram = this.getTilegramsByGeography(geography)[index]
+    return tilegram ? tilegram.topoJson : undefined
   }
 
   getTilegramsByGeography(geography) {

@@ -8,10 +8,6 @@ export default class TileGenerationUiControls extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      selectedOption: 'import',
-    }
-
     this._changeOption = this._changeOption.bind(this)
     this._onCustomImport = this._onCustomImport.bind(this)
     this._onTilegramSelected = this._onTilegramSelected.bind(this)
@@ -20,19 +16,17 @@ export default class TileGenerationUiControls extends React.Component {
   }
 
   _changeOption(event) {
-    const selectedOption = event.target.value
-    const newState = {selectedOption}
-    if (selectedOption === 'import') {
+    const value = event.target.value
+    this.props.changeOption(value)
+    if (value === 'import') {
       if (this._restoreLastTilegramSelection) {
         this._restoreLastTilegramSelection()
       } else {
         this.props.selectTilegram(0)
       }
-    } else if (selectedOption === 'generate') {
+    } else if (value === 'generate') {
       this.props.selectDataset(0)
-      this.resetMetricDomain = true
     }
-    this.setState(newState)
   }
 
   _onCustomImport(topoJson) {
@@ -49,12 +43,10 @@ export default class TileGenerationUiControls extends React.Component {
   }
 
   render() {
-    const resetMetricDomain = this.resetMetricDomain
-    this.resetMetricDomain = false
     return (
       <div className='ui-controls'>
         <div
-          className={this.state.selectedOption === 'import'
+          className={this.props.generateOption === 'import'
             ? 'import active padding-bottom'
             : 'import padding-bottom'}
         >
@@ -63,13 +55,13 @@ export default class TileGenerationUiControls extends React.Component {
             type='radio'
             name='tile-controls'
             value='import'
-            checked={this.state.selectedOption === 'import'}
+            checked={this.props.generateOption === 'import'}
             onChange={this._changeOption}
           />
           <label htmlFor='load-tilegram' className='radio-label'>
             Load existing map
           </label>
-          <div className={this.state.selectedOption !== 'import' ? 'collapsed' : ''} >
+          <div className={this.props.generateOption !== 'import' ? 'collapsed' : ''} >
             <ImportControls
               labels={this.props.tilegramLabels}
               onCustomImport={this._onCustomImport}
@@ -79,7 +71,7 @@ export default class TileGenerationUiControls extends React.Component {
           </div>
         </div>
         <div
-          className={this.state.selectedOption === 'generate'
+          className={this.props.generateOption === 'generate'
             ? 'import active padding-bottom'
             : 'import padding-bottom'}
         >
@@ -88,13 +80,13 @@ export default class TileGenerationUiControls extends React.Component {
             type='radio'
             name='tile-controls'
             value='generate'
-            checked={this.state.selectedOption === 'generate'}
+            checked={this.props.generateOption === 'generate'}
             onChange={this._changeOption}
           />
           <label htmlFor='generate-tilegram' className='radio-label'>
             Generate from data
           </label>
-          <div className={this.state.selectedOption !== 'generate' ? 'collapsed' : null}>
+          <div className={this.props.generateOption !== 'generate' ? 'collapsed' : null}>
             <DatasetSelector
               labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}
@@ -102,7 +94,6 @@ export default class TileGenerationUiControls extends React.Component {
             />
             <ResolutionSlider
               defaultResolution={this.props.defaultResolution}
-              resetMetricDomain={resetMetricDomain}
               metricDomain={this.props.metricDomain}
               onChange={value => this.props.changeResolution(value, this.props.datasetSum)}
             />
@@ -118,6 +109,8 @@ TileGenerationUiControls.propTypes = {
   tilegramLabels: React.PropTypes.array,
   selectDataset: React.PropTypes.func,
   selectTilegram: React.PropTypes.func,
+  changeOption: React.PropTypes.func,
+  generateOption: React.PropTypes.string,
   selectCustomDataset: React.PropTypes.func,
   importCustom: React.PropTypes.func,
   changeResolution: React.PropTypes.func,
@@ -135,9 +128,11 @@ TileGenerationUiControls.defaultProps = {
   tilegramLabels: [],
   selectDataset: () => {},
   selectTilegram: () => {},
+  changeOption: () => {},
   selectCustomDataset: () => {},
   importCustom: () => {},
   changeResolution: () => {},
   metricPerTile: 1,
   editing: false,
+  generateOption: 'import',
 }

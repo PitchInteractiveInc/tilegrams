@@ -38,6 +38,7 @@ class Ui {
     this._updateNErrors = this._updateNErrors.bind(this)
     this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this)
     this._closeMobile = this._closeMobile.bind(this)
+    this.selectTilegramGenerateOption = this.selectTilegramGenerateOption.bind(this)
   }
 
   _closeMobile() {
@@ -77,6 +78,11 @@ class Ui {
 
   setGeoCodeToName(geoCodeToName) {
     this._geoCodeToName = geoCodeToName
+  }
+
+  selectTilegramGenerateOption(tilegramGenerateOption) {
+    this._generateOption = tilegramGenerateOption
+    this.render()
   }
 
   /** calculate the slider's domain from the dataset */
@@ -227,6 +233,7 @@ class Ui {
       <TileGenerationUiControls
         datasetLabels={this._datasetLabels}
         tilegramLabels={this._tilegramLabels}
+        changeOption={this.selectTilegramGenerateOption}
         selectDataset={this._datasetSelectedCallback}
         selectTilegram={this._tilegramSelectedCallback}
         selectCustomDataset={this._customDatasetCallback}
@@ -237,7 +244,7 @@ class Ui {
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
         editing={this._editing}
-        geography={this._geography}
+        generateOption={this._generateOption}
       />
     )
     const generateOption = (

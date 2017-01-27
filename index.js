@@ -61,8 +61,13 @@ function loadTopoJson(topoJson) {
 
 function selectGeography(geography) {
   /**
-  * Geography dropdown loads first pre-made tilegram if it exists, else loads first associated
-  * dataset and generates a new tilegram.
+  * Updates ui with matching geo data (list of tilegrams, list of datasets).
+  * Update ui and canvas with the matching geoCodeHash for the current geography. This is used
+  * in the hexMetrics component and to render the labels on canvas.
+  * Loads the first tilegram associated with the geography if it exists, else loads the first
+  * dataset.
+  * NB: ui.selectTilegramGenerateOption is loaded _after_ the dataset is updated to prevent error
+  * on first load.
   */
   importing = false
   const datasets = datasetResource.getDatasetsByGeography(geography)
@@ -76,20 +81,11 @@ function selectGeography(geography) {
   canvas.setGeoCodeToName(geoCodeToName)
   if (tilegrams.length) {
     loadTopoJson(tilegrams[0].topoJson)
+    ui.selectTilegramGenerateOption('import')
   } else {
-    document.getElementById('generate-tilegram').click()
-    const dataset = datasets[0]
-    ui.setSelectedDataset(dataset)
-    canvas.computeCartogram(dataset)
-    clearInterval(cartogramComputeTimer)
-    cartogramComputeTimer = setInterval(() => {
-      const iterated = canvas.iterateCartogram(geography)
-      if (iterated) {
-        canvas.updateTilesFromMetrics()
-      }
-    }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
+    selectDataset(geography, 0)
+    ui.selectTilegramGenerateOption('generate')
   }
-  updateUi()
 }
 
 function confirmNavigation(e) {
@@ -106,7 +102,10 @@ function init() {
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
   ui.setDatasetSelectedCallback((geography, index) => selectDataset(geography, index))
   ui.setTilegramSelectedCallback((geography, index) => {
-    loadTopoJson(tilegramResource.getTilegram(geography, index))
+    const tilegram = (tilegramResource.getTilegram(geography, index))
+    if (tilegram) {
+      loadTopoJson(tilegramResource.getTilegram(geography, index))
+    }
   })
   ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
@@ -143,9 +142,8 @@ function init() {
   ui.setImportCallback(loadTopoJson)
   ui.setGeographySelectCallback(selectGeography)
 
-  // populate
   selectGeography(defaultGeography)
-  updateUi()
+
   if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)
   }
