@@ -25,7 +25,7 @@ class Canvas {
   computeCartogram(dataset) {
     this._mapGraphic.computeCartogram(dataset)
     this._setCartogramArea()
-    this.updateTiles(dataset)
+    this.updateTiles(dataset.data)
     this._cartogramReady = true
   }
 

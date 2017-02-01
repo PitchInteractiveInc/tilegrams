@@ -41,6 +41,7 @@ class Importer {
     return {
       tiles: this._normalizeTilePosition(tiles),
       metricPerTile: topoJson.properties.tilegramMetricPerTile,
+      geography: topoJson.properties.tilegramGeography || 'United States',
     }
   }
 

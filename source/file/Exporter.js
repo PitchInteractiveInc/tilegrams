@@ -9,18 +9,19 @@ import {nest} from 'd3-collection'
 import {topology} from 'topojson/server.js'
 import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
-import {fipsColor, fipsToPostal} from '../utils'
+import {fipsColor} from '../utils'
+import geographyResource from '../resources/GeographyResource'
 
 export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles, metricPerTile) {
+  toTopoJson(tiles, metricPerTile, geography) {
     const maxTileY = tiles.reduce(
       (max, tile) => Math.max(max, tile.position.y),
       -Infinity
     )
-
+    const geoCodeToName = geographyResource.getGeoCodeHash(geography)
     // Aggregate tiles by state
     const tilesByState = {}
     tiles.forEach(tile => {
@@ -53,7 +54,7 @@ class Exporter {
         },
         id: stateId,
         properties: {
-          state: fipsToPostal(stateId),
+          name: geoCodeToName[stateId].name,
         },
       }
       if (stateTiles[0].tilegramValue) {
@@ -79,11 +80,13 @@ class Exporter {
       tilegramMetricPerTile: metricPerTile,
       tilegramVersion: version,
       tilegramTileSize: gridGeometry.getTileDimensions(),
+      tilegramGeography: geography,
     }
     return topoJson
   }
 
-  toSvg(tiles) {
+  toSvg(tiles, geography) {
+    const geoCodeToName = geographyResource.getGeoCodeHash(geography)
     // create svg
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     const canv = document.getElementById('canvas').getElementsByTagName('canvas')[0]
@@ -98,7 +101,7 @@ class Exporter {
     groupedTiles.forEach((group) => {
       // convert from hsl to hex string for illustrator
       const groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-      groupEl.setAttribute('id', fipsToPostal(group.key))
+      groupEl.setAttribute('id', geoCodeToName[group.key])
       const colorString = color(fipsColor(group.key)).toString()
       group.values.forEach((tile) => {
         const center = gridGeometry.tileCenterPoint({

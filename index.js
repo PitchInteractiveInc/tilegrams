@@ -50,9 +50,9 @@ function updateUi() {
 
 function loadTopoJson(topoJson) {
   importing = true
-  const {tiles, metricPerTile} = importer.fromTopoJson(topoJson)
+  const {tiles, metricPerTile, geography} = importer.fromTopoJson(topoJson)
   const dataset = datasetResource.buildDatasetFromTiles(tiles)
-
+  ui.setGeography(geography)
   ui.setSelectedDataset(dataset)
   metrics.metricPerTile = metricPerTile
   canvas.importTiles(tiles)
@@ -76,8 +76,6 @@ function selectGeography(geography) {
   ui.setGeography(geography)
   ui.setDatasetLabels(datasets.map(dataset => dataset.label))
   ui.setTilegramLabels(tilegrams.map(tilegram => tilegram.label))
-  ui.setGeos(geographyResource.getMapResource(geography).getUniqueFeatureIds())
-  ui.setGeoCodeToName(geoCodeToName)
   canvas.setGeoCodeToName(geoCodeToName)
   if (tilegrams.length) {
     loadTopoJson(tilegrams[0].topoJson)
@@ -120,19 +118,23 @@ function init() {
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setResetUnsavedChangesCallback(() => canvas.getGrid().resetEdits())
-  ui.setExportCallback(() => {
+  ui.setExportCallback(geography => {
     const json = exporter.toTopoJson(
       canvas.getGrid().getTiles(),
-      metrics.metricPerTile
+      metrics.metricPerTile,
+      geography
     )
     startDownload({
       filename: 'tiles.topo.json',
-      mimeType: 'application/json',
+      mimeType: 'text/plain',
       content: JSON.stringify(json),
     })
   })
-  ui.setExportSvgCallback(() => {
-    const svg = exporter.toSvg(canvas.getGrid().getTiles())
+  ui.setExportSvgCallback(geography => {
+    const svg = exporter.toSvg(
+      canvas.getGrid().getTiles(),
+      geography
+    )
     startDownload({
       filename: 'tiles.svg',
       mimeType: 'image/svg+xml',

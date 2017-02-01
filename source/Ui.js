@@ -17,6 +17,7 @@ import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
 import facebookLogo from './images/social-facebook.svg'
 import GeographySelector from './components/GeographySelector'
+import geographyResource from './resources/GeographyResource'
 
 class Ui {
   constructor() {
@@ -45,10 +46,6 @@ class Ui {
     document.body.className = ''
   }
 
-  setGeos(geos) {
-    this._geos = geos
-  }
-
   setTiles(tiles) {
     this._tiles = tiles
   }
@@ -74,10 +71,8 @@ class Ui {
 
   setGeography(geography) {
     this._selectedGeography = geography
-  }
-
-  setGeoCodeToName(geoCodeToName) {
-    this._geoCodeToName = geoCodeToName
+    this._geoCodeToName = geographyResource.getGeoCodeHash(geography)
+    this._geos = geographyResource.getMapResource(geography).getUniqueFeatureIds()
   }
 
   selectTilegramGenerateOption(tilegramGenerateOption) {
@@ -135,11 +130,15 @@ class Ui {
   }
 
   setExportCallback(callback) {
-    this._exportCallback = callback
+    this._exportCallback = () => {
+      callback(this._selectedGeography)
+    }
   }
 
   setExportSvgCallback(callback) {
-    this._exportSvgCallback = callback
+    this._exportSvgCallback = () => {
+      callback(this._selectedGeography)
+    }
   }
 
   setImportCallback(callback) {
