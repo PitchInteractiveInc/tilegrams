@@ -4,6 +4,7 @@ import ukConstituencyTopoJson from '../../maps/uk-constituency.topo.json'
 import MapResource from './MapResource'
 import fipsHash from '../../data/fips-to-state.json'
 import fidHash from '../../data/fid-to-constituency.json'
+import isoHash from '../../data/isoa3-to-name.json'
 
 class GeographyResource {
   constructor() {
@@ -21,7 +22,7 @@ class GeographyResource {
       {
         label: 'World',
         mapResource: new MapResource(worldTopoJson, 'countries'),
-        geoCodeToName: {},
+        geoCodeToName: isoHash,
       },
     ]
   }

@@ -12,7 +12,7 @@ import {canvasDimensions} from '../constants'
 const topogram = topogramImport()
 
 const MIN_PATH_AREA = 0.5
-const MAX_ITERATION_COUNT = 15
+const MAX_ITERATION_COUNT = 20
 
 export default class MapGraphic extends Graphic {
   constructor() {

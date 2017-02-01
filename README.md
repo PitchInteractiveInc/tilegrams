@@ -43,11 +43,13 @@ The Maker also depends on a pre-release `npm` version of `topogram`
 [this PR](https://github.com/shawnbot/topogram/pull/26).
 
 ## Data Sources
-[Population Data](http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=PEP_2015_PEPANNRES&prodType=table)
+[US Population Data](http://factfinder.census.gov/faces/tableservices/jsf/pages/productview.xhtml?pid=PEP_2015_PEPANNRES&prodType=table)
 
 [Electoral Votes Data](https://www.archives.gov/federal-register/electoral-college/allocation.html)
 
 [GDP Data](http://www.bea.gov/itable/)
+
+[World Population Data](http://databank.worldbank.org/)
 
 ## Base Map Sources
 US states map:
@@ -55,7 +57,7 @@ US states map:
 
 UK constituency map:
 [Ordnancesurvey.co.uk](https://www.ordnancesurvey.co.uk/opendatadownload/products.html)
-Contains OS data © Crown copyright and database right (2017)
+Contains OS data © Crown copyright and database right (2017),
 [Ordnance Survey of Northern Ireland](http://osni.spatial-ni.opendata.arcgis.com/datasets/563dc2ec3d9943428e3fe68966d40deb_3)
 Contains public sector information licensed under the terms of the Open Government Licence v3.0.
 
