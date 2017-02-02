@@ -91,13 +91,14 @@ export default class MapGraphic extends Graphic {
   updatePreProjection(geography) {
     // TODO: Smarter map projection
     let projection = (d => d)
+    const defaultTranslate = [
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ]
     if (geography === 'United States') {
       projection = geoAlbersUsa()
         .scale(canvasDimensions.width)
-        .translate([
-          canvasDimensions.width * 0.5,
-          canvasDimensions.height * 0.5,
-        ])
+        .translate(defaultTranslate)
     } else if (geography === 'World') {
       projection = geoMercator()
         .scale(canvasDimensions.width / 8)
@@ -109,12 +110,17 @@ export default class MapGraphic extends Graphic {
       projection = geoMercator()
         .center([-2, 55.7])
         .scale(canvasDimensions.height * 2.9)
-        .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
+        .translate(defaultTranslate)
     } else if (geography === 'Germany - Constituencies') {
       projection = geoMercator()
         .center([11, 51.2])
         .scale(canvasDimensions.height * 3.9)
-        .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
+        .translate(defaultTranslate)
+    } else if (geography === 'France - Regions') {
+      projection = geoMercator()
+        .center([3.4, 46.3])
+        .scale(canvasDimensions.height * 3.4)
+        .translate(defaultTranslate)
     }
     topogram.projection(projection)
   }

@@ -6,6 +6,7 @@ import gdpCsv from '../../data/gdp-by-state.csv'
 import populationWorld from '../../data/world-population.csv'
 import ukConstituency from '../../data/uk-constituencies.csv'
 import germanyConstituency from '../../data/germany-constituencies.csv'
+import franceRegionPopulation from '../../data/france-region-population.csv'
 
 class DatasetResource {
   constructor() {
@@ -42,6 +43,12 @@ class DatasetResource {
         data: this.parseCsv(germanyConstituency, 'Germany - Constituencies'),
         geography: 'Germany - Constituencies',
         defaultResolution: 1,
+      },
+      {
+        label: 'France Region Population',
+        data: this.parseCsv(franceRegionPopulation, 'France - Regions'),
+        geography: 'France - Regions',
+        defaultResolution: 100000,
       },
       {
         label: 'World Population',
