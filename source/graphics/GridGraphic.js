@@ -398,6 +398,7 @@ export default class GridGraphic extends Graphic {
     // draw highlighted region border
     if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
       this._drawGeoBorder(this._highlightId)
+      this._showGeoName(this._highlightId)
     }
 
     // draw selected tiles
@@ -544,6 +545,16 @@ export default class GridGraphic extends Graphic {
       this._ctx.stroke()
       this._ctx.globalAlpha = 1.0
     })
+  }
+
+  _showGeoName(id) {
+    this._ctx.textAlign = 'left'
+    this._ctx.textBaseline = 'top'
+    this._ctx.fillStyle = 'black'
+    this._ctx.font = `${14.0 * devicePixelRatio}px Fira Sans`
+    const geoCode = this.geoCodeToName[id]
+    const text = geoCode ? geoCode.name : id
+    this._ctx.fillText(text, 40, 30)
   }
 
   /** Compute contiguous outline (convex hull) of given tiles */
