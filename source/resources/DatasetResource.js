@@ -5,6 +5,7 @@ import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv
 import gdpCsv from '../../data/gdp-by-state.csv'
 import populationWorld from '../../data/world-population.csv'
 import ukConstituency from '../../data/uk-constituencies.csv'
+import germanyConstituency from '../../data/germany-constituencies.csv'
 
 class DatasetResource {
   constructor() {
@@ -34,6 +35,12 @@ class DatasetResource {
         label: 'U.K. Constituency 1-to-1',
         data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
         geography: 'United Kingdom - Constituencies',
+        defaultResolution: 1,
+      },
+      {
+        label: 'Germany Constituency 1-to-1',
+        data: this.parseCsv(germanyConstituency, 'Germany - Constituencies'),
+        geography: 'Germany - Constituencies',
         defaultResolution: 1,
       },
       {

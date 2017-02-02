@@ -110,6 +110,11 @@ export default class MapGraphic extends Graphic {
         .center([-2, 55.7])
         .scale(canvasDimensions.height * 2.9)
         .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
+    } else if (geography === 'Germany - Constituencies') {
+      projection = geoMercator()
+        .center([11, 51.2])
+        .scale(canvasDimensions.height * 3.9)
+        .translate([canvasDimensions.width / 2, canvasDimensions.height / 2])
     }
     topogram.projection(projection)
   }
