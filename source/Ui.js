@@ -17,7 +17,6 @@ import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
 import facebookLogo from './images/social-facebook.svg'
 import GeographySelector from './components/GeographySelector'
-import geographyResource from './resources/GeographyResource'
 
 class Ui {
   constructor() {
@@ -71,8 +70,6 @@ class Ui {
 
   setGeography(geography) {
     this._selectedGeography = geography
-    this._geoCodeToName = geographyResource.getGeoCodeHash(geography)
-    this._geos = geographyResource.getMapResource(geography).getUniqueFeatureIds()
   }
 
   selectTilegramGenerateOption(tilegramGenerateOption) {
@@ -367,8 +364,7 @@ class Ui {
             <HexMetrics
               metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
-              geos={this._geos}
-              geoCodeToName={this._geoCodeToName}
+              geography={this._selectedGeography}
               tiles={this._tiles}
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
