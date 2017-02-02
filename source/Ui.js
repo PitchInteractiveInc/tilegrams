@@ -17,6 +17,7 @@ import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
 import facebookLogo from './images/social-facebook.svg'
 import GeographySelector from './components/GeographySelector'
+import geographyResource from './resources/GeographyResource'
 
 class Ui {
   constructor() {
@@ -254,14 +255,14 @@ class Ui {
     )
     let errorWarning = null
     if (this._nErrors > 0) {
-      const statesTxt = this._nErrors === 1 ? 'state' : 'states'
+      const objectId = geographyResource.getMapResource(this._selectedGeography).getObjectId()
       errorWarning = (
         <span
           className='n-errors'
           onMouseOver={this._toggleRefineTooltip}
           onMouseOut={this._toggleRefineTooltip}
         >
-          <i className='fa fa-exclamation-triangle' /> {this._nErrors} {statesTxt}
+          <i className='fa fa-exclamation-triangle' /> {this._nErrors} {objectId}
         </span>
       )
     }
