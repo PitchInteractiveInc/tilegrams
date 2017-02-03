@@ -49,6 +49,8 @@ The Maker also depends on a pre-release `npm` version of `topogram`
 
 [GDP Data](http://www.bea.gov/itable/)
 
+[France Population Data](https://en.wikipedia.org/wiki/Ranked_list_of_French_regions)
+
 [World Population Data](http://databank.worldbank.org/)
 
 ## Base Map Sources
@@ -60,6 +62,12 @@ UK constituency map:
 Contains OS data © Crown copyright and database right (2017),
 [Ordnance Survey of Northern Ireland](http://osni.spatial-ni.opendata.arcgis.com/datasets/563dc2ec3d9943428e3fe68966d40deb_3)
 Contains public sector information licensed under the terms of the Open Government Licence v3.0.
+
+Germany constituency map:
+[Bundeswahlleiter.de](https://www.bundeswahlleiter.de/en/bundestagswahlen/2017/wahlkreiseinteilung/downloads.html)
+© Der Bundeswahlleiter, Statistisches Bundesamt, Wiesbaden 2016,
+Wahlkreiskarte für die Wahl zum 19. Deutschen Bundestag
+Basis of the geological information © Geobasis-DE / BKG (2016)
 
 # License
 
