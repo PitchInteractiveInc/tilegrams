@@ -111,7 +111,7 @@ class Ui {
 
   setCustomDatasetCallback(callback) {
     this._customDatasetCallback = (csv) => {
-      callback(csv)
+      callback(this._selectedGeography, csv)
     }
   }
 

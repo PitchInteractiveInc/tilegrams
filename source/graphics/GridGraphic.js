@@ -252,6 +252,9 @@ export default class GridGraphic extends Graphic {
   }
 
   onkeydown(event) {
+    if (event.target.type === 'textarea' || event.target.type === 'text') {
+      return // ignore delete events from textareas
+    }
     const key = event.keyCode || event.charCode
     if (key === 8 || key === 46) {
       event.preventDefault()

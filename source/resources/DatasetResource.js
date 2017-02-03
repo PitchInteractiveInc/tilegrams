@@ -21,6 +21,7 @@ class DatasetResource {
         label: 'U.S. Population 2016',
         data: this.parseCsv(populationCsv, 'United States'),
         geography: 'United States',
+        defaultResolution: 1000000,
       },
       {
         label: 'U.S. Electoral College 2016',
@@ -75,6 +76,7 @@ class DatasetResource {
     const features = mapResource.getUniqueFeatureIds()
     const badMapIds = []
     const badValueIds = []
+    csv = csv.trim()
     let parsed
     if (geography === 'United States') {
       parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
@@ -137,6 +139,13 @@ class DatasetResource {
       datasetMap[tile.id] = [tile.id, tile.tilegramValue]
     })
     return {data: Object.keys(datasetMap).map((row) => datasetMap[row])}
+  }
+
+  buildDatasetFromCustomCsv(geography, csv) {
+    return {
+      data: this.parseCsv(csv, geography, true),
+      geography,
+    }
   }
 }
 

@@ -11,7 +11,8 @@ export default class DatasetSelector extends React.Component {
       csvInputValue: '',
     }
 
-    this._onCustomCsv = this._onCustomCsv.bind(this)
+    this._onCsvChange = this._onCsvChange.bind(this)
+    this._submitCustomCsv = this._submitCustomCsv.bind(this)
   }
 
   _onSelect(event) {
@@ -24,15 +25,20 @@ export default class DatasetSelector extends React.Component {
     }
   }
 
-  _onCustomCsv(event) {
+  _onCsvChange(event) {
     const csvInputValue = event.target.value
     this.setState({csvInputValue})
-    this.props.onCustomDataset(csvInputValue)
   }
 
-  /** Return true if user has selected 'Custom' option but hasn't pasted yet */
+  _submitCustomCsv() {
+    if (this.state.csvInputValue) {
+      this.props.onCustomDataset(this.state.csvInputValue)
+    }
+  }
+
+  /** Return true if user has selected 'Custom' option */
   _displayCsvInput() {
-    return this._isCustomSelection() && this.state.csvInputValue === ''
+    return this._isCustomSelection()
   }
 
   /** Return true if index is the 'Custom' option */
@@ -62,7 +68,7 @@ export default class DatasetSelector extends React.Component {
       <div className='csv-input'>
         <div className='instruction'>
           {`Paste custom CSV below. Csv should be formatted with no
-          headers and state id (fips) as the first column. Ex:`}
+          headers and geo id as the first column. Ex:`}
           <div className='code'>
           01,4858979
             <br />
@@ -72,8 +78,10 @@ export default class DatasetSelector extends React.Component {
           </div>
         </div>
         <textarea
+          ref={(ref) => { this.csvInput = ref }}
           rows={5}
-          onChange={this._onCustomCsv}
+          onChange={this._onCsvChange}
+          onBlur={this._submitCustomCsv}
           value={this.state.csvInputValue || ''}
         />
       </div>

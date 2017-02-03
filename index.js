@@ -29,8 +29,10 @@ if (typeof window !== 'undefined') {
   }
 }
 
-function selectDataset(geography, index) {
-  const dataset = datasetResource.getDataset(geography, index)
+function selectDataset(geography, index, customCsv) {
+  const dataset = index !== null ?
+    datasetResource.getDataset(geography, index) :
+    datasetResource.buildDatasetFromCustomCsv(geography, customCsv)
   importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
@@ -105,7 +107,7 @@ function init() {
       loadTopoJson(tilegramResource.getTilegram(geography, index))
     }
   })
-  ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
+  ui.setCustomDatasetCallback((geography, csv) => selectDataset(geography, null, csv))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
