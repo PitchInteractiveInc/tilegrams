@@ -3,12 +3,14 @@ import usTopoJson from '../../maps/us-110m.topo.json'
 import ukConstituencyTopoJson from '../../maps/uk-constituency.topo.json'
 import germanyConstituencyTopoJson from '../../maps/germany-constituency.topo.json'
 import franceRegionTopoJson from '../../maps/france-region.topo.json'
+import franceDepartmentTopoJson from '../../maps/france-department.topo.json'
 import MapResource from './MapResource'
 import fipsHash from '../../data/fips-to-state.json'
 import fidHash from '../../data/fid-to-constituency.json'
 import wkrHash from '../../data/wkr-to-name.json'
 import isoHash from '../../data/isoa3-to-name.json'
 import regionHash from '../../data/region-to-name.json'
+import departmentHash from '../../data/department-to-name.json'
 
 class GeographyResource {
   constructor() {
@@ -32,6 +34,11 @@ class GeographyResource {
         label: 'France - Regions',
         mapResource: new MapResource(franceRegionTopoJson, 'regions'),
         geoCodeToName: regionHash,
+      },
+      {
+        label: 'France - Departments',
+        mapResource: new MapResource(franceDepartmentTopoJson, 'departments'),
+        geoCodeToName: departmentHash,
       },
       {
         label: 'World',

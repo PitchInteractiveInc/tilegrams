@@ -116,7 +116,7 @@ export default class MapGraphic extends Graphic {
         .center([11, 51.2])
         .scale(canvasDimensions.height * 3.9)
         .translate(defaultTranslate)
-    } else if (geography === 'France - Regions') {
+    } else if (geography === 'France - Regions' || 'France - Departments') {
       projection = geoMercator()
         .center([3.4, 46.3])
         .scale(canvasDimensions.height * 3.4)
