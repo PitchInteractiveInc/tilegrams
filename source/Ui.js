@@ -242,6 +242,7 @@ class Ui {
         datasetSum={this._selectedDatasetSum}
         editing={this._editing}
         generateOption={this._generateOption}
+        geography={this._selectedGeography}
       />
     )
     const generateOption = (

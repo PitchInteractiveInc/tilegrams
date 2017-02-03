@@ -91,6 +91,7 @@ export default class TileGenerationUiControls extends React.Component {
               labels={this.props.datasetLabels}
               onDatasetSelected={index => this.props.selectDataset(index)}
               onCustomDataset={csv => this.props.selectCustomDataset(csv)}
+              geography={this.props.geography}
             />
             <ResolutionSlider
               defaultResolution={this.props.defaultResolution}
@@ -121,6 +122,7 @@ TileGenerationUiControls.propTypes = {
   editing: React.PropTypes.bool,
   generateOpen: React.PropTypes.bool,
   editOpen: React.PropTypes.bool,
+  geography: React.PropTypes.string,
 }
 
 TileGenerationUiControls.defaultProps = {

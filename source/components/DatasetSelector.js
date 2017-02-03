@@ -1,4 +1,5 @@
 import React from 'react'
+import geographyResource from '../resources/GeographyResource'
 
 const CUSTOM_LABEL = 'Custom CSV'
 
@@ -63,19 +64,27 @@ export default class DatasetSelector extends React.Component {
     )
   }
 
+  /** Builds custom csv from geos to help users input good data */
+  _generateSampleCsv() {
+    const geos = geographyResource.getMapResource(this.props.geography).getUniqueFeatureIds()
+    const geoHash = geographyResource.getGeoCodeHash(this.props.geography)
+    const sampleCsv = geos.reduce((a, b) => `${a}${b},1,${geoHash[b].name}\n`, '')
+    return (
+      <div className='code'>
+        {sampleCsv}
+      </div>
+    )
+  }
+
   _renderCsvInput() {
     return (
       <div className='csv-input'>
         <div className='instruction'>
-          {`Paste custom CSV below. Csv should be formatted with no
-          headers and geo id as the first column. Ex:`}
-          <div className='code'>
-          01,4858979
-            <br />
-          02,738432
-            <br />
-          04,6828065
-          </div>
+          {`Csv should be formatted with no
+          headers and geo id as the first column and value as second.
+          The third column is ignored. Sample CSV:`}
+          {this._generateSampleCsv()}
+          Paste custom CSV below:
         </div>
         <textarea
           ref={(ref) => { this.csvInput = ref }}
@@ -106,6 +115,7 @@ DatasetSelector.propTypes = {
   onDatasetSelected: React.PropTypes.func,
   onCustomDataset: React.PropTypes.func,
   onResizeNeeded: React.PropTypes.func,
+  geography: React.PropTypes.string,
 }
 DatasetSelector.defaultProps = {
   labels: [],
