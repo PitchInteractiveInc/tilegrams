@@ -3,7 +3,6 @@ import geographyResource from './GeographyResource.js'
 import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
-import populationWorld from '../../data/world-population.csv'
 import ukConstituency from '../../data/uk-constituencies.csv'
 import germanyConstituency from '../../data/germany-constituencies.csv'
 import franceRegionPopulation from '../../data/france-region-population.csv'
@@ -57,11 +56,6 @@ class DatasetResource {
         data: this.parseCsv(franceDepartment, 'France - Departments'),
         geography: 'France - Departments',
         defaultResolution: 1,
-      },
-      {
-        label: 'World Population',
-        data: this.parseCsv(populationWorld, 'World'),
-        geography: 'World',
       },
     ]
     this._selectedDatasetIndex = 2
