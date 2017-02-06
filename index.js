@@ -51,6 +51,7 @@ function updateUi() {
 }
 
 function loadTopoJson(topoJson) {
+  clearInterval(cartogramComputeTimer)
   importing = true
   const {tiles, metricPerTile, geography} = importer.fromTopoJson(topoJson)
   const dataset = datasetResource.buildDatasetFromTiles(tiles)
