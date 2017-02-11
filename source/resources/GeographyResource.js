@@ -1,11 +1,13 @@
 import usTopoJson from '../../maps/us-110m.topo.json'
 import ukConstituencyTopoJson from '../../maps/uk-constituency.topo.json'
+import ukAuthorityTopoJson from '../../maps/uk-local-authority.topo.json'
 import germanyConstituencyTopoJson from '../../maps/germany-constituency.topo.json'
 import franceRegionTopoJson from '../../maps/france-region.topo.json'
 import franceDepartmentTopoJson from '../../maps/france-department.topo.json'
 import MapResource from './MapResource'
 import fipsHash from '../../data/fips-to-state.json'
 import fidHash from '../../data/fid-to-constituency.json'
+import authorityIdHash from '../../data/id-to-authority.json'
 import wkrHash from '../../data/wkr-to-name.json'
 import regionHash from '../../data/region-to-name.json'
 import departmentHash from '../../data/department-to-name.json'
@@ -22,6 +24,11 @@ class GeographyResource {
         label: 'United Kingdom - Constituencies',
         mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
         geoCodeToName: fidHash,
+      },
+      {
+        label: 'United Kingdom - Local Authorities',
+        mapResource: new MapResource(ukAuthorityTopoJson, 'authorities'),
+        geoCodeToName: authorityIdHash,
       },
       {
         label: 'Germany - Constituencies',

@@ -4,6 +4,7 @@ import populationCsv from '../../data/population-by-state.csv'
 import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/gdp-by-state.csv'
 import ukConstituency from '../../data/uk-constituencies.csv'
+import ukAuthority from '../../data/uk-authorities.csv'
 import germanyConstituency from '../../data/germany-constituencies.csv'
 import franceRegionPopulation from '../../data/france-region-population.csv'
 import franceDepartment from '../../data/france-departments.csv'
@@ -37,6 +38,12 @@ class DatasetResource {
         label: 'U.K. Constituency 1-to-1',
         data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
         geography: 'United Kingdom - Constituencies',
+        defaultResolution: 1,
+      },
+      {
+        label: 'U.K. Authority 1-to-1',
+        data: this.parseCsv(ukAuthority, 'United Kingdom - Local Authorities'),
+        geography: 'United Kingdom - Local Authorities',
         defaultResolution: 1,
       },
       {

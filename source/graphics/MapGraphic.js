@@ -106,7 +106,10 @@ export default class MapGraphic extends Graphic {
           canvasDimensions.width * 0.5,
           canvasDimensions.height * 0.7,
         ])
-    } else if (geography === 'United Kingdom - Constituencies') {
+    } else if (
+      geography === 'United Kingdom - Constituencies' ||
+      geography === 'United Kingdom - Local Authorities'
+      ) {
       projection = geoMercator()
         .center([-2, 55.7])
         .scale(canvasDimensions.height * 2.9)
