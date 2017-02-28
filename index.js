@@ -58,6 +58,7 @@ function loadTopoJson(topoJson) {
   ui.setGeography(geography)
   ui.setSelectedDataset(dataset)
   metrics.metricPerTile = metricPerTile
+  canvas.setGeoCodeToName(geographyResource.getGeoCodeHash(geography))
   canvas.importTiles(tiles)
   updateUi()
 }
