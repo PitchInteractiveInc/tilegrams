@@ -1,11 +1,14 @@
-/** Return a pseudo-random color for a given fips code */
+/** Return a pseudo-random color for a given geo code */
 function fipsColor(fips) {
-  let number = parseInt(fips, 10)
+  const scaleTo = 56
+  let number = parseInt(fips, 10) % scaleTo
   if (isNaN(number)) {
-    number = fips.charCodeAt(0) - 97 || 0 // TODO: better conversion of string to color
+    number = (
+      ((fips.charCodeAt(fips.length - 1) || 0) + ((fips.charCodeAt(fips.length - 2) || 0) * 10))
+    ) % scaleTo
   }
-  const scalar = number / 56.0
-  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 85%, 70%)`
+  const scalar = number / scaleTo
+  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 87%, 70%)`
 }
 
 /** Create DOM element. Options may include 'id' */
