@@ -41,6 +41,9 @@
   "14": {
     "name": "Calvados"
   },
+   "15": {
+    "name": "Cantal"
+  },
   "16": {
     "name": "Charente"
   },
@@ -66,7 +69,7 @@
     "name": "Dordogne"
   },
   "25": {
-    "name": "Cantal"
+    "name": "Doubs"
   },
   "26": {
     "name": "Drôme"
@@ -82,6 +85,9 @@
   },
   "30": {
     "name": "Gard"
+  },
+  "31": {
+    "name": "Haute-Garonne"
   },
   "32": {
     "name": "Gers"
@@ -276,9 +282,9 @@
     "name": "Val-D'Oise"
   },
   "2A": {
-    "name": "Haute-Corse"
+    "name": "Corse-du-Sud"
   },
   "2B": {
-    "name": "Corse-du-Sud"
+    "name": "Haute-Corse"
   }
 }
