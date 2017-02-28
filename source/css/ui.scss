@@ -287,8 +287,8 @@ code {
     }
   }
   .metrics-box.disabled {
-    pointer-events: none;
     opacity: 0.3;
+    cursor: pointer;
   }
 }
 .metrics.hide-null {
