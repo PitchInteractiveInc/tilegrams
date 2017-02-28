@@ -112,7 +112,7 @@ export default class ImportControls extends React.Component {
         <div>
           <fieldset>
             <span>Using {this.state.uploadedFilename}</span>
-            <a onClick={this._resetUpload}>✕</a>
+            <a onClick={this._resetUpload}>&times;</a>
           </fieldset>
           {resolution}
         </div>
