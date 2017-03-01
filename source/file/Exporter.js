@@ -16,7 +16,7 @@ export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles, metricPerTile, geography) {
+  toTopoJson(tiles, dataset, metricPerTile, geography) {
     const maxTileY = tiles.reduce(
       (max, tile) => Math.max(max, tile.position.y),
       -Infinity
@@ -30,41 +30,43 @@ class Exporter {
       }
       tilesByState[tile.id].push(tile)
     })
+    dataset.forEach(d => {
+      // even if no tiles, make sure all entries in dataset are added to object
+      if (!tilesByState[d[0]]) { tilesByState[d[0]] = null }
+    })
 
     const features = Object.keys(tilesByState).map(stateId => {
       const stateTiles = tilesByState[stateId]
-
-      // Feature Geometry
-      const tilesCoordinates = stateTiles.map(tile => {
-        // if maxTileY is odd, then subtract one to maintain correct staggering
-        const center = gridGeometry.tileCenterPoint({
-          x: tile.position.x,
-          y: (maxTileY - tile.position.y) - (maxTileY % 2),
+      let tilesCoordinates = null
+      let geometry = null
+      if (stateTiles !== null) {
+        // Generate feature Geometry
+        tilesCoordinates = stateTiles.map(tile => {
+          // if maxTileY is odd, then subtract one to maintain correct staggering
+          const center = gridGeometry.tileCenterPoint({
+            x: tile.position.x,
+            y: (maxTileY - tile.position.y) - (maxTileY % 2),
+          })
+          const hexagonPoints = gridGeometry.getPointsAround(center, true)
+          hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
+          return hexagonPoints
         })
-        const hexagonPoints = gridGeometry.getPointsAround(center, true)
-        hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
-        return hexagonPoints
-      })
-
-      const feature = {
-        type: 'Feature',
-        geometry: {
+        geometry = {
           type: 'MultiPolygon',
           coordinates: [tilesCoordinates],
-        },
+        }
+      }
+      const feature = {
+        type: 'Feature',
+        geometry,
         id: stateId,
         properties: {
           name: geoCodeToName[stateId].name,
+          tilegramValue: dataset.find(d => d[0] === stateId)[1],
         },
       }
-      console.log(stateTiles)
-      if (stateTiles[0].tilegramValue) {
-        feature.properties.tilegramValue = stateTiles[0].tilegramValue
-      }
-
       return feature
     })
-
     const geoJsonObjects = {
       [OBJECT_ID]: {
         type: 'FeatureCollection',

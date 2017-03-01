@@ -134,14 +134,6 @@ class DatasetResource {
     return this._datasets.filter(dataset => dataset.geography === geography)
   }
 
-  buildDatasetFromTiles(tiles) {
-    const datasetMap = {}
-    tiles.forEach((tile) => {
-      datasetMap[tile.id] = [tile.id, tile.tilegramValue]
-    })
-    return {data: Object.keys(datasetMap).map((row) => datasetMap[row])}
-  }
-
   buildDatasetFromCustomCsv(geography, csv) {
     return {
       data: this.parseCsv(csv, geography, true),

@@ -20,7 +20,10 @@ class Importer {
   fromTopoJson(topoJson) {
     const geometries = topoJson.objects[OBJECT_ID].geometries
     const tilePoints = []
+    const datasetMap = {}
     geometries.forEach(geometry => {
+      datasetMap[geometry.id] = geometry.properties.tilegramValue
+      if (geometry.type == null) { return }
       const paths = this._getAbsolutePaths(
         geometry,
         topoJson.arcs,
@@ -38,8 +41,10 @@ class Importer {
       tilePoints,
       topoJson.properties.tilegramTileSize
     )
+    const dataset = {data: Object.keys(datasetMap).map((row) => [row, datasetMap[row]])}
     return {
       tiles: this._normalizeTilePosition(tiles),
+      dataset,
       metricPerTile: topoJson.properties.tilegramMetricPerTile,
       geography: topoJson.properties.tilegramGeography || 'United States',
     }

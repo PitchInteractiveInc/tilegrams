@@ -69,6 +69,10 @@ class Ui {
     this._defaultResolution = dataset.defaultResolution
   }
 
+  getSelectedDataset() {
+    return this._selectedDataset
+  }
+
   setGeography(geography) {
     this._selectedGeography = geography
   }
