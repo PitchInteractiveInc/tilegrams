@@ -1,13 +1,13 @@
 import {csvParseRows} from 'd3-dsv'
 import geographyResource from './GeographyResource.js'
-import populationCsv from '../../data/population-by-state.csv'
-import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
-import gdpCsv from '../../data/gdp-by-state.csv'
-import ukConstituency from '../../data/uk-constituencies.csv'
-import ukAuthority from '../../data/uk-authorities.csv'
-import germanyConstituency from '../../data/germany-constituencies.csv'
-import franceRegionPopulation from '../../data/france-region-population.csv'
-import franceDepartment from '../../data/france-departments.csv'
+import populationCsv from '../../data/us/population-by-state.csv'
+import electoralCollegeCsv from '../../data/us/electoral-college-votes-by-state.csv'
+import gdpCsv from '../../data/us/gdp-by-state.csv'
+import ukConstituency from '../../data/uk/constituencies.csv'
+import ukAuthority from '../../data/uk/authorities.csv'
+import germanyConstituency from '../../data/germany/constituencies.csv'
+import franceRegionPopulation from '../../data/france/region-population.csv'
+import franceDepartment from '../../data/france/departments.csv'
 
 class DatasetResource {
   constructor() {
