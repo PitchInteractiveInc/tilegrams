@@ -136,10 +136,10 @@
 	  var _importer$fromTopoJso = _Importer2.default.fromTopoJson(topoJson);
 
 	  var tiles = _importer$fromTopoJso.tiles;
+	  var dataset = _importer$fromTopoJso.dataset;
 	  var metricPerTile = _importer$fromTopoJso.metricPerTile;
 	  var geography = _importer$fromTopoJso.geography;
 
-	  var dataset = _DatasetResource2.default.buildDatasetFromTiles(tiles);
 	  _Ui2.default.setGeography(geography);
 	  _Ui2.default.setSelectedDataset(dataset);
 	  _Metrics2.default.metricPerTile = metricPerTile;
@@ -230,7 +230,7 @@
 	    return _Canvas2.default.getGrid().resetEdits();
 	  });
 	  _Ui2.default.setExportCallback(function (geography) {
-	    var json = _Exporter2.default.toTopoJson(_Canvas2.default.getGrid().getTiles(), _Metrics2.default.metricPerTile, geography);
+	    var json = _Exporter2.default.toTopoJson(_Canvas2.default.getGrid().getTiles(), _Ui2.default.getSelectedDataset(), _Metrics2.default.metricPerTile, geography);
 	    (0, _utils.startDownload)({
 	      filename: 'tiles.topo.json',
 	      mimeType: 'text/plain',
@@ -131534,7 +131534,7 @@
 	    key: 'toTopoJson',
 
 	    /** Convert hexagon offset coordinates to TopoJSON */
-	    value: function toTopoJson(tiles, metricPerTile, geography) {
+	    value: function toTopoJson(tiles, dataset, metricPerTile, geography) {
 	      var maxTileY = tiles.reduce(function (max, tile) {
 	        return Math.max(max, tile.position.y);
 	      }, -Infinity);
@@ -131547,41 +131547,47 @@
 	        }
 	        tilesByState[tile.id].push(tile);
 	      });
+	      dataset.forEach(function (d) {
+	        // even if no tiles, make sure all entries in dataset are added to object
+	        if (!tilesByState[d[0]]) {
+	          tilesByState[d[0]] = null;
+	        }
+	      });
 
 	      var features = Object.keys(tilesByState).map(function (stateId) {
 	        var stateTiles = tilesByState[stateId];
-
-	        // Feature Geometry
-	        var tilesCoordinates = stateTiles.map(function (tile) {
-	          // if maxTileY is odd, then subtract one to maintain correct staggering
-	          var center = _GridGeometry2.default.tileCenterPoint({
-	            x: tile.position.x,
-	            y: maxTileY - tile.position.y - maxTileY % 2
+	        var tilesCoordinates = null;
+	        var geometry = null;
+	        if (stateTiles !== null) {
+	          // Generate feature Geometry
+	          tilesCoordinates = stateTiles.map(function (tile) {
+	            // if maxTileY is odd, then subtract one to maintain correct staggering
+	            var center = _GridGeometry2.default.tileCenterPoint({
+	              x: tile.position.x,
+	              y: maxTileY - tile.position.y - maxTileY % 2
+	            });
+	            var hexagonPoints = _GridGeometry2.default.getPointsAround(center, true);
+	            hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]]);
+	            return hexagonPoints;
 	          });
-	          var hexagonPoints = _GridGeometry2.default.getPointsAround(center, true);
-	          hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]]);
-	          return hexagonPoints;
-	        });
-
-	        var feature = {
-	          type: 'Feature',
-	          geometry: {
+	          geometry = {
 	            type: 'MultiPolygon',
 	            coordinates: [tilesCoordinates]
-	          },
+	          };
+	        }
+	        var feature = {
+	          type: 'Feature',
+	          geometry: geometry,
 	          id: stateId,
 	          properties: {
-	            name: geoCodeToName[stateId].name
+	            name: geoCodeToName[stateId].name,
+	            tilegramValue: dataset.find(function (d) {
+	              return d[0] === stateId;
+	            })[1]
 	          }
 	        };
-	        console.log(stateTiles);
-	        if (stateTiles[0].tilegramValue) {
-	          feature.properties.tilegramValue = stateTiles[0].tilegramValue;
-	        }
-
 	        return feature;
 	      });
-
 	      var geoJsonObjects = _defineProperty({}, OBJECT_ID, {
 	        type: 'FeatureCollection',
 	        features: features
@@ -135023,6 +135029,11 @@
 	      this._selectedDatasetSum = this.getDatasetSum(this._selectedDataset);
 	      this._metricDomain = this._calculateIdealDomain();
 	      this._defaultResolution = dataset.defaultResolution;
+	    }
+	  }, {
+	    key: 'getSelectedDataset',
+	    value: function getSelectedDataset() {
+	      return this._selectedDataset;
 	    }
 	  }, {
 	    key: 'setGeography',
@@ -168966,7 +168977,12 @@
 
 	      var geometries = topoJson.objects[_Exporter.OBJECT_ID].geometries;
 	      var tilePoints = [];
+	      var datasetMap = {};
 	      geometries.forEach(function (geometry) {
+	        datasetMap[geometry.id] = geometry.properties.tilegramValue;
+	        if (geometry.type == null) {
+	          return;
+	        }
 	        var paths = _this._getAbsolutePaths(geometry, topoJson.arcs, topoJson.transform);
 	        paths.forEach(function (path) {
 	          tilePoints.push({
@@ -168977,8 +168993,12 @@
 	        });
 	      });
 	      var tiles = this._getTilePositions(tilePoints, topoJson.properties.tilegramTileSize);
+	      var dataset = { data: Object.keys(datasetMap).map(function (row) {
+	          return [row, datasetMap[row]];
+	        }) };
 	      return {
 	        tiles: this._normalizeTilePosition(tiles),
+	        dataset: dataset,
 	        metricPerTile: topoJson.properties.tilegramMetricPerTile,
 	        geography: topoJson.properties.tilegramGeography || 'United States'
 	      };
@@ -169370,17 +169390,6 @@
 	      return this._datasets.filter(function (dataset) {
 	        return dataset.geography === geography;
 	      });
-	    }
-	  }, {
-	    key: 'buildDatasetFromTiles',
-	    value: function buildDatasetFromTiles(tiles) {
-	      var datasetMap = {};
-	      tiles.forEach(function (tile) {
-	        datasetMap[tile.id] = [tile.id, tile.tilegramValue];
-	      });
-	      return { data: Object.keys(datasetMap).map(function (row) {
-	          return datasetMap[row];
-	        }) };
 	    }
 	  }, {
 	    key: 'buildDatasetFromCustomCsv',
