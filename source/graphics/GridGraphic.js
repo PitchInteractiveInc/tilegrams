@@ -288,6 +288,10 @@ export default class GridGraphic extends Graphic {
         y: -1,
       },
     }
+    const tilegramValue = this._getTilegramValue(id)
+    if (tilegramValue) {
+      this._newTile.tilegramValue = tilegramValue
+    }
     this._draggingMultiSelect = true
     this._draggingMultiSelectOrigin = {
       x: this._mouseAt.x,
@@ -304,9 +308,22 @@ export default class GridGraphic extends Graphic {
     })
   }
 
+  _getTilegramValue(id) {
+    const hasProperties = Array.isArray(this._properties)
+    if (hasProperties) {
+      const tileProperty = this._properties.find(property => {
+        return property[0] === id
+      })
+      if (tileProperty) {
+        return tileProperty[1]
+      }
+    }
+    return false
+  }
+
   /** Populate tiles based on given TopoJSON-backed map graphic */
   populateTiles(mapGraphic, properties) {
-    const hasProperties = Array.isArray(properties)
+    this._properties = properties
     this._tiles = []
     this._deselectTile()
     gridGeometry.forEachTilePosition((x, y) => {
@@ -317,18 +334,15 @@ export default class GridGraphic extends Graphic {
           id: feature.id,
           position: {x, y},
         }
-        if (hasProperties) {
-          const tileProperty = properties.find(property => {
-            return property[0] === feature.id
-          })
-          if (tileProperty) {
-            tile.tilegramValue = tileProperty[1]
-          }
+        const tilegramValue = this._getTilegramValue(feature.id)
+        if (tilegramValue) {
+          tile.tilegramValue = tilegramValue
         }
         this._tiles.push(tile)
       }
     })
     this._hasBeenEdited = false // reset edit state
+    this._properties = properties
     this.updateUi()
     this.renderBackgroundImage()
     this._positionClusterLabels()

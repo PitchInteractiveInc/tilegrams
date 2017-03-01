@@ -57,6 +57,7 @@ class Exporter {
           name: geoCodeToName[stateId].name,
         },
       }
+      console.log(stateTiles)
       if (stateTiles[0].tilegramValue) {
         feature.properties.tilegramValue = stateTiles[0].tilegramValue
       }
