@@ -6,6 +6,7 @@ import fiveThirtyEightElectoralCollegeTilegram from
 import francePopulationTilegram from '../../tilegrams/france-population.json'
 import francePopulationWithOverseasTilegram from
   '../../tilegrams/france-population-with-overseas.json'
+import franceOneToOneDepartmentsTilegram from '../../tilegrams/france-departments-one-to-one.json'
 
 class TilegramResource {
   constructor() {
@@ -39,6 +40,11 @@ class TilegramResource {
         label: 'France Population With Overseas',
         topoJson: francePopulationWithOverseasTilegram,
         geography: 'France - Regions',
+      },
+      {
+        label: 'France Departments 1-to-1',
+        topoJson: franceOneToOneDepartmentsTilegram,
+        geography: 'France - Departments',
       },
     ]
   }
