@@ -7,6 +7,7 @@ import francePopulationTilegram from '../../tilegrams/france-population.json'
 import francePopulationWithOverseasTilegram from
   '../../tilegrams/france-population-with-overseas.json'
 import franceOneToOneDepartmentsTilegram from '../../tilegrams/france-departments-one-to-one.json'
+import germanyOneToOneConstituenciesTilegram from '../../tilegrams/germany-constituencies.json'
 
 class TilegramResource {
   constructor() {
@@ -45,6 +46,11 @@ class TilegramResource {
         label: 'France Departments 1-to-1',
         topoJson: franceOneToOneDepartmentsTilegram,
         geography: 'France - Departments',
+      },
+      {
+        label: 'Germany Constituencies 1-to-1',
+        topoJson: germanyOneToOneConstituenciesTilegram,
+        geography: 'Germany - Constituencies',
       },
     ]
   }
