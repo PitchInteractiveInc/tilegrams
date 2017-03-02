@@ -261,6 +261,7 @@ export default class GridGraphic extends Graphic {
       this._selectedTiles.forEach((tile) => {
         this._deleteTile(tile)
       })
+      this._positionClusterLabels()
       this._selectedTiles.length = 0
       this._setToEditingMode()
       this.updateUi()
