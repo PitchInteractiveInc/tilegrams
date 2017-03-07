@@ -1,25 +1,68 @@
 import {csvParseRows} from 'd3-dsv'
-
-import mapResource from './MapResource'
-
-import populationCsv from '../../data/population-by-state.csv'
-import electoralCollegeCsv from '../../data/electoral-college-votes-by-state.csv'
-import gdpCsv from '../../data/gdp-by-state.csv'
+import geographyResource from './GeographyResource.js'
+import populationCsv from '../../data/us/population-by-state.csv'
+import electoralCollegeCsv from '../../data/us/electoral-college-votes-by-state.csv'
+import gdpCsv from '../../data/us/gdp-by-state.csv'
+// import ukConstituency from '../../data/uk/constituencies.csv'
+// import ukAuthority from '../../data/uk/authorities.csv'
+import germanyConstituency from '../../data/germany/constituencies.csv'
+import franceRegionPopulation from '../../data/france/region-population.csv'
+import franceDepartment from '../../data/france/departments.csv'
 
 class DatasetResource {
   constructor() {
+    /**
+    * Datasets must have an associated geography for the map graphic to successfully compute a
+    * cartogram. Default resolution (optional) is the default tile value when a user selects the
+    * data from the dropdown.
+    */
     this._datasets = [
       {
         label: 'U.S. Population 2016',
-        data: this.parseCsv(populationCsv),
+        data: this.parseCsv(populationCsv, 'United States'),
+        geography: 'United States',
+        defaultResolution: 1000000,
       },
       {
         label: 'U.S. Electoral College 2016',
-        data: this.parseCsv(electoralCollegeCsv),
+        data: this.parseCsv(electoralCollegeCsv, 'United States'),
+        geography: 'United States',
+        defaultResolution: 1,
       },
       {
         label: 'U.S. GDP 2015 (Millions)',
-        data: this.parseCsv(gdpCsv),
+        data: this.parseCsv(gdpCsv, 'United States'),
+        geography: 'United States',
+      },
+      // {
+      //   label: 'U.K. Constituency 1-to-1',
+      //   data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
+      //   geography: 'United Kingdom - Constituencies',
+      //   defaultResolution: 1,
+      // },
+      // {
+      //   label: 'U.K. Authority 1-to-1',
+      //   data: this.parseCsv(ukAuthority, 'United Kingdom - Local Authorities'),
+      //   geography: 'United Kingdom - Local Authorities',
+      //   defaultResolution: 1,
+      // },
+      {
+        label: 'Germany Constituency 1-to-1',
+        data: this.parseCsv(germanyConstituency, 'Germany - Constituencies'),
+        geography: 'Germany - Constituencies',
+        defaultResolution: 1,
+      },
+      {
+        label: 'France Region Population',
+        data: this.parseCsv(franceRegionPopulation, 'France - Regions'),
+        geography: 'France - Regions',
+        defaultResolution: 100000,
+      },
+      {
+        label: 'France Department 1-to-1',
+        data: this.parseCsv(franceDepartment, 'France - Departments'),
+        geography: 'France - Departments',
+        defaultResolution: 1,
       },
     ]
     this._selectedDatasetIndex = 2
@@ -29,12 +72,21 @@ class DatasetResource {
     return fips && fips.length < 2 ? `0${fips}` : fips
   }
 
-  parseCsv(csv) {
+  parseCsv(csv, geography, customUpload) {
+    const mapResource = geographyResource.getMapResource(geography)
     const features = mapResource.getUniqueFeatureIds()
     const badMapIds = []
     const badValueIds = []
-    const parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
-      .filter(row => {
+    csv = csv.trim()
+    let parsed
+    if (geography === 'United States') {
+      parsed = csvParseRows(csv, d => [this._validateFips(d[0]), parseFloat(d[1])])
+    } else {
+      parsed = csvParseRows(csv, d => [d[0], parseFloat(d[1])])
+    }
+    if (customUpload) {
+      // extra data validation for custom uploads
+      parsed = parsed.filter(row => {
         const hasId = (features.indexOf(row[0]) > -1)
         if (!hasId) {
           badMapIds.push(row[0])
@@ -44,8 +96,9 @@ class DatasetResource {
         }
         return hasId && row[1] > 0
       })
-    if (badMapIds.length || badValueIds.length) {
-      this._warnDataErrors(badMapIds, badValueIds)
+      if (badMapIds.length || badValueIds.length) {
+        this._warnDataErrors(badMapIds, badValueIds)
+      }
     }
     return parsed
   }
@@ -69,16 +122,23 @@ class DatasetResource {
     return this._datasets.map(dataset => dataset.label)
   }
 
-  getDataset(index) {
-    return this._datasets[index].data
+  getDataset(geography, index) {
+    return this.getDatasetsByGeography(geography)[index]
   }
 
-  buildDatasetFromTiles(tiles) {
-    const datasetMap = {}
-    tiles.forEach((tile) => {
-      datasetMap[tile.id] = [tile.id, tile.tilegramValue]
-    })
-    return Object.keys(datasetMap).map((row) => datasetMap[row])
+  getDatasetGeography(index) {
+    return this._datasets[index].geography
+  }
+
+  getDatasetsByGeography(geography) {
+    return this._datasets.filter(dataset => dataset.geography === geography)
+  }
+
+  buildDatasetFromCustomCsv(geography, csv) {
+    return {
+      data: this.parseCsv(csv, geography, true),
+      geography,
+    }
   }
 }
 

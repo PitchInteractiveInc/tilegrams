@@ -9,18 +9,19 @@ import {nest} from 'd3-collection'
 import {topology} from 'topojson/server.js'
 import {version} from '../../package.json'
 import gridGeometry from '../geometry/GridGeometry'
-import {fipsColor, fipsToPostal} from '../utils'
+import {fipsColor} from '../utils'
+import geographyResource from '../resources/GeographyResource'
 
 export const OBJECT_ID = 'tiles'
 
 class Exporter {
   /** Convert hexagon offset coordinates to TopoJSON */
-  toTopoJson(tiles, metricPerTile) {
+  toTopoJson(tiles, dataset, metricPerTile, geography) {
     const maxTileY = tiles.reduce(
       (max, tile) => Math.max(max, tile.position.y),
       -Infinity
     )
-
+    const geoCodeToName = geographyResource.getGeoCodeHash(geography)
     // Aggregate tiles by state
     const tilesByState = {}
     tiles.forEach(tile => {
@@ -29,40 +30,43 @@ class Exporter {
       }
       tilesByState[tile.id].push(tile)
     })
+    dataset.forEach(d => {
+      // even if no tiles, make sure all entries in dataset are added to object
+      if (!tilesByState[d[0]]) { tilesByState[d[0]] = null }
+    })
 
     const features = Object.keys(tilesByState).map(stateId => {
       const stateTiles = tilesByState[stateId]
-
-      // Feature Geometry
-      const tilesCoordinates = stateTiles.map(tile => {
-        // if maxTileY is odd, then subtract one to maintain correct staggering
-        const center = gridGeometry.tileCenterPoint({
-          x: tile.position.x,
-          y: (maxTileY - tile.position.y) - (maxTileY % 2),
+      let tilesCoordinates = null
+      let geometry = null
+      if (stateTiles !== null) {
+        // Generate feature Geometry
+        tilesCoordinates = stateTiles.map(tile => {
+          // if maxTileY is odd, then subtract one to maintain correct staggering
+          const center = gridGeometry.tileCenterPoint({
+            x: tile.position.x,
+            y: (maxTileY - tile.position.y) - (maxTileY % 2),
+          })
+          const hexagonPoints = gridGeometry.getPointsAround(center, true)
+          hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
+          return hexagonPoints
         })
-        const hexagonPoints = gridGeometry.getPointsAround(center, true)
-        hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
-        return hexagonPoints
-      })
-
-      const feature = {
-        type: 'Feature',
-        geometry: {
+        geometry = {
           type: 'MultiPolygon',
           coordinates: [tilesCoordinates],
-        },
+        }
+      }
+      const feature = {
+        type: 'Feature',
+        geometry,
         id: stateId,
         properties: {
-          state: fipsToPostal(stateId),
+          name: geoCodeToName[stateId].name,
+          tilegramValue: dataset.find(d => d[0] === stateId)[1],
         },
       }
-      if (stateTiles[0].tilegramValue) {
-        feature.properties.tilegramValue = stateTiles[0].tilegramValue
-      }
-
       return feature
     })
-
     const geoJsonObjects = {
       [OBJECT_ID]: {
         type: 'FeatureCollection',
@@ -79,11 +83,13 @@ class Exporter {
       tilegramMetricPerTile: metricPerTile,
       tilegramVersion: version,
       tilegramTileSize: gridGeometry.getTileDimensions(),
+      tilegramGeography: geography,
     }
     return topoJson
   }
 
-  toSvg(tiles) {
+  toSvg(tiles, geography) {
+    const geoCodeToName = geographyResource.getGeoCodeHash(geography)
     // create svg
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     const canv = document.getElementById('canvas').getElementsByTagName('canvas')[0]
@@ -98,7 +104,7 @@ class Exporter {
     groupedTiles.forEach((group) => {
       // convert from hsl to hex string for illustrator
       const groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-      groupEl.setAttribute('id', fipsToPostal(group.key))
+      groupEl.setAttribute('id', geoCodeToName[group.key])
       const colorString = color(fipsColor(group.key)).toString()
       group.values.forEach((tile) => {
         const center = gridGeometry.tileCenterPoint({
@@ -121,7 +127,8 @@ class Exporter {
   }
 
   /** Format TopoJSON from GeoJSON */
-  fromGeoJSON(geoJSON) {
+  fromGeoJSON(geoJSON, objectId) {
+    objectId = objectId || 'states'
     const arcs = []
     const topoJson = {
       type: 'Topology',
@@ -130,7 +137,7 @@ class Exporter {
         translate: [0.0, 0.0],
       },
       objects: {
-        states: {
+        [objectId]: {
           type: 'GeometryCollection',
           geometries: geoJSON.features.map(feature => {
             const geometryArcIndices = []

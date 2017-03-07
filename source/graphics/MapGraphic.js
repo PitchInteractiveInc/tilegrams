@@ -1,10 +1,10 @@
-import {geoPath, geoAlbersUsa} from 'd3-geo'
+import {geoPath} from 'd3-geo'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
-import mapResource from '../resources/MapResource'
+import geographyResource from '../resources/GeographyResource'
 import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
@@ -12,12 +12,11 @@ import {canvasDimensions} from '../constants'
 const topogram = topogramImport()
 
 const MIN_PATH_AREA = 0.5
-const MAX_ITERATION_COUNT = 15
+const MAX_ITERATION_COUNT = 20
 
 export default class MapGraphic extends Graphic {
   constructor() {
     super()
-
     this._stateFeatures = null
     this._iterationCount = 0
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
@@ -26,20 +25,18 @@ export default class MapGraphic extends Graphic {
   }
 
   /** Apply topogram on topoJson using data in properties */
-  computeCartogram(properties) {
-    topogram.value(
-      feature => properties.find(property => property[0] === feature.id)[1]
-    )
+  computeCartogram(dataset) {
+    topogram.value(feature => dataset.data.find(datum => datum[0] === feature.id)[1])
     this._iterationCount = 0
 
-    // compute initial cartogram
-    this.updatePreProjection()
+    // compute initial cartogram from geography
+    this.updatePreProjection(dataset.geography)
 
     // generate basemap for topogram
-    const baseMap = this._getbaseMapTopoJson(properties)
+    this._baseMap = this._getbaseMapTopoJson(dataset)
     this._stateFeatures = topogram(
-      baseMap.topo,
-      baseMap.geometries
+      this._baseMap.topo,
+      this._baseMap.geometries
     )
     this._precomputeBounds()
   }
@@ -48,21 +45,21 @@ export default class MapGraphic extends Graphic {
    * Returns either the original map topojson and geometries or
    * a filtered version of the map if the data properties don't match the map.
    */
-  _getbaseMapTopoJson(properties) {
+  _getbaseMapTopoJson(dataset) {
+    const mapResource = geographyResource.getMapResource(dataset.geography)
     const baseMapTopoJson = mapResource.getTopoJson()
     let filteredTopoJson = null
     let filteredGeometries = null
-
+    const baseMapLength = baseMapTopoJson.objects[mapResource.getObjectId()].geometries.length
     // for custom uploads with incomplete data
-    if (properties.length !== baseMapTopoJson.objects.states.geometries.length) {
-      const statesWithData = properties.map(property => property[0])
-      filteredGeometries = baseMapTopoJson.objects.states.geometries
+    if (dataset.data.length !== baseMapLength) {
+      const statesWithData = dataset.data.map(datum => datum[0])
+      filteredGeometries = baseMapTopoJson.objects[mapResource.getObjectId()].geometries
         .filter(geom => statesWithData.indexOf(geom.id) > -1)
       filteredTopoJson = JSON.parse(JSON.stringify(baseMapTopoJson)) // clones the baseMap
       // only pass filtered geometries to topogram generator
-      filteredTopoJson.objects.states.geometries = filteredGeometries
+      filteredTopoJson.objects[mapResource.getObjectId()].geometries = filteredGeometries
     }
-
     return {
       topo: filteredTopoJson || baseMapTopoJson,
       geometries: filteredGeometries || mapResource.getGeometries(),
@@ -73,13 +70,14 @@ export default class MapGraphic extends Graphic {
    * Calculate subsequent cartogram iterations.
    * Return true if iteration was performed, false if not.
    */
-  iterateCartogram() {
+  iterateCartogram(geography) {
     if (this._iterationCount > MAX_ITERATION_COUNT) {
       return false
     }
+    const mapResource = geographyResource.getMapResource(geography)
     topogram.projection(x => x)
-    const topoJson = exporter.fromGeoJSON(this._stateFeatures)
-    this._stateFeatures = topogram(topoJson, topoJson.objects.states.geometries)
+    const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
+    this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
     this._precomputeBounds()
     this._iterationCount++
     return true
@@ -89,14 +87,9 @@ export default class MapGraphic extends Graphic {
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
   }
 
-  /** Apply projectiong _before_ cartogram computation */
-  updatePreProjection() {
-    const projection = geoAlbersUsa()
-      .scale(canvasDimensions.width)
-      .translate([
-        canvasDimensions.width * 0.5,
-        canvasDimensions.height * 0.5,
-      ])
+  /** Apply projection _before_ cartogram computation */
+  updatePreProjection(geography) {
+    const projection = geographyResource.getProjection(geography, canvasDimensions)
     topogram.projection(projection)
   }
 

@@ -1,7 +1,8 @@
 import React, {PropTypes} from 'react'
 import {nest} from 'd3-collection'
+import geographyResource from '../resources/GeographyResource'
 
-import {fipsColor, hashFromData, fipsToPostal} from '../utils'
+import {fipsColor, hashFromData} from '../utils'
 
 export default class HexMetrics extends React.Component {
   constructor(props) {
@@ -64,9 +65,10 @@ export default class HexMetrics extends React.Component {
     const input = props.dataset.map(row => ({key: row[0], value: +row[1]}))
     const inputHash = hashFromData(input)
     const selectedRatio = props.metricPerTile
+    const geos = geographyResource.getMapResource(props.geography).getUniqueFeatureIds()
     let shouldWarn = false
     let nErrors = 0
-    const stats = this._getCountsByGeo(props.tiles, props.geos).map((d) => {
+    const stats = this._getCountsByGeo(props.tiles, geos).map((d) => {
       const metric = inputHash[d.key]
       const stat = {key: d.key, nHex: d.value, disable: !metric}
       if (metric) {
@@ -87,6 +89,7 @@ export default class HexMetrics extends React.Component {
     props.updateNErrors(nErrors)
 
     this.setState({
+      objectId: geographyResource.getMapResource(props.geography).getObjectId(),
       metrics: {stats, shouldWarn},
     })
   }
@@ -140,7 +143,7 @@ export default class HexMetrics extends React.Component {
     return (
       <div id='warning'>
         <i className='fa fa-exclamation-triangle' />
-        At this data resolution, some states will not be represented.
+        At this data resolution, some {this.state.objectId} will not be represented.
         Consider a lower resolution.
       </div>
     )
@@ -156,7 +159,8 @@ export default class HexMetrics extends React.Component {
 
       let className = count.deviation === 0 ? 'metrics-box fade' : 'metrics-box'
       if (count.disable) { className += ' disabled' }
-
+      const geoCodeToName = geographyResource.getGeoCodeHash(this.props.geography)
+      const keyString = geoCodeToName[count.key]
       return (
         <div
           key={count.key}
@@ -172,7 +176,7 @@ export default class HexMetrics extends React.Component {
           >
             {count.disable ? 'No Data' : this._drawHexagon(count.key)}
           </div>
-          <div>{fipsToPostal(count.key)}</div>
+          <div>{keyString.name_short || count.key}</div>
           <div>{adjustString}</div>
         </div>
       )
@@ -206,7 +210,7 @@ export default class HexMetrics extends React.Component {
             onClick={this._toggleHide}
           />
           <label htmlFor='toggleNull'>
-            Only show states with surplus/deficit.
+            Only show {this.state.objectId} with surplus/deficit.
           </label>
           {this._renderWarning(metrics.shouldWarn)}
         </div>
@@ -219,7 +223,7 @@ export default class HexMetrics extends React.Component {
 HexMetrics.propTypes = {
   dataset: PropTypes.array,
   tiles: PropTypes.array,
-  geos: PropTypes.array,
+  geography: PropTypes.string,
   metricPerTile: PropTypes.number,
   onAddTileMouseDown: PropTypes.func,
   onMetricMouseOut: PropTypes.func,

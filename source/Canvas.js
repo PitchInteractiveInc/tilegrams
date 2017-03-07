@@ -18,15 +18,19 @@ class Canvas {
     this._cartogramArea = null
   }
 
-  computeCartogram(properties) {
-    this._mapGraphic.computeCartogram(properties)
+  setGeoCodeToName(geoCodeToName) {
+    this._gridGraphic.geoCodeToName = geoCodeToName
+  }
+
+  computeCartogram(dataset) {
+    this._mapGraphic.computeCartogram(dataset)
     this._setCartogramArea()
-    this.updateTiles(properties)
+    this.updateTiles()
     this._cartogramReady = true
   }
 
-  iterateCartogram() {
-    const iterated = this._mapGraphic.iterateCartogram()
+  iterateCartogram(geography) {
+    const iterated = this._mapGraphic.iterateCartogram(geography)
     if (iterated) {
       this._setCartogramArea()
     }
@@ -39,11 +43,8 @@ class Canvas {
     this._cartogramReady = true
   }
 
-  updateTiles(properties) {
-    if (typeof properties !== 'undefined') {
-      this._properties = properties
-    }
-    this._gridGraphic.populateTiles(this._mapGraphic, this._properties)
+  updateTiles() {
+    this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
   updateTilesFromMetrics() {

@@ -5,7 +5,7 @@ import metrics from './source/Metrics'
 import exporter from './source/file/Exporter'
 import importer from './source/file/Importer'
 import datasetResource from './source/resources/DatasetResource'
-import mapResource from './source/resources/MapResource'
+import geographyResource from './source/resources/GeographyResource'
 import tilegramResource from './source/resources/TilegramResource'
 import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
@@ -19,6 +19,7 @@ const CARTOGRAM_COMPUTE_FPS = 60.0
 let cartogramComputeTimer
 
 let importing = false
+const defaultGeography = 'United States'
 
 if (typeof window !== 'undefined') {
   const mobileDetect = new MobileDetect(window.navigator.userAgent)
@@ -28,13 +29,16 @@ if (typeof window !== 'undefined') {
   }
 }
 
-function selectDataset(dataset) {
+function selectDataset(geography, index, customCsv) {
+  const dataset = index !== null ?
+    datasetResource.getDataset(geography, index) :
+    datasetResource.buildDatasetFromCustomCsv(geography, customCsv)
   importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
   clearInterval(cartogramComputeTimer)
   cartogramComputeTimer = setInterval(() => {
-    const iterated = canvas.iterateCartogram()
+    const iterated = canvas.iterateCartogram(dataset.geography)
     if (iterated) {
       canvas.updateTilesFromMetrics()
     }
@@ -47,14 +51,43 @@ function updateUi() {
 }
 
 function loadTopoJson(topoJson) {
+  clearInterval(cartogramComputeTimer)
   importing = true
-  const {tiles, metricPerTile} = importer.fromTopoJson(topoJson)
-  const dataset = datasetResource.buildDatasetFromTiles(tiles)
-
+  const {tiles, dataset, metricPerTile, geography} = importer.fromTopoJson(topoJson)
+  ui.setGeography(geography)
   ui.setSelectedDataset(dataset)
   metrics.metricPerTile = metricPerTile
+  canvas.setGeoCodeToName(geographyResource.getGeoCodeHash(geography))
   canvas.importTiles(tiles)
   updateUi()
+}
+
+function selectGeography(geography) {
+  /**
+  * Updates ui with matching geo data (list of tilegrams, list of datasets).
+  * Update ui and canvas with the matching geoCodeHash for the current geography. This is used
+  * in the hexMetrics component and to render the labels on canvas.
+  * Loads the first tilegram associated with the geography if it exists, else loads the first
+  * dataset.
+  * NB: ui.selectTilegramGenerateOption is loaded _after_ the dataset is updated to prevent error
+  * on first load.
+  */
+  importing = false
+  const datasets = datasetResource.getDatasetsByGeography(geography)
+  const tilegrams = tilegramResource.getTilegramsByGeography(geography)
+  const geoCodeToName = geographyResource.getGeoCodeHash(geography)
+  ui.setGeography(geography)
+  ui.setDatasetLabels(datasets.map(dataset => dataset.label))
+  ui.setTilegramLabels(tilegrams.map(tilegram => tilegram.label))
+  canvas.setGeoCodeToName(geoCodeToName)
+  if (tilegrams.length) {
+    loadTopoJson(tilegrams[0].topoJson)
+    // ui.selectTilegram(0)
+    ui.selectTilegramGenerateOption('import')
+  } else {
+    selectDataset(geography, 0)
+    ui.selectTilegramGenerateOption('generate')
+  }
 }
 
 function confirmNavigation(e) {
@@ -69,11 +102,14 @@ function init() {
   canvas.getGrid().onChange(() => updateUi())
   canvas.getGrid().setUiEditingCallback(() => ui.setEditingTrue())
   ui.setAddTileCallback(id => canvas.getGrid().onAddTileMouseDown(id))
-  ui.setDatasetSelectedCallback(index => selectDataset(datasetResource.getDataset(index)))
-  ui.setTilegramSelectedCallback(index => {
-    loadTopoJson(tilegramResource.getTilegram(index))
+  ui.setDatasetSelectedCallback((geography, index) => selectDataset(geography, index))
+  ui.setTilegramSelectedCallback((geography, index) => {
+    const tilegram = (tilegramResource.getTilegram(geography, index))
+    if (tilegram) {
+      loadTopoJson(tilegramResource.getTilegram(geography, index))
+    }
   })
-  ui.setCustomDatasetCallback(csv => selectDataset(datasetResource.parseCsv(csv)))
+  ui.setCustomDatasetCallback((geography, csv) => selectDataset(geography, null, csv))
   ui.setHightlightCallback(id => canvas.getGrid().onHighlightGeo(id))
   ui.setUnhighlightCallback(() => canvas.getGrid().resetHighlightedGeo())
   ui.setResolutionChangedCallback((metricPerTile, sumMetrics) => {
@@ -86,19 +122,24 @@ function init() {
   })
   ui.setUnsavedChangesCallback(() => canvas.getGrid().checkForEdits())
   ui.setResetUnsavedChangesCallback(() => canvas.getGrid().resetEdits())
-  ui.setExportCallback(() => {
+  ui.setExportCallback(geography => {
     const json = exporter.toTopoJson(
       canvas.getGrid().getTiles(),
-      metrics.metricPerTile
+      ui.getSelectedDataset(),
+      metrics.metricPerTile,
+      geography
     )
     startDownload({
       filename: 'tiles.topo.json',
-      mimeType: 'application/json',
+      mimeType: 'text/plain',
       content: JSON.stringify(json),
     })
   })
-  ui.setExportSvgCallback(() => {
-    const svg = exporter.toSvg(canvas.getGrid().getTiles())
+  ui.setExportSvgCallback(geography => {
+    const svg = exporter.toSvg(
+      canvas.getGrid().getTiles(),
+      geography
+    )
     startDownload({
       filename: 'tiles.svg',
       mimeType: 'image/svg+xml',
@@ -106,13 +147,10 @@ function init() {
     })
   })
   ui.setImportCallback(loadTopoJson)
+  ui.setGeographySelectCallback(selectGeography)
 
-  // populate
-  ui.setGeos(mapResource.getUniqueFeatureIds())
-  ui.setDatasetLabels(datasetResource.getLabels())
-  ui.setTilegramLabels(tilegramResource.getLabels())
-  loadTopoJson(tilegramResource.getTilegram(0))
-  updateUi()
+  selectGeography(defaultGeography)
+
   if (!isDevEnvironment()) {
     window.addEventListener('beforeunload', confirmNavigation)
   }

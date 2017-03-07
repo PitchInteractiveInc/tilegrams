@@ -1,14 +1,11 @@
-import usTopoJson from '../../maps/us-110m.topo.json'
-
-const OBJECT_ID = 'states'
-
 class MapResource {
-  constructor(topoJson) {
+  constructor(topoJson, objectId) {
     this._topoJson = topoJson
+    this._objectId = objectId
   }
 
   getObjectId() {
-    return OBJECT_ID
+    return this._objectId
   }
 
   getTopoJson() {
@@ -16,7 +13,7 @@ class MapResource {
   }
 
   getGeometries() {
-    return this._topoJson.objects[OBJECT_ID].geometries
+    return this._topoJson.objects[this._objectId].geometries
   }
 
   getUniqueFeatureIds() {
@@ -24,4 +21,4 @@ class MapResource {
   }
 }
 
-export default new MapResource(usTopoJson)
+export default MapResource

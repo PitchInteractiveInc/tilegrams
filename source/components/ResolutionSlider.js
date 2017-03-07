@@ -18,7 +18,11 @@ export default class ResolutionSlider extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (JSON.stringify(nextProps) !== JSON.stringify(this.props)) {
       this.normalizeValue.domain(nextProps.metricDomain) // update the domain
-      this._triggerChangeFromSlider(50)
+      if (nextProps.defaultResolution) {
+        this._triggerChangerFromDefault(nextProps.defaultResolution)
+      } else {
+        this._triggerChangeFromSlider(50)
+      }
     }
   }
 
@@ -63,6 +67,12 @@ export default class ResolutionSlider extends React.Component {
     this._triggerChange(sanitizedValue)
   }
 
+  _triggerChangerFromDefault(defaultValue) {
+    const normalizedValue = this.normalizeValue(defaultValue)
+    this.setState({value: normalizedValue, typedValue: defaultValue})
+    this._triggerChange(defaultValue)
+  }
+
   _checkForEnter(event) {
     if (event.keyCode !== 13) return
     this.typedInput.blur()
@@ -104,6 +114,7 @@ export default class ResolutionSlider extends React.Component {
   }
 }
 ResolutionSlider.propTypes = {
+  defaultResolution: React.PropTypes.number,
   metricDomain: React.PropTypes.array,
   onChange: React.PropTypes.func,
 }

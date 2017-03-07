@@ -7,11 +7,11 @@ select {
   background: url('../images/arrow.svg') no-repeat 97% 50% #ffffff;
   background-size: 1em 0.5em;
   border: none;
-  background-color: $very-light-gray;
   color: #1a1a1a;
   font-size: 100%;
   font-weight: 300;
   cursor: pointer;
+  padding: 3px;
   &:focus {
     outline: none;
   }
@@ -121,6 +121,12 @@ code {
   .scroll-ui {
     overflow: scroll;
   }
+  .geographySelector {
+    padding: 0 $ui-margin 12px $ui-margin;
+    select {
+      background-color: $very-light-gray;
+    }
+  }
   .ui-controls {
     overflow: hidden;
     .ui-control-type {
@@ -128,6 +134,7 @@ code {
     }
     .import {
       padding: 0 $ui-margin 12px $ui-margin;
+      border-top: 1px solid $very-light-gray;
       &.active {
         background-color: $very-light-gray;
         border-left: 3px solid $gray;
@@ -163,12 +170,31 @@ code {
         outline: none;
       }
     }
+    .code {
+      white-space: pre-line;
+      max-height: 70px;
+      overflow-y: scroll;
+    }
+    .submit-custom {
+      margin: 5px 0;
+      background-color: white;
+      padding: 5px;
+      border-radius: 3px;
+      display: inline-block;
+      border: 1px solid $light-gray;
+      cursor: pointer;
+      opacity: 0.3;
+      &.active {
+        opacity: 1;
+      }
+    }
   }
   .dataset-select {
     width: 100%;
   }
   .instruction {
     margin-top: 10px;
+    line-height: 1.2em;
   }
   .resolution-slider {
     label {
@@ -280,8 +306,8 @@ code {
     }
   }
   .metrics-box.disabled {
-    pointer-events: none;
     opacity: 0.3;
+    cursor: pointer;
   }
 }
 .metrics.hide-null {

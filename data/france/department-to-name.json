@@ -1,0 +1,290 @@
+{
+  "1": {
+    "name": "Ain"
+  },
+  "2": {
+    "name": "Aisne"
+  },
+  "3": {
+    "name": "Allier"
+  },
+  "4": {
+    "name": "Alpes-de-Haute-Provence"
+  },
+  "5": {
+    "name": "Hautes-Alpes"
+  },
+  "6": {
+    "name": "Alpes-Maritimes"
+  },
+  "7": {
+    "name": "Ardèche"
+  },
+  "8": {
+    "name": "Ardennes"
+  },
+  "9": {
+    "name": "Ariège"
+  },
+  "10": {
+    "name": "Aube"
+  },
+  "11": {
+    "name": "Aude"
+  },
+  "12": {
+    "name": "Aveyron"
+  },
+  "13": {
+    "name": "Bouches-du-Rhône"
+  },
+  "14": {
+    "name": "Calvados"
+  },
+   "15": {
+    "name": "Cantal"
+  },
+  "16": {
+    "name": "Charente"
+  },
+  "17": {
+    "name": "Charente-Maritime"
+  },
+  "18": {
+    "name": "Cher"
+  },
+  "19": {
+    "name": "Corrèze"
+  },
+  "21": {
+    "name": "Cote-d'Or"
+  },
+  "22": {
+    "name": "Côtes-d'Armor"
+  },
+  "23": {
+    "name": "Creuse"
+  },
+  "24": {
+    "name": "Dordogne"
+  },
+  "25": {
+    "name": "Doubs"
+  },
+  "26": {
+    "name": "Drôme"
+  },
+  "27": {
+    "name": "Eure"
+  },
+  "28": {
+    "name": "Eure-et-Loir"
+  },
+  "29": {
+    "name": "Finistère"
+  },
+  "30": {
+    "name": "Gard"
+  },
+  "31": {
+    "name": "Haute-Garonne"
+  },
+  "32": {
+    "name": "Gers"
+  },
+  "33": {
+    "name": "Gironde"
+  },
+  "34": {
+    "name": "Hérault"
+  },
+  "35": {
+    "name": "Ille-et-Vilaine"
+  },
+  "36": {
+    "name": "Indre"
+  },
+  "37": {
+    "name": "Indre-et-Loire"
+  },
+  "38": {
+    "name": "Isère"
+  },
+  "39": {
+    "name": "Jura"
+  },
+  "40": {
+    "name": "Landes"
+  },
+  "41": {
+    "name": "Loir-et-Cher"
+  },
+  "42": {
+    "name": "Loire"
+  },
+  "43": {
+    "name": "Haute-Loire"
+  },
+  "44": {
+    "name": "Loire-Atlantique"
+  },
+  "45": {
+    "name": "Loiret"
+  },
+  "46": {
+    "name": "Lot"
+  },
+  "47": {
+    "name": "Lot-et-Garonne"
+  },
+  "48": {
+    "name": "Lozère"
+  },
+  "49": {
+    "name": "Maine-et-Loire"
+  },
+  "50": {
+    "name": "Manche"
+  },
+  "51": {
+    "name": "Marne"
+  },
+  "52": {
+    "name": "Haute-Marne"
+  },
+  "53": {
+    "name": "Mayenne"
+  },
+  "54": {
+    "name": "Meurthe-et-Moselle"
+  },
+  "55": {
+    "name": "Meuse"
+  },
+  "56": {
+    "name": "Morbihan"
+  },
+  "57": {
+    "name": "Moselle"
+  },
+  "58": {
+    "name": "Nièvre"
+  },
+  "59": {
+    "name": "Nord"
+  },
+  "60": {
+    "name": "Oise"
+  },
+  "61": {
+    "name": "Orne"
+  },
+  "62": {
+    "name": "Pas-de-Calais"
+  },
+  "63": {
+    "name": "Puy-de-Dôme"
+  },
+  "64": {
+    "name": "Pyrénées-Atlantiques"
+  },
+  "65": {
+    "name": "Hautes-Pyrénées"
+  },
+  "66": {
+    "name": "Pyrénées-Orientales"
+  },
+  "67": {
+    "name": "Bas-Rhin"
+  },
+  "68": {
+    "name": "Haut-Rhin"
+  },
+  "69": {
+    "name": "Rhône"
+  },
+  "70": {
+    "name": "Haute-Saône"
+  },
+  "71": {
+    "name": "Saone-et-Loire"
+  },
+  "72": {
+    "name": "Sarthe"
+  },
+  "73": {
+    "name": "Savoie"
+  },
+  "74": {
+    "name": "Haute-Savoie"
+  },
+  "75": {
+    "name": "Paris"
+  },
+  "76": {
+    "name": "Seine-Maritime"
+  },
+  "77": {
+    "name": "Seine-Et-Marne"
+  },
+  "78": {
+    "name": "Yvelines"
+  },
+  "79": {
+    "name": "Deux-Sèvres"
+  },
+  "80": {
+    "name": "Somme"
+  },
+  "81": {
+    "name": "Tarn"
+  },
+  "82": {
+    "name": "Tarn-et-Garonne"
+  },
+  "83": {
+    "name": "Var"
+  },
+  "84": {
+    "name": "Vaucluse"
+  },
+  "85": {
+    "name": "Vendée"
+  },
+  "86": {
+    "name": "Vienne"
+  },
+  "87": {
+    "name": "Haute-Vienne"
+  },
+  "88": {
+    "name": "Vosges"
+  },
+  "89": {
+    "name": "Yonne"
+  },
+  "90": {
+    "name": "Territoire de Belfort"
+  },
+  "91": {
+    "name": "Essonne"
+  },
+  "92": {
+    "name": "Hauts-de-Seine"
+  },
+  "93": {
+    "name": "Seine-Saint-Denis"
+  },
+  "94": {
+    "name": "Val-De-Marne"
+  },
+  "95": {
+    "name": "Val-D'Oise"
+  },
+  "2A": {
+    "name": "Corse-du-Sud"
+  },
+  "2B": {
+    "name": "Haute-Corse"
+  }
+}

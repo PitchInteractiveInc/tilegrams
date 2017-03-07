@@ -1,0 +1,899 @@
+{
+  "1": {
+    "name": "Flensburg – Schleswig"
+  },
+  "2": {
+    "name": "Nordfriesland – Dithmarschen Nord"
+  },
+  "3": {
+    "name": "Steinburg – Dithmarschen Süd"
+  },
+  "4": {
+    "name": "Rendsburg-Eckernförde"
+  },
+  "5": {
+    "name": "Kiel"
+  },
+  "6": {
+    "name": "Plön – Neumünster"
+  },
+  "7": {
+    "name": "Pinneberg"
+  },
+  "8": {
+    "name": "Segeberg – Stormarn-Mitte"
+  },
+  "9": {
+    "name": "Ostholstein – Stormarn-Nord"
+  },
+  "10": {
+    "name": "Herzogtum Lauenburg – Stormarn-Süd"
+  },
+  "11": {
+    "name": "Lübeck"
+  },
+  "12": {
+    "name": "Schwerin – Ludwigslust-Parchim I – Nordwestmecklenburg I"
+  },
+  "13": {
+    "name": "Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I"
+  },
+  "14": {
+    "name": "Rostock – Landkreis Rostock II"
+  },
+  "15": {
+    "name": "Vorpommern-Rügen – Vorpommern-Greifswald I"
+  },
+  "16": {
+    "name": "Mecklenburgische Seenplatte I – Vorpommern-Greifswald II"
+  },
+  "17": {
+    "name": "Mecklenburgische Seenplatte II – Landkreis Rostock III"
+  },
+  "18": {
+    "name": "Hamburg-Mitte"
+  },
+  "19": {
+    "name": "Hamburg-Altona"
+  },
+  "20": {
+    "name": "Hamburg-Eimsbüttel"
+  },
+  "21": {
+    "name": "Hamburg-Nord"
+  },
+  "22": {
+    "name": "Hamburg-Wandsbek"
+  },
+  "23": {
+    "name": "Hamburg-Bergedorf – Harburg"
+  },
+  "24": {
+    "name": "Aurich – Emden"
+  },
+  "25": {
+    "name": "Unterems"
+  },
+  "26": {
+    "name": "Friesland – Wilhelmshaven – Wittmund"
+  },
+  "27": {
+    "name": "Oldenburg – Ammerland"
+  },
+  "28": {
+    "name": "Delmenhorst – Wesermarsch – Oldenburg-Land"
+  },
+  "29": {
+    "name": "Cuxhaven – Stade II"
+  },
+  "30": {
+    "name": "Stade I – Rotenburg II"
+  },
+  "31": {
+    "name": "Mittelems"
+  },
+  "32": {
+    "name": "Cloppenburg – Vechta"
+  },
+  "33": {
+    "name": "Diepholz – Nienburg I"
+  },
+  "34": {
+    "name": "Osterholz – Verden"
+  },
+  "35": {
+    "name": "Rotenburg I – Heidekreis"
+  },
+  "36": {
+    "name": "Harburg"
+  },
+  "37": {
+    "name": "Lüchow-Dannenberg – Lüneburg"
+  },
+  "38": {
+    "name": "Osnabrück-Land"
+  },
+  "39": {
+    "name": "Stadt Osnabrück"
+  },
+  "40": {
+    "name": "Nienburg II – Schaumburg"
+  },
+  "41": {
+    "name": "Stadt Hannover I"
+  },
+  "42": {
+    "name": "Stadt Hannover II"
+  },
+  "43": {
+    "name": "Hannover-Land I"
+  },
+  "44": {
+    "name": "Celle – Uelzen"
+  },
+  "45": {
+    "name": "Gifhorn – Peine"
+  },
+  "46": {
+    "name": "Hameln-Pyrmont – Holzminden"
+  },
+  "47": {
+    "name": "Hannover-Land II"
+  },
+  "48": {
+    "name": "Hildesheim"
+  },
+  "49": {
+    "name": "Salzgitter – Wolfenbüttel"
+  },
+  "50": {
+    "name": "Braunschweig"
+  },
+  "51": {
+    "name": "Helmstedt – Wolfsburg"
+  },
+  "52": {
+    "name": "Goslar – Northeim – Osterode"
+  },
+  "53": {
+    "name": "Göttingen"
+  },
+  "54": {
+    "name": "Bremen I"
+  },
+  "55": {
+    "name": "Bremen II – Bremerhaven"
+  },
+  "56": {
+    "name": "Prignitz – Ostprignitz-Ruppin – Havelland I"
+  },
+  "57": {
+    "name": "Uckermark – Barnim I"
+  },
+  "58": {
+    "name": "Oberhavel – Havelland II"
+  },
+  "59": {
+    "name": "Märkisch-Oderland – Barnim II"
+  },
+  "60": {
+    "name": "Brandenburg an der Havel – Potsdam-Mittelmark I – Havelland III – Teltow-Fläming I"
+  },
+  "61": {
+    "name": "Potsdam – Potsdam-Mittelmark II – Teltow-Fläming II"
+  },
+  "62": {
+    "name": "Dahme-Spreewald – Teltow-Fläming III – Oberspreewald-Lausitz I"
+  },
+  "63": {
+    "name": "Frankfurt (Oder) – Oder-Spree"
+  },
+  "64": {
+    "name": "Cottbus – Spree-Neiße"
+  },
+  "65": {
+    "name": "Elbe-Elster – Oberspreewald-Lausitz II"
+  },
+  "66": {
+    "name": "Altmark"
+  },
+  "67": {
+    "name": "Börde – Jerichower Land"
+  },
+  "68": {
+    "name": "Harz"
+  },
+  "69": {
+    "name": "Magdeburg"
+  },
+  "70": {
+    "name": "Dessau – Wittenberg"
+  },
+  "71": {
+    "name": "Anhalt"
+  },
+  "72": {
+    "name": "Halle"
+  },
+  "73": {
+    "name": "Burgenland – Saalekreis"
+  },
+  "74": {
+    "name": "Mansfeld"
+  },
+  "75": {
+    "name": "Berlin-Mitte"
+  },
+  "76": {
+    "name": "Berlin-Pankow"
+  },
+  "77": {
+    "name": "Berlin-Reinickendorf"
+  },
+  "78": {
+    "name": "Berlin-Spandau – Charlottenburg Nord"
+  },
+  "79": {
+    "name": "Berlin-Steglitz-Zehlendorf"
+  },
+  "80": {
+    "name": "Berlin-Charlottenburg-Wilmersdorf"
+  },
+  "81": {
+    "name": "Berlin-Tempelhof-Schöneberg"
+  },
+  "82": {
+    "name": "Berlin-Neukölln"
+  },
+  "83": {
+    "name": "Berlin-Friedrichshain-Kreuzberg – Prenzlauer Berg Ost"
+  },
+  "84": {
+    "name": "Berlin-Treptow-Köpenick"
+  },
+  "85": {
+    "name": "Berlin-Marzahn-Hellersdorf"
+  },
+  "86": {
+    "name": "Berlin-Lichtenberg"
+  },
+  "87": {
+    "name": "Aachen I"
+  },
+  "88": {
+    "name": "Aachen II"
+  },
+  "89": {
+    "name": "Heinsberg"
+  },
+  "90": {
+    "name": "Düren"
+  },
+  "91": {
+    "name": "Rhein-Erft-Kreis I"
+  },
+  "92": {
+    "name": "Euskirchen – Rhein-Erft-Kreis II"
+  },
+  "93": {
+    "name": "Köln I"
+  },
+  "94": {
+    "name": "Köln II"
+  },
+  "95": {
+    "name": "Köln III"
+  },
+  "96": {
+    "name": "Bonn"
+  },
+  "97": {
+    "name": "Rhein-Sieg-Kreis I"
+  },
+  "98": {
+    "name": "Rhein-Sieg-Kreis II"
+  },
+  "99": {
+    "name": "Oberbergischer Kreis"
+  },
+  "100": {
+    "name": "Rheinisch-Bergischer Kreis"
+  },
+  "101": {
+    "name": "Leverkusen – Köln IV"
+  },
+  "102": {
+    "name": "Wuppertal I"
+  },
+  "103": {
+    "name": "Solingen – Remscheid – Wuppertal II"
+  },
+  "104": {
+    "name": "Mettmann I"
+  },
+  "105": {
+    "name": "Mettmann II"
+  },
+  "106": {
+    "name": "Düsseldorf I"
+  },
+  "107": {
+    "name": "Düsseldorf II"
+  },
+  "108": {
+    "name": "Neuss I"
+  },
+  "109": {
+    "name": "Mönchengladbach"
+  },
+  "110": {
+    "name": "Krefeld I – Neuss II"
+  },
+  "111": {
+    "name": "Viersen"
+  },
+  "112": {
+    "name": "Kleve"
+  },
+  "113": {
+    "name": "Wesel I"
+  },
+  "114": {
+    "name": "Krefeld II – Wesel II"
+  },
+  "115": {
+    "name": "Duisburg I"
+  },
+  "116": {
+    "name": "Duisburg II"
+  },
+  "117": {
+    "name": "Oberhausen – Wesel III"
+  },
+  "118": {
+    "name": "Mülheim – Essen I"
+  },
+  "119": {
+    "name": "Essen II"
+  },
+  "120": {
+    "name": "Essen III"
+  },
+  "121": {
+    "name": "Recklinghausen I"
+  },
+  "122": {
+    "name": "Recklinghausen II"
+  },
+  "123": {
+    "name": "Gelsenkirchen"
+  },
+  "124": {
+    "name": "Steinfurt I – Borken I"
+  },
+  "125": {
+    "name": "Bottrop – Recklinghausen III"
+  },
+  "126": {
+    "name": "Borken II"
+  },
+  "127": {
+    "name": "Coesfeld – Steinfurt II"
+  },
+  "128": {
+    "name": "Steinfurt III"
+  },
+  "129": {
+    "name": "Münster"
+  },
+  "130": {
+    "name": "Warendorf"
+  },
+  "131": {
+    "name": "Gütersloh I"
+  },
+  "132": {
+    "name": "Bielefeld – Gütersloh II"
+  },
+  "133": {
+    "name": "Herford – Minden-Lübbecke II"
+  },
+  "134": {
+    "name": "Minden-Lübbecke I"
+  },
+  "135": {
+    "name": "Lippe I"
+  },
+  "136": {
+    "name": "Höxter – Lippe II"
+  },
+  "137": {
+    "name": "Paderborn – Gütersloh III"
+  },
+  "138": {
+    "name": "Hagen – Ennepe-Ruhr-Kreis I"
+  },
+  "139": {
+    "name": "Ennepe-Ruhr-Kreis II"
+  },
+  "140": {
+    "name": "Bochum I"
+  },
+  "141": {
+    "name": "Herne – Bochum II"
+  },
+  "142": {
+    "name": "Dortmund I"
+  },
+  "143": {
+    "name": "Dortmund II"
+  },
+  "144": {
+    "name": "Unna I"
+  },
+  "145": {
+    "name": "Hamm – Unna II"
+  },
+  "146": {
+    "name": "Soest"
+  },
+  "147": {
+    "name": "Hochsauerlandkreis"
+  },
+  "148": {
+    "name": "Siegen-Wittgenstein"
+  },
+  "149": {
+    "name": "Olpe – Märkischer Kreis I"
+  },
+  "150": {
+    "name": "Märkischer Kreis II"
+  },
+  "151": {
+    "name": "Nordsachsen"
+  },
+  "152": {
+    "name": "Leipzig I"
+  },
+  "153": {
+    "name": "Leipzig II"
+  },
+  "154": {
+    "name": "Leipzig-Land"
+  },
+  "155": {
+    "name": "Meißen"
+  },
+  "156": {
+    "name": "Bautzen I"
+  },
+  "157": {
+    "name": "Görlitz"
+  },
+  "158": {
+    "name": "Sächsische Schweiz-Osterzgebirge"
+  },
+  "159": {
+    "name": "Dresden I"
+  },
+  "160": {
+    "name": "Dresden II – Bautzen II"
+  },
+  "161": {
+    "name": "Mittelsachsen"
+  },
+  "162": {
+    "name": "Chemnitz"
+  },
+  "163": {
+    "name": "Chemnitzer Umland – Erzgebirgskreis II"
+  },
+  "164": {
+    "name": "Erzgebirgskreis I"
+  },
+  "165": {
+    "name": "Zwickau"
+  },
+  "166": {
+    "name": "Vogtlandkreis"
+  },
+  "167": {
+    "name": "Waldeck"
+  },
+  "168": {
+    "name": "Kassel"
+  },
+  "169": {
+    "name": "Werra-Meißner – Hersfeld-Rotenburg"
+  },
+  "170": {
+    "name": "Schwalm-Eder"
+  },
+  "171": {
+    "name": "Marburg"
+  },
+  "172": {
+    "name": "Lahn-Dill"
+  },
+  "173": {
+    "name": "Gießen"
+  },
+  "174": {
+    "name": "Fulda"
+  },
+  "175": {
+    "name": "Main-Kinzig – Wetterau II – Schotten"
+  },
+  "176": {
+    "name": "Hochtaunus"
+  },
+  "177": {
+    "name": "Wetterau I"
+  },
+  "178": {
+    "name": "Rheingau-Taunus – Limburg"
+  },
+  "179": {
+    "name": "Wiesbaden"
+  },
+  "180": {
+    "name": "Hanau"
+  },
+  "181": {
+    "name": "Main-Taunus"
+  },
+  "182": {
+    "name": "Frankfurt am Main I"
+  },
+  "183": {
+    "name": "Frankfurt am Main II"
+  },
+  "184": {
+    "name": "Groß-Gerau"
+  },
+  "185": {
+    "name": "Offenbach"
+  },
+  "186": {
+    "name": "Darmstadt"
+  },
+  "187": {
+    "name": "Odenwald"
+  },
+  "188": {
+    "name": "Bergstraße"
+  },
+  "189": {
+    "name": "Eichsfeld – Nordhausen – Kyffhäuserkreis"
+  },
+  "190": {
+    "name": "Eisenach – Wartburgkreis – Unstrut-Hainich-Kreis"
+  },
+  "191": {
+    "name": "Jena – Sömmerda – Weimarer Land I"
+  },
+  "192": {
+    "name": "Gotha – Ilm-Kreis"
+  },
+  "193": {
+    "name": "Erfurt – Weimar – Weimarer Land II"
+  },
+  "194": {
+    "name": "Gera – Greiz – Altenburger Land"
+  },
+  "195": {
+    "name": "Saalfeld-Rudolstadt – Saale-Holzland-Kreis – Saale-Orla-Kreis"
+  },
+  "196": {
+    "name": "Suhl – Schmalkalden-Meiningen – Hildburghausen – Sonneberg"
+  },
+  "197": {
+    "name": "Neuwied"
+  },
+  "198": {
+    "name": "Ahrweiler"
+  },
+  "199": {
+    "name": "Koblenz"
+  },
+  "200": {
+    "name": "Mosel/Rhein-Hunsrück"
+  },
+  "201": {
+    "name": "Kreuznach"
+  },
+  "202": {
+    "name": "Bitburg"
+  },
+  "203": {
+    "name": "Trier"
+  },
+  "204": {
+    "name": "Montabaur"
+  },
+  "205": {
+    "name": "Mainz"
+  },
+  "206": {
+    "name": "Worms"
+  },
+  "207": {
+    "name": "Ludwigshafen/Frankenthal"
+  },
+  "208": {
+    "name": "Neustadt – Speyer"
+  },
+  "209": {
+    "name": "Kaiserslautern"
+  },
+  "210": {
+    "name": "Pirmasens"
+  },
+  "211": {
+    "name": "Südpfalz"
+  },
+  "212": {
+    "name": "Altötting"
+  },
+  "213": {
+    "name": "Erding – Ebersberg"
+  },
+  "214": {
+    "name": "Freising"
+  },
+  "215": {
+    "name": "Fürstenfeldbruck"
+  },
+  "216": {
+    "name": "Ingolstadt"
+  },
+  "217": {
+    "name": "München-Nord"
+  },
+  "218": {
+    "name": "München-Ost"
+  },
+  "219": {
+    "name": "München-Süd"
+  },
+  "220": {
+    "name": "München-West/Mitte"
+  },
+  "221": {
+    "name": "München-Land"
+  },
+  "222": {
+    "name": "Rosenheim"
+  },
+  "223": {
+    "name": "Bad Tölz-Wolfratshausen – Miesbach"
+  },
+  "224": {
+    "name": "Starnberg – Landsberg am Lech"
+  },
+  "225": {
+    "name": "Traunstein"
+  },
+  "226": {
+    "name": "Weilheim"
+  },
+  "227": {
+    "name": "Deggendorf"
+  },
+  "228": {
+    "name": "Landshut"
+  },
+  "229": {
+    "name": "Passau"
+  },
+  "230": {
+    "name": "Rottal-Inn"
+  },
+  "231": {
+    "name": "Straubing"
+  },
+  "232": {
+    "name": "Amberg"
+  },
+  "233": {
+    "name": "Regensburg"
+  },
+  "234": {
+    "name": "Schwandorf"
+  },
+  "235": {
+    "name": "Weiden"
+  },
+  "236": {
+    "name": "Bamberg"
+  },
+  "237": {
+    "name": "Bayreuth"
+  },
+  "238": {
+    "name": "Coburg"
+  },
+  "239": {
+    "name": "Hof"
+  },
+  "240": {
+    "name": "Kulmbach"
+  },
+  "241": {
+    "name": "Ansbach"
+  },
+  "242": {
+    "name": "Erlangen"
+  },
+  "243": {
+    "name": "Fürth"
+  },
+  "244": {
+    "name": "Nürnberg-Nord"
+  },
+  "245": {
+    "name": "Nürnberg-Süd"
+  },
+  "246": {
+    "name": "Roth"
+  },
+  "247": {
+    "name": "Aschaffenburg"
+  },
+  "248": {
+    "name": "Bad Kissingen"
+  },
+  "249": {
+    "name": "Main-Spessart"
+  },
+  "250": {
+    "name": "Schweinfurt"
+  },
+  "251": {
+    "name": "Würzburg"
+  },
+  "252": {
+    "name": "Augsburg-Stadt"
+  },
+  "253": {
+    "name": "Augsburg-Land"
+  },
+  "254": {
+    "name": "Donau-Ries"
+  },
+  "255": {
+    "name": "Neu-Ulm"
+  },
+  "256": {
+    "name": "Oberallgäu"
+  },
+  "257": {
+    "name": "Ostallgäu"
+  },
+  "258": {
+    "name": "Stuttgart I"
+  },
+  "259": {
+    "name": "Stuttgart II"
+  },
+  "260": {
+    "name": "Böblingen"
+  },
+  "261": {
+    "name": "Esslingen"
+  },
+  "262": {
+    "name": "Nürtingen"
+  },
+  "263": {
+    "name": "Göppingen"
+  },
+  "264": {
+    "name": "Waiblingen"
+  },
+  "265": {
+    "name": "Ludwigsburg"
+  },
+  "266": {
+    "name": "Neckar-Zaber"
+  },
+  "267": {
+    "name": "Heilbronn"
+  },
+  "268": {
+    "name": "Schwäbisch Hall – Hohenlohe"
+  },
+  "269": {
+    "name": "Backnang – Schwäbisch Gmünd"
+  },
+  "270": {
+    "name": "Aalen – Heidenheim"
+  },
+  "271": {
+    "name": "Karlsruhe-Stadt"
+  },
+  "272": {
+    "name": "Karlsruhe-Land"
+  },
+  "273": {
+    "name": "Rastatt"
+  },
+  "274": {
+    "name": "Heidelberg"
+  },
+  "275": {
+    "name": "Mannheim"
+  },
+  "276": {
+    "name": "Odenwald – Tauber"
+  },
+  "277": {
+    "name": "Rhein-Neckar"
+  },
+  "278": {
+    "name": "Bruchsal – Schwetzingen"
+  },
+  "279": {
+    "name": "Pforzheim"
+  },
+  "280": {
+    "name": "Calw"
+  },
+  "281": {
+    "name": "Freiburg"
+  },
+  "282": {
+    "name": "Lörrach – Müllheim"
+  },
+  "283": {
+    "name": "Emmendingen – Lahr"
+  },
+  "284": {
+    "name": "Offenburg"
+  },
+  "285": {
+    "name": "Rottweil – Tuttlingen"
+  },
+  "286": {
+    "name": "Schwarzwald-Baar"
+  },
+  "287": {
+    "name": "Konstanz"
+  },
+  "288": {
+    "name": "Waldshut"
+  },
+  "289": {
+    "name": "Reutlingen"
+  },
+  "290": {
+    "name": "Tübingen"
+  },
+  "291": {
+    "name": "Ulm"
+  },
+  "292": {
+    "name": "Biberach"
+  },
+  "293": {
+    "name": "Bodensee"
+  },
+  "294": {
+    "name": "Ravensburg"
+  },
+  "295": {
+    "name": "Zollernalb – Sigmaringen"
+  },
+  "296": {
+    "name": "Saarbrücken"
+  },
+  "297": {
+    "name": "Saarlouis"
+  },
+  "298": {
+    "name": "St. Wendel"
+  },
+  "299": {
+    "name": "Homburg"
+  }
+}

@@ -1,4 +1,5 @@
 import React from 'react'
+import geographyResource from '../resources/GeographyResource'
 
 const CUSTOM_LABEL = 'Custom CSV'
 
@@ -11,7 +12,18 @@ export default class DatasetSelector extends React.Component {
       csvInputValue: '',
     }
 
-    this._onCustomCsv = this._onCustomCsv.bind(this)
+    this._onCsvChange = this._onCsvChange.bind(this)
+    this._submitCustomCsv = this._submitCustomCsv.bind(this)
+  }
+
+  /**
+  * When new labels are passed, for example when a user selects a new geo,
+  * reset selected index to match the loaded dataset
+  */
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps.labels) !== JSON.stringify(this.props.labels)) {
+      this.setState({selectedIndex: 0})
+    }
   }
 
   _onSelect(event) {
@@ -24,15 +36,20 @@ export default class DatasetSelector extends React.Component {
     }
   }
 
-  _onCustomCsv(event) {
+  _onCsvChange(event) {
     const csvInputValue = event.target.value
     this.setState({csvInputValue})
-    this.props.onCustomDataset(csvInputValue)
   }
 
-  /** Return true if user has selected 'Custom' option but hasn't pasted yet */
+  _submitCustomCsv() {
+    if (this.state.csvInputValue) {
+      this.props.onCustomDataset(this.state.csvInputValue)
+    }
+  }
+
+  /** Return true if user has selected 'Custom' option */
   _displayCsvInput() {
-    return this._isCustomSelection() && this.state.csvInputValue === ''
+    return this._isCustomSelection()
   }
 
   /** Return true if index is the 'Custom' option */
@@ -57,25 +74,37 @@ export default class DatasetSelector extends React.Component {
     )
   }
 
+  /** Builds custom csv from geos to help users input good data */
+  _generateSampleCsv() {
+    const geos = geographyResource.getMapResource(this.props.geography).getUniqueFeatureIds()
+    const geoHash = geographyResource.getGeoCodeHash(this.props.geography)
+    const sampleCsv = geos.reduce((a, b) => `${a}${b},1,${geoHash[b].name}\n`, '')
+    return (
+      <div className='code'>
+        {sampleCsv}
+      </div>
+    )
+  }
+
   _renderCsvInput() {
+    let submitClass = 'submit-custom'
+    if (this.state.csvInputValue) { submitClass += ' active' }
     return (
       <div className='csv-input'>
         <div className='instruction'>
-          {`Paste custom CSV below. Csv should be formatted with no
-          headers and state id (fips) as the first column. Ex:`}
-          <div className='code'>
-          01,4858979
-            <br />
-          02,738432
-            <br />
-          04,6828065
-          </div>
+          {`Csv should be formatted with no
+          headers and geo id as the first column and value as second.
+          The third column is ignored. Sample CSV:`}
+          {this._generateSampleCsv()}
+          Paste custom CSV below:
         </div>
         <textarea
+          ref={(ref) => { this.csvInput = ref }}
           rows={5}
-          onChange={this._onCustomCsv}
+          onChange={this._onCsvChange}
           value={this.state.csvInputValue || ''}
         />
+        <div className={submitClass} onClick={this._submitCustomCsv}>Submit</div>
       </div>
     )
   }
@@ -98,6 +127,7 @@ DatasetSelector.propTypes = {
   onDatasetSelected: React.PropTypes.func,
   onCustomDataset: React.PropTypes.func,
   onResizeNeeded: React.PropTypes.func,
+  geography: React.PropTypes.string,
 }
 DatasetSelector.defaultProps = {
   labels: [],

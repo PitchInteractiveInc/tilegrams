@@ -3,7 +3,7 @@ import {DBSCAN} from 'density-clustering'
 import polygonOverlap from 'polygon-overlap'
 
 import Graphic from './Graphic'
-import {fipsColor, fipsToPostal} from '../utils'
+import {fipsColor} from '../utils'
 import gridGeometry from '../geometry/GridGeometry'
 import {
   canvasDimensions,
@@ -252,12 +252,16 @@ export default class GridGraphic extends Graphic {
   }
 
   onkeydown(event) {
+    if (event.target.type === 'textarea' || event.target.type === 'text') {
+      return // ignore delete events from textareas
+    }
     const key = event.keyCode || event.charCode
     if (key === 8 || key === 46) {
       event.preventDefault()
       this._selectedTiles.forEach((tile) => {
         this._deleteTile(tile)
       })
+      this._positionClusterLabels()
       this._selectedTiles.length = 0
       this._setToEditingMode()
       this.updateUi()
@@ -302,8 +306,7 @@ export default class GridGraphic extends Graphic {
   }
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
-  populateTiles(mapGraphic, properties) {
-    const hasProperties = Array.isArray(properties)
+  populateTiles(mapGraphic) {
     this._tiles = []
     this._deselectTile()
     gridGeometry.forEachTilePosition((x, y) => {
@@ -313,14 +316,6 @@ export default class GridGraphic extends Graphic {
         const tile = {
           id: feature.id,
           position: {x, y},
-        }
-        if (hasProperties) {
-          const tileProperty = properties.find(property => {
-            return property[0] === feature.id
-          })
-          if (tileProperty) {
-            tile.tilegramValue = tileProperty[1]
-          }
         }
         this._tiles.push(tile)
       }
@@ -398,6 +393,7 @@ export default class GridGraphic extends Graphic {
     // draw highlighted region border
     if (this._highlightId && !this._makingMarqueeSelection && !this._draggingMultiSelect) {
       this._drawGeoBorder(this._highlightId)
+      this._showGeoName(this._highlightId)
     }
 
     // draw selected tiles
@@ -468,8 +464,10 @@ export default class GridGraphic extends Graphic {
       this._ctx.textBaseline = 'middle'
       this._ctx.fillStyle = 'black'
       this._ctx.font = `${12.0 * devicePixelRatio}px Fira Sans`
+      const geoCode = this.geoCodeToName[label.id]
+      const text = geoCode ? geoCode.name_short || label.id : label.id
       this._ctx.fillText(
-        fipsToPostal(label.id),
+        text,
         label.position.x,
         label.position.y
       )
@@ -542,6 +540,16 @@ export default class GridGraphic extends Graphic {
       this._ctx.stroke()
       this._ctx.globalAlpha = 1.0
     })
+  }
+
+  _showGeoName(id) {
+    this._ctx.textAlign = 'left'
+    this._ctx.textBaseline = 'top'
+    this._ctx.fillStyle = 'black'
+    this._ctx.font = `${14.0 * devicePixelRatio}px Fira Sans`
+    const geoCode = this.geoCodeToName[id]
+    const text = geoCode ? geoCode.name : id
+    this._ctx.fillText(text, 40, 30)
   }
 
   /** Compute contiguous outline (convex hull) of given tiles */

@@ -1,7 +1,7 @@
 import React from 'react'
 import commaNumber from 'comma-number'
 
-const CUSTOM_LABEL = 'Upload custom'
+const CUSTOM_LABEL = 'Upload custom tilegram'
 
 export default class ImportControls extends React.Component {
   constructor(props) {
@@ -15,6 +15,16 @@ export default class ImportControls extends React.Component {
 
     this._onFileUpload = this._onFileUpload.bind(this)
     this._resetUpload = this._resetUpload.bind(this)
+  }
+
+  /**
+  * When new labels are passed, for example when a user selects a new geo,
+  * reset selected index to match the loaded dataset
+  */
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps.labels) !== JSON.stringify(this.props.labels)) {
+      this.setState({selectedIndex: 0})
+    }
   }
 
   _onFileUpload(event) {
@@ -112,7 +122,7 @@ export default class ImportControls extends React.Component {
         <div>
           <fieldset>
             <span>Using {this.state.uploadedFilename}</span>
-            <a onClick={this._resetUpload}>✕</a>
+            <a onClick={this._resetUpload}>&times;</a>
           </fieldset>
           {resolution}
         </div>

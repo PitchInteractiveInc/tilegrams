@@ -1,10 +1,14 @@
-import fipsHash from '../data/fips-to-state.json'
-
-/** Return a pseudo-random color for a given fips code */
+/** Return a pseudo-random color for a given geo code */
 function fipsColor(fips) {
-  const number = parseInt(fips, 10)
-  const scalar = number / 56.0
-  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 85%, 70%)`
+  const scaleTo = 56
+  let number = parseInt(fips, 10) % scaleTo
+  if (isNaN(number)) {
+    number = (
+      ((fips.charCodeAt(fips.length - 1) || 0) + ((fips.charCodeAt(fips.length - 2) || 0) * 10))
+    ) % scaleTo
+  }
+  const scalar = number / scaleTo
+  return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 87%, 70%)`
 }
 
 /** Create DOM element. Options may include 'id' */
@@ -57,10 +61,6 @@ function hashFromData(data) {
   return dataHash
 }
 
-function fipsToPostal(fips) {
-  return fipsHash[fips].postal
-}
-
 function checkDevEnvironment() {
   const devPort = 8080 // should match whatever port webpack-dev-server is running on
   return parseInt(document.location.port, 10) === devPort
@@ -78,6 +78,5 @@ module.exports = {
   updateBounds,
   checkWithinBounds,
   hashFromData,
-  fipsToPostal,
   isDevEnvironment,
 }

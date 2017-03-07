@@ -16,11 +16,14 @@ import googleNewsLabLogo from './images/gnl-logo.png'
 import tilegramsLogo from './images/tilegrams-logo.svg'
 import twitterLogo from './images/social-twitter.svg'
 import facebookLogo from './images/social-facebook.svg'
+import GeographySelector from './components/GeographySelector'
+import geographyResource from './resources/GeographyResource'
 
 class Ui {
   constructor() {
     this._init()
     this._tiles = null
+    this._selectedGeography = null
     this._editing = false
     this._generateOpen = true
     this._editOpen = false
@@ -36,14 +39,11 @@ class Ui {
     this._updateNErrors = this._updateNErrors.bind(this)
     this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this)
     this._closeMobile = this._closeMobile.bind(this)
+    this.selectTilegramGenerateOption = this.selectTilegramGenerateOption.bind(this)
   }
 
   _closeMobile() {
     document.body.className = ''
-  }
-
-  setGeos(geos) {
-    this._geos = geos
   }
 
   setTiles(tiles) {
@@ -63,9 +63,23 @@ class Ui {
   }
 
   setSelectedDataset(dataset) {
-    this._selectedDataset = dataset
-    this._selectedDatasetSum = this.getDatasetSum(dataset)
+    this._selectedDataset = dataset.data
+    this._selectedDatasetSum = this.getDatasetSum(this._selectedDataset)
     this._metricDomain = this._calculateIdealDomain()
+    this._defaultResolution = dataset.defaultResolution
+  }
+
+  getSelectedDataset() {
+    return this._selectedDataset
+  }
+
+  setGeography(geography) {
+    this._selectedGeography = geography
+  }
+
+  selectTilegramGenerateOption(tilegramGenerateOption) {
+    this._generateOption = tilegramGenerateOption
+    this.render()
   }
 
   /** calculate the slider's domain from the dataset */
@@ -89,19 +103,19 @@ class Ui {
 
   setDatasetSelectedCallback(callback) {
     this._datasetSelectedCallback = (index) => {
-      callback(index)
+      callback(this._selectedGeography, index)
     }
   }
 
   setTilegramSelectedCallback(callback) {
     this._tilegramSelectedCallback = (index) => {
-      callback(index)
+      callback(this._selectedGeography, index)
     }
   }
 
   setCustomDatasetCallback(callback) {
     this._customDatasetCallback = (csv) => {
-      callback(csv)
+      callback(this._selectedGeography, csv)
     }
   }
 
@@ -118,16 +132,26 @@ class Ui {
   }
 
   setExportCallback(callback) {
-    this._exportCallback = callback
+    this._exportCallback = () => {
+      callback(this._selectedGeography)
+    }
   }
 
   setExportSvgCallback(callback) {
-    this._exportSvgCallback = callback
+    this._exportSvgCallback = () => {
+      callback(this._selectedGeography)
+    }
   }
 
   setImportCallback(callback) {
     this._importCallback = (topoJson) => {
       callback(topoJson)
+    }
+  }
+
+  setGeographySelectCallback(callback) {
+    this._selectGeographyCallback = (geography) => {
+      callback(geography)
     }
   }
 
@@ -210,15 +234,19 @@ class Ui {
       <TileGenerationUiControls
         datasetLabels={this._datasetLabels}
         tilegramLabels={this._tilegramLabels}
+        changeOption={this.selectTilegramGenerateOption}
         selectDataset={this._datasetSelectedCallback}
         selectTilegram={this._tilegramSelectedCallback}
         selectCustomDataset={this._customDatasetCallback}
         importCustom={this._importCallback}
         metricDomain={this._metricDomain}
+        defaultResolution={this._defaultResolution}
         metricPerTile={metrics.metricPerTile}
         changeResolution={this._resolutionChangedCallback}
         datasetSum={this._selectedDatasetSum}
         editing={this._editing}
+        generateOption={this._generateOption}
+        geography={this._selectedGeography}
       />
     )
     const generateOption = (
@@ -232,14 +260,14 @@ class Ui {
     )
     let errorWarning = null
     if (this._nErrors > 0) {
-      const statesTxt = this._nErrors === 1 ? 'state' : 'states'
+      const objectId = geographyResource.getMapResource(this._selectedGeography).getObjectId()
       errorWarning = (
         <span
           className='n-errors'
           onMouseOver={this._toggleRefineTooltip}
           onMouseOut={this._toggleRefineTooltip}
         >
-          <i className='fa fa-exclamation-triangle' /> {this._nErrors} {statesTxt}
+          <i className='fa fa-exclamation-triangle' /> {this._nErrors} {objectId}
         </span>
       )
     }
@@ -326,6 +354,10 @@ class Ui {
               style={{height: uiControlsHeight, overflow: 'hidden'}}
               onMouseDown={this._checkForEdits}
             >
+              <GeographySelector
+                selectedGeography={this._selectedGeography}
+                selectGeography={this._selectGeographyCallback}
+              />
               {tileGenerationControls}
             </div>
             <hr />
@@ -338,7 +370,7 @@ class Ui {
             <HexMetrics
               metricPerTile={metrics.metricPerTile}
               dataset={this._selectedDataset}
-              geos={this._geos}
+              geography={this._selectedGeography}
               tiles={this._tiles}
               onAddTileMouseDown={this._addTileCallback}
               onMetricMouseOver={this._highlightCallback}
