@@ -57,7 +57,7 @@ The Maker also depends on a pre-release `npm` version of `topogram`
 US states map:
 [Natural Earth Data](http://www.naturalearthdata.com/downloads/)
 
-UK constituency map:
+<!---UK constituency map:
 [Ordnancesurvey.co.uk](https://www.ordnancesurvey.co.uk/opendatadownload/products.html)
 Contains OS data © Crown copyright and database right (2017),
 [Ordnance Survey of Northern Ireland](http://osni.spatial-ni.opendata.arcgis.com/datasets/563dc2ec3d9943428e3fe68966d40deb_3)
@@ -67,7 +67,7 @@ UK local authority map:
 [http://geoportal.statistics.gov.uk/](http://geoportal.statistics.gov.uk/datasets/686603e943f948acaa13fb5d2b0f1275_2)
 Contains OS data © Crown copyright and database right (2017),
 [Ordnance Survey of Northern Ireland](http://osni-spatial-ni.opendata.arcgis.com/datasets/a55726475f1b460c927d1816ffde6c72_2)
-Contains public sector information licensed under the terms of the Open Government Licence v3.0.
+Contains public sector information licensed under the terms of the Open Government Licence v3.0.--->
 
 Germany constituency map:
 [Bundeswahlleiter.de](https://www.bundeswahlleiter.de/en/bundestagswahlen/2017/wahlkreiseinteilung/downloads.html)
