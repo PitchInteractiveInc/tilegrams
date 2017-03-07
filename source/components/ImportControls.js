@@ -17,6 +17,16 @@ export default class ImportControls extends React.Component {
     this._resetUpload = this._resetUpload.bind(this)
   }
 
+  /**
+  * When new labels are passed, for example when a user selects a new geo,
+  * reset selected index to match the loaded dataset
+  */
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps.labels) !== JSON.stringify(this.props.labels)) {
+      this.setState({selectedIndex: 0})
+    }
+  }
+
   _onFileUpload(event) {
     const file = event.target.files[0]
     const reader = new FileReader()

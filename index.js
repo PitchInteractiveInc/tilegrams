@@ -82,6 +82,7 @@ function selectGeography(geography) {
   canvas.setGeoCodeToName(geoCodeToName)
   if (tilegrams.length) {
     loadTopoJson(tilegrams[0].topoJson)
+    // ui.selectTilegram(0)
     ui.selectTilegramGenerateOption('import')
   } else {
     selectDataset(geography, 0)

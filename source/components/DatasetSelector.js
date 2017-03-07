@@ -16,6 +16,16 @@ export default class DatasetSelector extends React.Component {
     this._submitCustomCsv = this._submitCustomCsv.bind(this)
   }
 
+  /**
+  * When new labels are passed, for example when a user selects a new geo,
+  * reset selected index to match the loaded dataset
+  */
+  componentWillReceiveProps(nextProps) {
+    if (JSON.stringify(nextProps.labels) !== JSON.stringify(this.props.labels)) {
+      this.setState({selectedIndex: 0})
+    }
+  }
+
   _onSelect(event) {
     const selectedIndex = event.target.value
     this.setState({selectedIndex, csvInputValue: ''})
