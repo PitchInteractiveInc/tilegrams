@@ -1,7 +1,7 @@
 import React from 'react'
 import commaNumber from 'comma-number'
 
-const CUSTOM_LABEL = 'Upload custom'
+const CUSTOM_LABEL = 'Upload custom tilegram'
 
 export default class ImportControls extends React.Component {
   constructor(props) {

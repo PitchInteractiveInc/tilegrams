@@ -18,9 +18,12 @@ export default function GeographySelector(props) {
   })
   return (
     <div className='geographySelector'>
-      <select value={props.selectedGeography} onChange={selectGeography}>
-        {options}
-      </select>
+      Select base map
+      <fieldset>
+        <select value={props.selectedGeography} onChange={selectGeography}>
+          {options}
+        </select>
+      </fieldset>
     </div>
   )
 }

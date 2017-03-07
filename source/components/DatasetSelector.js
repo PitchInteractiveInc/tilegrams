@@ -77,6 +77,8 @@ export default class DatasetSelector extends React.Component {
   }
 
   _renderCsvInput() {
+    let submitClass = 'submit-custom'
+    if (this.state.csvInputValue) { submitClass += ' active' }
     return (
       <div className='csv-input'>
         <div className='instruction'>
@@ -90,9 +92,9 @@ export default class DatasetSelector extends React.Component {
           ref={(ref) => { this.csvInput = ref }}
           rows={5}
           onChange={this._onCsvChange}
-          onBlur={this._submitCustomCsv}
           value={this.state.csvInputValue || ''}
         />
+        <div className={submitClass} onClick={this._submitCustomCsv}>Submit</div>
       </div>
     )
   }
