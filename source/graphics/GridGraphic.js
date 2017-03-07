@@ -306,8 +306,7 @@ export default class GridGraphic extends Graphic {
   }
 
   /** Populate tiles based on given TopoJSON-backed map graphic */
-  populateTiles(mapGraphic, properties) {
-    this._properties = properties
+  populateTiles(mapGraphic) {
     this._tiles = []
     this._deselectTile()
     gridGeometry.forEachTilePosition((x, y) => {
@@ -322,7 +321,6 @@ export default class GridGraphic extends Graphic {
       }
     })
     this._hasBeenEdited = false // reset edit state
-    this._properties = properties
     this.updateUi()
     this.renderBackgroundImage()
     this._positionClusterLabels()

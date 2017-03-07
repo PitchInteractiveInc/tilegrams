@@ -25,7 +25,7 @@ class Canvas {
   computeCartogram(dataset) {
     this._mapGraphic.computeCartogram(dataset)
     this._setCartogramArea()
-    this.updateTiles(dataset.data)
+    this.updateTiles()
     this._cartogramReady = true
   }
 
@@ -43,11 +43,8 @@ class Canvas {
     this._cartogramReady = true
   }
 
-  updateTiles(properties) {
-    if (typeof properties !== 'undefined') {
-      this._properties = properties
-    }
-    this._gridGraphic.populateTiles(this._mapGraphic, this._properties)
+  updateTiles() {
+    this._gridGraphic.populateTiles(this._mapGraphic)
   }
 
   updateTilesFromMetrics() {
