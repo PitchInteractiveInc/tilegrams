@@ -1,4 +1,4 @@
-import {geoPath, geoAlbersUsa, geoMercator} from 'd3-geo'
+import {geoPath} from 'd3-geo'
 import inside from 'point-in-polygon';
 import area from 'area-polygon'
 import topogramImport from 'topogram'
@@ -89,42 +89,7 @@ export default class MapGraphic extends Graphic {
 
   /** Apply projection _before_ cartogram computation */
   updatePreProjection(geography) {
-    // TODO: Smarter map projection
-    let projection = (d => d)
-    const defaultTranslate = [
-      canvasDimensions.width * 0.5,
-      canvasDimensions.height * 0.5,
-    ]
-    if (geography === 'United States') {
-      projection = geoAlbersUsa()
-        .scale(canvasDimensions.width)
-        .translate(defaultTranslate)
-    } else if (geography === 'World') {
-      projection = geoMercator()
-        .scale(canvasDimensions.width / 8)
-        .translate([
-          canvasDimensions.width * 0.5,
-          canvasDimensions.height * 0.7,
-        ])
-    } else if (
-      geography === 'United Kingdom - Constituencies' ||
-      geography === 'United Kingdom - Local Authorities'
-      ) {
-      projection = geoMercator()
-        .center([-2, 55.7])
-        .scale(canvasDimensions.height * 2.9)
-        .translate(defaultTranslate)
-    } else if (geography === 'Germany - Constituencies') {
-      projection = geoMercator()
-        .center([11, 51.2])
-        .scale(canvasDimensions.height * 3.9)
-        .translate(defaultTranslate)
-    } else if (geography === 'France - Regions' || 'France - Departments') {
-      projection = geoMercator()
-        .center([3.4, 46.3])
-        .scale(canvasDimensions.height * 3.4)
-        .translate(defaultTranslate)
-    }
+    const projection = geographyResource.getProjection(geography, canvasDimensions)
     topogram.projection(projection)
   }
 
