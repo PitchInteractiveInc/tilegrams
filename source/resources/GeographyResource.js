@@ -1,13 +1,13 @@
 import usTopoJson from '../../maps/us/us-110m.topo.json'
-import ukConstituencyTopoJson from '../../maps/uk/constituency.topo.json'
-import ukAuthorityTopoJson from '../../maps/uk/local-authority.topo.json'
+// import ukConstituencyTopoJson from '../../maps/uk/constituency.topo.json'
+// import ukAuthorityTopoJson from '../../maps/uk/local-authority.topo.json'
 import germanyConstituencyTopoJson from '../../maps/germany/constituency.topo.json'
 import franceRegionTopoJson from '../../maps/france/region.topo.json'
 import franceDepartmentTopoJson from '../../maps/france/department.topo.json'
 import MapResource from './MapResource'
 import fipsHash from '../../data/us/fips-to-state.json'
-import fidHash from '../../data/uk/fid-to-constituency.json'
-import authorityIdHash from '../../data/uk/id-to-authority.json'
+// import fidHash from '../../data/uk/fid-to-constituency.json'
+// import authorityIdHash from '../../data/uk/id-to-authority.json'
 import wkrHash from '../../data/germany/wkr-to-name.json'
 import regionHash from '../../data/france/region-to-name.json'
 import departmentHash from '../../data/france/department-to-name.json'
@@ -20,16 +20,16 @@ class GeographyResource {
         mapResource: new MapResource(usTopoJson, 'states'),
         geoCodeToName: fipsHash,
       },
-      {
-        label: 'United Kingdom - Constituencies',
-        mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
-        geoCodeToName: fidHash,
-      },
-      {
-        label: 'United Kingdom - Local Authorities',
-        mapResource: new MapResource(ukAuthorityTopoJson, 'authorities'),
-        geoCodeToName: authorityIdHash,
-      },
+      // {
+      //   label: 'United Kingdom - Constituencies',
+      //   mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
+      //   geoCodeToName: fidHash,
+      // },
+      // {
+      //   label: 'United Kingdom - Local Authorities',
+      //   mapResource: new MapResource(ukAuthorityTopoJson, 'authorities'),
+      //   geoCodeToName: authorityIdHash,
+      // },
       {
         label: 'Germany - Constituencies',
         mapResource: new MapResource(germanyConstituencyTopoJson, 'constituencies'),

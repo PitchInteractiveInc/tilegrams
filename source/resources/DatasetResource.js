@@ -3,8 +3,8 @@ import geographyResource from './GeographyResource.js'
 import populationCsv from '../../data/us/population-by-state.csv'
 import electoralCollegeCsv from '../../data/us/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/us/gdp-by-state.csv'
-import ukConstituency from '../../data/uk/constituencies.csv'
-import ukAuthority from '../../data/uk/authorities.csv'
+// import ukConstituency from '../../data/uk/constituencies.csv'
+// import ukAuthority from '../../data/uk/authorities.csv'
 import germanyConstituency from '../../data/germany/constituencies.csv'
 import franceRegionPopulation from '../../data/france/region-population.csv'
 import franceDepartment from '../../data/france/departments.csv'
@@ -34,18 +34,18 @@ class DatasetResource {
         data: this.parseCsv(gdpCsv, 'United States'),
         geography: 'United States',
       },
-      {
-        label: 'U.K. Constituency 1-to-1',
-        data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
-        geography: 'United Kingdom - Constituencies',
-        defaultResolution: 1,
-      },
-      {
-        label: 'U.K. Authority 1-to-1',
-        data: this.parseCsv(ukAuthority, 'United Kingdom - Local Authorities'),
-        geography: 'United Kingdom - Local Authorities',
-        defaultResolution: 1,
-      },
+      // {
+      //   label: 'U.K. Constituency 1-to-1',
+      //   data: this.parseCsv(ukConstituency, 'United Kingdom - Constituencies'),
+      //   geography: 'United Kingdom - Constituencies',
+      //   defaultResolution: 1,
+      // },
+      // {
+      //   label: 'U.K. Authority 1-to-1',
+      //   data: this.parseCsv(ukAuthority, 'United Kingdom - Local Authorities'),
+      //   geography: 'United Kingdom - Local Authorities',
+      //   defaultResolution: 1,
+      // },
       {
         label: 'Germany Constituency 1-to-1',
         data: this.parseCsv(germanyConstituency, 'Germany - Constituencies'),
