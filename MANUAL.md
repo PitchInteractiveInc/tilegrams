@@ -64,9 +64,9 @@ hexagon.
 The number indicates the _delta inaccuracy_ between the number of tiles that
 region _currently_ has on the map and how many it _should_ have, based on the
 dataset. If the delta is positive, that region has too many tiles on the map.
-If the delta is negative, it doesn't have enough tiles on the map. If there
-If there is a warning sign, then that region doesn't have enough data for even a
-single tile on the map at the chosen resolution.
+If the delta is negative, it doesn't have enough tiles on the map. If there is
+a warning sign, then that region doesn't have enough data for even a single tile
+on the map at the chosen resolution.
 
 (_Why does this happen?_ It is computationally very difficult to produce
 tilegrams which are accurate _and_ recognizable. As you begin to make
