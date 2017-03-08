@@ -8856,7 +8856,7 @@
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-geo/ Version 1.2.4. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-geo/ Version 1.4.0. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports, __webpack_require__(29)) :
 	  typeof define === 'function' && define.amd ? define(['exports', 'd3-array'], factory) :
@@ -8870,9 +8870,9 @@
 	// Code adapted from GeographicLib by Charles F. F. Karney,
 	// http://geographiclib.sourceforge.net/
 
-	function adder() {
+	var adder = function() {
 	  return new Adder;
-	}
+	};
 
 	function Adder() {
 	  this.reset();
@@ -8920,6 +8920,7 @@
 	var cos = Math.cos;
 	var ceil = Math.ceil;
 	var exp = Math.exp;
+
 	var log = Math.log;
 	var pow = Math.pow;
 	var sin = Math.sin;
@@ -9003,13 +9004,13 @@
 	  stream.polygonEnd();
 	}
 
-	function geoStream(object, stream) {
+	var geoStream = function(object, stream) {
 	  if (object && streamObjectType.hasOwnProperty(object.type)) {
 	    streamObjectType[object.type](object, stream);
 	  } else {
 	    streamGeometry(object, stream);
 	  }
-	}
+	};
 
 	var areaRingSum = adder();
 
@@ -9019,6 +9020,7 @@
 	var lambda0;
 	var cosPhi0;
 	var sinPhi0;
+
 	var areaStream = {
 	  point: noop,
 	  lineStart: noop,
@@ -9074,11 +9076,11 @@
 	  lambda0 = lambda, cosPhi0 = cosPhi, sinPhi0 = sinPhi;
 	}
 
-	function area(object) {
+	var area = function(object) {
 	  areaSum.reset();
 	  geoStream(object, areaStream);
 	  return areaSum * 2;
-	}
+	};
 
 	function spherical(cartesian) {
 	  return [atan2(cartesian[1], cartesian[0]), asin(cartesian[2])];
@@ -9123,6 +9125,7 @@
 	var deltaSum = adder();
 	var ranges;
 	var range$1;
+
 	var boundsStream = {
 	  point: boundsPoint,
 	  lineStart: boundsLineStart,
@@ -9161,14 +9164,14 @@
 	    cartesianNormalizeInPlace(inflection);
 	    inflection = spherical(inflection);
 	    var delta = lambda - lambda2,
-	        sign = delta > 0 ? 1 : -1,
-	        lambdai = inflection[0] * degrees * sign,
+	        sign$$1 = delta > 0 ? 1 : -1,
+	        lambdai = inflection[0] * degrees * sign$$1,
 	        phii,
 	        antimeridian = abs(delta) > 180;
-	    if (antimeridian ^ (sign * lambda2 < lambdai && lambdai < sign * lambda)) {
+	    if (antimeridian ^ (sign$$1 * lambda2 < lambdai && lambdai < sign$$1 * lambda)) {
 	      phii = inflection[1] * degrees;
 	      if (phii > phi1) phi1 = phii;
-	    } else if (lambdai = (lambdai + 360) % 360 - 180, antimeridian ^ (sign * lambda2 < lambdai && lambdai < sign * lambda)) {
+	    } else if (lambdai = (lambdai + 360) % 360 - 180, antimeridian ^ (sign$$1 * lambda2 < lambdai && lambdai < sign$$1 * lambda)) {
 	      phii = -inflection[1] * degrees;
 	      if (phii < phi0) phi0 = phii;
 	    } else {
@@ -9243,11 +9246,11 @@
 	  return a[0] - b[0];
 	}
 
-	function rangeContains(range, x) {
-	  return range[0] <= range[1] ? range[0] <= x && x <= range[1] : x < range[0] || range[1] < x;
+	function rangeContains(range$$1, x) {
+	  return range$$1[0] <= range$$1[1] ? range$$1[0] <= x && x <= range$$1[1] : x < range$$1[0] || range$$1[1] < x;
 	}
 
-	function bounds(feature) {
+	var bounds = function(feature) {
 	  var i, n, a, b, merged, deltaMax, delta;
 
 	  phi1 = lambda1 = -(lambda0$1 = phi0 = Infinity);
@@ -9282,7 +9285,7 @@
 	  return lambda0$1 === Infinity || phi0 === Infinity
 	      ? [[NaN, NaN], [NaN, NaN]]
 	      : [[lambda0$1, phi0], [lambda1, phi1]];
-	}
+	};
 
 	var W0;
 	var W1;
@@ -9299,8 +9302,7 @@
 	var phi00$2;
 	var x0;
 	var y0;
-	var z0;
-	// previous point
+	var z0; // previous point
 
 	var centroidStream = {
 	  sphere: noop,
@@ -9408,7 +9410,7 @@
 	  centroidPointCartesian(x0, y0, z0);
 	}
 
-	function centroid(object) {
+	var centroid = function(object) {
 	  W0 = W1 =
 	  X0 = Y0 = Z0 =
 	  X1 = Y1 = Z1 =
@@ -9431,15 +9433,15 @@
 	  }
 
 	  return [atan2(y, x) * degrees, asin(z / sqrt(m)) * degrees];
-	}
+	};
 
-	function constant(x) {
+	var constant = function(x) {
 	  return function() {
 	    return x;
 	  };
-	}
+	};
 
-	function compose(a, b) {
+	var compose = function(a, b) {
 
 	  function compose(x, y) {
 	    return x = a(x, y), b(x[0], x[1]);
@@ -9450,7 +9452,7 @@
 	  };
 
 	  return compose;
-	}
+	};
 
 	function rotationIdentity(lambda, phi) {
 	  return [lambda > pi ? lambda - tau : lambda < -pi ? lambda + tau : lambda, phi];
@@ -9510,7 +9512,7 @@
 	  return rotation;
 	}
 
-	function rotation(rotate) {
+	var rotation = function(rotate) {
 	  rotate = rotateRadians(rotate[0] * radians, rotate[1] * radians, rotate.length > 2 ? rotate[2] * radians : 0);
 
 	  function forward(coordinates) {
@@ -9524,7 +9526,7 @@
 	  };
 
 	  return forward;
-	}
+	};
 
 	// Generates a circle centered at [0°, 0°], with a given radius and precision.
 	function circleStream(stream, radius, delta, direction, t0, t1) {
@@ -9554,7 +9556,7 @@
 	  return ((-point[2] < 0 ? -radius : radius) + tau - epsilon) % tau;
 	}
 
-	function circle() {
+	var circle = function() {
 	  var center = constant([0, 0]),
 	      radius = constant(90),
 	      precision = constant(6),
@@ -9592,9 +9594,9 @@
 	  };
 
 	  return circle;
-	}
+	};
 
-	function clipBuffer() {
+	var clipBuffer = function() {
 	  var lines = [],
 	      line;
 	  return {
@@ -9615,9 +9617,9 @@
 	      return result;
 	    }
 	  };
-	}
+	};
 
-	function clipLine(a, b, x0, y0, x1, y1) {
+	var clipLine = function(a, b, x0, y0, x1, y1) {
 	  var ax = a[0],
 	      ay = a[1],
 	      bx = b[0],
@@ -9675,11 +9677,11 @@
 	  if (t0 > 0) a[0] = ax + t0 * dx, a[1] = ay + t0 * dy;
 	  if (t1 < 1) b[0] = ax + t1 * dx, b[1] = ay + t1 * dy;
 	  return true;
-	}
+	};
 
-	function pointEqual(a, b) {
+	var pointEqual = function(a, b) {
 	  return abs(a[0] - b[0]) < epsilon && abs(a[1] - b[1]) < epsilon;
-	}
+	};
 
 	function Intersection(point, points, other, entry) {
 	  this.x = point;
@@ -9693,7 +9695,7 @@
 	// A generalized polygon clipping algorithm: given a polygon that has been cut
 	// into its visible line segments, and rejoins the segments by interpolating
 	// along the clip edge.
-	function clipPolygon(segments, compareIntersection, startInside, interpolate, stream) {
+	var clipPolygon = function(segments, compareIntersection, startInside, interpolate, stream) {
 	  var subject = [],
 	      clip = [],
 	      i,
@@ -9764,7 +9766,7 @@
 	    } while (!current.v);
 	    stream.lineEnd();
 	  }
-	}
+	};
 
 	function link(array) {
 	  if (!(n = array.length)) return;
@@ -9783,6 +9785,7 @@
 
 	var clipMax = 1e9;
 	var clipMin = -clipMax;
+
 	// TODO Use d3-polygon’s polygonContains here for the ring check?
 	// TODO Eliminate duplicate buffering in clipBuffer and polygon.push?
 
@@ -9944,7 +9947,7 @@
 	  };
 	}
 
-	function extent() {
+	var extent = function() {
 	  var x0 = 0,
 	      y0 = 0,
 	      x1 = 960,
@@ -9961,12 +9964,13 @@
 	      return arguments.length ? (x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1], cache = cacheStream = null, clip) : [[x0, y0], [x1, y1]];
 	    }
 	  };
-	}
+	};
 
 	var lengthSum = adder();
 	var lambda0$2;
 	var sinPhi0$1;
 	var cosPhi0$1;
+
 	var lengthStream = {
 	  sphere: noop,
 	  point: noop,
@@ -10005,19 +10009,20 @@
 	  lambda0$2 = lambda, sinPhi0$1 = sinPhi, cosPhi0$1 = cosPhi;
 	}
 
-	function length(object) {
+	var length = function(object) {
 	  lengthSum.reset();
 	  geoStream(object, lengthStream);
 	  return +lengthSum;
-	}
+	};
 
 	var coordinates = [null, null];
 	var object = {type: "LineString", coordinates: coordinates};
-	function distance(a, b) {
+
+	var distance = function(a, b) {
 	  coordinates[0] = a;
 	  coordinates[1] = b;
 	  return length(object);
-	}
+	};
 
 	function graticuleX(y0, y1, dy) {
 	  var y = d3Array.range(y0, y1 - epsilon, dy).concat(y1);
@@ -10118,7 +10123,11 @@
 	      .extentMinor([[-180, -80 - epsilon], [180, 80 + epsilon]]);
 	}
 
-	function interpolate(a, b) {
+	function graticule10() {
+	  return graticule()();
+	}
+
+	var interpolate = function(a, b) {
 	  var x0 = a[0] * radians,
 	      y0 = a[1] * radians,
 	      x1 = b[0] * radians,
@@ -10151,11 +10160,11 @@
 	  interpolate.distance = d;
 
 	  return interpolate;
-	}
+	};
 
-	function identity(x) {
+	var identity = function(x) {
 	  return x;
-	}
+	};
 
 	var areaSum$1 = adder();
 	var areaRingSum$1 = adder();
@@ -10163,6 +10172,7 @@
 	var y00;
 	var x0$1;
 	var y0$1;
+
 	var areaStream$1 = {
 	  point: noop,
 	  lineStart: noop,
@@ -10205,6 +10215,7 @@
 	var y0$2 = x0$2;
 	var x1 = -x0$2;
 	var y1 = x1;
+
 	var boundsStream$1 = {
 	  point: boundsPoint$1,
 	  lineStart: noop,
@@ -10225,6 +10236,8 @@
 	  if (y > y1) y1 = y;
 	}
 
+	// TODO Enforce positive area for exterior, negative area for interior?
+
 	var X0$1 = 0;
 	var Y0$1 = 0;
 	var Z0$1 = 0;
@@ -10238,6 +10251,7 @@
 	var y00$1;
 	var x0$3;
 	var y0$3;
+
 	var centroidStream$1 = {
 	  point: centroidPoint$1,
 	  lineStart: centroidLineStart$1,
@@ -10417,11 +10431,9 @@
 	      + "z";
 	}
 
-	function index() {
+	var index = function(projection, context) {
 	  var pointRadius = 4.5,
-	      projection,
 	      projectionStream,
-	      context,
 	      contextStream;
 
 	  function path(object) {
@@ -10448,12 +10460,12 @@
 	  };
 
 	  path.projection = function(_) {
-	    return arguments.length ? (projectionStream = (projection = _) == null ? identity : _.stream, path) : projection;
+	    return arguments.length ? (projectionStream = _ == null ? (projection = null, identity) : (projection = _).stream, path) : projection;
 	  };
 
 	  path.context = function(_) {
 	    if (!arguments.length) return context;
-	    contextStream = (context = _) == null ? new PathString : new PathContext(_);
+	    contextStream = _ == null ? (context = null, new PathString) : new PathContext(context = _);
 	    if (typeof pointRadius !== "function") contextStream.pointRadius(pointRadius);
 	    return path;
 	  };
@@ -10464,12 +10476,12 @@
 	    return path;
 	  };
 
-	  return path.projection(null).context(null);
-	}
+	  return path.projection(projection).context(context);
+	};
 
 	var sum = adder();
 
-	function polygonContains(polygon, point) {
+	var polygonContains = function(polygon, point) {
 	  var lambda = point[0],
 	      phi = point[1],
 	      normal = [sin(lambda), -cos(lambda), 0],
@@ -10495,13 +10507,13 @@
 	          sinPhi1 = sin(phi1),
 	          cosPhi1 = cos(phi1),
 	          delta = lambda1 - lambda0,
-	          sign = delta >= 0 ? 1 : -1,
-	          absDelta = sign * delta,
+	          sign$$1 = delta >= 0 ? 1 : -1,
+	          absDelta = sign$$1 * delta,
 	          antimeridian = absDelta > pi,
 	          k = sinPhi0 * sinPhi1;
 
-	      sum.add(atan2(k * sign * sin(absDelta), cosPhi0 * cosPhi1 + k * cos(absDelta)));
-	      angle += antimeridian ? delta + sign * tau : delta;
+	      sum.add(atan2(k * sign$$1 * sin(absDelta), cosPhi0 * cosPhi1 + k * cos(absDelta)));
+	      angle += antimeridian ? delta + sign$$1 * tau : delta;
 
 	      // Are the longitudes either side of the point’s meridian (lambda),
 	      // and are the latitudes smaller than the parallel (phi)?
@@ -10530,9 +10542,9 @@
 	  // same side as the South pole.
 
 	  return (angle < -epsilon || angle < epsilon && sum < -epsilon) ^ (winding & 1);
-	}
+	};
 
-	function clip(pointVisible, clipLine, interpolate, start) {
+	var clip = function(pointVisible, clipLine, interpolate, start) {
 	  return function(rotate, sink) {
 	    var line = clipLine(sink),
 	        rotatedStart = rotate.invert(start[0], start[1]),
@@ -10649,7 +10661,7 @@
 
 	    return clip;
 	  };
-	}
+	};
 
 	function validSegment(segment) {
 	  return segment.length > 1;
@@ -10752,7 +10764,7 @@
 	  }
 	}
 
-	function clipCircle(radius, delta) {
+	var clipCircle = function(radius, delta) {
 	  var cr = cos(radius),
 	      smallRadius = cr > 0,
 	      notHemisphere = abs(cr) > epsilon; // TODO optimise for this common case
@@ -10926,28 +10938,27 @@
 	  }
 
 	  return clip(visible, clipLine, interpolate, smallRadius ? [0, -radius] : [-pi, radius - pi]);
-	}
+	};
 
-	function transform(prototype) {
+	var transform = function(methods) {
 	  return {
-	    stream: transform$1(prototype)
+	    stream: transformer(methods)
 	  };
-	}
+	};
 
-	function transform$1(prototype) {
-	  function T() {}
-	  var p = T.prototype = Object.create(Transform.prototype);
-	  for (var k in prototype) p[k] = prototype[k];
+	function transformer(methods) {
 	  return function(stream) {
-	    var t = new T;
-	    t.stream = stream;
-	    return t;
+	    var s = new TransformStream;
+	    for (var key in methods) s[key] = methods[key];
+	    s.stream = stream;
+	    return s;
 	  };
 	}
 
-	function Transform() {}
+	function TransformStream() {}
 
-	Transform.prototype = {
+	TransformStream.prototype = {
+	  constructor: TransformStream,
 	  point: function(x, y) { this.stream.point(x, y); },
 	  sphere: function() { this.stream.sphere(); },
 	  lineStart: function() { this.stream.lineStart(); },
@@ -10956,53 +10967,44 @@
 	  polygonEnd: function() { this.stream.polygonEnd(); }
 	};
 
-	function fit(project, extent, object) {
+	function fitExtent(projection, extent, object) {
 	  var w = extent[1][0] - extent[0][0],
 	      h = extent[1][1] - extent[0][1],
-	      clip = project.clipExtent && project.clipExtent();
+	      clip = projection.clipExtent && projection.clipExtent();
 
-	  project
+	  projection
 	      .scale(150)
 	      .translate([0, 0]);
 
-	  if (clip != null) project.clipExtent(null);
+	  if (clip != null) projection.clipExtent(null);
 
-	  geoStream(object, project.stream(boundsStream$1));
+	  geoStream(object, projection.stream(boundsStream$1));
 
 	  var b = boundsStream$1.result(),
 	      k = Math.min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1])),
 	      x = +extent[0][0] + (w - k * (b[1][0] + b[0][0])) / 2,
 	      y = +extent[0][1] + (h - k * (b[1][1] + b[0][1])) / 2;
 
-	  if (clip != null) project.clipExtent(clip);
+	  if (clip != null) projection.clipExtent(clip);
 
-	  return project
+	  return projection
 	      .scale(k * 150)
 	      .translate([x, y]);
 	}
 
-	function fitSize(project) {
-	  return function(size, object) {
-	    return fit(project, [[0, 0], size], object);
-	  };
-	}
-
-	function fitExtent(project) {
-	  return function(extent, object) {
-	    return fit(project, extent, object);
-	  };
+	function fitSize(projection, size, object) {
+	  return fitExtent(projection, [[0, 0], size], object);
 	}
 
 	var maxDepth = 16;
-	var cosMinDistance = cos(30 * radians);
-	// cos(minimum angular distance)
+	var cosMinDistance = cos(30 * radians); // cos(minimum angular distance)
 
-	function resample(project, delta2) {
+	var resample = function(project, delta2) {
 	  return +delta2 ? resample$1(project, delta2) : resampleNone(project);
-	}
+	};
 
 	function resampleNone(project) {
-	  return transform$1({
+	  return transformer({
 	    point: function(x, y) {
 	      x = project(x, y);
 	      this.stream.point(x[0], x[1]);
@@ -11093,7 +11095,7 @@
 	  };
 	}
 
-	var transformRadians = transform$1({
+	var transformRadians = transformer({
 	  point: function(x, y) {
 	    this.stream.point(x * radians, y * radians);
 	  }
@@ -11161,9 +11163,13 @@
 	    return arguments.length ? (projectResample = resample(projectTransform, delta2 = _ * _), reset()) : sqrt(delta2);
 	  };
 
-	  projection.fitExtent = fitExtent(projection);
+	  projection.fitExtent = function(extent, object) {
+	    return fitExtent(projection, extent, object);
+	  };
 
-	  projection.fitSize = fitSize(projection);
+	  projection.fitSize = function(size, object) {
+	    return fitSize(projection, size, object);
+	  };
 
 	  function recenter() {
 	    projectRotate = compose(rotate = rotateRadians(deltaLambda, deltaPhi, deltaGamma), project);
@@ -11198,11 +11204,27 @@
 	  return p;
 	}
 
+	function cylindricalEqualAreaRaw(phi0) {
+	  var cosPhi0 = cos(phi0);
+
+	  function forward(lambda, phi) {
+	    return [lambda * cosPhi0, sin(phi) / cosPhi0];
+	  }
+
+	  forward.invert = function(x, y) {
+	    return [x / cosPhi0, asin(y * cosPhi0)];
+	  };
+
+	  return forward;
+	}
+
 	function conicEqualAreaRaw(y0, y1) {
-	  var sy0 = sin(y0),
-	      n = (sy0 + sin(y1)) / 2,
-	      c = 1 + sy0 * (2 * n - sy0),
-	      r0 = sqrt(c) / n;
+	  var sy0 = sin(y0), n = (sy0 + sin(y1)) / 2;
+
+	  // Are the parallels symmetrical around the Equator?
+	  if (abs(n) < epsilon) return cylindricalEqualAreaRaw(y0);
+
+	  var c = 1 + sy0 * (2 * n - sy0), r0 = sqrt(c) / n;
 
 	  function project(x, y) {
 	    var r = sqrt(c - 2 * n * sin(y)) / n;
@@ -11211,26 +11233,26 @@
 
 	  project.invert = function(x, y) {
 	    var r0y = r0 - y;
-	    return [atan2(x, r0y) / n, asin((c - (x * x + r0y * r0y) * n * n) / (2 * n))];
+	    return [atan2(x, abs(r0y)) / n * sign(r0y), asin((c - (x * x + r0y * r0y) * n * n) / (2 * n))];
 	  };
 
 	  return project;
 	}
 
-	function conicEqualArea() {
+	var conicEqualArea = function() {
 	  return conicProjection(conicEqualAreaRaw)
 	      .scale(155.424)
 	      .center([0, 33.6442]);
-	}
+	};
 
-	function albers() {
+	var albers = function() {
 	  return conicEqualArea()
 	      .parallels([29.5, 45.5])
 	      .scale(1070)
 	      .translate([480, 250])
 	      .rotate([96, 0])
 	      .center([-0.6, 38.7]);
-	}
+	};
 
 	// The projections must have mutually exclusive clip regions on the sphere,
 	// as this will avoid emitting interleaving lines and polygons.
@@ -11251,7 +11273,7 @@
 	// scale to 1285 and adjust the translate accordingly. The set of standard
 	// parallels for each region comes from USGS, which is published here:
 	// http://egsc.usgs.gov/isb/pubs/MapProjections/projections.html#albers
-	function albersUsa() {
+	var albersUsa = function() {
 	  var cache,
 	      cacheStream,
 	      lower48 = albers(), lower48Point,
@@ -11284,7 +11306,7 @@
 	  albersUsa.precision = function(_) {
 	    if (!arguments.length) return lower48.precision();
 	    lower48.precision(_), alaska.precision(_), hawaii.precision(_);
-	    return albersUsa;
+	    return reset();
 	  };
 
 	  albersUsa.scale = function(_) {
@@ -11312,15 +11334,24 @@
 	        .clipExtent([[x - 0.214 * k + epsilon, y + 0.166 * k + epsilon], [x - 0.115 * k - epsilon, y + 0.234 * k - epsilon]])
 	        .stream(pointStream);
 
-	    return albersUsa;
+	    return reset();
 	  };
 
-	  albersUsa.fitExtent = fitExtent(albersUsa);
+	  albersUsa.fitExtent = function(extent, object) {
+	    return fitExtent(albersUsa, extent, object);
+	  };
 
-	  albersUsa.fitSize = fitSize(albersUsa);
+	  albersUsa.fitSize = function(size, object) {
+	    return fitSize(albersUsa, size, object);
+	  };
+
+	  function reset() {
+	    cache = cacheStream = null;
+	    return albersUsa;
+	  }
 
 	  return albersUsa.scale(1070);
-	}
+	};
 
 	function azimuthalRaw(scale) {
 	  return function(x, y) {
@@ -11355,11 +11386,11 @@
 	  return 2 * asin(z / 2);
 	});
 
-	function azimuthalEqualArea() {
+	var azimuthalEqualArea = function() {
 	  return projection(azimuthalEqualAreaRaw)
 	      .scale(124.75)
 	      .clipAngle(180 - 1e-3);
-	}
+	};
 
 	var azimuthalEquidistantRaw = azimuthalRaw(function(c) {
 	  return (c = acos(c)) && c / sin(c);
@@ -11369,11 +11400,11 @@
 	  return z;
 	});
 
-	function azimuthalEquidistant() {
+	var azimuthalEquidistant = function() {
 	  return projection(azimuthalEquidistantRaw)
 	      .scale(79.4188)
 	      .clipAngle(180 - 1e-3);
-	}
+	};
 
 	function mercatorRaw(lambda, phi) {
 	  return [lambda, log(tan((halfPi + phi) / 2))];
@@ -11383,10 +11414,10 @@
 	  return [x, 2 * atan(exp(y)) - halfPi];
 	};
 
-	function mercator() {
+	var mercator = function() {
 	  return mercatorProjection(mercatorRaw)
 	      .scale(961 / tau);
-	}
+	};
 
 	function mercatorProjection(project) {
 	  var m = projection(project),
@@ -11437,17 +11468,17 @@
 
 	  project.invert = function(x, y) {
 	    var fy = f - y, r = sign(n) * sqrt(x * x + fy * fy);
-	    return [atan2(x, fy) / n, 2 * atan(pow(f / r, 1 / n)) - halfPi];
+	    return [atan2(x, abs(fy)) / n * sign(fy), 2 * atan(pow(f / r, 1 / n)) - halfPi];
 	  };
 
 	  return project;
 	}
 
-	function conicConformal() {
+	var conicConformal = function() {
 	  return conicProjection(conicConformalRaw)
 	      .scale(109.5)
 	      .parallels([30, 30]);
-	}
+	};
 
 	function equirectangularRaw(lambda, phi) {
 	  return [lambda, phi];
@@ -11455,10 +11486,10 @@
 
 	equirectangularRaw.invert = equirectangularRaw;
 
-	function equirectangular() {
+	var equirectangular = function() {
 	  return projection(equirectangularRaw)
 	      .scale(152.63);
-	}
+	};
 
 	function conicEquidistantRaw(y0, y1) {
 	  var cy0 = cos(y0),
@@ -11474,17 +11505,17 @@
 
 	  project.invert = function(x, y) {
 	    var gy = g - y;
-	    return [atan2(x, gy) / n, g - sign(n) * sqrt(x * x + gy * gy)];
+	    return [atan2(x, abs(gy)) / n * sign(gy), g - sign(n) * sqrt(x * x + gy * gy)];
 	  };
 
 	  return project;
 	}
 
-	function conicEquidistant() {
+	var conicEquidistant = function() {
 	  return conicProjection(conicEquidistantRaw)
 	      .scale(131.154)
 	      .center([0, 13.9389]);
-	}
+	};
 
 	function gnomonicRaw(x, y) {
 	  var cy = cos(y), k = cos(x) * cy;
@@ -11493,11 +11524,59 @@
 
 	gnomonicRaw.invert = azimuthalInvert(atan);
 
-	function gnomonic() {
+	var gnomonic = function() {
 	  return projection(gnomonicRaw)
 	      .scale(144.049)
 	      .clipAngle(60);
+	};
+
+	function scaleTranslate(kx, ky, tx, ty) {
+	  return kx === 1 && ky === 1 && tx === 0 && ty === 0 ? identity : transformer({
+	    point: function(x, y) {
+	      this.stream.point(x * kx + tx, y * ky + ty);
+	    }
+	  });
 	}
+
+	var identity$1 = function() {
+	  var k = 1, tx = 0, ty = 0, sx = 1, sy = 1, transform = identity, // scale, translate and reflect
+	      x0 = null, y0, x1, y1, clip = identity, // clip extent
+	      cache,
+	      cacheStream,
+	      projection;
+
+	  function reset() {
+	    cache = cacheStream = null;
+	    return projection;
+	  }
+
+	  return projection = {
+	    stream: function(stream) {
+	      return cache && cacheStream === stream ? cache : cache = transform(clip(cacheStream = stream));
+	    },
+	    clipExtent: function(_) {
+	      return arguments.length ? (clip = _ == null ? (x0 = y0 = x1 = y1 = null, identity) : clipExtent(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]), reset()) : x0 == null ? null : [[x0, y0], [x1, y1]];
+	    },
+	    scale: function(_) {
+	      return arguments.length ? (transform = scaleTranslate((k = +_) * sx, k * sy, tx, ty), reset()) : k;
+	    },
+	    translate: function(_) {
+	      return arguments.length ? (transform = scaleTranslate(k * sx, k * sy, tx = +_[0], ty = +_[1]), reset()) : [tx, ty];
+	    },
+	    reflectX: function(_) {
+	      return arguments.length ? (transform = scaleTranslate(k * (sx = _ ? -1 : 1), k * sy, tx, ty), reset()) : sx < 0;
+	    },
+	    reflectY: function(_) {
+	      return arguments.length ? (transform = scaleTranslate(k * sx, k * (sy = _ ? -1 : 1), tx, ty), reset()) : sy < 0;
+	    },
+	    fitExtent: function(extent, object) {
+	      return fitExtent(projection, extent, object);
+	    },
+	    fitSize: function(size, object) {
+	      return fitSize(projection, size, object);
+	    }
+	  };
+	};
 
 	function orthographicRaw(x, y) {
 	  return [cos(y) * sin(x), sin(y)];
@@ -11505,11 +11584,11 @@
 
 	orthographicRaw.invert = azimuthalInvert(asin);
 
-	function orthographic() {
+	var orthographic = function() {
 	  return projection(orthographicRaw)
 	      .scale(249.5)
 	      .clipAngle(90 + epsilon);
-	}
+	};
 
 	function stereographicRaw(x, y) {
 	  var cy = cos(y), k = 1 + cos(x) * cy;
@@ -11520,11 +11599,11 @@
 	  return 2 * atan(z);
 	});
 
-	function stereographic() {
+	var stereographic = function() {
 	  return projection(stereographicRaw)
 	      .scale(250)
 	      .clipAngle(142);
-	}
+	};
 
 	function transverseMercatorRaw(lambda, phi) {
 	  return [log(tan((halfPi + phi) / 2)), -lambda];
@@ -11534,7 +11613,7 @@
 	  return [-y, 2 * atan(exp(x)) - halfPi];
 	};
 
-	function transverseMercator() {
+	var transverseMercator = function() {
 	  var m = mercatorProjection(transverseMercatorRaw),
 	      center = m.center,
 	      rotate = m.rotate;
@@ -11549,7 +11628,7 @@
 
 	  return rotate([0, 0, 90])
 	      .scale(159.155);
-	}
+	};
 
 	exports.geoArea = area;
 	exports.geoBounds = bounds;
@@ -11558,6 +11637,7 @@
 	exports.geoClipExtent = extent;
 	exports.geoDistance = distance;
 	exports.geoGraticule = graticule;
+	exports.geoGraticule10 = graticule10;
 	exports.geoInterpolate = interpolate;
 	exports.geoLength = length;
 	exports.geoPath = index;
@@ -11577,6 +11657,7 @@
 	exports.geoEquirectangularRaw = equirectangularRaw;
 	exports.geoGnomonic = gnomonic;
 	exports.geoGnomonicRaw = gnomonicRaw;
+	exports.geoIdentity = identity$1;
 	exports.geoProjection = projection;
 	exports.geoProjectionMutator = projectionMutator;
 	exports.geoMercator = mercator;
@@ -11594,6 +11675,7 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 	})));
+
 
 /***/ },
 /* 29 */
@@ -12199,6 +12281,9 @@
 	        sizeError = Math.max(area, desired) / Math.min(area, desired);
 	        sizeErrorsTot += sizeError;
 	        sizeErrorsNum++;
+	        if(isNaN(sizeError)) {
+	          debugger
+	        }
 	        // console.log(o.id, "@", j, "area:", area, "value:", v, "->", desired, radius, mass, sizeError);
 	        return {
 	          id:         o.id,
@@ -62754,7 +62839,7 @@
 	                  className: 'close-mobile',
 	                  onClick: this._closeMobile
 	                },
-	                '×'
+	                '\xD7'
 	              ),
 	              _react2.default.createElement(
 	                'h1',
@@ -63763,14 +63848,6 @@
 	  var source = null;
 
 	  if (config != null) {
-	    if (process.env.NODE_ENV !== 'production') {
-	      process.env.NODE_ENV !== 'production' ? warning(
-	      /* eslint-disable no-proto */
-	      config.__proto__ == null || config.__proto__ === Object.prototype,
-	      /* eslint-enable no-proto */
-	      'React.createElement(...): Expected props argument to be a plain object. ' + 'Properties defined in its prototype chain will be ignored.') : void 0;
-	    }
-
 	    if (hasValidRef(config)) {
 	      ref = config.ref;
 	    }
@@ -63871,14 +63948,6 @@
 	  var owner = element._owner;
 
 	  if (config != null) {
-	    if (process.env.NODE_ENV !== 'production') {
-	      process.env.NODE_ENV !== 'production' ? warning(
-	      /* eslint-disable no-proto */
-	      config.__proto__ == null || config.__proto__ === Object.prototype,
-	      /* eslint-enable no-proto */
-	      'React.cloneElement(...): Expected props argument to be a plain object. ' + 'Properties defined in its prototype chain will be ignored.') : void 0;
-	    }
-
 	    if (hasValidRef(config)) {
 	      // Silently steal the ref from the parent.
 	      ref = config.ref;
@@ -66912,7 +66981,7 @@
 
 	'use strict';
 
-	module.exports = '15.3.1';
+	module.exports = '15.3.2';
 
 /***/ },
 /* 118 */
@@ -67894,8 +67963,10 @@
 	function getFallbackBeforeInputChars(topLevelType, nativeEvent) {
 	  // If we are currently composing (IME) and using a fallback to do so,
 	  // try to extract the composed characters from the fallback object.
+	  // If composition event is available, we extract a string only at
+	  // compositionevent, otherwise extract it at fallback events.
 	  if (currentComposition) {
-	    if (topLevelType === topLevelTypes.topCompositionEnd || isFallbackCompositionEnd(topLevelType, nativeEvent)) {
+	    if (topLevelType === topLevelTypes.topCompositionEnd || !canUseCompositionEvent && isFallbackCompositionEnd(topLevelType, nativeEvent)) {
 	      var chars = currentComposition.getData();
 	      FallbackCompositionState.release(currentComposition);
 	      currentComposition = null;
@@ -69504,7 +69575,8 @@
 
 	    if (event.preventDefault) {
 	      event.preventDefault();
-	    } else {
+	    } else if (typeof event.returnValue !== 'unknown') {
+	      // eslint-disable-line valid-typeof
 	      event.returnValue = false;
 	    }
 	    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;
@@ -69761,7 +69833,7 @@
 	var doesChangeEventBubble = false;
 	if (ExecutionEnvironment.canUseDOM) {
 	  // See `handleChange` comment below
-	  doesChangeEventBubble = isEventSupported('change') && (!('documentMode' in document) || document.documentMode > 8);
+	  doesChangeEventBubble = isEventSupported('change') && (!document.documentMode || document.documentMode > 8);
 	}
 
 	function manualDispatchChangeEvent(nativeEvent) {
@@ -69827,7 +69899,7 @@
 	  // deleting text, so we ignore its input events.
 	  // IE10+ fire input events to often, such when a placeholder
 	  // changes or when an input with a placeholder is focused.
-	  isInputEventSupported = isEventSupported('input') && (!('documentMode' in document) || document.documentMode > 11);
+	  isInputEventSupported = isEventSupported('input') && (!document.documentMode || document.documentMode > 11);
 	}
 
 	/**
@@ -71056,12 +71128,6 @@
 	    endLifeCycleTimer(debugID, timerType);
 	    emitEvent('onEndLifeCycleTimer', debugID, timerType);
 	  },
-	  onError: function (debugID) {
-	    if (currentTimerDebugID != null) {
-	      endLifeCycleTimer(currentTimerDebugID, currentTimerType);
-	    }
-	    emitEvent('onError', debugID);
-	  },
 	  onBeginProcessingChildContext: function () {
 	    emitEvent('onBeginProcessingChildContext');
 	  },
@@ -72135,6 +72201,8 @@
 	    allowFullScreen: HAS_BOOLEAN_VALUE,
 	    allowTransparency: 0,
 	    alt: 0,
+	    // specifies target context for links with `preload` type
+	    as: 0,
 	    async: HAS_BOOLEAN_VALUE,
 	    autoComplete: 0,
 	    // autoFocus is polyfilled/normalized by AutoFocusUtils
@@ -72215,6 +72283,7 @@
 	    optimum: 0,
 	    pattern: 0,
 	    placeholder: 0,
+	    playsInline: HAS_BOOLEAN_VALUE,
 	    poster: 0,
 	    preload: 0,
 	    profile: 0,
@@ -72737,9 +72806,9 @@
 	  if (node.namespaceURI === DOMNamespaces.svg && !('innerHTML' in node)) {
 	    reusableSVGContainer = reusableSVGContainer || document.createElement('div');
 	    reusableSVGContainer.innerHTML = '<svg>' + html + '</svg>';
-	    var newNodes = reusableSVGContainer.firstChild.childNodes;
-	    for (var i = 0; i < newNodes.length; i++) {
-	      node.appendChild(newNodes[i]);
+	    var svgNode = reusableSVGContainer.firstChild;
+	    while (svgNode.firstChild) {
+	      node.appendChild(svgNode.firstChild);
 	    }
 	  } else {
 	    node.innerHTML = html;
@@ -73667,9 +73736,9 @@
 	  ReactDOMOption.postMountWrapper(inst);
 	}
 
-	var setContentChildForInstrumentation = emptyFunction;
+	var setAndValidateContentChildDev = emptyFunction;
 	if (process.env.NODE_ENV !== 'production') {
-	  setContentChildForInstrumentation = function (content) {
+	  setAndValidateContentChildDev = function (content) {
 	    var hasExistingContent = this._contentDebugID != null;
 	    var debugID = this._debugID;
 	    // This ID represents the inlined child that has no backing instance:
@@ -73683,6 +73752,7 @@
 	      return;
 	    }
 
+	    validateDOMNesting(null, String(content), this, this._ancestorInfo);
 	    this._contentDebugID = contentDebugID;
 	    if (hasExistingContent) {
 	      ReactInstrumentation.debugTool.onBeforeUpdateComponent(contentDebugID, content);
@@ -73857,7 +73927,7 @@
 	  this._flags = 0;
 	  if (process.env.NODE_ENV !== 'production') {
 	    this._ancestorInfo = null;
-	    setContentChildForInstrumentation.call(this, null);
+	    setAndValidateContentChildDev.call(this, null);
 	  }
 	}
 
@@ -73957,7 +74027,7 @@
 	      if (parentInfo) {
 	        // parentInfo should always be present except for the top-level
 	        // component when server rendering
-	        validateDOMNesting(this._tag, this, parentInfo);
+	        validateDOMNesting(this._tag, null, this, parentInfo);
 	      }
 	      this._ancestorInfo = validateDOMNesting.updatedAncestorInfo(parentInfo, this._tag, this);
 	    }
@@ -74126,7 +74196,7 @@
 	        // TODO: Validate that text is allowed as a child of this node
 	        ret = escapeTextContentForBrowser(contentToUse);
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, contentToUse);
+	          setAndValidateContentChildDev.call(this, contentToUse);
 	        }
 	      } else if (childrenToUse != null) {
 	        var mountImages = this.mountChildren(childrenToUse, transaction, context);
@@ -74163,7 +74233,7 @@
 	      if (contentToUse != null) {
 	        // TODO: Validate that text is allowed as a child of this node
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, contentToUse);
+	          setAndValidateContentChildDev.call(this, contentToUse);
 	        }
 	        DOMLazyTree.queueText(lazyTree, contentToUse);
 	      } else if (childrenToUse != null) {
@@ -74395,7 +74465,7 @@
 	      if (lastContent !== nextContent) {
 	        this.updateTextContent('' + nextContent);
 	        if (process.env.NODE_ENV !== 'production') {
-	          setContentChildForInstrumentation.call(this, nextContent);
+	          setAndValidateContentChildDev.call(this, nextContent);
 	        }
 	      }
 	    } else if (nextHtml != null) {
@@ -74407,7 +74477,7 @@
 	      }
 	    } else if (nextChildren != null) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        setContentChildForInstrumentation.call(this, null);
+	        setAndValidateContentChildDev.call(this, null);
 	      }
 
 	      this.updateChildren(nextChildren, transaction, context);
@@ -74462,7 +74532,7 @@
 	    this._wrapperState = null;
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      setContentChildForInstrumentation.call(this, null);
+	      setAndValidateContentChildDev.call(this, null);
 	    }
 	  },
 
@@ -75735,6 +75805,19 @@
 	  },
 
 	  /**
+	   * Protect against document.createEvent() returning null
+	   * Some popup blocker extensions appear to do this:
+	   * https://github.com/facebook/react/issues/6887
+	   */
+	  supportsEventPageXY: function () {
+	    if (!document.createEvent) {
+	      return false;
+	    }
+	    var ev = document.createEvent('MouseEvent');
+	    return ev != null && 'pageX' in ev;
+	  },
+
+	  /**
 	   * Listens to window scroll and resize events. We cache scroll values so that
 	   * application code can access them without triggering reflows.
 	   *
@@ -75747,7 +75830,7 @@
 	   */
 	  ensureScrollValueMonitoring: function () {
 	    if (hasEventPageXY === undefined) {
-	      hasEventPageXY = document.createEvent && 'pageX' in document.createEvent('MouseEvent');
+	      hasEventPageXY = ReactBrowserEventEmitter.supportsEventPageXY();
 	    }
 	    if (!hasEventPageXY && !isMonitoringScrollValue) {
 	      var refresh = ViewportMetrics.refreshScrollValues;
@@ -76033,7 +76116,7 @@
 
 	function isControlled(props) {
 	  var usesChecked = props.type === 'checkbox' || props.type === 'radio';
-	  return usesChecked ? props.checked !== undefined : props.value !== undefined;
+	  return usesChecked ? props.checked != null : props.value != null;
 	}
 
 	/**
@@ -77806,34 +77889,29 @@
 	  }
 	}
 
-	function invokeComponentDidMountWithTimer() {
-	  var publicInstance = this._instance;
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentDidMount');
-	  }
-	  publicInstance.componentDidMount();
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentDidMount');
-	  }
-	}
-
-	function invokeComponentDidUpdateWithTimer(prevProps, prevState, prevContext) {
-	  var publicInstance = this._instance;
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentDidUpdate');
-	  }
-	  publicInstance.componentDidUpdate(prevProps, prevState, prevContext);
-	  if (this._debugID !== 0) {
-	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentDidUpdate');
-	  }
-	}
-
 	function shouldConstruct(Component) {
 	  return !!(Component.prototype && Component.prototype.isReactComponent);
 	}
 
 	function isPureComponent(Component) {
 	  return !!(Component.prototype && Component.prototype.isPureReactComponent);
+	}
+
+	// Separated into a function to contain deoptimizations caused by try/finally.
+	function measureLifeCyclePerf(fn, debugID, timerType) {
+	  if (debugID === 0) {
+	    // Top-level wrappers (see ReactMount) and empty components (see
+	    // ReactDOMEmptyComponent) are invisible to hooks and devtools.
+	    // Both are implementation details that should go away in the future.
+	    return fn();
+	  }
+
+	  ReactInstrumentation.debugTool.onBeginLifeCycleTimer(debugID, timerType);
+	  try {
+	    return fn();
+	  } finally {
+	    ReactInstrumentation.debugTool.onEndLifeCycleTimer(debugID, timerType);
+	  }
 	}
 
 	/**
@@ -77927,6 +78005,8 @@
 	   * @internal
 	   */
 	  mountComponent: function (transaction, hostParent, hostContainerInfo, context) {
+	    var _this = this;
+
 	    this._context = context;
 	    this._mountOrder = nextMountID++;
 	    this._hostParent = hostParent;
@@ -78016,7 +78096,11 @@
 
 	    if (inst.componentDidMount) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        transaction.getReactMountReady().enqueue(invokeComponentDidMountWithTimer, this);
+	        transaction.getReactMountReady().enqueue(function () {
+	          measureLifeCyclePerf(function () {
+	            return inst.componentDidMount();
+	          }, _this._debugID, 'componentDidMount');
+	        });
 	      } else {
 	        transaction.getReactMountReady().enqueue(inst.componentDidMount, inst);
 	      }
@@ -78040,35 +78124,26 @@
 
 	  _constructComponentWithoutOwner: function (doConstruct, publicProps, publicContext, updateQueue) {
 	    var Component = this._currentElement.type;
-	    var instanceOrElement;
+
 	    if (doConstruct) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'ctor');
-	        }
-	      }
-	      instanceOrElement = new Component(publicProps, publicContext, updateQueue);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'ctor');
-	        }
-	      }
-	    } else {
-	      // This can still be an instance in case of factory components
-	      // but we'll count this as time spent rendering as the more common case.
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'render');
-	        }
-	      }
-	      instanceOrElement = Component(publicProps, publicContext, updateQueue);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'render');
-	        }
+	        return measureLifeCyclePerf(function () {
+	          return new Component(publicProps, publicContext, updateQueue);
+	        }, this._debugID, 'ctor');
+	      } else {
+	        return new Component(publicProps, publicContext, updateQueue);
 	      }
 	    }
-	    return instanceOrElement;
+
+	    // This can still be an instance in case of factory components
+	    // but we'll count this as time spent rendering as the more common case.
+	    if (process.env.NODE_ENV !== 'production') {
+	      return measureLifeCyclePerf(function () {
+	        return Component(publicProps, publicContext, updateQueue);
+	      }, this._debugID, 'render');
+	    } else {
+	      return Component(publicProps, publicContext, updateQueue);
+	    }
 	  },
 
 	  performInitialMountWithErrorHandling: function (renderedElement, hostParent, hostContainerInfo, transaction, context) {
@@ -78077,11 +78152,6 @@
 	    try {
 	      markup = this.performInitialMount(renderedElement, hostParent, hostContainerInfo, transaction, context);
 	    } catch (e) {
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onError();
-	        }
-	      }
 	      // Roll back to checkpoint, handle error (which may add items to the transaction), and take a new checkpoint
 	      transaction.rollback(checkpoint);
 	      this._instance.unstable_handleError(e);
@@ -78102,17 +78172,19 @@
 
 	  performInitialMount: function (renderedElement, hostParent, hostContainerInfo, transaction, context) {
 	    var inst = this._instance;
+
+	    var debugID = 0;
+	    if (process.env.NODE_ENV !== 'production') {
+	      debugID = this._debugID;
+	    }
+
 	    if (inst.componentWillMount) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillMount');
-	        }
-	      }
-	      inst.componentWillMount();
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillMount');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillMount();
+	        }, debugID, 'componentWillMount');
+	      } else {
+	        inst.componentWillMount();
 	      }
 	      // When mounting, calls to `setState` by `componentWillMount` will set
 	      // `this._pendingStateQueue` without triggering a re-render.
@@ -78132,15 +78204,12 @@
 	    );
 	    this._renderedComponent = child;
 
-	    var selfDebugID = 0;
-	    if (process.env.NODE_ENV !== 'production') {
-	      selfDebugID = this._debugID;
-	    }
-	    var markup = ReactReconciler.mountComponent(child, transaction, hostParent, hostContainerInfo, this._processChildContext(context), selfDebugID);
+	    var markup = ReactReconciler.mountComponent(child, transaction, hostParent, hostContainerInfo, this._processChildContext(context), debugID);
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onSetChildren(this._debugID, child._debugID !== 0 ? [child._debugID] : []);
+	      if (debugID !== 0) {
+	        var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
+	        ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
 	      }
 	    }
 
@@ -78161,24 +78230,22 @@
 	    if (!this._renderedComponent) {
 	      return;
 	    }
+
 	    var inst = this._instance;
 
 	    if (inst.componentWillUnmount && !inst._calledComponentWillUnmount) {
 	      inst._calledComponentWillUnmount = true;
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillUnmount');
-	        }
-	      }
+
 	      if (safely) {
 	        var name = this.getName() + '.componentWillUnmount()';
 	        ReactErrorUtils.invokeGuardedCallback(name, inst.componentWillUnmount.bind(inst));
 	      } else {
-	        inst.componentWillUnmount();
-	      }
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillUnmount');
+	        if (process.env.NODE_ENV !== 'production') {
+	          measureLifeCyclePerf(function () {
+	            return inst.componentWillUnmount();
+	          }, this._debugID, 'componentWillUnmount');
+	        } else {
+	          inst.componentWillUnmount();
 	        }
 	      }
 	    }
@@ -78265,13 +78332,21 @@
 	  _processChildContext: function (currentContext) {
 	    var Component = this._currentElement.type;
 	    var inst = this._instance;
-	    if (process.env.NODE_ENV !== 'production') {
-	      ReactInstrumentation.debugTool.onBeginProcessingChildContext();
+	    var childContext;
+
+	    if (inst.getChildContext) {
+	      if (process.env.NODE_ENV !== 'production') {
+	        ReactInstrumentation.debugTool.onBeginProcessingChildContext();
+	        try {
+	          childContext = inst.getChildContext();
+	        } finally {
+	          ReactInstrumentation.debugTool.onEndProcessingChildContext();
+	        }
+	      } else {
+	        childContext = inst.getChildContext();
+	      }
 	    }
-	    var childContext = inst.getChildContext && inst.getChildContext();
-	    if (process.env.NODE_ENV !== 'production') {
-	      ReactInstrumentation.debugTool.onEndProcessingChildContext();
-	    }
+
 	    if (childContext) {
 	      !(typeof Component.childContextTypes === 'object') ? process.env.NODE_ENV !== 'production' ? invariant(false, '%s.getChildContext(): childContextTypes must be defined in order to use getChildContext().', this.getName() || 'ReactCompositeComponent') : _prodInvariant('107', this.getName() || 'ReactCompositeComponent') : void 0;
 	      if (process.env.NODE_ENV !== 'production') {
@@ -78366,15 +78441,11 @@
 	    // immediately reconciled instead of waiting for the next batch.
 	    if (willReceive && inst.componentWillReceiveProps) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillReceiveProps');
-	        }
-	      }
-	      inst.componentWillReceiveProps(nextProps, nextContext);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillReceiveProps');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillReceiveProps(nextProps, nextContext);
+	        }, this._debugID, 'componentWillReceiveProps');
+	      } else {
+	        inst.componentWillReceiveProps(nextProps, nextContext);
 	      }
 	    }
 
@@ -78384,15 +78455,11 @@
 	    if (!this._pendingForceUpdate) {
 	      if (inst.shouldComponentUpdate) {
 	        if (process.env.NODE_ENV !== 'production') {
-	          if (this._debugID !== 0) {
-	            ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'shouldComponentUpdate');
-	          }
-	        }
-	        shouldUpdate = inst.shouldComponentUpdate(nextProps, nextState, nextContext);
-	        if (process.env.NODE_ENV !== 'production') {
-	          if (this._debugID !== 0) {
-	            ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'shouldComponentUpdate');
-	          }
+	          shouldUpdate = measureLifeCyclePerf(function () {
+	            return inst.shouldComponentUpdate(nextProps, nextState, nextContext);
+	          }, this._debugID, 'shouldComponentUpdate');
+	        } else {
+	          shouldUpdate = inst.shouldComponentUpdate(nextProps, nextState, nextContext);
 	        }
 	      } else {
 	        if (this._compositeType === CompositeTypes.PureClass) {
@@ -78458,6 +78525,8 @@
 	   * @private
 	   */
 	  _performComponentUpdate: function (nextElement, nextProps, nextState, nextContext, transaction, unmaskedContext) {
+	    var _this2 = this;
+
 	    var inst = this._instance;
 
 	    var hasComponentDidUpdate = Boolean(inst.componentDidUpdate);
@@ -78472,15 +78541,11 @@
 
 	    if (inst.componentWillUpdate) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'componentWillUpdate');
-	        }
-	      }
-	      inst.componentWillUpdate(nextProps, nextState, nextContext);
-	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'componentWillUpdate');
-	        }
+	        measureLifeCyclePerf(function () {
+	          return inst.componentWillUpdate(nextProps, nextState, nextContext);
+	        }, this._debugID, 'componentWillUpdate');
+	      } else {
+	        inst.componentWillUpdate(nextProps, nextState, nextContext);
 	      }
 	    }
 
@@ -78494,7 +78559,9 @@
 
 	    if (hasComponentDidUpdate) {
 	      if (process.env.NODE_ENV !== 'production') {
-	        transaction.getReactMountReady().enqueue(invokeComponentDidUpdateWithTimer.bind(this, prevProps, prevState, prevContext), this);
+	        transaction.getReactMountReady().enqueue(function () {
+	          measureLifeCyclePerf(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), _this2._debugID, 'componentDidUpdate');
+	        });
 	      } else {
 	        transaction.getReactMountReady().enqueue(inst.componentDidUpdate.bind(inst, prevProps, prevState, prevContext), inst);
 	      }
@@ -78511,6 +78578,12 @@
 	    var prevComponentInstance = this._renderedComponent;
 	    var prevRenderedElement = prevComponentInstance._currentElement;
 	    var nextRenderedElement = this._renderValidatedComponent();
+
+	    var debugID = 0;
+	    if (process.env.NODE_ENV !== 'production') {
+	      debugID = this._debugID;
+	    }
+
 	    if (shouldUpdateReactComponent(prevRenderedElement, nextRenderedElement)) {
 	      ReactReconciler.receiveComponent(prevComponentInstance, nextRenderedElement, transaction, this._processChildContext(context));
 	    } else {
@@ -78523,15 +78596,12 @@
 	      );
 	      this._renderedComponent = child;
 
-	      var selfDebugID = 0;
-	      if (process.env.NODE_ENV !== 'production') {
-	        selfDebugID = this._debugID;
-	      }
-	      var nextMarkup = ReactReconciler.mountComponent(child, transaction, this._hostParent, this._hostContainerInfo, this._processChildContext(context), selfDebugID);
+	      var nextMarkup = ReactReconciler.mountComponent(child, transaction, this._hostParent, this._hostContainerInfo, this._processChildContext(context), debugID);
 
 	      if (process.env.NODE_ENV !== 'production') {
-	        if (this._debugID !== 0) {
-	          ReactInstrumentation.debugTool.onSetChildren(this._debugID, child._debugID !== 0 ? [child._debugID] : []);
+	        if (debugID !== 0) {
+	          var childDebugIDs = child._debugID !== 0 ? [child._debugID] : [];
+	          ReactInstrumentation.debugTool.onSetChildren(debugID, childDebugIDs);
 	        }
 	      }
 
@@ -78553,17 +78623,14 @@
 	   */
 	  _renderValidatedComponentWithoutOwnerOrContext: function () {
 	    var inst = this._instance;
+	    var renderedComponent;
 
 	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onBeginLifeCycleTimer(this._debugID, 'render');
-	      }
-	    }
-	    var renderedComponent = inst.render();
-	    if (process.env.NODE_ENV !== 'production') {
-	      if (this._debugID !== 0) {
-	        ReactInstrumentation.debugTool.onEndLifeCycleTimer(this._debugID, 'render');
-	      }
+	      renderedComponent = measureLifeCyclePerf(function () {
+	        return inst.render();
+	      }, this._debugID, 'render');
+	    } else {
+	      renderedComponent = inst.render();
 	    }
 
 	    if (process.env.NODE_ENV !== 'production') {
@@ -78614,7 +78681,7 @@
 	    var publicComponentInstance = component.getPublicInstance();
 	    if (process.env.NODE_ENV !== 'production') {
 	      var componentName = component && component.getName ? component.getName() : 'a component';
-	      process.env.NODE_ENV !== 'production' ? warning(publicComponentInstance != null, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : void 0;
+	      process.env.NODE_ENV !== 'production' ? warning(publicComponentInstance != null || component._compositeType !== CompositeTypes.StatelessFunctional, 'Stateless function components cannot be given refs ' + '(See ref "%s" in %s created by %s). ' + 'Attempts to access this ref will fail.', ref, componentName, this.getName()) : void 0;
 	    }
 	    var refs = inst.refs === emptyObject ? inst.refs = {} : inst.refs;
 	    refs[ref] = publicComponentInstance;
@@ -78751,7 +78818,8 @@
 	  if (x === y) {
 	    // Steps 1-5, 7-10
 	    // Steps 6.b-6.e: +0 != -0
-	    return x !== 0 || 1 / x === 1 / y;
+	    // Added the nonzero y check to make Flow happy, but it is redundant
+	    return x !== 0 || y !== 0 || 1 / x === 1 / y;
 	  } else {
 	    // Step 6.a: NaN == NaN
 	    return x !== x && y !== y;
@@ -79805,10 +79873,15 @@
 
 	  var didWarn = {};
 
-	  validateDOMNesting = function (childTag, childInstance, ancestorInfo) {
+	  validateDOMNesting = function (childTag, childText, childInstance, ancestorInfo) {
 	    ancestorInfo = ancestorInfo || emptyAncestorInfo;
 	    var parentInfo = ancestorInfo.current;
 	    var parentTag = parentInfo && parentInfo.tag;
+
+	    if (childText != null) {
+	      process.env.NODE_ENV !== 'production' ? warning(childTag == null, 'validateDOMNesting: when childText is passed, childTag should be null') : void 0;
+	      childTag = '#text';
+	    }
 
 	    var invalidParent = isTagValidWithParent(childTag, parentTag) ? null : parentInfo;
 	    var invalidAncestor = invalidParent ? null : findInvalidAncestorForTag(childTag, ancestorInfo);
@@ -79857,7 +79930,15 @@
 	      didWarn[warnKey] = true;
 
 	      var tagDisplayName = childTag;
-	      if (childTag !== '#text') {
+	      var whitespaceInfo = '';
+	      if (childTag === '#text') {
+	        if (/\S/.test(childText)) {
+	          tagDisplayName = 'Text nodes';
+	        } else {
+	          tagDisplayName = 'Whitespace text nodes';
+	          whitespaceInfo = ' Make sure you don\'t have any extra whitespace between tags on ' + 'each line of your source code.';
+	        }
+	      } else {
 	        tagDisplayName = '<' + childTag + '>';
 	      }
 
@@ -79866,7 +79947,7 @@
 	        if (ancestorTag === 'table' && childTag === 'tr') {
 	          info += ' Add a <tbody> to your code to match the DOM tree generated by ' + 'the browser.';
 	        }
-	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a child of <%s>. ' + 'See %s.%s', tagDisplayName, ancestorTag, ownerInfo, info) : void 0;
+	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a child of <%s>.%s ' + 'See %s.%s', tagDisplayName, ancestorTag, whitespaceInfo, ownerInfo, info) : void 0;
 	      } else {
 	        process.env.NODE_ENV !== 'production' ? warning(false, 'validateDOMNesting(...): %s cannot appear as a descendant of ' + '<%s>. See %s.', tagDisplayName, ancestorTag, ownerInfo) : void 0;
 	      }
@@ -80173,7 +80254,7 @@
 	      if (parentInfo) {
 	        // parentInfo should always be present except for the top-level
 	        // component when server rendering
-	        validateDOMNesting('#text', this, parentInfo);
+	        validateDOMNesting(null, this._stringText, this, parentInfo);
 	      }
 	    }
 
@@ -81766,7 +81847,7 @@
 	      bubbled: keyOf({ onSelect: null }),
 	      captured: keyOf({ onSelectCapture: null })
 	    },
-	    dependencies: [topLevelTypes.topBlur, topLevelTypes.topContextMenu, topLevelTypes.topFocus, topLevelTypes.topKeyDown, topLevelTypes.topMouseDown, topLevelTypes.topMouseUp, topLevelTypes.topSelectionChange]
+	    dependencies: [topLevelTypes.topBlur, topLevelTypes.topContextMenu, topLevelTypes.topFocus, topLevelTypes.topKeyDown, topLevelTypes.topKeyUp, topLevelTypes.topMouseDown, topLevelTypes.topMouseUp, topLevelTypes.topSelectionChange]
 	  }
 	};
 
@@ -92161,7 +92242,7 @@
 /* 283 */
 /***/ function(module, exports) {
 
-	module.exports = "# Making a Tilegram\n\nA “tilegram” is a map made of tiles\nwhere regions are sized proportionally to a dataset.\nThe name is short for a tiled\n[cartogram](https://en.wikipedia.org/wiki/Cartogram).\nTilegrams can represent demographic data more truthfully than conventional,\ngeographic maps, while still retaining a familiar appearance.\n\nThis free, open-source tool enables news designers and developers\nto browse existing tilegrams or make their own for use in interactive\nand print publications.\n\nEven with computer automation, tilegrams can be time-consuming to produce,\nbecause, to be effective, they require a human eye to verify that geographic\ncontours will be recognizable and meaningful to a general readership. For this\nreason, you're encouraged to begin with existing tilegrams before authoring\nyour own.\n\nYou can read more about the project in our announcement\n[blog post](http://pitchinteractive.com/latest/tilegrams-more-human-maps/).\n\nThis manual proceeds from the most basic to the most advanced usage case.\n\n## Exporting existing tilegrams\n\nOn load, you will see a ready-made tilegram, as selected in the\n**Load existing** menu. Try selecting other options to browse around.\n\nIf you are satisfied with the tilegram as it appears, go right ahead and\n**Export**—as **TopoJSON** or **SVG**—using the buttons at the lower left.\n\nDesigners will be able to import the SVG into their software of choice\n(e.g. Illustrator) and developers will be able to pull the TopoJSON into\nweb applications. In both cases, the data is identified with the US\n[FIPS](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standards)\ncode.\n\n## Editing tilegrams\n\nSuppose you've loaded a tilegram, but want to reshape a region. Maybe Florida\nlooks too heavy, or Missouri is streched too thin.\n\nClick step **2**: **Refine your tilegram**.\n\n### Moving tiles around\n\nClick and drag any tile to move it around.\n\nTo move many tiles around, click and drag a\nrectangular marquee around them, and then drag them around.\n\nTo move just a specific region around, double-click\nany tile in it to select them all—then drag them around.\n\nYou can also hover over a region in the **State Tiles**\nsidebar area to see that region's tiles highlighted on the map.\n\n### Ensuring statistical accuracy\n\nUnder **State Tiles**, you'll see a list of each state with a number and a\nhexagon.\n\nThe number indicates the _delta inaccuracy_ between the number of tiles that\nregion _currently_ has on the map and how many it _should_ have, based on the\ndataset. If the delta is positive, that region has too many tiles on the map.\nIf the delta is negative, it doesn't have enough tiles on the map. If there\nIf there is a warning sign, then that region doesn't have enough data for even a\nsingle tile on the map at the chosen resolution.\n\n(_Why does this happen?_ It is computationally very difficult to produce\ntilegrams which are accurate _and_ recognizable. As you begin to make\ncartograms, you'll appreciate the difficult trade-offs you must make between\npreserving the approximate shapes of regions and their adjacency to other\nregions.)\n\nTo remove a tile from the map, click it, and hit 'Delete' on your keyboard.\n\nTo add a tile to the map, click the hexagon from the left sidebar and drag it\nonto the map.\n\n## Generating new tilegrams\n\nIf you've made it this far, you are ready to produce your own tilegram.\n\nSelect **Generate from data**. You will see the tilegram generated before your\neyes, by beginning with a conventional geographic map and then progressively\nresizing its regions to conform to the selected dataset.\n\nUnder **Dataset**, you may select one of a few prepared datasets, or input\nyour own **Custom CSV**, by pasting in a dataset in the format specified,\nusing US FIPS codes.\n\nThen you may alter the resolution in two ways. The most visually gratifying is\nto click and grab the **Resolution** slider and watch as the tiles are\nre-computed in realtime. The other, more statistically accurate way is to click\ninto the **Per tile** field and entire your desired value per tile.\n\nFor example, if you are using population to scale the regions of your tilegram,\nyou might enter '500,000' so that each tile corresponds to (approximately) five\nhundred thousand people. Then, each region's number of tiles is rounded to the\nnearest multiple of that number. So, in this same example, if you have a region\nwith 700,000 people, the metrics would show that you need one tile and if you\nhave a region with 800,000 people it would round up to two tiles.\n\nAs you adjust the **Dataset** and **Resolution**/**Per tile**, you'll notice\nthat the _deltas_ under **State Tiles** update dynamically. Please remember\nto take note of them and ensure that they all read `0` to make responsible\ntilegrams.\n\n## Using exported tilegrams\n\n### In D3\n\nYou can export either SVG or TopoJSON for use in [D3](https://d3js.org/).\n\nThe following examples use D3 v4 and were tested against this hosted version:\n\n```html\n<script type=\"text/javascript\" src=\"https://d3js.org/d3.v4.min.js\"></script>\n```\n\n#### Rendering tilegram SVG in D3\n\nThe simplest D3 integration may just be to write the SVG to the DOM and then\nadd handlers for interactivity:\n\n```javascript\nvar WIDTH = 800\n\nd3.text('tiles.svg', (e, data) => {\n  var div = d3.select(document.body).append('div').html(data)\n  var svg = div.select('svg')\n  var groups = svg.selectAll('g')\n\n  // Scale SVG\n  var importedWidth = parseInt(svg.attr('width'))\n  var importedHeight = parseInt(svg.attr('height'))\n  var scale = WIDTH / importedWidth\n  svg\n    .attr('width', importedWidth * scale)\n    .attr('height', importedHeight * scale)\n  groups.attr('transform', 'scale(' + scale + ')')\n\n  // Apply handlers\n  groups.on('click', (e) => {\n    console.log('Clicked', d3.event.target.parentNode.id)\n  })\n})\n```\n\n#### Rendering tilegram TopoJSON in D3\n\nWhen displaying tilegrams TopoJSON in D3, it's important not to use a geographic\nprojection, as the TopoJSON coordinates do not refer to latitude/longitude,\nbut to dimensionless Euclidean space.\n\nIt is currently also necessary to flip the map vertically. (This is\nbecause the exported tilegram coordinates assume that the origin (`0, 0`) is in\nthe lower-left corner, whereas projection-less rendering will assume that it's\nin the upper-left.) Note the `transform` below.\n\nFirst, be sure to import `topojson` as well:\n\n```html\n<script type=\"text/javascript\" src=\"http://d3js.org/topojson.v1.min.js\"></script>\n```\n\nThen:\n\n```javascript\nvar WIDTH = 1400\nvar HEIGHT = 1000\n\nvar svg = d3.select('body').append('svg')\n    .attr('width', WIDTH)\n    .attr('height', HEIGHT)\n\nd3.json('tiles.topo.json', function showData(error, tilegram) {\n  var tiles = topojson.feature(tilegram, tilegram.objects.tiles)\n\n  var transform = d3.geoTransform({\n    point: function(x, y) {\n      this.stream.point(x, -y)\n    }\n  })\n\n  var path = d3.geoPath().projection(transform)\n\n  var g = svg.append('g')\n    .attr('transform', 'translate(0,' + HEIGHT + ')')\n\n  g.selectAll('.tiles')\n    .data(tiles.features)\n    .enter().append('path')\n    .attr('d', path)\n})\n```\n\nTo draw a border around each state:\n\n```javascript\n// Build list of state codes\nvar stateCodes = []\ntilegram.objects.tiles.geometries.forEach(function(geometry) {\n  if (stateCodes.indexOf(geometry.properties.state) === -1) {\n    stateCodes.push(geometry.properties.state)\n  }\n})\n\n// Build merged geometry for each state\nvar stateBorders = stateCodes.map(function(code) {\n  return topojson.merge(\n    tilegram,\n    tilegram.objects.tiles.geometries.filter(function(geometry) {\n      return geometry.properties.state === code\n    })\n  )\n})\n\n// Draw path\ng.selectAll('path.border')\n  .data(stateBorders)\n  .enter().append('path')\n  .attr('d', path)\n  .attr('class', 'border')\n  .attr('fill', 'none')\n  .attr('stroke', 'black')\n  .attr('stroke-width', 4)\n```\n\n## Sharing tilegrams\n\nIf you use, enjoy, or can't stand this tool, we'd love to hear from you at\n[@pitchinc](http://twitter.com/pitchinc) or\n[info@pitchinteractive.com](mailto:info@pitchinteractive.com).\nWe hope to include more example tilegrams in the application.\n\nHappy tilegramming!\n"
+	module.exports = "# Making a Tilegram\n\nA “tilegram” is a map made of tiles\nwhere regions are sized proportionally to a dataset.\nThe name is short for a tiled\n[cartogram](https://en.wikipedia.org/wiki/Cartogram).\nTilegrams can represent demographic data more truthfully than conventional,\ngeographic maps, while still retaining a familiar appearance.\n\nThis free, open-source tool enables news designers and developers\nto browse existing tilegrams or make their own for use in interactive\nand print publications.\n\nEven with computer automation, tilegrams can be time-consuming to produce,\nbecause, to be effective, they require a human eye to verify that geographic\ncontours will be recognizable and meaningful to a general readership. For this\nreason, you're encouraged to begin with existing tilegrams before authoring\nyour own.\n\nYou can read more about the project in our announcement\n[blog post](http://pitchinteractive.com/latest/tilegrams-more-human-maps/).\n\nThis manual proceeds from the most basic to the most advanced usage case.\n\n## Exporting existing tilegrams\n\nOn load, you will see a ready-made tilegram, as selected in the\n**Load existing** menu. Try selecting other options to browse around.\n\nIf you are satisfied with the tilegram as it appears, go right ahead and\n**Export**—as **TopoJSON** or **SVG**—using the buttons at the lower left.\n\nDesigners will be able to import the SVG into their software of choice\n(e.g. Illustrator) and developers will be able to pull the TopoJSON into\nweb applications. In both cases, the data is identified with the US\n[FIPS](https://en.wikipedia.org/wiki/Federal_Information_Processing_Standards)\ncode.\n\n## Editing tilegrams\n\nSuppose you've loaded a tilegram, but want to reshape a region. Maybe Florida\nlooks too heavy, or Missouri is streched too thin.\n\nClick step **2**: **Refine your tilegram**.\n\n### Moving tiles around\n\nClick and drag any tile to move it around.\n\nTo move many tiles around, click and drag a\nrectangular marquee around them, and then drag them around.\n\nTo move just a specific region around, double-click\nany tile in it to select them all—then drag them around.\n\nYou can also hover over a region in the **State Tiles**\nsidebar area to see that region's tiles highlighted on the map.\n\n### Ensuring statistical accuracy\n\nUnder **State Tiles**, you'll see a list of each state with a number and a\nhexagon.\n\nThe number indicates the _delta inaccuracy_ between the number of tiles that\nregion _currently_ has on the map and how many it _should_ have, based on the\ndataset. If the delta is positive, that region has too many tiles on the map.\nIf the delta is negative, it doesn't have enough tiles on the map. If there is\na warning sign, then that region doesn't have enough data for even a single tile\non the map at the chosen resolution.\n\n(_Why does this happen?_ It is computationally very difficult to produce\ntilegrams which are accurate _and_ recognizable. As you begin to make\ncartograms, you'll appreciate the difficult trade-offs you must make between\npreserving the approximate shapes of regions and their adjacency to other\nregions.)\n\nTo remove a tile from the map, click it, and hit 'Delete' on your keyboard.\n\nTo add a tile to the map, click the hexagon from the left sidebar and drag it\nonto the map.\n\n## Generating new tilegrams\n\nIf you've made it this far, you are ready to produce your own tilegram.\n\nSelect **Generate from data**. You will see the tilegram generated before your\neyes, by beginning with a conventional geographic map and then progressively\nresizing its regions to conform to the selected dataset.\n\nUnder **Dataset**, you may select one of a few prepared datasets, or input\nyour own **Custom CSV**, by pasting in a dataset in the format specified,\nusing US FIPS codes.\n\nThen you may alter the resolution in two ways. The most visually gratifying is\nto click and grab the **Resolution** slider and watch as the tiles are\nre-computed in realtime. The other, more statistically accurate way is to click\ninto the **Per tile** field and entire your desired value per tile.\n\nFor example, if you are using population to scale the regions of your tilegram,\nyou might enter '500,000' so that each tile corresponds to (approximately) five\nhundred thousand people. Then, each region's number of tiles is rounded to the\nnearest multiple of that number. So, in this same example, if you have a region\nwith 700,000 people, the metrics would show that you need one tile and if you\nhave a region with 800,000 people it would round up to two tiles.\n\nAs you adjust the **Dataset** and **Resolution**/**Per tile**, you'll notice\nthat the _deltas_ under **State Tiles** update dynamically. Please remember\nto take note of them and ensure that they all read `0` to make responsible\ntilegrams.\n\n## Using exported tilegrams\n\n### In D3\n\nYou can export either SVG or TopoJSON for use in [D3](https://d3js.org/).\n\nThe following examples use D3 v4 and were tested against this hosted version:\n\n```html\n<script type=\"text/javascript\" src=\"https://d3js.org/d3.v4.min.js\"></script>\n```\n\n#### Rendering tilegram SVG in D3\n\nThe simplest D3 integration may just be to write the SVG to the DOM and then\nadd handlers for interactivity:\n\n```javascript\nvar WIDTH = 800\n\nd3.text('tiles.svg', (e, data) => {\n  var div = d3.select(document.body).append('div').html(data)\n  var svg = div.select('svg')\n  var groups = svg.selectAll('g')\n\n  // Scale SVG\n  var importedWidth = parseInt(svg.attr('width'))\n  var importedHeight = parseInt(svg.attr('height'))\n  var scale = WIDTH / importedWidth\n  svg\n    .attr('width', importedWidth * scale)\n    .attr('height', importedHeight * scale)\n  groups.attr('transform', 'scale(' + scale + ')')\n\n  // Apply handlers\n  groups.on('click', (e) => {\n    console.log('Clicked', d3.event.target.parentNode.id)\n  })\n})\n```\n\n#### Rendering tilegram TopoJSON in D3\n\nWhen displaying tilegrams TopoJSON in D3, it's important not to use a geographic\nprojection, as the TopoJSON coordinates do not refer to latitude/longitude,\nbut to dimensionless Euclidean space.\n\nIt is currently also necessary to flip the map vertically. (This is\nbecause the exported tilegram coordinates assume that the origin (`0, 0`) is in\nthe lower-left corner, whereas projection-less rendering will assume that it's\nin the upper-left.) Note the `transform` below.\n\nFirst, be sure to import `topojson` as well:\n\n```html\n<script type=\"text/javascript\" src=\"http://d3js.org/topojson.v1.min.js\"></script>\n```\n\nThen:\n\n```javascript\nvar WIDTH = 1400\nvar HEIGHT = 1000\n\nvar svg = d3.select('body').append('svg')\n    .attr('width', WIDTH)\n    .attr('height', HEIGHT)\n\nd3.json('tiles.topo.json', function showData(error, tilegram) {\n  var tiles = topojson.feature(tilegram, tilegram.objects.tiles)\n\n  var transform = d3.geoTransform({\n    point: function(x, y) {\n      this.stream.point(x, -y)\n    }\n  })\n\n  var path = d3.geoPath().projection(transform)\n\n  var g = svg.append('g')\n    .attr('transform', 'translate(0,' + HEIGHT + ')')\n\n  g.selectAll('.tiles')\n    .data(tiles.features)\n    .enter().append('path')\n    .attr('d', path)\n})\n```\n\nTo draw a border around each state:\n\n```javascript\n// Build list of state codes\nvar stateCodes = []\ntilegram.objects.tiles.geometries.forEach(function(geometry) {\n  if (stateCodes.indexOf(geometry.properties.state) === -1) {\n    stateCodes.push(geometry.properties.state)\n  }\n})\n\n// Build merged geometry for each state\nvar stateBorders = stateCodes.map(function(code) {\n  return topojson.merge(\n    tilegram,\n    tilegram.objects.tiles.geometries.filter(function(geometry) {\n      return geometry.properties.state === code\n    })\n  )\n})\n\n// Draw path\ng.selectAll('path.border')\n  .data(stateBorders)\n  .enter().append('path')\n  .attr('d', path)\n  .attr('class', 'border')\n  .attr('fill', 'none')\n  .attr('stroke', 'black')\n  .attr('stroke-width', 4)\n```\n\n## Sharing tilegrams\n\nIf you use, enjoy, or can't stand this tool, we'd love to hear from you at\n[@pitchinc](http://twitter.com/pitchinc) or\n[info@pitchinteractive.com](mailto:info@pitchinteractive.com).\nWe hope to include more example tilegrams in the application.\n\nHappy tilegramming!\n"
 
 /***/ },
 /* 284 */
@@ -94576,7 +94657,7 @@
 /* 290 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// https://d3js.org/d3-time/ Version 1.0.3. Copyright 2016 Mike Bostock.
+	// https://d3js.org/d3-time/ Version 1.0.4. Copyright 2016 Mike Bostock.
 	(function (global, factory) {
 	   true ? factory(exports) :
 	  typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -94619,9 +94700,9 @@
 
 	  interval.filter = function(test) {
 	    return newInterval(function(date) {
-	      while (floori(date), !test(date)) date.setTime(date - 1);
+	      if (date >= date) while (floori(date), !test(date)) date.setTime(date - 1);
 	    }, function(date, step) {
-	      while (--step >= 0) while (offseti(date, 1), !test(date)) {} // eslint-disable-line no-empty
+	      if (date >= date) while (--step >= 0) while (offseti(date, 1), !test(date)) {} // eslint-disable-line no-empty
 	    });
 	  };
 
@@ -94954,6 +95035,7 @@
 	Object.defineProperty(exports, '__esModule', { value: true });
 
 	})));
+
 
 /***/ },
 /* 291 */
@@ -95750,7 +95832,7 @@
 	            _react2.default.createElement(
 	              'a',
 	              { onClick: this._resetUpload },
-	              '×'
+	              '\xD7'
 	            )
 	          ),
 	          resolution
