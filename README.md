@@ -51,8 +51,6 @@ The Maker also depends on a pre-release `npm` version of `topogram`
 
 [France Population Data](https://en.wikipedia.org/wiki/Ranked_list_of_French_regions)
 
-[World Population Data](http://databank.worldbank.org/)
-
 ## Base Map Sources
 US states map:
 [Natural Earth Data](http://www.naturalearthdata.com/downloads/)
