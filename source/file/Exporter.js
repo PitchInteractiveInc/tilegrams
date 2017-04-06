@@ -3,7 +3,11 @@
  *
  * Primary reference:
  * https://github.com/mbostock/topojson/wiki/Introduction
+ *
+ * For GeoJSON geometry specifications see:
+ * http://geojson.org/geojson-spec.html#appendix-a-geometry-examples
  */
+
 import {color} from 'd3-color'
 import {nest} from 'd3-collection'
 import {topology} from 'topojson/server.js'
@@ -51,9 +55,16 @@ class Exporter {
           hexagonPoints.push([hexagonPoints[0][0], hexagonPoints[0][1]])
           return hexagonPoints
         })
-        geometry = {
-          type: 'MultiPolygon',
-          coordinates: [tilesCoordinates],
+        if (tilesCoordinates.length !== 1) {
+          geometry = {
+            type: 'MultiPolygon',
+            coordinates: tilesCoordinates.map(t => [t]),
+          }
+        } else {
+          geometry = {
+            type: 'Polygon',
+            coordinates: tilesCoordinates,
+          }
         }
       }
       const feature = {
@@ -73,7 +84,6 @@ class Exporter {
         features,
       },
     }
-
     // Convert verbose GeoJSON to compressed TopoJSON format
     const topoJson = topology(geoJsonObjects, {
       'property-transform': feature => feature.properties,
