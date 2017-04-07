@@ -53,8 +53,8 @@ class Importer {
   /** Determine paths' absolute points, given TopoJSON delta-encoded arcs */
   _getAbsolutePaths(geometry, allArcs, transform) {
     // flatten MultiPolygon array so that we can map the arcs to get absolute paths
-    const arcs = geometry.type === 'Polygon' ?
-      geometry.arcs : geometry.arcs.reduce((a, b) => a.concat(b))
+    const arcs = geometry.type === 'MultiPolygon' ?
+      geometry.arcs.reduce((a, b) => a.concat(b)) : geometry.arcs
     // for each arc
     return arcs.map(arc => {
       return arc.reduce(
