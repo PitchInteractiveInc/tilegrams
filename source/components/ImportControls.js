@@ -1,5 +1,6 @@
 import React from 'react'
 import commaNumber from 'comma-number'
+import {OBJECT_ID} from '../file/Exporter'
 
 const CUSTOM_LABEL = 'Upload custom tilegram'
 
@@ -34,9 +35,14 @@ export default class ImportControls extends React.Component {
       let topoJson
       try {
         topoJson = JSON.parse(readEvent.target.result)
+        // validate is tilegram
+        topoJson.objects[OBJECT_ID].geometries // eslint-disable-line no-unused-expressions
       } catch (e) {
-        // eslint-disable-next-line no-alert
-        alert('Faild to parse JSON')
+        // catch non-json and non-tilegram topojson files
+        // eslint-disable-next-line max-len, no-alert
+        alert('We were unable to load your tilegram, sorry. If you\'re seeing this message it\'s probably because the tilegram format is incorrect or you tried to upload an unrecognized file type.')
+        this._resetUpload()
+        return
       }
       this.props.onCustomImport(topoJson)
       this.setState({
