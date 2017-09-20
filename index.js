@@ -38,9 +38,9 @@ function selectDataset(geography, index, customCsv) {
   function iterateLoop() {
     const iterated = canvas.iterateCartogram(dataset.geography)
     if (iterated) {
-      canvas.updateTilesFromMetrics()
-    } else {
       requestAnimationFrame(iterateLoop);
+    } else {
+      canvas.updateTilesFromMetrics()
     }
   }
 
