@@ -14,9 +14,7 @@ import {updateCanvasSize} from './source/constants'
 require('./source/css/main.scss')
 require('font-awesome/scss/font-awesome.scss')
 
-const CARTOGRAM_COMPUTE_FPS = 60.0
-
-let cartogramComputeTimer
+let cartogramComputeRafId
 
 let importing = false
 const defaultGeography = 'United States'
@@ -36,13 +34,18 @@ function selectDataset(geography, index, customCsv) {
   importing = false
   ui.setSelectedDataset(dataset)
   canvas.computeCartogram(dataset)
-  clearInterval(cartogramComputeTimer)
-  cartogramComputeTimer = setInterval(() => {
+
+  function iterateLoop() {
     const iterated = canvas.iterateCartogram(dataset.geography)
     if (iterated) {
       canvas.updateTilesFromMetrics()
+    } else {
+      requestAnimationFrame(iterateLoop);
     }
-  }, 1000.0 / CARTOGRAM_COMPUTE_FPS)
+  }
+
+  cancelAnimationFrame(cartogramComputeRafId)
+  cartogramComputeRafId = requestAnimationFrame(iterateLoop)
 }
 
 function updateUi() {
@@ -51,7 +54,7 @@ function updateUi() {
 }
 
 function loadTopoJson(topoJson) {
-  clearInterval(cartogramComputeTimer)
+  cancelAnimationFrame(cartogramComputeRafId)
   importing = true
   const {tiles, dataset, metricPerTile, geography} = importer.fromTopoJson(topoJson)
   ui.setGeography(geography)
