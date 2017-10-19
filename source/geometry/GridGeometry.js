@@ -18,6 +18,9 @@ class GridGeometry {
   }
 
   setTileEdge(tileEdge) {
+    if (isNaN(tileEdge)) {
+      console.warn('setting NaN tile edge, something probably went wrong')
+    }
     this._tileEdge = tileEdge
     this.resize()
   }
