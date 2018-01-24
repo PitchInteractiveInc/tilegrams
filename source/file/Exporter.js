@@ -114,7 +114,7 @@ class Exporter {
     groupedTiles.forEach((group) => {
       // convert from hsl to hex string for illustrator
       const groupEl = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-      groupEl.setAttribute('id', geoCodeToName[group.key])
+      groupEl.setAttribute('id', geoCodeToName[group.key].name)
       const colorString = color(fipsColor(group.key)).toString()
       group.values.forEach((tile) => {
         const center = gridGeometry.tileCenterPoint({
