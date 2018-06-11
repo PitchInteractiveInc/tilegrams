@@ -8,6 +8,8 @@ import francePopulationWithOverseasTilegram from
   '../../tilegrams/france-population-with-overseas.json'
 import franceOneToOneDepartmentsTilegram from '../../tilegrams/france-departments-one-to-one.json'
 import germanyOneToOneConstituenciesTilegram from '../../tilegrams/germany-constituencies.json'
+import usCongress2018 from '../../tilegrams/us-congressional-districts-2018.json'
+import usCongress2018brokenOut from '../../tilegrams/us-congressional-districts-2018-brokenout.json'
 
 class TilegramResource {
   constructor() {
@@ -30,6 +32,16 @@ class TilegramResource {
       {
         label: 'NPR 1-to-1',
         topoJson: nprOneToOneTilegram,
+        geography: 'United States',
+      },
+      {
+        label: 'U.S. Congressional Districts 2018',
+        topoJson: usCongress2018,
+        geography: 'United States',
+      },
+      {
+        label: 'U.S. Congressional Districts 2018 Broken Out By State',
+        topoJson: usCongress2018brokenOut,
         geography: 'United States',
       },
       {

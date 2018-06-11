@@ -3,6 +3,7 @@ import geographyResource from './GeographyResource.js'
 import populationCsv from '../../data/us/population-by-state.csv'
 import electoralCollegeCsv from '../../data/us/electoral-college-votes-by-state.csv'
 import gdpCsv from '../../data/us/gdp-by-state.csv'
+import congressionalDistricts2018 from '../../data/us/congressional-districts-2018.csv'
 // import ukConstituency from '../../data/uk/constituencies.csv'
 // import ukAuthority from '../../data/uk/authorities.csv'
 import germanyConstituency from '../../data/germany/constituencies.csv'
@@ -34,6 +35,12 @@ class DatasetResource {
         label: 'U.S. GDP 2015 (Millions)',
         data: this.parseCsv(gdpCsv, 'United States'),
         geography: 'United States',
+      },
+      {
+        label: 'U.S. Congressional Districts 2018',
+        data: this.parseCsv(congressionalDistricts2018, 'United States'),
+        geography: 'United States',
+        defaultResolution: 1,
       },
       {
         label: 'Netherlands – Population',
