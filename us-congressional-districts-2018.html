@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>2018 US Congressional Districts Tilegrams</title>
+    <meta name = "viewport" content = "initial-scale=1.0, maximum-scale=1.0, width=device-width">
+    <meta name="description" content="Tilegrams helps you create beautiful, statistically-accurate maps scaled proportionally to a dataset. This open-source tool was created through a collaboration between Pitch Interactive and Google News Lab." />
+    <!-- Open Graph data -->
+    <meta property="og:title" content="Tilegrams" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://pitchinteractiveinc.github.io/tilegrams/us-congressional-districts-2018.html" />
+    <meta property="og:image" content="http://pitchinteractive.com/latest/wp-content/uploads/2016/09/tilegrams-photo-1400-soft1.jpg" />
+    <meta property="og:description" content="Tilegrams helps you create beautiful, statistically-accurate maps scaled proportionally to a dataset. This open-source tool was created through a collaboration between Pitch Interactive and Google News Lab." />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.0/dist/mini-default.min.css">
+    <script src="https://unpkg.com/d3@5.4.0/dist/d3.min.js"></script>
+    <script src="https://unpkg.com/topojson"></script>
+    <style>
+      .state {
+        float: left;
+        border: 1px solid #ccc;
+        padding: 1em;
+      }
+
+      svg {
+        cursor: pointer;
+      }
+      .header {
+        background-color: #1a1a1a;
+        padding: 0.5em 1em 0.3em;
+      }
+      p {
+        padding-left: 0.75em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class='header'>
+      <img src='./logo.png' alt='Tilegrams by Pitch Interactive' />
+    </div>
+    <p>
+      Tilegrams currently offers a tilegram map of the United States 2018 Congressional districts. These might be useful if you are only looking to visualize one state of the Union rather than the entire map.
+      <div class='states'></div>
+    </p>
+    <script>
+      var inputDirectory = '/tilegrams/us-individual-states-congressional-districts/';
+      function fipsColor(fips) {
+        const scaleTo = 56
+        let number = parseInt(fips, 10) % scaleTo
+        if (isNaN(number)) {
+          number = (
+            ((fips.charCodeAt(fips.length - 1) || 0) + ((fips.charCodeAt(fips.length - 2) || 0) * 10))
+          ) % scaleTo
+        }
+        const scalar = number / scaleTo
+        return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 87%, 70%)`
+      }
+      var states = ['ak', 'al', 'ar', 'az', 'ca', 'co', 'ct', 'de', 'fl', 'ga',
+        'hi', 'ia', 'id', 'il', 'in', 'ks', 'ky', 'la', 'ma', 'md', 'me', 'mi',
+        'mn', 'mo', 'ms', 'mt', 'nc', 'nd', 'ne', 'nh', 'nj', 'nm', 'nv', 'ny',
+        'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'ut', 'va', 'vt',
+        'wa', 'wi', 'wv', 'wy'];
+
+      console.log(states)
+      var container = d3.select('.states')
+      var statesGroup = container.selectAll('div.state').data(states)
+        .enter().append('div').attr('class',(state) => 'state ' + state)
+
+      const identity = (d) => [d]
+      statesGroup.selectAll('.name').data(identity)
+        .enter().append('span').attr('class', 'name').text((label) => label.toUpperCase())
+      statesGroup.selectAll('.link').data(identity)
+        .enter().append('a').attr('class', 'link')
+          .text((label) => ' Topojson')
+          .attr('href', (state) => inputDirectory + state + '.json')
+          .attr('target', '_blank')
+          .attr('rel', 'noopener noreferrer')
+
+      statesGroup.selectAll('.viz').data(identity)
+        .enter().append('div').attr('class', 'viz')
+        .on('click', (state) => window.open(inputDirectory + state + '.json'))
+      states.forEach((state, stateIndex) => {
+        d3.json(inputDirectory + state + '.json')
+          .then((data) => {
+            console.log(data)
+            var tiles = topojson.feature(data, data.objects.tiles)
+            var transform = d3.geoTransform({
+              point: function(x, y) {
+                this.stream.point(x, -y)
+              }
+            })
+            var width = 400
+            var height = 400
+            var path = d3.geoPath().projection(transform)
+            var svg = statesGroup.select('.state.'+ state +' .viz').append('svg')
+              .attr('width', width)
+              .attr('height', height)
+            var g = svg.append('g')
+              .attr('transform', 'translate(0,' + height + ')')
+
+            var runningX = 0
+            var runningY = 0
+            var count = 0
+            g.selectAll('.tiles')
+              .data(tiles.features)
+              .enter().append('path')
+              .attr('d', (feature) => {
+                var d = path(feature)
+                var numbers = d.split(/M|Z|L/)
+                numbers.forEach(number => {
+                  var parts = number.split(',')
+                  if (number === '') {
+                    return;
+                  }
+                  runningX += parseFloat(parts[0])
+                  runningY += parseFloat(parts[1])
+                  count ++;
+                })
+
+                return d;
+              })
+              .attr('fill', fipsColor(stateIndex))
+
+            const avgX = runningX / count;
+            const avgY = runningY / count;
+            const scale = 0.75
+            const offsetX = width / 2 - (avgX * scale)
+            const offsetY = height / 2 - (avgY / 1.5 / scale)
+            g.attr('transform', ' translate(' + offsetX + ',' + offsetY + ') scale(' + scale + ')')
+            console.log(state, avgX, avgY)
+          })
+      })
+
+    </script>
+  </body>
+</html>
