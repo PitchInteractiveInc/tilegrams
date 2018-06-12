@@ -1,10 +1,12 @@
 var path = require('path')
 var webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: {
     javascript: './index.js',
     html: './index.html',
+    html2: './us-congressional-districts-2018.html'
   },
   output: {
     filename: 'main.js',
@@ -32,12 +34,13 @@ module.exports = {
         loader: "file?name=[name].[ext]"
       },
       {
-        test: /tilegrams\/us-individual-states-congressional-districts\/*\.json$/,
-        loader: 'file?name=[name].[ext]'
-      },
-      {
         test: /\.json$/,
         loaders: ['json'],
+      },
+      {
+        type: 'javascript/auto',
+        test: /tilegrams\/us-individual-states-congressional-districts\/[^.]*\.json$/,
+        loader: 'file-loader?name=tilegrams/us-individual-states-congressional-districts/[name].[ext]'
       },
       {
         test: /\.csv$/,
@@ -55,4 +58,12 @@ module.exports = {
       {test: /\.png(\?v=\d+\.\d+\.\d+)?$/, loader: "file-loader?name=[name].[ext]"}
     ],
   },
+  plugins: [
+    new CopyWebpackPlugin([
+      {
+        from: './tilegrams/us-individual-states-congressional-districts/**',
+        to: './'
+      }
+    ])
+  ]
 }

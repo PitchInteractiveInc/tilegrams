@@ -11,8 +11,6 @@ import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
 
-// eslint-disable-next-line no-unused-vars
-import staticExports from './source/staticExports'
 import logo from './source/images/logo.png' // eslint-disable-line no-unused-vars
 
 require('./source/css/main.scss')
