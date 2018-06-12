@@ -60,7 +60,6 @@
         'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'ut', 'va', 'vt',
         'wa', 'wi', 'wv', 'wy'];
 
-      console.log(states)
       var container = d3.select('.states')
       var statesGroup = container.selectAll('div.state').data(states)
         .enter().append('div').attr('class',(state) => 'state ' + state)
@@ -81,7 +80,6 @@
       states.forEach((state, stateIndex) => {
         d3.json(inputDirectory + state + '.json')
           .then((data) => {
-            console.log(data)
             var tiles = topojson.feature(data, data.objects.tiles)
             var transform = d3.geoTransform({
               point: function(x, y) {
@@ -126,7 +124,6 @@
             const offsetX = width / 2 - (avgX * scale)
             const offsetY = height / 2 - (avgY / 1.5 / scale)
             g.attr('transform', ' translate(' + offsetX + ',' + offsetY + ') scale(' + scale + ')')
-            console.log(state, avgX, avgY)
           })
       })
 
