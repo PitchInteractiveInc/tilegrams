@@ -28,19 +28,61 @@
         background-color: #1a1a1a;
         padding: 0.5em 1em 0.3em;
       }
-      p {
-        padding-left: 0.75em;
+      .states {
+        margin-top: 1em;
       }
+      p {
+      }
+      .svgLink {
+        display: inline-block;
+        padding-left: 1em;
+      }
+
+      .quickDL {
+        position: absolute;
+        right: 1em;
+        top: 1em;
+
+      }
+      .wrapper {
+        position: relative;
+        padding: 1em;
+      }
+      .cf:before,
+      .cf:after {
+          content: " "; /* 1 */
+          display: table; /* 2 */
+      }
+
+      .cf:after {
+          clear: both;
+      }
+
+      select {
+        margin: 0;
+      }
+
+      .descr {
+        padding-right: 300px;
+      }
+
     </style>
   </head>
   <body>
     <div class='header'>
       <img src='./logo.png' alt='Tilegrams by Pitch Interactive' />
     </div>
-    <p>
-      Tilegrams currently offers a tilegram map of the United States 2018 Congressional districts. These might be useful if you are only looking to visualize one state of the Union rather than the entire map.
-      <div class='states'></div>
-    </p>
+    <div class='wrapper'>
+      <div class='descr'>
+        Tilegrams currently offers a tilegram map of the United States 2018 Congressional districts. These might be useful if you are only looking to visualize one state of the Union rather than the entire map.
+      </div>
+      <div class='quickDL'>
+        Quick Download: <select class='stateList'></select>
+        <a class='topo' target='_blank' rel='noopener noreferrer'>Topojson</a>
+        <a class='svg'>SVG</a>
+      </div>
+      <div class='states cf'></div>
+    </div>
     <script>
       var inputDirectory = './tilegrams/us-individual-states-congressional-districts/';
       function fipsColor(fips) {
@@ -59,6 +101,280 @@
         'mn', 'mo', 'ms', 'mt', 'nc', 'nd', 'ne', 'nh', 'nj', 'nm', 'nv', 'ny',
         'oh', 'ok', 'or', 'pa', 'ri', 'sc', 'sd', 'tn', 'tx', 'ut', 'va', 'vt',
         'wa', 'wi', 'wv', 'wy'];
+      var fipsToState = {
+        "01": {
+          "name_short": "AL",
+          "name": "ALABAMA"
+        },
+        "02": {
+          "name_short": "AK",
+          "name": "ALASKA"
+        },
+        "04": {
+          "name_short": "AZ",
+          "name": "ARIZONA"
+        },
+        "05": {
+          "name_short": "AR",
+          "name": "ARKANSAS"
+        },
+        "06": {
+          "name_short": "CA",
+          "name": "CALIFORNIA"
+        },
+        "08": {
+          "name_short": "CO",
+          "name": "COLORADO"
+        },
+        "09": {
+          "name_short": "CT",
+          "name": "CONNECTICUT"
+        },
+        "10": {
+          "name_short": "DE",
+          "name": "DELAWARE"
+        },
+        "11": {
+          "name_short": "DC",
+          "name": "DISTRICT OF COLUMBIA"
+        },
+        "12": {
+          "name_short": "FL",
+          "name": "FLORIDA"
+        },
+        "13": {
+          "name_short": "GA",
+          "name": "GEORGIA"
+        },
+        "15": {
+          "name_short": "HI",
+          "name": "HAWAII"
+        },
+        "16": {
+          "name_short": "ID",
+          "name": "IDAHO"
+        },
+        "17": {
+          "name_short": "IL",
+          "name": "ILLINOIS"
+        },
+        "18": {
+          "name_short": "IN",
+          "name": "INDIANA"
+        },
+        "19": {
+          "name_short": "IA",
+          "name": "IOWA"
+        },
+        "20": {
+          "name_short": "KS",
+          "name": "KANSAS"
+        },
+        "21": {
+          "name_short": "KY",
+          "name": "KENTUCKY"
+        },
+        "22": {
+          "name_short": "LA",
+          "name": "LOUISIANA"
+        },
+        "23": {
+          "name_short": "ME",
+          "name": "MAINE"
+        },
+        "24": {
+          "name_short": "MD",
+          "name": "MARYLAND"
+        },
+        "25": {
+          "name_short": "MA",
+          "name": "MASSACHUSETTS"
+        },
+        "26": {
+          "name_short": "MI",
+          "name": "MICHIGAN"
+        },
+        "27": {
+          "name_short": "MN",
+          "name": "MINNESOTA"
+        },
+        "28": {
+          "name_short": "MS",
+          "name": "MISSISSIPPI"
+        },
+        "29": {
+          "name_short": "MO",
+          "name": "MISSOURI"
+        },
+        "30": {
+          "name_short": "MT",
+          "name": "MONTANA"
+        },
+        "31": {
+          "name_short": "NE",
+          "name": "NEBRASKA"
+        },
+        "32": {
+          "name_short": "NV",
+          "name": "NEVADA"
+        },
+        "33": {
+          "name_short": "NH",
+          "name": "NEW HAMPSHIRE"
+        },
+        "34": {
+          "name_short": "NJ",
+          "name": "NEW JERSEY"
+        },
+        "35": {
+          "name_short": "NM",
+          "name": "NEW MEXICO"
+        },
+        "36": {
+          "name_short": "NY",
+          "name": "NEW YORK"
+        },
+        "37": {
+          "name_short": "NC",
+          "name": "NORTH CAROLINA"
+        },
+        "38": {
+          "name_short": "ND",
+          "name": "NORTH DAKOTA"
+        },
+        "39": {
+          "name_short": "OH",
+          "name": "OHIO"
+        },
+        "40": {
+          "name_short": "OK",
+          "name": "OKLAHOMA"
+        },
+        "41": {
+          "name_short": "OR",
+          "name": "OREGON"
+        },
+        "42": {
+          "name_short": "PA",
+          "name": "PENNSYLVANIA"
+        },
+        "44": {
+          "name_short": "RI",
+          "name": "RHODE ISLAND"
+        },
+        "45": {
+          "name_short": "SC",
+          "name": "SOUTH CAROLINA"
+        },
+        "46": {
+          "name_short": "SD",
+          "name": "SOUTH DAKOTA"
+        },
+        "47": {
+          "name_short": "TN",
+          "name": "TENNESSEE"
+        },
+        "48": {
+          "name_short": "TX",
+          "name": "TEXAS"
+        },
+        "49": {
+          "name_short": "UT",
+          "name": "UTAH"
+        },
+        "50": {
+          "name_short": "VT",
+          "name": "VERMONT"
+        },
+        "51": {
+          "name_short": "VA",
+          "name": "VIRGINIA"
+        },
+        "53": {
+          "name_short": "WA",
+          "name": "WASHINGTON"
+        },
+        "54": {
+          "name_short": "WV",
+          "name": "WEST VIRGINIA"
+        },
+        "55": {
+          "name_short": "WI",
+          "name": "WISCONSIN"
+        },
+        "56": {
+          "name_short": "WY",
+          "name": "WYOMING"
+        }
+      }
+
+      function titleCase(str) {
+        str = str.toLowerCase().split(' ');
+        for (var i = 0; i < str.length; i++) {
+          str[i] = str[i].charAt(0).toUpperCase() + str[i].slice(1);
+        }
+        return str.join(' ');
+      }
+
+      var counts = [
+        { fips: 1, count: 7 },
+        { fips: 2, count: 1 },
+        { fips: 4, count: 9 },
+        { fips: 5, count: 4 },
+        { fips: 6, count: 53 },
+        { fips: 8, count: 7 },
+        { fips: 9, count: 5 },
+        { fips: 10, count: 1 },
+        { fips: 12, count: 27 },
+        { fips: 13, count: 14 },
+        { fips: 15, count: 2 },
+        { fips: 16, count: 2 },
+        { fips: 17, count: 18 },
+        { fips: 18, count: 9 },
+        { fips: 19, count: 4 },
+        { fips: 20, count: 4 },
+        { fips: 21, count: 6 },
+        { fips: 22, count: 6 },
+        { fips: 23, count: 2 },
+        { fips: 24, count: 8 },
+        { fips: 25, count: 9 },
+        { fips: 26, count: 14 },
+        { fips: 27, count: 8 },
+        { fips: 28, count: 4 },
+        { fips: 29, count: 8 },
+        { fips: 30, count: 1 },
+        { fips: 31, count: 3 },
+        { fips: 32, count: 4 },
+        { fips: 33, count: 2 },
+        { fips: 34, count: 12 },
+        { fips: 35, count: 3 },
+        { fips: 36, count: 27 },
+        { fips: 37, count: 13 },
+        { fips: 38, count: 1 },
+        { fips: 39, count: 16 },
+        { fips: 40, count: 5 },
+        { fips: 41, count: 5 },
+        { fips: 42, count: 18 },
+        { fips: 44, count: 2 },
+        { fips: 45, count: 7 },
+        { fips: 46, count: 1 },
+        { fips: 47, count: 9 },
+        { fips: 48, count: 36 },
+        { fips: 49, count: 4 },
+        { fips: 50, count: 1 },
+        { fips: 51, count: 11 },
+        { fips: 53, count: 10 },
+        { fips: 54, count: 3 },
+        { fips: 55, count: 8 },
+        { fips: 56, count: 1 },
+      ]
+
+      d3.select('select').selectAll('option').data(states)
+        .enter()
+        .append('option').text(state => state.toUpperCase())
+      d3.select('select').on('change', () => {
+        quickDownload(d3.event.target.value);
+      })
 
       var container = d3.select('.states')
       var statesGroup = container.selectAll('div.state').data(states)
@@ -66,13 +382,18 @@
 
       const identity = (d) => [d]
       statesGroup.selectAll('.name').data(identity)
-        .enter().append('span').attr('class', 'name').text((label) => label.toUpperCase())
+        .enter().append('div').attr('class', 'name').text((label) => label.toUpperCase())
       statesGroup.selectAll('.link').data(identity)
         .enter().append('a').attr('class', 'link')
           .text((label) => ' Topojson')
           .attr('href', (state) => inputDirectory + state + '.json')
           .attr('target', '_blank')
           .attr('rel', 'noopener noreferrer')
+      statesGroup.selectAll('.svgLink').data(identity)
+        .enter().append('a').attr('class', 'svgLink')
+          .text((label) => 'SVG')
+          .attr('href', '#')
+
 
       statesGroup.selectAll('.viz').data(identity)
         .enter().append('div').attr('class', 'viz')
@@ -86,8 +407,8 @@
                 this.stream.point(x, -y)
               }
             })
-            var width = 400
-            var height = 400
+            var width = 200
+            var height = 200
             var path = d3.geoPath().projection(transform)
             var svg = statesGroup.select('.state.'+ state +' .viz').append('svg')
               .attr('width', width)
@@ -95,9 +416,24 @@
             var g = svg.append('g')
               .attr('transform', 'translate(0,' + height + ')')
 
+            let fips = -1;
+            let congressCount = -1;
+            let fullName = state
+            Object.keys(fipsToState).forEach(selectedFips => {
+              const selectedState = fipsToState[selectedFips];
+              if (selectedState.name_short === state.toUpperCase()) {
+                fips = selectedFips;
+                fullName = selectedState.name;
+                counts.forEach(selectedCount => {
+                  if (+selectedCount.fips === +fips) {
+                    congressCount = selectedCount.count
+                  }
+                })
+              }
+            })
             var runningX = 0
             var runningY = 0
-            var count = 0
+            var pathCount = 0
             g.selectAll('.tiles')
               .data(tiles.features)
               .enter().append('path')
@@ -111,21 +447,53 @@
                   }
                   runningX += parseFloat(parts[0])
                   runningY += parseFloat(parts[1])
-                  count ++;
+                  pathCount ++;
                 })
 
                 return d;
               })
               .attr('fill', fipsColor(stateIndex))
+              .attr('stroke', 'black')
 
-            const avgX = runningX / count;
-            const avgY = runningY / count;
-            const scale = 0.75
+            const avgX = runningX / pathCount;
+            const avgY = runningY / pathCount;
+            const scale = 0.375
             const offsetX = width / 2 - (avgX * scale)
-            const offsetY = height / 2 - (avgY / 1.5 / scale)
+            const offsetY = height / 2 - (avgY / 7 / scale)
             g.attr('transform', ' translate(' + offsetX + ',' + offsetY + ') scale(' + scale + ')')
+            statesGroup.select('.state.' + state + ' .name')
+              .text(titleCase(fullName) + ' ' + congressCount + ' seat' + (congressCount === 1 ? '' : 's'))
+
+
+
+
+            var serializer = new XMLSerializer()
+            var source = serializer.serializeToString(svg.node())
+            if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+              source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+              source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+            }
+            source = '<?xml version="1.0" standalone="no"?>\r\n' + source;
+            var url = "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(source);
+
+            statesGroup.select('.state.' + state + ' .svgLink').attr('href', url)
+              .attr('download', state+'.svg')
+
+
+            quickDownload('AK')
           })
       })
+
+      function quickDownload(stateName) {
+        const topo = d3.select('.state.'+stateName.toLowerCase() + ' .link').attr('href')
+        const svg = d3.select('.state.'+stateName.toLowerCase() + ' .svgLink').attr('href')
+        d3.select('.quickDL .topo').attr('href', topo)
+        d3.select('.quickDL .svg').attr('href', svg)
+          .attr('download', stateName.toLowerCase()+'.svg')
+
+      }
 
     </script>
   </body>
