@@ -18,9 +18,11 @@
       .state {
         float: left;
         border: 1px solid #ccc;
-        padding: 1em;
+        padding: 0.8em 1em 0.2em 1em;
       }
-
+      a {
+        text-decoration: underline;
+      }
       svg {
         cursor: pointer;
       }
@@ -64,6 +66,10 @@
 
       .descr {
         padding-right: 300px;
+      }
+
+      .link, .svgLink {
+        font-size: 12px;
       }
 
     </style>
@@ -383,6 +389,12 @@
       const identity = (d) => [d]
       statesGroup.selectAll('.name').data(identity)
         .enter().append('div').attr('class', 'name').text((label) => label.toUpperCase())
+
+
+      statesGroup.selectAll('.viz').data(identity)
+        .enter().append('div').attr('class', 'viz')
+        .on('click', (state) => window.open(inputDirectory + state + '.json'))
+
       statesGroup.selectAll('.link').data(identity)
         .enter().append('a').attr('class', 'link')
           .text((label) => ' Topojson')
@@ -395,9 +407,6 @@
           .attr('href', '#')
 
 
-      statesGroup.selectAll('.viz').data(identity)
-        .enter().append('div').attr('class', 'viz')
-        .on('click', (state) => window.open(inputDirectory + state + '.json'))
       states.forEach((state, stateIndex) => {
         d3.json(inputDirectory + state + '.json')
           .then((data) => {
@@ -457,12 +466,12 @@
 
             const avgX = runningX / pathCount;
             const avgY = runningY / pathCount;
-            const scale = 0.375
+            const scale = 0.42
             const offsetX = width / 2 - (avgX * scale)
-            const offsetY = height / 2 - (avgY / 7 / scale)
+            const offsetY = height / 2 - (avgY / 5.5 / scale)
             g.attr('transform', ' translate(' + offsetX + ',' + offsetY + ') scale(' + scale + ')')
             statesGroup.select('.state.' + state + ' .name')
-              .text(titleCase(fullName) + ' ' + congressCount + ' seat' + (congressCount === 1 ? '' : 's'))
+              .html('<b style="font-size: 14px">'+titleCase(fullName) + '</b> <span style="font-size: 12px">(' + state.toUpperCase() + ') - ' + congressCount + ' seat' + (congressCount === 1 ? '' : 's')+"</span>")
 
 
 
