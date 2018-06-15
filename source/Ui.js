@@ -40,6 +40,7 @@ class Ui {
     this._toggleRefineTooltip = this._toggleRefineTooltip.bind(this)
     this._closeMobile = this._closeMobile.bind(this)
     this.selectTilegramGenerateOption = this.selectTilegramGenerateOption.bind(this)
+    this._selectedTilegramIndex = 0;
   }
 
   _closeMobile() {
@@ -60,6 +61,7 @@ class Ui {
 
   setTilegramLabels(tilegramLabels) {
     this._tilegramLabels = tilegramLabels
+    this._selectedTilegramIndex = 0
   }
 
   setSelectedDataset(dataset) {
@@ -109,6 +111,7 @@ class Ui {
 
   setTilegramSelectedCallback(callback) {
     this._tilegramSelectedCallback = (index) => {
+      this._selectedTilegramIndex = index;
       callback(this._selectedGeography, index)
     }
   }
@@ -293,9 +296,31 @@ class Ui {
     const uiControlsHeight = this._generateOpen ? 'auto' : '0px'
     const metricsHeight = this._editOpen ? 'auto' : '0px'
     const manualClass = this._manualOpen ? 'manual' : 'manual hidden'
+
+    const selectedTilegram = this._tilegramLabels[this._selectedTilegramIndex]
+    let congressionalDistrictModal = null
+    if (
+      this._generateOption === 'import' &&
+      selectedTilegram.includes('U.S. Congressional Districts 2018')
+    ) {
+      congressionalDistrictModal = (
+        <div className='congressionalDistrictModal'>
+          Looking for each State broken out individually?
+          Don't worry,
+          <a
+            href='./us-congressional-districts-2018.html'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            we have you covered.
+          </a>
+        </div>
+      )
+    }
     ReactDOM.render(
       <div>
         {modal}
+        {congressionalDistrictModal}
         <div className={manualClass}>
           <div
             className='manual-close'
