@@ -11,6 +11,7 @@ import franceRegionPopulation from '../../data/france/region-population.csv'
 import franceDepartment from '../../data/france/departments.csv'
 import netherlandsPopulation from '../../data/netherlands/netherlands-populations.csv'
 import brazilPopulation from '../../data/brazil/brazil-populations.csv'
+import irelandVotes from '../../data/ireland/constituency_values.csv'
 
 class DatasetResource {
   constructor() {
@@ -83,6 +84,12 @@ class DatasetResource {
         label: 'France Department 1-to-1',
         data: this.parseCsv(franceDepartment, 'France - Departments'),
         geography: 'France - Departments',
+        defaultResolution: 1,
+      },
+      {
+        label: 'Ireland Constituencies',
+        data: this.parseCsv(irelandVotes, 'Ireland'),
+        geography: 'Ireland',
         defaultResolution: 1,
       },
     ]

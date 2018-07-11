@@ -315,3 +315,15 @@ code {
     display: none;
   }
 }
+
+.congressionalDistrictModal {
+  position: fixed;
+  top: 55px;
+  left: 323px;
+  width: calc(100% - 323px);
+  text-align: center;
+  z-index: 99999;
+  background-color: white;
+  line-height: 3em;
+  font-size: 120%;
+}
