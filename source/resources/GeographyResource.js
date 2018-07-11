@@ -7,6 +7,7 @@ import germanyConstituencyTopoJson from '../../maps/germany/constituency.topo.js
 import franceRegionTopoJson from '../../maps/france/region.topo.json'
 import franceDepartmentTopoJson from '../../maps/france/department.topo.json'
 import netherlandsTopoJson from '../../maps/netherlands/netherlands.topo.json'
+import brazilTopoJson from '../../maps/brazil/brazil.topo.json'
 
 import MapResource from './MapResource'
 import fipsHash from '../../data/us/fips-to-state.json'
@@ -16,6 +17,7 @@ import wkrHash from '../../data/germany/wkr-to-name.json'
 import regionHash from '../../data/france/region-to-name.json'
 import departmentHash from '../../data/france/department-to-name.json'
 import netherlandsHash from '../../data/netherlands/netherlands-names.json'
+import brazilHash from '../../data/brazil/brazil-names.json'
 
 const usProjection = (canvasDimensions) => {
   return geoAlbersUsa()
@@ -66,6 +68,16 @@ const netherlandsProjection = (canvasDimensions) => {
     ])
 }
 
+const brazilProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([-50, -15])
+    .scale(canvasDimensions.height)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+
 class GeographyResource {
   constructor() {
     this._geographies = [
@@ -109,6 +121,12 @@ class GeographyResource {
         mapResource: new MapResource(netherlandsTopoJson, 'dutch municipalities'),
         geoCodeToName: netherlandsHash,
         projection: netherlandsProjection,
+      },
+      {
+        label: 'Brazil',
+        mapResource: new MapResource(brazilTopoJson, 'estados'),
+        geoCodeToName: brazilHash,
+        projection: brazilProjection,
       },
     ]
   }

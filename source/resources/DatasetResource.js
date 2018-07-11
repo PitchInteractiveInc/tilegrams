@@ -10,6 +10,7 @@ import germanyConstituency from '../../data/germany/constituencies.csv'
 import franceRegionPopulation from '../../data/france/region-population.csv'
 import franceDepartment from '../../data/france/departments.csv'
 import netherlandsPopulation from '../../data/netherlands/netherlands-populations.csv'
+import brazilPopulation from '../../data/brazil/brazil-populations.csv'
 
 class DatasetResource {
   constructor() {
@@ -47,6 +48,12 @@ class DatasetResource {
         data: this.parseCsv(netherlandsPopulation, 'Netherlands'),
         geography: 'Netherlands',
         defaultResolution: 50000,
+      },
+      {
+        label: 'Brazil – Population',
+        data: this.parseCsv(brazilPopulation, 'Brazil'),
+        geography: 'Brazil',
+        defaultResolution: 500000,
       },
       // {
       //   label: 'U.K. Constituency 1-to-1',
