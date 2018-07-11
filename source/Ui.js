@@ -300,6 +300,7 @@ class Ui {
     const selectedTilegram = this._tilegramLabels[this._selectedTilegramIndex]
     let congressionalDistrictModal = null
     if (
+      selectedTilegram &&
       this._generateOption === 'import' &&
       selectedTilegram.includes('U.S. Congressional Districts 2018')
     ) {

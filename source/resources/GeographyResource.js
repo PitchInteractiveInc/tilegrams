@@ -82,7 +82,7 @@ const brazilProjection = (canvasDimensions) => {
 
 const irelandProjection = (canvasDimensions) => {
   return geoMercator()
-    .center([-7, 53.])
+    .center([-7, 53.0])
     .scale(canvasDimensions.height * 5.9)
     .translate([
       canvasDimensions.width * 0.5,
