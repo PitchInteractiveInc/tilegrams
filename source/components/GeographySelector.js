@@ -4,6 +4,7 @@ import GeographyResource from '../resources/GeographyResource'
 
 export default function GeographySelector(props) {
   const selectGeography = (event) => {
+    console.log(event.target.value);
     props.selectGeography(event.target.value)
   }
   const options = GeographyResource.getGeographies().map((geography, geographyIndex) => {
@@ -20,7 +21,7 @@ export default function GeographySelector(props) {
     <div className='geographySelector'>
       Select base map
       <fieldset>
-        <select value={props.selectedGeography} onChange={selectGeography}>
+        <select onChange={selectGeography}>
           {options}
         </select>
       </fieldset>
