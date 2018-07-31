@@ -12,6 +12,9 @@ module.exports = {
     filename: 'main.js',
     path: 'dist',
   },
+  devServer: {
+    disableHostCheck: true,
+  },
   module: {
     preLoaders: [
       {

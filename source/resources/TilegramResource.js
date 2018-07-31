@@ -10,6 +10,7 @@ import franceOneToOneDepartmentsTilegram from '../../tilegrams/france-department
 import germanyOneToOneConstituenciesTilegram from '../../tilegrams/germany-constituencies.json'
 import usCongress2018 from '../../tilegrams/us-congressional-districts-2018.json'
 import usCongress2018brokenOut from '../../tilegrams/us-congressional-districts-2018-brokenout.json'
+import brazilStatesPopulation2018 from '../../tilegrams/brazil-states-population.json'
 
 class TilegramResource {
   constructor() {
@@ -63,6 +64,11 @@ class TilegramResource {
         label: 'Germany Constituencies 1-to-1',
         topoJson: germanyOneToOneConstituenciesTilegram,
         geography: 'Germany - Constituencies',
+      },
+      {
+        label: 'Brazil States Population 2017',
+        topoJson: brazilStatesPopulation2018,
+        geography: 'Brazil',
       },
     ]
   }
