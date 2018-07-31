@@ -1,0 +1,10 @@
+deployed by jamesproctor_Pitch at Thu Jul 26 13:40:31 PDT 2018
+from: /Users/jamesproctor_Pitch/Dropbox/Documents/Professional/Pitch/Projects/tilegrams/dist
+repo: https://github.com/PitchInteractiveInc/tilegrams.git
+branch: master
+commit 7d0f5c13d1e8e60e84d9940bf102d81d684b11cf
+Merge: 58dfe07 e5c782d
+Author: James Proctor <james@pitchinteractive.com>
+Date:   Wed Jul 11 11:03:00 2018 -0700
+
+    Merge branch 'master' of https://github.com/PitchInteractiveInc/tilegrams
