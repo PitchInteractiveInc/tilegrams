@@ -4,7 +4,6 @@ import GeographyResource from '../resources/GeographyResource'
 
 export default function GeographySelector(props) {
   const selectGeography = (event) => {
-    console.log(event.target.value);
     props.selectGeography(event.target.value)
   }
   const options = GeographyResource.getGeographies().map((geography, geographyIndex) => {
