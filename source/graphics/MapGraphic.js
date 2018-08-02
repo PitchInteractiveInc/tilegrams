@@ -5,7 +5,7 @@ import topogramImport from 'topogram'
 
 import Graphic from './Graphic'
 import geographyResource from '../resources/GeographyResource'
-import exporter from '../file/Exporter'
+//import exporter from '../file/Exporter'
 import {fipsColor, updateBounds, checkWithinBounds} from '../utils'
 import {canvasDimensions} from '../constants'
 
@@ -74,10 +74,10 @@ export default class MapGraphic extends Graphic {
     if (this._iterationCount > MAX_ITERATION_COUNT) {
       return false
     }
-    const mapResource = geographyResource.getMapResource(geography)
+    //const mapResource = geographyResource.getMapResource(geography)
     topogram.projection(x => x)
-    const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
-    this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
+    //const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
+    //this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
     this._precomputeBounds()
     this._iterationCount++
     return true

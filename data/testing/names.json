@@ -1,0 +1,842 @@
+{
+  "1001": {
+    "name": "Flensburg – Schleswig"
+  },
+  "1002": {
+    "name": "Nordfriesland – Dithmarschen Nord"
+  },
+  "1003": {
+    "name": "Steinburg – Dithmarschen Süd"
+  },
+  "1005": {
+    "name": "Kiel"
+  },
+  "1008": {
+    "name": "Segeberg – Stormarn-Mitte"
+  },
+  "1009": {
+    "name": "Ostholstein – Stormarn-Nord"
+  },
+  "1010": {
+    "name": "Herzogtum Lauenburg – Stormarn-Süd"
+  },
+  "1011": {
+    "name": "Lübeck"
+  },
+  "1012": {
+    "name": "Schwerin – Ludwigslust-Parchim I – Nordwestmecklenburg I"
+  },
+  "1013": {
+    "name": "Ludwigslust-Parchim II – Nordwestmecklenburg II – Landkreis Rostock I"
+  },
+  "1014": {
+    "name": "Rostock – Landkreis Rostock II"
+  },
+  "1015": {
+    "name": "Vorpommern-Rügen – Vorpommern-Greifswald I"
+  },
+  "1016": {
+    "name": "Mecklenburgische Seenplatte I – Vorpommern-Greifswald II"
+  },
+  "1017": {
+    "name": "Mecklenburgische Seenplatte II – Landkreis Rostock III"
+  },
+  "1018": {
+    "name": "Hamburg-Mitte"
+  },
+  "1019": {
+    "name": "Hamburg-Altona"
+  },
+  "1020": {
+    "name": "Hamburg-Eimsbüttel"
+  },
+  "1021": {
+    "name": "Hamburg-Nord"
+  },
+  "1022": {
+    "name": "Hamburg-Wandsbek"
+  },
+  "1023": {
+    "name": "Hamburg-Bergedorf – Harburg"
+  },
+  "1024": {
+    "name": "Aurich – Emden"
+  },
+  "1025": {
+    "name": "Unterems"
+  },
+  "1026": {
+    "name": "Friesland – Wilhelmshaven – Wittmund"
+  },
+  "1032": {
+    "name": "Cloppenburg – Vechta"
+  },
+  "1033": {
+    "name": "Diepholz – Nienburg I"
+  },
+  "1034": {
+    "name": "Osterholz – Verden"
+  },
+  "1035": {
+    "name": "Rotenburg I – Heidekreis"
+  },
+  "1036": {
+    "name": "Harburg"
+  },
+  "1038": {
+    "name": "Osnabrück-Land"
+  },
+  "1039": {
+    "name": "Stadt Osnabrück"
+  },
+  "1040": {
+    "name": "Nienburg II – Schaumburg"
+  },
+  "1041": {
+    "name": "Stadt Hannover I"
+  },
+  "1042": {
+    "name": "Stadt Hannover II"
+  },
+  "1043": {
+    "name": "Hannover-Land I"
+  },
+  "1044": {
+    "name": "Celle – Uelzen"
+  },
+  "1045": {
+    "name": "Gifhorn – Peine"
+  },
+  "1046": {
+    "name": "Hameln-Pyrmont – Holzminden"
+  },
+  "1047": {
+    "name": "Hannover-Land II"
+  },
+  "1048": {
+    "name": "Hildesheim"
+  },
+  "1049": {
+    "name": "Salzgitter – Wolfenbüttel"
+  },
+  "1050": {
+    "name": "Braunschweig"
+  },
+  "1051": {
+    "name": "Helmstedt – Wolfsburg"
+  },
+  "1052": {
+    "name": "Goslar – Northeim – Osterode"
+  },
+  "1054": {
+    "name": "Bremen I"
+  },
+  "1057": {
+    "name": "Uckermark – Barnim I"
+  },
+  "1058": {
+    "name": "Oberhavel – Havelland II"
+  },
+  "1059": {
+    "name": "Märkisch-Oderland – Barnim II"
+  },
+  "1060": {
+    "name": "Brandenburg an der Havel – Potsdam-Mittelmark I – Havelland III – Teltow-Fläming I"
+  },
+  "1061": {
+    "name": "Potsdam – Potsdam-Mittelmark II – Teltow-Fläming II"
+  },
+  "1062": {
+    "name": "Dahme-Spreewald – Teltow-Fläming III – Oberspreewald-Lausitz I"
+  },
+  "1063": {
+    "name": "Frankfurt (Oder) – Oder-Spree"
+  },
+  "1064": {
+    "name": "Cottbus – Spree-Neiße"
+  },
+  "1065": {
+    "name": "Elbe-Elster – Oberspreewald-Lausitz II"
+  },
+  "1066": {
+    "name": "Altmark"
+  },
+  "1067": {
+    "name": "Börde – Jerichower Land"
+  },
+  "1068": {
+    "name": "Harz"
+  },
+  "1069": {
+    "name": "Magdeburg"
+  },
+  "1070": {
+    "name": "Dessau – Wittenberg"
+  },
+  "1071": {
+    "name": "Anhalt"
+  },
+  "1072": {
+    "name": "Halle"
+  },
+  "1073": {
+    "name": "Burgenland – Saalekreis"
+  },
+  "1074": {
+    "name": "Mansfeld"
+  },
+  "1075": {
+    "name": "Berlin-Mitte"
+  },
+  "1076": {
+    "name": "Berlin-Pankow"
+  },
+  "1079": {
+    "name": "Berlin-Steglitz-Zehlendorf"
+  },
+  "1080": {
+    "name": "Berlin-Charlottenburg-Wilmersdorf"
+  },
+  "1081": {
+    "name": "Berlin-Tempelhof-Schöneberg"
+  },
+  "1082": {
+    "name": "Berlin-Neukölln"
+  },
+  "1085": {
+    "name": "Berlin-Marzahn-Hellersdorf"
+  },
+  "1086": {
+    "name": "Berlin-Lichtenberg"
+  },
+  "1088": {
+    "name": "Aachen II"
+  },
+  "1089": {
+    "name": "Heinsberg"
+  },
+  "1090": {
+    "name": "Düren"
+  },
+  "1091": {
+    "name": "Rhein-Erft-Kreis I"
+  },
+  "1092": {
+    "name": "Euskirchen – Rhein-Erft-Kreis II"
+  },
+  "1093": {
+    "name": "Köln I"
+  },
+  "1094": {
+    "name": "Köln II"
+  },
+  "1095": {
+    "name": "Köln III"
+  },
+  "1096": {
+    "name": "Bonn"
+  },
+  "1097": {
+    "name": "Rhein-Sieg-Kreis I"
+  },
+  "1098": {
+    "name": "Rhein-Sieg-Kreis II"
+  },
+  "1099": {
+    "name": "Oberbergischer Kreis"
+  },
+  "1100": {
+    "name": "Rheinisch-Bergischer Kreis"
+  },
+  "1101": {
+    "name": "Leverkusen – Köln IV"
+  },
+  "1102": {
+    "name": "Wuppertal I"
+  },
+  "1103": {
+    "name": "Solingen – Remscheid – Wuppertal II"
+  },
+  "1105": {
+    "name": "Mettmann II"
+  },
+  "1106": {
+    "name": "Düsseldorf I"
+  },
+  "1107": {
+    "name": "Düsseldorf II"
+  },
+  "1108": {
+    "name": "Neuss I"
+  },
+  "1109": {
+    "name": "Mönchengladbach"
+  },
+  "1110": {
+    "name": "Krefeld I – Neuss II"
+  },
+  "1111": {
+    "name": "Viersen"
+  },
+  "1112": {
+    "name": "Kleve"
+  },
+  "1113": {
+    "name": "Wesel I"
+  },
+  "1114": {
+    "name": "Krefeld II – Wesel II"
+  },
+  "1123": {
+    "name": "Gelsenkirchen"
+  },
+  "1124": {
+    "name": "Steinfurt I – Borken I"
+  },
+  "1125": {
+    "name": "Bottrop – Recklinghausen III"
+  },
+  "1126": {
+    "name": "Borken II"
+  },
+  "1127": {
+    "name": "Coesfeld – Steinfurt II"
+  },
+  "1128": {
+    "name": "Steinfurt III"
+  },
+  "1129": {
+    "name": "Münster"
+  },
+  "1133": {
+    "name": "Herford – Minden-Lübbecke II"
+  },
+  "1136": {
+    "name": "Höxter – Lippe II"
+  },
+  "1137": {
+    "name": "Paderborn – Gütersloh III"
+  },
+  "1142": {
+    "name": "Dortmund I"
+  },
+  "1143": {
+    "name": "Dortmund II"
+  },
+  "1144": {
+    "name": "Unna I"
+  },
+  "1146": {
+    "name": "Soest"
+  },
+  "1147": {
+    "name": "Hochsauerlandkreis"
+  },
+  "1148": {
+    "name": "Siegen-Wittgenstein"
+  },
+  "1150": {
+    "name": "Märkischer Kreis II"
+  },
+  "1151": {
+    "name": "Nordsachsen"
+  },
+  "1152": {
+    "name": "Leipzig I"
+  },
+  "1153": {
+    "name": "Leipzig II"
+  },
+  "1154": {
+    "name": "Leipzig-Land"
+  },
+  "1155": {
+    "name": "Meißen"
+  },
+  "1156": {
+    "name": "Bautzen I"
+  },
+  "1157": {
+    "name": "Görlitz"
+  },
+  "1158": {
+    "name": "Sächsische Schweiz-Osterzgebirge"
+  },
+  "1159": {
+    "name": "Dresden I"
+  },
+  "1160": {
+    "name": "Dresden II – Bautzen II"
+  },
+  "1161": {
+    "name": "Mittelsachsen"
+  },
+  "1162": {
+    "name": "Chemnitz"
+  },
+  "1163": {
+    "name": "Chemnitzer Umland – Erzgebirgskreis II"
+  },
+  "1164": {
+    "name": "Erzgebirgskreis I"
+  },
+  "1165": {
+    "name": "Zwickau"
+  },
+  "1166": {
+    "name": "Vogtlandkreis"
+  },
+  "1167": {
+    "name": "Waldeck"
+  },
+  "1168": {
+    "name": "Kassel"
+  },
+  "1169": {
+    "name": "Werra-Meißner – Hersfeld-Rotenburg"
+  },
+  "1170": {
+    "name": "Schwalm-Eder"
+  },
+  "1172": {
+    "name": "Lahn-Dill"
+  },
+  "1173": {
+    "name": "Gießen"
+  },
+  "1175": {
+    "name": "Main-Kinzig – Wetterau II – Schotten"
+  },
+  "1176": {
+    "name": "Hochtaunus"
+  },
+  "1177": {
+    "name": "Wetterau I"
+  },
+  "1178": {
+    "name": "Rheingau-Taunus – Limburg"
+  },
+  "1179": {
+    "name": "Wiesbaden"
+  },
+  "1180": {
+    "name": "Hanau"
+  },
+  "1181": {
+    "name": "Main-Taunus"
+  },
+  "1183": {
+    "name": "Frankfurt am Main II"
+  },
+  "1185": {
+    "name": "Offenbach"
+  },
+  "1186": {
+    "name": "Darmstadt"
+  },
+  "1187": {
+    "name": "Odenwald"
+  },
+  "1188": {
+    "name": "Bergstraße"
+  },
+  "1189": {
+    "name": "Eichsfeld – Nordhausen – Kyffhäuserkreis"
+  },
+  "1190": {
+    "name": "Eisenach – Wartburgkreis – Unstrut-Hainich-Kreis"
+  },
+  "1193": {
+    "name": "Erfurt – Weimar – Weimarer Land II"
+  },
+  "1196": {
+    "name": "Suhl – Schmalkalden-Meiningen – Hildburghausen – Sonneberg"
+  },
+  "1198": {
+    "name": "Ahrweiler"
+  },
+  "1199": {
+    "name": "Koblenz"
+  },
+  "1204": {
+    "name": "Montabaur"
+  },
+  "1205": {
+    "name": "Mainz"
+  },
+  "1206": {
+    "name": "Worms"
+  },
+  "1207": {
+    "name": "Ludwigshafen/Frankenthal"
+  },
+  "1208": {
+    "name": "Neustadt – Speyer"
+  },
+  "1209": {
+    "name": "Kaiserslautern"
+  },
+  "1210": {
+    "name": "Pirmasens"
+  },
+  "1211": {
+    "name": "Südpfalz"
+  },
+  "1212": {
+    "name": "Altötting"
+  },
+  "1213": {
+    "name": "Erding – Ebersberg"
+  },
+  "1214": {
+    "name": "Freising"
+  },
+  "1215": {
+    "name": "Fürstenfeldbruck"
+  },
+  "1216": {
+    "name": "Ingolstadt"
+  },
+  "1217": {
+    "name": "München-Nord"
+  },
+  "1218": {
+    "name": "München-Ost"
+  },
+  "1219": {
+    "name": "München-Süd"
+  },
+  "1220": {
+    "name": "München-West/Mitte"
+  },
+  "1221": {
+    "name": "München-Land"
+  },
+  "1222": {
+    "name": "Rosenheim"
+  },
+  "1223": {
+    "name": "Bad Tölz-Wolfratshausen – Miesbach"
+  },
+  "1224": {
+    "name": "Starnberg – Landsberg am Lech"
+  },
+  "1225": {
+    "name": "Traunstein"
+  },
+  "1226": {
+    "name": "Weilheim"
+  },
+  "1227": {
+    "name": "Deggendorf"
+  },
+  "1228": {
+    "name": "Landshut"
+  },
+  "1229": {
+    "name": "Passau"
+  },
+  "1230": {
+    "name": "Rottal-Inn"
+  },
+  "1231": {
+    "name": "Straubing"
+  },
+  "1232": {
+    "name": "Amberg"
+  },
+  "1233": {
+    "name": "Regensburg"
+  },
+  "1234": {
+    "name": "Schwandorf"
+  },
+  "1235": {
+    "name": "Weiden"
+  },
+  "1236": {
+    "name": "Bamberg"
+  },
+  "1239": {
+    "name": "Hof"
+  },
+  "1240": {
+    "name": "Kulmbach"
+  },
+  "1241": {
+    "name": "Ansbach"
+  },
+  "1242": {
+    "name": "Erlangen"
+  },
+  "1244": {
+    "name": "Nürnberg-Nord"
+  },
+  "1246": {
+    "name": "Roth"
+  },
+  "1247": {
+    "name": "Aschaffenburg"
+  },
+  "1248": {
+    "name": "Bad Kissingen"
+  },
+  "1249": {
+    "name": "Main-Spessart"
+  },
+  "1250": {
+    "name": "Schweinfurt"
+  },
+  "1251": {
+    "name": "Würzburg"
+  },
+  "1252": {
+    "name": "Augsburg-Stadt"
+  },
+  "1253": {
+    "name": "Augsburg-Land"
+  },
+  "1254": {
+    "name": "Donau-Ries"
+  },
+  "1255": {
+    "name": "Neu-Ulm"
+  },
+  "1256": {
+    "name": "Oberallgäu"
+  },
+  "1257": {
+    "name": "Karlsruhe-Land-21"
+  },
+  "260": {
+    "name": "Karlsruhe-Land"
+  },
+  "261": {
+    "name": "Karlsruhe-Land-1"
+  },
+  "259": {
+    "name": "Karlsruhe-Land-2"
+  },
+  "262": {
+    "name": "Karlsruhe-Land-3"
+  },
+  "263": {
+    "name": "Karlsruhe-Land-4"
+  },
+  "265": {
+    "name": "Karlsruhe-Land-5"
+  },
+  "267": {
+    "name": "Karlsruhe-Land-6"
+  },
+  "266": {
+    "name": "Karlsruhe-Land-7"
+  },
+  "268": {
+    "name": "Karlsruhe-Land-8"
+  },
+  "269": {
+    "name": "Karlsruhe-Land-9"
+  },
+  "270": {
+    "name": "Karlsruhe-Land-10"
+  },
+  "271": {
+    "name": "Karlsruhe-Land-11"
+  },
+  "272": {
+    "name": "Karlsruhe-Land-12"
+  },
+  "34": {
+    "name": "Karlsruhe-Land-13"
+  },
+  "25": {
+    "name": "Karlsruhe-Land-14"
+  },
+  "204": {
+    "name": "Karlsruhe-Land-15"
+  },
+  "210": {
+    "name": "Karlsruhe-Land-16"
+  },
+  "206": {
+    "name": "Karlsruhe-Land-17"
+  },
+  "205": {
+    "name": "Karlsruhe-Land-18"
+  },
+  "207": {
+    "name": "Karlsruhe-Land-19"
+  },
+  "209": {
+    "name": "Karlsruhe-Land-20"
+  },
+  "252": {
+    "name": "Karlsruhe-Land-22"
+  },
+  "259": {
+    "name": "Karlsruhe-Land-23"
+  },
+  "103": {
+    "name": "Karlsruhe-Land-24"
+  },
+  "141": {
+    "name": "Karlsruhe-Land-25"
+  },
+  "181": {
+    "name": "Karlsruhe-Land-26"
+  },
+  "137": {
+    "name": "Karlsruhe-Land-27"
+  },
+  "117": {
+    "name": "Karlsruhe-Land-28"
+  },
+  "165": {
+    "name": "Karlsruhe-Land-29"
+  },
+  "164": {
+    "name": "Karlsruhe-Land-30"
+  },
+  "163": {
+    "name": "Karlsruhe-Land-31"
+  },
+  "137": {
+    "name": "Karlsruhe-Land-32"
+  },
+  "162": {
+    "name": "Karlsruhe-Land-33"
+  },
+  "182": {
+    "name": "Karlsruhe-Land-34"
+  },
+  "102": {
+    "name": "Karlsruhe-Land-35"
+  },
+  "137": {
+    "name": "Karlsruhe-Land-36"
+  },
+  "143": {
+    "name": "Karlsruhe-Land-37"
+  },
+  "145": {
+    "name": "Karlsruhe-Land-38"
+  },
+  "116": {
+    "name": "Karlsruhe-Land-39"
+  },
+  "115": {
+    "name": "Karlsruhe-Land-40"
+  },
+  "133": {
+    "name": "Karlsruhe-Land-41"
+  },
+  "136": {
+    "name": "Karlsruhe-Land-42"
+  },
+  "134": {
+    "name": "Karlsruhe-Land-43"
+  },
+  "132": {
+    "name": "Karlsruhe-Land-44"
+  },
+  "142": {
+    "name": "Karlsruhe-Land-45"
+  },
+  "139": {
+    "name": "Karlsruhe-Land-46"
+  },
+  "140": {
+    "name": "Karlsruhe-Land-47"
+  },
+  "98": {
+    "name": "Karlsruhe-Land-48"
+  },
+  "99": {
+    "name": "Karlsruhe-Land-49"
+  },
+  "100": {
+    "name": "Karlsruhe-Land-50"
+  },
+  "78": {
+    "name": "Karlsruhe-Land-51"
+  },
+  "58": {
+    "name": "Karlsruhe-Land-52"
+  },
+  "137": {
+    "name": "Karlsruhe-Land-53"
+  },
+  "79": {
+    "name": "Karlsruhe-Land-54"
+  },
+  "58": {
+    "name": "Karlsruhe-Land-55"
+  },
+  "171": {
+    "name": "Karlsruhe-Land-56"
+  },
+  "87": {
+    "name": "Karlsruhe-Land-57"
+  },
+  "180": {
+    "name": "Karlsruhe-Land-58"
+  },
+  "175": {
+    "name": "Karlsruhe-Land-59"
+  },
+  "57": {
+    "name": "Karlsruhe-Land-60"
+  },
+  "59": {
+    "name": "Karlsruhe-Land-61"
+  },
+  "89": {
+    "name": "Karlsruhe-Land-62"
+  },
+  "90": {
+    "name": "Karlsruhe-Land-63"
+  },
+  "172": {
+    "name": "Karlsruhe-Land-64"
+  },
+  "173": {
+    "name": "Karlsruhe-Land-65"
+  },
+  "177": {
+    "name": "Karlsruhe-Land-66"
+  },
+  "178": {
+    "name": "Karlsruhe-Land-67"
+  },
+  "179": {
+    "name": "Karlsruhe-Land-68"
+  },
+  "186": {
+    "name": "Karlsruhe-Land-69"
+  },
+  "1": {
+    "name": "Karlsruhe-Land-70"
+  },
+  "2": {
+    "name": "Karlsruhe-Land-71"
+  },
+  "3": {
+    "name": "Karlsruhe-Land-72"
+  },
+  "4": {
+    "name": "Karlsruhe-Land-73"
+  },
+  "129": {
+    "name": "Karlsruhe-Land-74"
+  },
+  "125": {
+    "name": "Karlsruhe-Land-75"
+  },
+  "135": {
+    "name": "Karlsruhe-Land-76"
+  },
+  "131": {
+    "name": "Karlsruhe-Land-77"
+  }
+}

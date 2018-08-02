@@ -11,8 +11,6 @@ import gridGeometry from './source/geometry/GridGeometry'
 import {startDownload, isDevEnvironment} from './source/utils'
 import {updateCanvasSize} from './source/constants'
 
-import logo from './source/images/logo.png' // eslint-disable-line no-unused-vars
-
 require('./source/css/main.scss')
 require('font-awesome/scss/font-awesome.scss')
 
