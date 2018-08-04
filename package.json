@@ -38,6 +38,7 @@
   "dependencies": {
     "area-polygon": "^1.0.1",
     "comma-number": "^1.1.0",
+    "copy-webpack-plugin": "^4.5.1",
     "d3-array": "^1.0.1",
     "d3-collection": "^1.0.1",
     "d3-color": "^1.0.1",

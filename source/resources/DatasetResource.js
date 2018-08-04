@@ -15,6 +15,8 @@ import netherlandsPopulation from '../../data/netherlands/netherlands-population
 import pakistanSeats from '../../data/pakistan/seats.csv'
 import pakistanNewSeats from '../../data/pakistan/pakistanNew.csv'
 import testingSeats from '../../data/testing/testing.csv'
+import brazilPopulation2018 from '../../data/brazil/brazil-populations.csv'
+import irelandVotes from '../../data/ireland/constituency_values.csv'
 //
 
 class DatasetResource {
@@ -50,6 +52,12 @@ class DatasetResource {
         data: this.parseCsv(testingSeats, 'testing'),
         geography: 'testing',
         defaultResolution: 1,
+      },
+      {
+        label: 'Brazil – Population 2017',
+        data: this.parseCsv(brazilPopulation2018, 'Brazil'),
+        geography: 'Brazil',
+        defaultResolution: 500000,
       },
       {
         label: 'U.S. Electoral College 2016',
@@ -102,6 +110,12 @@ class DatasetResource {
         label: 'France Department 1-to-1',
         data: this.parseCsv(franceDepartment, 'France - Departments'),
         geography: 'France - Departments',
+        defaultResolution: 1,
+      },
+      {
+        label: 'Ireland Constituencies',
+        data: this.parseCsv(irelandVotes, 'Ireland'),
+        geography: 'Ireland',
         defaultResolution: 1,
       },
     ]

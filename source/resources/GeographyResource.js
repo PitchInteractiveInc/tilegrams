@@ -7,6 +7,8 @@ import germanyConstituencyTopoJson from '../../maps/germany/constituency.topo.js
 import franceRegionTopoJson from '../../maps/france/region.topo.json'
 import franceDepartmentTopoJson from '../../maps/france/department.topo.json'
 import netherlandsTopoJson from '../../maps/netherlands/netherlands.topo.json'
+import brazilTopoJson from '../../maps/brazil/brazil.topo.json'
+import irelandTopoJson from '../../maps/ireland/Irish_Constituencies.topo.json'
 //
 import pakistanTopoJson from '../../maps/pakistan/pakistan.json'
 import pakistanNewTopoJson from '../../maps/pakistanNew/pakistan.json'
@@ -26,6 +28,9 @@ import netherlandsHash from '../../data/netherlands/netherlands-names.json'
 import pakistanHash from '../../data/pakistan/names.json'
 import pakistanNewHash from '../../data/pakistan/newNames.json'
 import testingHash from '../../data/testing/names.json'
+
+import brazilHash from '../../data/brazil/brazil-names.json'
+import irelandHash from '../../data/ireland/constituency_names.json'
 //
 
 const usProjection = (canvasDimensions) => {
@@ -109,6 +114,26 @@ const testingProjection = (canvasDimensions) => {
 }
 //
 
+const brazilProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([-50, -15])
+    .scale(canvasDimensions.height)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+
+const irelandProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([-7, 53.0])
+    .scale(canvasDimensions.height * 5.9)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+
 class GeographyResource {
   constructor() {
     this._geographies = [
@@ -172,6 +197,18 @@ class GeographyResource {
         mapResource: new MapResource(netherlandsTopoJson, 'dutch municipalities'),
         geoCodeToName: netherlandsHash,
         projection: netherlandsProjection,
+      },
+      {
+        label: 'Brazil',
+        mapResource: new MapResource(brazilTopoJson, 'estados'),
+        geoCodeToName: brazilHash,
+        projection: brazilProjection,
+      },
+      {
+        label: 'Ireland',
+        mapResource: new MapResource(irelandTopoJson, 'Irish_Constituencies'),
+        geoCodeToName: irelandHash,
+        projection: irelandProjection,
       },
     ]
   }
