@@ -144,20 +144,20 @@ class GeographyResource {
         projection: usProjection,
       },
       //
+      // {
+      //   label: 'Pakistan',
+      //   mapResource: new MapResource(pakistanTopoJson, 'boundaries'),
+      //   geoCodeToName: pakistanHash,
+      //   projection: pakistanProjection,
+      // },
+      // {
+      //   label: 'Pakistan New',
+      //   mapResource: new MapResource(pakistanNewTopoJson, 'boundaries'),
+      //   geoCodeToName: pakistanNewHash,
+      //   projection: pakistanNewProjection,
+      // },
       {
         label: 'Pakistan',
-        mapResource: new MapResource(pakistanTopoJson, 'boundaries'),
-        geoCodeToName: pakistanHash,
-        projection: pakistanProjection,
-      },
-      {
-        label: 'Pakistan New',
-        mapResource: new MapResource(pakistanNewTopoJson, 'boundaries'),
-        geoCodeToName: pakistanNewHash,
-        projection: pakistanNewProjection,
-      },
-      {
-        label: 'testing',
         mapResource: new MapResource(testingTopoJson, 'boundaries'),
         geoCodeToName: testingHash,
         projection: testingProjection,

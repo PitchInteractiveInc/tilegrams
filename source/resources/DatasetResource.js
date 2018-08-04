@@ -34,23 +34,23 @@ class DatasetResource {
         defaultResolution: 1000000,
       },
       //
-      {
-        label: 'Pakistan Results',
-        data: this.parseCsv(pakistanSeats, 'Pakistan'),
-        geography: 'Pakistan',
-        defaultResolution: 1,
-      },
-      {
-        label: 'Pakistan New Results',
-        data: this.parseCsv(pakistanNewSeats, 'Pakistan New'),
-        geography: 'Pakistan New',
-        defaultResolution: 1,
-      },
+      // {
+      //   label: 'Pakistan Results',
+      //   data: this.parseCsv(pakistanSeats, 'Pakistan'),
+      //   geography: 'Pakistan',
+      //   defaultResolution: 1,
+      // },
+      // {
+      //   label: 'Pakistan New Results',
+      //   data: this.parseCsv(pakistanNewSeats, 'Pakistan New'),
+      //   geography: 'Pakistan New',
+      //   defaultResolution: 1,
+      // },
       //
       {
         label: 'TestingPakistan',
-        data: this.parseCsv(testingSeats, 'testing'),
-        geography: 'testing',
+        data: this.parseCsv(testingSeats, 'Pakistan'),
+        geography: 'Pakistan',
         defaultResolution: 1,
       },
       {
