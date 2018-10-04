@@ -10,8 +10,14 @@ import germanyConstituency from '../../data/germany/constituencies.csv'
 import franceRegionPopulation from '../../data/france/region-population.csv'
 import franceDepartment from '../../data/france/departments.csv'
 import netherlandsPopulation from '../../data/netherlands/netherlands-populations.csv'
+
+//
+import pakistanSeats from '../../data/pakistan/seats.csv'
+import pakistanNewSeats from '../../data/pakistan/pakistanNew.csv'
+import testingSeats from '../../data/testing/testing.csv'
 import brazilPopulation2018 from '../../data/brazil/brazil-populations.csv'
 import irelandVotes from '../../data/ireland/constituency_values.csv'
+//
 
 class DatasetResource {
   constructor() {
@@ -26,6 +32,32 @@ class DatasetResource {
         data: this.parseCsv(populationCsv, 'United States'),
         geography: 'United States',
         defaultResolution: 1000000,
+      },
+      //
+      // {
+      //   label: 'Pakistan Results',
+      //   data: this.parseCsv(pakistanSeats, 'Pakistan'),
+      //   geography: 'Pakistan',
+      //   defaultResolution: 1,
+      // },
+      // {
+      //   label: 'Pakistan New Results',
+      //   data: this.parseCsv(pakistanNewSeats, 'Pakistan New'),
+      //   geography: 'Pakistan New',
+      //   defaultResolution: 1,
+      // },
+      //
+      {
+        label: 'TestingPakistan',
+        data: this.parseCsv(testingSeats, 'Pakistan'),
+        geography: 'Pakistan',
+        defaultResolution: 1,
+      },
+      {
+        label: 'Brazil – Population 2017',
+        data: this.parseCsv(brazilPopulation2018, 'Brazil'),
+        geography: 'Brazil',
+        defaultResolution: 500000,
       },
       {
         label: 'U.S. Electoral College 2016',
@@ -49,12 +81,6 @@ class DatasetResource {
         data: this.parseCsv(netherlandsPopulation, 'Netherlands'),
         geography: 'Netherlands',
         defaultResolution: 50000,
-      },
-      {
-        label: 'Brazil – Population 2017',
-        data: this.parseCsv(brazilPopulation2018, 'Brazil'),
-        geography: 'Brazil',
-        defaultResolution: 500000,
       },
       // {
       //   label: 'U.K. Constituency 1-to-1',

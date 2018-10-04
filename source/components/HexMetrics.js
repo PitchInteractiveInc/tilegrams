@@ -4,6 +4,8 @@ import geographyResource from '../resources/GeographyResource'
 
 import {fipsColor, hashFromData} from '../utils'
 
+//keyString.name_short removed from line 181
+
 export default class HexMetrics extends React.Component {
   constructor(props) {
     super(props)
@@ -176,7 +178,8 @@ export default class HexMetrics extends React.Component {
           >
             {count.disable ? 'No Data' : this._drawHexagon(count.key)}
           </div>
-          <div>{keyString.name_short || count.key}</div>
+          <div>{count.key}</div>
+
           <div>{adjustString}</div>
         </div>
       )

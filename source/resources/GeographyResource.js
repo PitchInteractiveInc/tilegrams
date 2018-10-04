@@ -9,7 +9,12 @@ import franceDepartmentTopoJson from '../../maps/france/department.topo.json'
 import netherlandsTopoJson from '../../maps/netherlands/netherlands.topo.json'
 import brazilTopoJson from '../../maps/brazil/brazil.topo.json'
 import irelandTopoJson from '../../maps/ireland/Irish_Constituencies.topo.json'
+//
+import pakistanTopoJson from '../../maps/pakistan/pakistan.json'
+import pakistanNewTopoJson from '../../maps/pakistanNew/pakistan.json'
 
+import testingTopoJson from '../../maps/testing/testing.json'
+//
 import MapResource from './MapResource'
 import fipsHash from '../../data/us/fips-to-state.json'
 // import fidHash from '../../data/uk/fid-to-constituency.json'
@@ -18,8 +23,15 @@ import wkrHash from '../../data/germany/wkr-to-name.json'
 import regionHash from '../../data/france/region-to-name.json'
 import departmentHash from '../../data/france/department-to-name.json'
 import netherlandsHash from '../../data/netherlands/netherlands-names.json'
+
+//
+import pakistanHash from '../../data/pakistan/names.json'
+import pakistanNewHash from '../../data/pakistan/newNames.json'
+import testingHash from '../../data/testing/names.json'
+
 import brazilHash from '../../data/brazil/brazil-names.json'
 import irelandHash from '../../data/ireland/constituency_names.json'
+//
 
 const usProjection = (canvasDimensions) => {
   return geoAlbersUsa()
@@ -70,6 +82,38 @@ const netherlandsProjection = (canvasDimensions) => {
     ])
 }
 
+//
+const pakistanProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([71, 30.2])
+    .scale(canvasDimensions.height * 2)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+
+const pakistanNewProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([71, 30.2])
+    .scale(canvasDimensions.height * 3)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+
+const testingProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([71, 30.2])
+    .scale(canvasDimensions.height * 3)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
+//
+
 const brazilProjection = (canvasDimensions) => {
   return geoMercator()
     .center([-50, -15])
@@ -99,6 +143,26 @@ class GeographyResource {
         geoCodeToName: fipsHash,
         projection: usProjection,
       },
+      //
+      // {
+      //   label: 'Pakistan',
+      //   mapResource: new MapResource(pakistanTopoJson, 'boundaries'),
+      //   geoCodeToName: pakistanHash,
+      //   projection: pakistanProjection,
+      // },
+      // {
+      //   label: 'Pakistan New',
+      //   mapResource: new MapResource(pakistanNewTopoJson, 'boundaries'),
+      //   geoCodeToName: pakistanNewHash,
+      //   projection: pakistanNewProjection,
+      // },
+      {
+        label: 'Pakistan',
+        mapResource: new MapResource(testingTopoJson, 'boundaries'),
+        geoCodeToName: testingHash,
+        projection: testingProjection,
+      },
+      //
       // {
       //   label: 'United Kingdom - Constituencies',
       //   mapResource: new MapResource(ukConstituencyTopoJson, 'constituencies'),
