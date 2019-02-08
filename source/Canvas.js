@@ -16,6 +16,7 @@ class Canvas {
     this._gridGraphic = new GridGraphic()
     this._cartogramReady = false
     this._cartogramArea = null
+    this._progress = -1
   }
 
   setGeoCodeToName(geoCodeToName) {
@@ -30,11 +31,12 @@ class Canvas {
   }
 
   iterateCartogram(geography) {
-    const iterated = this._mapGraphic.iterateCartogram(geography)
+    const [iterated, time] = this._mapGraphic.iterateCartogram(geography)
     if (iterated) {
       this._setCartogramArea()
     }
-    return iterated
+    this._progress = time;
+    return [iterated, time]
   }
 
   importTiles(tiles) {
@@ -115,6 +117,27 @@ class Canvas {
       if (settings.displayGrid) {
         this._gridGraphic.render(this._ctx)
       }
+    }
+    if (this._progress >= 0 && this._progress < 1) {
+      this._ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+      this._ctx.fillRect(0, 0, canvasDimensions.width, canvasDimensions.height)
+      const fullBarWidth = Math.min(400, canvasDimensions.width / 3)
+      const barX = (canvasDimensions.width / 2) - (fullBarWidth / 2);
+      const progressBarWidth = this._progress * fullBarWidth
+      const barHeight = 30
+      const barY = (canvasDimensions.height / 2) - (barHeight / 2);
+      this._ctx.fillStyle = '#fff';
+      this._ctx.fillRect(barX, barY, fullBarWidth, barHeight);
+      this._ctx.fillStyle = '#666';
+      this._ctx.fillRect(barX, barY, progressBarWidth, barHeight)
+      this._ctx.fillStyle = '#fff';
+
+      this._ctx.textAlign = 'center'
+      this._ctx.textBaseline = 'middle'
+      this._ctx.font = `${16.0 * devicePixelRatio}px Fira Sans`
+
+      const label = 'Computing Tilegram...'
+      this._ctx.fillText(label, canvasDimensions.width / 2, barY - 16)
     }
     this._stats.end()
   }

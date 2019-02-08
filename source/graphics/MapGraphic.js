@@ -13,12 +13,13 @@ const topogram = topogramImport()
 
 const MIN_PATH_AREA = 0.5
 const MAX_ITERATION_COUNT = 20
-
+const MAX_ITERATION_DURATION = 1000 * 30
 export default class MapGraphic extends Graphic {
   constructor() {
     super()
     this._stateFeatures = null
     this._iterationCount = 0
+    this._iterationDuration = 0
     this._generalBounds = [[Infinity, Infinity], [-Infinity, -Infinity]]
     this.getFeatureAtPoint = this.getFeatureAtPoint.bind(this)
     topogram.iterations(1)
@@ -28,6 +29,7 @@ export default class MapGraphic extends Graphic {
   computeCartogram(dataset) {
     topogram.value(feature => dataset.data.find(datum => datum[0] === feature.id)[1])
     this._iterationCount = 0
+    this._iterationDuration = 0
 
     // compute initial cartogram from geography
     this.updatePreProjection(dataset.geography)
@@ -71,16 +73,22 @@ export default class MapGraphic extends Graphic {
    * Return true if iteration was performed, false if not.
    */
   iterateCartogram(geography) {
-    if (this._iterationCount > MAX_ITERATION_COUNT) {
-      return false
+    const percentageDone = Math.max(
+      this._iterationCount / MAX_ITERATION_COUNT,
+      this._iterationDuration / MAX_ITERATION_DURATION
+    )
+    if (percentageDone >= 1) {
+      return [false, percentageDone]
     }
+    const then = Date.now()
     const mapResource = geographyResource.getMapResource(geography)
     topogram.projection(x => x)
     const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
     this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
     this._precomputeBounds()
     this._iterationCount++
-    return true
+    this._iterationDuration += Date.now() - then
+    return [true, percentageDone]
   }
 
   resetBounds() {

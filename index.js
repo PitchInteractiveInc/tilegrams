@@ -38,7 +38,7 @@ function selectDataset(geography, index, customCsv) {
   canvas.computeCartogram(dataset)
 
   function iterateLoop() {
-    const iterated = canvas.iterateCartogram(dataset.geography)
+    const [iterated] = canvas.iterateCartogram(dataset.geography)
     if (iterated) {
       requestAnimationFrame(iterateLoop);
     } else {
@@ -47,6 +47,7 @@ function selectDataset(geography, index, customCsv) {
   }
 
   cancelAnimationFrame(cartogramComputeRafId)
+  canvas.progress = 0
   cartogramComputeRafId = requestAnimationFrame(iterateLoop)
 }
 
