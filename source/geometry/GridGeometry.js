@@ -1,7 +1,7 @@
 /**
  * GridGeometry: manage and convert grid coordinates
  */
-
+import memoize from 'memoizee'
 import {settings, tileEdgeRange, canvasDimensions} from '../constants'
 import PointyTopHexagonShape from './shapes/PointyTopHexagonShape'
 
@@ -14,6 +14,17 @@ const shape = new PointyTopHexagonShape()
 
 class GridGeometry {
   constructor() {
+    this.tileCenterPoint = memoize(this._tileCenterPoint, {
+      normalizer: (args) => {
+        return `x${args[0].x}y${args[0].y}`
+      },
+    })
+    this.getPointsAround = memoize(this._getPointsAround, {
+      normalizer: (args) => {
+        return `x${args[0].x}y${args[0].y}`
+      },
+    })
+
     this.setTileEdge(tileEdgeRange.default)
   }
 
@@ -79,6 +90,8 @@ class GridGeometry {
         (TILE_OFFSET * 2)
       ),
     }
+    this.tileCenterPoint.clear()
+    this.getPointsAround.clear()
   }
 
   forEachTilePosition(iterator) {
@@ -90,7 +103,7 @@ class GridGeometry {
   }
 
   /** Return X/Y center point of tile at given position */
-  tileCenterPoint(position) {
+  _tileCenterPoint(position) {
     const gridUnit = shape.getGridUnit()
     return {
       x: this._tileSize.width * (
@@ -104,7 +117,7 @@ class GridGeometry {
     }
   }
 
-  getPointsAround(center, contiguous) {
+  _getPointsAround(center, contiguous) {
     const tileScale = contiguous ? 1.0 : settings.tileScale
     const scaledSize = {
       width: this._tileSize.width * tileScale,
