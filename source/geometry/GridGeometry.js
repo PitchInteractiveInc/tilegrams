@@ -14,16 +14,18 @@ const shape = new PointyTopHexagonShape()
 
 class GridGeometry {
   constructor() {
-    this.tileCenterPoint = memoize(this._tileCenterPoint, {
-      normalizer: (args) => {
-        return `x${args[0].x}y${args[0].y}`
-      },
-    })
-    this.getPointsAround = memoize(this._getPointsAround, {
-      normalizer: (args) => {
-        return `x${args[0].x}y${args[0].y}`
-      },
-    })
+    // this.tileCenterPoint = memoize(this._tileCenterPoint, {
+    //   normalizer: (args) => {
+    //     return `x${args[0].x}y${args[0].y}`
+    //   },
+    // })
+    // this.getPointsAround = memoize(this._getPointsAround, {
+    //   normalizer: (args) => {
+    //     return `x${args[0].x}y${args[0].y}`
+    //   },
+    // })
+    this.tileCenterPoint = this._tileCenterPoint
+    this.getPointsAround = this._getPointsAround
 
     this.setTileEdge(tileEdgeRange.default)
   }
@@ -90,8 +92,8 @@ class GridGeometry {
         (TILE_OFFSET * 2)
       ),
     }
-    this.tileCenterPoint.clear()
-    this.getPointsAround.clear()
+    // this.tileCenterPoint.clear()
+    // this.getPointsAround.clear()
   }
 
   forEachTilePosition(iterator) {
