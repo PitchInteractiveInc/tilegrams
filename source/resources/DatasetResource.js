@@ -12,6 +12,7 @@ import franceDepartment from '../../data/france/departments.csv'
 import netherlandsPopulation from '../../data/netherlands/netherlands-populations.csv'
 import brazilPopulation2018 from '../../data/brazil/brazil-populations.csv'
 import irelandVotes from '../../data/ireland/constituency_values.csv'
+import ukRegionConstituencyCounts from '../../data/uk/uk_region_constituency_counts.csv'
 
 class DatasetResource {
   constructor() {
@@ -92,6 +93,13 @@ class DatasetResource {
         geography: 'Ireland',
         defaultResolution: 1,
       },
+      {
+        label: 'United Kingdom - Regions',
+        data: this.parseCsv(ukRegionConstituencyCounts, 'United Kingdom - Regions'),
+        geography: 'United Kingdom - Regions',
+        defaultResolution: 1,
+      },
+
     ]
     this._selectedDatasetIndex = 2
   }

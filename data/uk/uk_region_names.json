@@ -1,0 +1,14 @@
+{
+  "North East": { "name": "North East" },
+  "North West": { "name": "North West" },
+  "Yorkshire and The Humber": { "name": "Yorkshire and The Humber" },
+  "East Midlands": { "name": "East Midlands" },
+  "West Midlands": { "name": "West Midlands" },
+  "Eastern": { "name": "Eastern" },
+  "London": { "name": "London" },
+  "South East": { "name": "South East" },
+  "South West": { "name": "South West" },
+  "Northern Ireland": { "name": "Northern Ireland" },
+  "Scotland": { "name": "Scotland" },
+  "Wales": { "name": "Wales" }
+}

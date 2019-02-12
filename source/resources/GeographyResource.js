@@ -9,6 +9,7 @@ import franceDepartmentTopoJson from '../../maps/france/department.topo.json'
 import netherlandsTopoJson from '../../maps/netherlands/netherlands.topo.json'
 import brazilTopoJson from '../../maps/brazil/brazil.topo.json'
 import irelandTopoJson from '../../maps/ireland/Irish_Constituencies.topo.json'
+import ukRegionsTopojson from '../../maps/uk/uk_countries_and_england_regions.topo.json'
 
 import MapResource from './MapResource'
 import fipsHash from '../../data/us/fips-to-state.json'
@@ -20,6 +21,7 @@ import departmentHash from '../../data/france/department-to-name.json'
 import netherlandsHash from '../../data/netherlands/netherlands-names.json'
 import brazilHash from '../../data/brazil/brazil-names.json'
 import irelandHash from '../../data/ireland/constituency_names.json'
+import ukRegionsHash from '../../data/uk/uk_region_names.json';
 
 const usProjection = (canvasDimensions) => {
   return geoAlbersUsa()
@@ -30,15 +32,15 @@ const usProjection = (canvasDimensions) => {
     ])
 }
 
-// const ukProjection = (canvasDimensions) => {
-//   return geoMercator()
-//     .center([-2, 55.7])
-//     .scale(canvasDimensions.height * 2.9)
-//     .translate([
-//       canvasDimensions.width * 0.5,
-//       canvasDimensions.height * 0.5,
-//     ])
-// }
+const ukProjection = (canvasDimensions) => {
+  return geoMercator()
+    .center([-2, 55.7])
+    .scale(canvasDimensions.height * 2.9)
+    .translate([
+      canvasDimensions.width * 0.5,
+      canvasDimensions.height * 0.5,
+    ])
+}
 
 const germanyProjection = (canvasDimensions) => {
   return geoMercator()
@@ -110,6 +112,13 @@ class GeographyResource {
       //   mapResource: new MapResource(ukAuthorityTopoJson, 'authorities'),
       //   geoCodeToName: authorityIdHash,
       //   projection: ukProjection,
+      // },
+      {
+        label: 'United Kingdom - Regions',
+        mapResource: new MapResource(ukRegionsTopojson, 'uk_countries_and_england_regions'),
+        geoCodeToName: ukRegionsHash,
+        projection: ukProjection,
+      },
       {
         label: 'Germany - Constituencies',
         mapResource: new MapResource(germanyConstituencyTopoJson, 'constituencies'),
