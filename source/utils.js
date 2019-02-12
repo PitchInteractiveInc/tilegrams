@@ -1,11 +1,22 @@
+function hashCode(input) {
+  let hash = 0;
+  if (input.length === 0) {
+    return hash;
+  }
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash &= hash; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 /** Return a pseudo-random color for a given geo code */
 function fipsColor(fips) {
   const scaleTo = 56
   let number = parseInt(fips, 10) % scaleTo
   if (isNaN(number)) {
-    number = (
-      ((fips.charCodeAt(fips.length - 1) || 0) + ((fips.charCodeAt(fips.length - 2) || 0) * 10))
-    ) % scaleTo
+    number = hashCode(fips.split('').reverse().join('')) % scaleTo
   }
   const scalar = number / scaleTo
   return `hsl(${360 - ((scalar * 180.0) + 180.0)}, 87%, 70%)`
