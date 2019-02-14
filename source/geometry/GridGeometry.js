@@ -19,6 +19,8 @@ class GridGeometry {
   setTileEdge(tileEdge) {
     if (isNaN(tileEdge)) {
       console.warn('setting NaN tile edge, something probably went wrong')
+      // eslint-disable-next-line no-restricted-syntax, no-debugger
+      debugger
     }
     this._tileEdge = tileEdge
     this.resize()

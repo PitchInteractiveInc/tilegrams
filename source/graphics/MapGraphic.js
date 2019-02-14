@@ -27,7 +27,10 @@ export default class MapGraphic extends Graphic {
 
   /** Apply topogram on topoJson using data in properties */
   computeCartogram(dataset) {
-    topogram.value(feature => dataset.data.find(datum => datum[0] === feature.id)[1])
+    topogram.value(feature => {
+      const v = dataset.data.find(datum => datum[0] === feature.id)[1]
+      return v
+    })
     this._iterationCount = 0
     this._iterationDuration = 0
 
@@ -83,6 +86,7 @@ export default class MapGraphic extends Graphic {
     const then = Date.now()
     const mapResource = geographyResource.getMapResource(geography)
     topogram.projection(x => x)
+
     const topoJson = exporter.fromGeoJSON(this._stateFeatures, mapResource.getObjectId())
     this._stateFeatures = topogram(topoJson, topoJson.objects[mapResource.getObjectId()].geometries)
     this._precomputeBounds()
@@ -159,8 +163,14 @@ export default class MapGraphic extends Graphic {
 
   computeCartogramArea() {
     const featureAreas = this._stateFeatures.features.map((feature) => {
-      return geoPath().area(feature)
+      const featureArea = geoPath().area(feature)
+      if (isNaN(featureArea)) {
+        // eslint-disable-next-line no-debugger, no-restricted-syntax
+        debugger
+      }
+      return featureArea
     })
+
     return featureAreas.reduce((a, b) => a + b)
   }
 }
