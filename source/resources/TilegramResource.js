@@ -12,6 +12,7 @@ import usCongress2018 from '../../tilegrams/us-congressional-districts-2018.json
 import usCongress2018brokenOut from '../../tilegrams/us-congressional-districts-2018-brokenout.json'
 import brazilStatesPopulation2018 from '../../tilegrams/brazil-states-population.json'
 import ukRegions from '../../tilegrams/uk-regions.json';
+import indiaConstituencies from '../../tilegrams/india-constituencies.json';
 
 class TilegramResource {
   constructor() {
@@ -75,6 +76,11 @@ class TilegramResource {
         label: 'United Kingdom - Regions',
         topoJson: ukRegions,
         geography: 'United Kingdom - Regions',
+      },
+      {
+        label: 'India Constituencies',
+        topoJson: indiaConstituencies,
+        geography: 'India',
       },
     ]
   }
