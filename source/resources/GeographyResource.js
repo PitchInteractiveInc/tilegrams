@@ -10,7 +10,7 @@ import netherlandsTopoJson from '../../maps/netherlands/netherlands.topo.json'
 import brazilTopoJson from '../../maps/brazil/brazil.topo.json'
 import irelandTopoJson from '../../maps/ireland/Irish_Constituencies.topo.json'
 import ukRegionsTopojson from '../../maps/uk/uk_countries_and_england_regions.topo.json'
-import indiaTopojson from '../../maps/india/india.topo.json'
+// import indiaTopojson from '../../maps/india/india.topo.json'
 
 import MapResource from './MapResource'
 import fipsHash from '../../data/us/fips-to-state.json'
@@ -23,7 +23,7 @@ import netherlandsHash from '../../data/netherlands/netherlands-names.json'
 import brazilHash from '../../data/brazil/brazil-names.json'
 import irelandHash from '../../data/ireland/constituency_names.json'
 import ukRegionsHash from '../../data/uk/uk_region_names.json';
-import indiaHash from '../../data/india/india_names.json';
+// import indiaHash from '../../data/india/india_names.json';
 
 const usProjection = (canvasDimensions) => {
   return geoAlbersUsa()
@@ -94,15 +94,15 @@ const irelandProjection = (canvasDimensions) => {
     ])
 }
 
-const indiaProjection = (canvasDimensions) => {
-  return geoMercator()
-    .center([80.310, 22.371])
-    .scale(canvasDimensions.height * 1.5)
-    .translate([
-      canvasDimensions.width * 0.5,
-      canvasDimensions.height * 0.5,
-    ])
-}
+// const indiaProjection = (canvasDimensions) => {
+//   return geoMercator()
+//     .center([80.310, 22.371])
+//     .scale(canvasDimensions.height * 1.5)
+//     .translate([
+//       canvasDimensions.width * 0.5,
+//       canvasDimensions.height * 0.5,
+//     ])
+// }
 
 class GeographyResource {
   constructor() {
@@ -167,12 +167,12 @@ class GeographyResource {
         geoCodeToName: irelandHash,
         projection: irelandProjection,
       },
-      {
-        label: 'India',
-        mapResource: new MapResource(indiaTopojson, 'india'),
-        geoCodeToName: indiaHash,
-        projection: indiaProjection,
-      },
+      // {
+      //   label: 'India',
+      //   mapResource: new MapResource(indiaTopojson, 'india'),
+      //   geoCodeToName: indiaHash,
+      //   projection: indiaProjection,
+      // },
     ]
   }
 

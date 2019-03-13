@@ -13,7 +13,7 @@ import netherlandsPopulation from '../../data/netherlands/netherlands-population
 import brazilPopulation2018 from '../../data/brazil/brazil-populations.csv'
 import irelandVotes from '../../data/ireland/constituency_values.csv'
 import ukRegionConstituencyCounts from '../../data/uk/uk_region_constituency_counts.csv'
-import indiaContituencyCounts from '../../data/india/india_constituency_counts.csv';
+// import indiaContituencyCounts from '../../data/india/india_constituency_counts.csv';
 
 class DatasetResource {
   constructor() {
@@ -100,12 +100,12 @@ class DatasetResource {
         geography: 'United Kingdom - Regions',
         defaultResolution: 1,
       },
-      {
-        label: 'India Constituencies',
-        data: this.parseCsv(indiaContituencyCounts, 'India'),
-        geography: 'India',
-        defaultResolution: 1,
-      },
+      // {
+      //   label: 'India Constituencies',
+      //   data: this.parseCsv(indiaContituencyCounts, 'India'),
+      //   geography: 'India',
+      //   defaultResolution: 1,
+      // },
     ]
 
     this._selectedDatasetIndex = 2
