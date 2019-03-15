@@ -318,6 +318,15 @@ class Ui {
         </div>
       )
     }
+    if (selectedTilegram && selectedTilegram.includes('India')) {
+      console.log('india')
+      congressionalDistrictModal = (
+        <div className='congressionalDistrictModal india'>
+          This data visualisation is a cartographic representation of a
+          traditional map of India and as such does not have 100% geographical accuracy.
+        </div>
+      )
+    }
     ReactDOM.render(
       <div>
         {modal}

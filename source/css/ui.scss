@@ -323,7 +323,12 @@ code {
   width: calc(100% - 323px);
   text-align: center;
   z-index: 99999;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.8);
   line-height: 3em;
   font-size: 120%;
+
+  &.india {
+    font-size: 100%;
+    line-height: 2em;
+  }
 }
