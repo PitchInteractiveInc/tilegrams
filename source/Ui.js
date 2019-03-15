@@ -319,7 +319,6 @@ class Ui {
       )
     }
     if (selectedTilegram && selectedTilegram.includes('India')) {
-      console.log('india')
       congressionalDistrictModal = (
         <div className='congressionalDistrictModal india'>
           This data visualisation is a cartographic representation of a
