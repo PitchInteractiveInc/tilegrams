@@ -54,9 +54,10 @@ export default class ResolutionSlider extends React.Component {
       typedValue = parseFloat(typedValue.replace(/,/g, ''))
     }
     sanitizedValue = typedValue
-    if (typedValue < min) {
+    const enforceRanges = !window.location.search.includes('ignoreRange')
+    if (enforceRanges && typedValue < min) {
       sanitizedValue = min
-    } else if (typedValue > max) {
+    } else if (enforceRanges && typedValue > max) {
       sanitizedValue = max
     }
     if (isNaN(typedValue)) { // catch any bad values and reset
