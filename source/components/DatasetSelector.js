@@ -66,7 +66,6 @@ export default class DatasetSelector extends React.Component {
       <select
         id='dataset-selector'
         className='dataset-select'
-        value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
       >
         {datasets}

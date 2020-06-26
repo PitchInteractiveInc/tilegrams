@@ -83,7 +83,6 @@ export default class ImportControls extends React.Component {
     return (
       <select
         className='map-select'
-        value={this.state.selectedIndex}
         onChange={(event) => this._onSelect(event)}
       >
         {datasets}
