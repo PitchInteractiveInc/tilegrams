@@ -4,7 +4,7 @@ A “tilegram” is a map made of tiles
 where regions are sized proportionally to a dataset.
 The name is short for a tiled
 [cartogram](https://en.wikipedia.org/wiki/Cartogram).
-Tilegrams can represent demographic data more truthfully than conventional,
+Tilegrams can represent demographic data more accurately than conventional,
 geographic maps, while still retaining a familiar appearance.
 
 This free, open-source tool enables news designers and developers
