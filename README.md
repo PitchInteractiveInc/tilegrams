@@ -10,6 +10,7 @@ or the [manual](MANUAL.md).
 ## Development
 
 ### Setup
+Despite many deprecations, npm v10.24.1 can install this project when it can call python2 (Python 2.7). Other setups might work.
 
 After cloning the repository, run:
 

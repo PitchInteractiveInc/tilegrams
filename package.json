@@ -55,7 +55,7 @@
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "stats-js": "^1.0.0-alpha1",
-    "topogram": "git://github.com/PitchInteractiveInc/topogram.git#node-js",
+    "topogram": "https://github.com/PitchInteractiveInc/topogram.git#node-js",
     "topojson": "^1.6.26"
   }
 }
